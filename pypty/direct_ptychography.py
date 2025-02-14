@@ -14,7 +14,7 @@ from pypty.fft import *
 from pypty.utils import *
 
 
-def wdd(pypty_params, mean_pattern=None, eps_wiener=1e-3, thresh=None, save=0):
+def wdd(pypty_params,  eps_wiener=1e-3, thresh=None, save=0):
     global cpu_mode
     if not(cpu_mode):
         cp.fft.config.clear_plan_cache()
@@ -37,6 +37,9 @@ def wdd(pypty_params, mean_pattern=None, eps_wiener=1e-3, thresh=None, save=0):
     aberrations = pypty_params.get('aberrations', [0])
     pixel_size_x_A = pypty_params.get('pixel_size_x_A', 1)
     pixel_size_y_A = pypty_params.get('pixel_size_y_A', 1)
+    save=pypty_params.get('save_preprocessing_files', save)
+    mean_pattern=pypty_params.get('mean_pattern', None)
+
     
     try:
         os.makedirs(pypty_params["output_folder"], exist_ok=True)
