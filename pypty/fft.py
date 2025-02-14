@@ -1,6 +1,6 @@
 try:
     import cupy as cp
-    import cupy.fft as sf
+    import cupyx.scipy.fft as sf
 except:
     import numpy as cp
     import scipy.fft as sf
