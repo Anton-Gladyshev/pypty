@@ -4,14 +4,12 @@ import os
 import h5py
 import matplotlib.pyplot as plt
 from tqdm import tqdm
-
 try:
     import cupy as cp
     cpu_mode=False
 except:
     import numpy as cp
     cpu_mode=True
-    
 from pypty.fft import *
 from pypty.utils import *
 

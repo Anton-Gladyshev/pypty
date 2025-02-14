@@ -246,7 +246,6 @@ def multislice(full_probe, this_obj_chopped, num_slices, n_obj_modes, n_probe_mo
     return cp.conjugate(waves_multislice), wave
 
 
-
 def multislice_grads(dLoss_dP_out, waves_multislice, this_obj_chopped, object_grad, tilts_grad, is_single_dist,this_distances, exclude_mask, this_wavelength, q2, qx, this_tan_x, qy, this_tan_y, num_slices, n_obj_modes,tiltind, master_propagator_phase_space, this_step_tilts, damping_cutoff_multislice, smooth_rolloff, tilt_mode,  compute_batch, mask_clean, this_step_probe, this_step_obj, this_step_pos_correction, masked_pixels_y, masked_pixels_x, default_float, default_complex, helper_flag_4):
     this_obj_chopped=cp.conjugate(this_obj_chopped)
     for i_update in range(num_slices-1,-1,-1): #backward propagation

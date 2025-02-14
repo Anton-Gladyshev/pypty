@@ -178,7 +178,7 @@ def append_exp_params(experimental_params, pypty_params=None):
     aperture=experimental_params.get("aperture", None)
     data_pad=experimental_params.get("data_pad", None)
     upsample_pattern=experimental_params.get("upsample_pattern",1)
-
+    aberrations = experimental_params.get("aberrations",np.zeros(8))
     scan_size=experimental_params.get("scan_size", None)
     scan_step_A=experimental_params.get("scan_step_A", None)
     fov_nm=experimental_params.get("fov_nm", None)
@@ -323,6 +323,7 @@ def append_exp_params(experimental_params, pypty_params=None):
         pypty_params['data_pad']=data_pad
         pypty_params['probe']=None
         pypty_params['obj']=np.ones((1,1,num_slices,1), dtype=np.complex128)
+    pypty_params["aberrations"]=aberrations
     pypty_params["mean_pattern"]=mean_pattern_as_it_is
     pypty_params["upsample_pattern"]=upsample_pattern
     pypty_params["rez_pixel_size_A"]=rez_pixel_size_A

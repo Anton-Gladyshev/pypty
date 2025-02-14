@@ -18,7 +18,18 @@ except:
 from pypty.fft import *
 from pypty.utils import *
 
-def run_tcbf_alignment(params, aberrations=None, binning_for_fit=[8], save=True, n_aberrations_to_fit=12, plot_CTF_shifts=True, plot_inter_image=True, save_inter_imags=False,refine_box_dim=10, upsample=3, reference_type="bf", optimize_angle=False, scan_pad=None, cancel_large_shifts=None, compensate_lowfreq_drift=False, aperture=None, append_lowfreq_shifts_to_params=True, subscan_region=None, interpolate_scan_factor=1, cross_corr_type="phase", save_iteration_results=False, binning_cross_corr=1, phase_cross_corr_formula=False, f_scale_lsq=1,x_scale_lsq=1, loss_lsq="linear", tol_ctf=1e-8):
+def run_tcbf_alignment(params, binning_for_fit=[8],
+                        save=True, optimize_angle=False,
+                        plot_CTF_shifts=True, plot_inter_image=True,
+                        save_inter_imags=False,refine_box_dim=10,
+                        upsample=3, reference_type="bf",
+                        scan_pad=None, cancel_large_shifts=None, compensate_lowfreq_drift=False,
+                        aperture=None, append_lowfreq_shifts_to_params=True, subscan_region=None,
+                        interpolate_scan_factor=1,
+                        cross_corr_type="phase",n_aberrations_to_fit=12, aberrations=None,
+                        save_iteration_results=False, binning_cross_corr=1,
+                        phase_cross_corr_formula=False, f_scale_lsq=1,x_scale_lsq=1,
+                        loss_lsq="linear", tol_ctf=1e-8):
     """
     This function fit the beam CTF to the shifts between the individual pixel images of the 4d-stem dataset. The shift estimation is done via phase-cross correaltion. The shift of the CTF can be done either on an aberration basis or on a full discretized grid.
     inputs:
@@ -85,8 +96,10 @@ def run_tcbf_alignment(params, aberrations=None, binning_for_fit=[8], save=True,
     wavelength=12.4/np.sqrt(acc_voltage*(acc_voltage+2*511))
     mrad_per_px=1000*rez_pixel_size_A*wavelength
     if aberrations is None:
-        aberrations=list(np.zeros(n_aberrations_to_fit))
-        aberrations[0]=-1*pypty_params.get("extra_probe_defocus", 0)
+        aberrations=pypty_params.get("aberrations", None)
+        if aberrations is None:
+            aberrations=list(np.zeros(n_aberrations_to_fit))
+            aberrations[0]=-1*pypty_params.get("extra_probe_defocus", 0)
     
     plot=pypty_params.get("plot", False)
     print_flag=pypty_params.get("print_flag", False)
@@ -585,9 +598,6 @@ def run_tcbf_alignment(params, aberrations=None, binning_for_fit=[8], save=True,
     return pypty_params
 
 
-
-
-
 def upsampled_tcbf(pypty_params, upsample=5, pad=10,compensate_lowfreq_drift=False, default_float=64,round_shifts=False,xp=np,save=0,max_parallel_fft=100, bin_fac=1):
     """
     Run a tcBF reconstruction on an upsampled grid. Note that usually before doing so you need to execute run_tcbf_alignment fucntion to adjust pypty_params.
@@ -680,7 +690,6 @@ def upsampled_tcbf(pypty_params, upsample=5, pad=10,compensate_lowfreq_drift=Fal
         maskx, masky=np.meshgrid(np.fft.fftfreq(patterns.shape[2]), np.fft.fftfreq(patterns.shape[1]), indexing="xy")
         for ind111 in tqdm(range(patterns.shape[0])):
             shifty, shiftx= int(comy[ind111]), int(comx[ind111])
-            #pattern_shifted=np.real(np.fft.ifft2(np.exp(6.283185307179586j*(maskx*shiftx+masky*shifty))*np.fft.fft2(np.sqrt(np.copy(patterns[ind111])))))**2
             pattern_shifted=np.roll(np.copy(patterns[ind111]), (-shifty, -shiftx), axis=(0,1))
             if bin_fac!=1:
                 pattern_shifted=np.sum(pattern_shifted[difference_y_left:difference_y_right, difference_x_left:difference_x_right].reshape(new_sky,bin_fac, new_skx,bin_fac), axis=(-3, -1))
