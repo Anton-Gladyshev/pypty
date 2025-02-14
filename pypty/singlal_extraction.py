@@ -4,6 +4,7 @@ import os
 import h5py
 import matplotlib.pyplot as plt
 from scipy.ndimage import percentile_filter as cpu_percentile
+from scipy.interpolate import griddata
 
 
 
@@ -61,28 +62,18 @@ def get_aperture(params):
     return params
 
 
-def get_focussed_probe_from_vacscan(pypty_params, mean_pat_vaccum):
-    data_path=pypty_params["data_path"]
-    upsample_pattern= pypty_params["upsample_pattern"]
-    if data_path[-3:]==".h5":
-        f=h5py.File(data_path, "r")["data"]
-        meanpat_f=np.mean(f, axis=0)
-    elif data_path[-4:]==".npy":
-        meanpat_f=np.load(data_path)
-        if len(meanpat_f.shape)==4:
-            meanpat_f=np.mean(meanpat_f, (0,1))
-        else:
-            meanpat_f=np.mean(f, axis=0)
-    x,y=np.fft.fftshift(np.fft.fftfreq(meanpat_f.shape[1])), np.fft.fftshift(np.fft.fftfreq(meanpat_f.shape[0]))
-    x,y=np.meshgrid(x,y, indexing="xy")
-    mean_pat_vaccum_fft=np.fft.fftshift(np.fft.fft2(mean_pat_vaccum))
-    mean_pat_data_fft  =np.fft.fftshift(np.fft.fft2(meanpat_f))
-    mean_pat_vaccum_fft=phase_cross_corr_align(mean_pat_data_fft, mean_pat_vaccum_fft, refine_box_dim=1, upsample=1, x_real=x, y_real=y)
-    mean_pattern_vacuum=np.fft.ifft2(np.fft.ifftshift(mean_pat_vaccum_fft))
-    mean_pattern_vacuum=np.abs(mean_pattern_vacuum)
-    mean_pattern_vacuum=upsample_something(mean_pattern_vacuum, upsample_pattern, True, np)
-    focussed_probe_aligned=np.expand_dims(np.fft.fftshift(np.fft.ifft2(np.fft.ifftshift((mean_pattern_vacuum**0.5)))),-1)
-    return focussed_probe_aligned
+def get_focussed_probe_from_vacscan(pypty_params, mean_pattern):
+    upsample_pattern= pypty_params.get("upsample_pattern", 1)
+    data_pad=pypty_params.get("data_pad", 1)
+    if upsample_pattern!=1:
+        x,y=np.meshgrid(np.linspace(0,1,mean_pattern.shape[1]),np.linspace(0,1,mean_pattern.shape[0]))
+        points=np.swapaxes(np.array([x.flatten(),y.flatten()]), 0,1)
+        x2, y2=np.meshgrid(np.linspace(0,1,upsample_pattern*mean_pattern.shape[1]), np.linspace(0,1,upsample_pattern*mean_pattern.shape[0]))
+        mean_pattern=np.abs(griddata(points, mean_pattern.flatten(), (x2, y2), method='cubic'))
+        mean_pattern=np.pad(np.abs(mean_pattern),data_pad, mode="constant", constant_values=0)
+    focussed_probe=np.expand_dims(np.fft.fftshift(np.fft.ifft2(np.fft.ifftshift((mean_pattern**0.5)))),-1)
+    pypty_params["probe"]=focussed_probe
+    return pypty_params
 
 
 

@@ -5,7 +5,6 @@ import h5py
 import json
 import matplotlib.pyplot as plt
 from scipy.interpolate import CloughTocher2DInterpolator
-
 from pypty.utils import *
 from pypty.dpc import *
 
@@ -141,6 +140,23 @@ def get_positions_px_size(x_range, y_range,scan_step_A, detector_pixel_size_rezA
     positions*=scan_step_A/px_size
     return positions, px_size
 
+
+def get_grid_for_upsampled_image(pypty_params, image,image_px_size ):
+    scx, scy=np.meshgrid(np.arange(0, image.shape[1],1)*image_px_size,
+                        np.arange(0, image.shape[0],1)*image_px_size,
+                        indexing="xy")
+    rot_ang=pypty_params["PLRotation_deg"]*np.pi/180
+    sc_prime_x,sc_prime_y=scx * np.cos(rot_ang) - scy * np.sin(rot_ang), scx * np.sin(rot_ang) + scy * np.cos(rot_ang)
+    ofy, ofx=get_offset(x_range=pypty_params["scan_size"][1],
+                        y_range=pypty_params["scan_size"][0],
+                        scan_step_A=pypty_params["scan_step_A"],
+                        detector_pixel_size_rezA=pypty_params["rez_pixel_size_A"],
+                        patternshape=pypty_params["aperture_mask"].shape,
+                        rot_angle_deg=-1*pypty_params["PLRotation_deg"])
+    sc_prime_x, sc_prime_y=sc_prime_x+ofx, sc_prime_y+ofy
+    sc=np.swapaxes(np.array([sc_prime_y.flatten(), sc_prime_x.flatten()]),0,1)
+    
+    return sc
 
     
     
