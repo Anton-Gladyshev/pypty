@@ -10,7 +10,6 @@ import copy
 import inspect
 
 
-
 from pypty.fft import *
 from pypty.utils import *
 from pypty.loss_and_direction import *
@@ -24,10 +23,6 @@ except:
     import scipy.ndimage as ndi
     import numpy as cp
     cpu_mode=True
-
-
-
-
 
 
 

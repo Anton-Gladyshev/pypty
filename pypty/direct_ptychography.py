@@ -14,9 +14,9 @@ except:
     
 from pypty.fft import *
 from pypty.utils import *
-    
 
-def wdd(pypty_params, mean_pattern=None, eps_wiener=1e-3, thresh=None):
+
+def wdd(pypty_params, mean_pattern=None, eps_wiener=1e-3, thresh=None, save=0):
     global cpu_mode
     if not(cpu_mode):
         cp.fft.config.clear_plan_cache()
@@ -40,6 +40,11 @@ def wdd(pypty_params, mean_pattern=None, eps_wiener=1e-3, thresh=None):
     pixel_size_x_A = pypty_params.get('pixel_size_x_A', 1)
     pixel_size_y_A = pypty_params.get('pixel_size_y_A', 1)
     
+    try:
+        os.makedirs(pypty_params["output_folder"], exist_ok=True)
+        os.makedirs(pypty_params["output_folder"]+"/wdd/", exist_ok=True)
+    except:
+        sys.stdout.write("output folder was not created!")
     pixel_size_x_A*=(data.shape[2]+2*data_pad)/data.shape[2]
     pixel_size_y_A*=(data.shape[1]+2*data_pad)/data.shape[1]
     scan_step_A= pypty_params.get('scan_step_A', 1)
@@ -150,5 +155,13 @@ def wdd(pypty_params, mean_pattern=None, eps_wiener=1e-3, thresh=None):
     prefactor=cp.sqrt(cp.abs(o[min_q_ind[0],min_q_ind[1]]))
     o=o/prefactor
     o=ifft2_ishift(o)
+    try:
+        o=o.get()
+        p=p.get()
+    except:
+        pass
+    if save:
+        np.save(pypty_params["output_folder"]+"/wdd/object.npy", o)
+        np.save(pypty_params["output_folder"]+"/wdd/probe.npy", p)
     return o, probe
 

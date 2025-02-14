@@ -6,7 +6,6 @@ except:
     import numpy as cp
     cpu_mode=True
 from pypty.fft import *
-#from pypty.loss_and_direction import *
 from pypty.utils import *
 
 def better_multislice(full_probe, this_obj_chopped, num_slices, n_obj_modes, n_probe_modes, this_distances, this_wavelength, q2, qx, qy, exclude_mask, is_single_dist, this_tan_x,this_tan_y, damping_cutoff_multislice, smooth_rolloff, master_propagator_phase_space,  half_master_propagator_phase_space, mask_clean, waves_multislice, wave, default_float, default_complex):

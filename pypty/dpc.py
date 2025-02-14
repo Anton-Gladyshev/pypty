@@ -25,6 +25,12 @@ def GetPLRotation(dpcx, dpcy):
     return R
 
 def getdpcpot(pypty_params, hpass=0, lpass=0, save=False, comx=None, comy=None):
+    if save:
+        try:
+            os.makedirs(pypty_params["output_folder"], exist_ok=True)
+            os.makedirs(pypty_params["output_folder"]+"/dpc/", exist_ok=True)
+        except:
+            sys.stdout.write("output folder was not created!")
     dataset_h5=pypty_params.get("data_path", "")
     scan_size=pypty_params.get("scan_size", None)
     angle=pypty_params.get("PLRotation_deg", None)
@@ -85,14 +91,20 @@ def getdpcpot(pypty_params, hpass=0, lpass=0, save=False, comx=None, comy=None):
     pypty_params["comx"]=comx
     pypty_params["comy"]=comy
     if save:
-        np.save(pypty_params["output_folder"]+"/idpc.npy", pot)
+        np.save(pypty_params["output_folder"]+"/dpc/idpc.npy", pot)
     pypty_params["PLRotation_deg"]=angle*180/np.pi
     return pot, pypty_params, rcomx, rcomy
 
 
 
 
-def iterative_dpc(COMx, COMy, phase=None, select=None,px_size=1,print_flag=False, hpass=0, lpass=0, step_size=0.1, num_iterations=100, beta=0.5, bin_fac=1, use_backtracking=True, pad_width=1):
+def iterative_dpc(COMx, COMy, phase=None, select=None,px_size=1,print_flag=False, hpass=0, lpass=0, step_size=0.1, num_iterations=100, beta=0.5, bin_fac=1, use_backtracking=True, pad_width=1, save=False):
+    if save:
+        try:
+            os.makedirs(pypty_params["output_folder"], exist_ok=True)
+            os.makedirs(pypty_params["output_folder"]+"/dpc/", exist_ok=True)
+        except:
+            sys.stdout.write("output folder was not created!")
     if select is None:
         Ny, Nx = COMx.shape
     else:
@@ -156,7 +168,10 @@ def iterative_dpc(COMx, COMy, phase=None, select=None,px_size=1,print_flag=False
         if (print_flag>2) or iteration==(num_iterations-1):
             sys.stdout.write(f"\rIteration {iteration}, Total Error: {error:.3e}, count: {count}, step: {step_size:.2e}")
             sys.stdout.flush()
-    return padded_phase[:Ny, :Nx]
+    padded_phase=padded_phase[:Ny, :Nx]
+    if save:
+        np.save(pypty_params["output_folder"]+"/dpc/iterative_dpc.npy", padded_phase)
+    return padded_phase
 
 
 

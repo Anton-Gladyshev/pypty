@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 from scipy.interpolate import CloughTocher2DInterpolator
 
 from pypty.utils import *
-
+from pypty.dpc import *
 
 
 def create_h5_file_from_numpy(path_numpy, path_h5, swap_axes=False,flip_ky=False,flip_kx=False, flip_y=False,flip_x=False,comcalc_len=1000, comx=None, comy=None, bin=1, crop_left=None, crop_right=None, crop_top=None, crop_bottom=None, normalize=True, cutoff_ratio=None, pad_k=0, data_dtype=np.float32, rescale=1, exist_ok=True):
