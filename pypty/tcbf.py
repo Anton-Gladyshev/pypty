@@ -21,13 +21,13 @@ from pypty.utils import *
 def run_tcbf_alignment(params, binning_for_fit=[8],
                         save=True, optimize_angle=False,
                         plot_CTF_shifts=True, plot_inter_image=True,
-                        save_inter_imags=False,refine_box_dim=10,
+                        refine_box_dim=10,
                         upsample=3, reference_type="bf",
                         scan_pad=None, cancel_large_shifts=None, compensate_lowfreq_drift=False,
                         aperture=None, append_lowfreq_shifts_to_params=True, subscan_region=None,
                         interpolate_scan_factor=1,
                         cross_corr_type="phase",n_aberrations_to_fit=12, aberrations=None,
-                        save_iteration_results=False, binning_cross_corr=1,
+                        binning_cross_corr=1,
                         phase_cross_corr_formula=False, f_scale_lsq=1,x_scale_lsq=1,
                         loss_lsq="linear", tol_ctf=1e-8):
     """
@@ -75,6 +75,8 @@ def run_tcbf_alignment(params, binning_for_fit=[8],
     data_pad=pypty_params.get("data_pad",0)
     upsample_pattern=pypty_params.get("upsample_pattern",1)
     smart_memory=pypty_params.get("smart_memory", True)
+    save=pypty_params.get("save_preprocessing_files", save)
+
     try:
         smart_memory=smart_memory(0)
     except:
@@ -333,14 +335,14 @@ def run_tcbf_alignment(params, binning_for_fit=[8],
         if not cpu_mode:
             reference_x=reference_x.get()
             reference_y=reference_y.get()
-        if (plot and plot_inter_image) or save_inter_imags: ## plot the tcBF estimate
+        if (plot and plot_inter_image) or save: ## plot the tcBF estimate
             image_bf_binned_plot=cp.real(ifft2(image_bf_binned_fourier))
             if not(cpu_mode):
                 image_bf_binned_plot=image_bf_binned_plot.get()
             plt.imshow(image_bf_binned_plot, cmap="gray")
             plt.title("tcBF image at bin %d. Iteration %d"%(bin_fac, index_bin))
             plt.axis("off")
-            if save_inter_imags:
+            if save:
                 plt.savefig(pypty_params["output_folder"]+"/tcbf/"+str(index_bin)+"png", dpi=200)
                 np.save(pypty_params["output_folder"]+"/tcbf/tcbf_"+str(index_bin)+".npy", image_bf_binned_plot)
             if not(plot and plot_inter_image):
@@ -497,7 +499,7 @@ def run_tcbf_alignment(params, binning_for_fit=[8],
             start_x=aberrations
         result=least_squares(ctf_residuals,start_x, jac=jacobian_residuals, x_scale=x_scale_lsq, loss=loss_lsq, f_scale=f_scale_lsq, ftol=tol_ctf) ## do least squares!
         aberrations= np.asarray(result.x)
-        if save_iteration_results:
+        if save:
             np.save(pypty_params["output_folder"]+"/tcbf/estimated_shifts_%d.npy"%index_bin, estimated_shifts)
             np.save(pypty_params["output_folder"]+"/tcbf/aberrations_%d.npy"%index_bin, aberrations)
         if optimize_angle:
@@ -535,7 +537,7 @@ def run_tcbf_alignment(params, binning_for_fit=[8],
     if print_flag:
         sys.stdout.write("\nFinal CTF Fit done!")
     
-    if save_iteration_results:
+    if save:
         np.save(pypty_params["output_folder"]+"/tcbf/aberrations_A.npy", fit_abberations_array)
         if optimize_angle:
             np.save(pypty_params["output_folder"]+"/tcbf/PL_angle_deg.npy", (fit_angle_array)*180/np.pi)
@@ -552,7 +554,7 @@ def run_tcbf_alignment(params, binning_for_fit=[8],
             ax[index_aberr].legend(loc=1)
             ax[index_aberr].set_xlabel("iteration")
             ax[index_aberr].set_ylabel("value")
-        if save_iteration_results:
+        if save:
             fig.savefig(pypty_params["output_folder"]+"/tcbf/aberrations_fit.png")
         plt.show()
         if optimize_angle:
@@ -560,7 +562,7 @@ def run_tcbf_alignment(params, binning_for_fit=[8],
             ax.plot((fit_angle_array)*180/np.pi, "-.", linewidth=2, label="angle offset")
             ax.set_xlabel("iteration")
             ax.set_ylabel("angle (deg)")
-            if save_iteration_results:
+            if save:
                 fig.savefig(pypty_params["output_folder"]+"/tcbf/angle_fit.png")
             plt.show()
     del binned_data_bright_field
@@ -626,6 +628,8 @@ def upsampled_tcbf(pypty_params, upsample=5, pad=10,compensate_lowfreq_drift=Fal
     data_pad= pypty_params.get("data_pad", 1)
     rez_pixel_size_A= pypty_params.get("rez_pixel_size_A", 1)
     upsample_pattern= pypty_params.get("upsample_pattern", 1)
+    save=pypty_params.get("save_preprocessing_files", save)
+
     xp=cp  #pypty_params.get("backend", cp)
     if data_pad!=0:
         aperture=aperture[data_pad:-data_pad,data_pad:-data_pad]

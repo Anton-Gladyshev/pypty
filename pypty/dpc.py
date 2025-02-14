@@ -24,7 +24,8 @@ def GetPLRotation(dpcx, dpcy):
     R = result.x[0]
     return R
 
-def getdpcpot(pypty_params, hpass=0, lpass=0, save=False, comx=None, comy=None):
+def getdpcpot(pypty_params, hpass=0, lpass=0, save=True, comx=None, comy=None, plot=True):
+    save=pypty_params.get("save_preprocessing_files", save)
     if save:
         try:
             os.makedirs(pypty_params["output_folder"], exist_ok=True)
@@ -34,7 +35,7 @@ def getdpcpot(pypty_params, hpass=0, lpass=0, save=False, comx=None, comy=None):
     dataset_h5=pypty_params.get("data_path", "")
     scan_size=pypty_params.get("scan_size", None)
     angle=pypty_params.get("PLRotation_deg", None)
-    plot=pypty_params.get("plot", False)
+    plot=pypty_params.get("plot", plot)
     if dataset_h5[-3:]==".h5":
         dataset_h5=h5py.File(dataset_h5, "r")
         dataset_h5=dataset_h5["data"]
@@ -98,7 +99,8 @@ def getdpcpot(pypty_params, hpass=0, lpass=0, save=False, comx=None, comy=None):
 
 
 
-def iterative_dpc(COMx, COMy, phase=None, select=None,px_size=1,print_flag=False, hpass=0, lpass=0, step_size=0.1, num_iterations=100, beta=0.5, bin_fac=1, use_backtracking=True, pad_width=1, save=False):
+def iterative_dpc(COMx, COMy, phase=None, select=None,px_size=1,print_flag=False, hpass=0, lpass=0, step_size=0.1, num_iterations=100, beta=0.5, bin_fac=1, use_backtracking=True, pad_width=1, save=True):
+    save=pypty_params.get("save_preprocessing_files", save)
     if save:
         try:
             os.makedirs(pypty_params["output_folder"], exist_ok=True)

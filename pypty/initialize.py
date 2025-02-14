@@ -98,7 +98,7 @@ def create_h5_file_from_numpy(path_numpy, path_h5, swap_axes=False,flip_ky=False
 
     
 def get_offset(x_range, y_range, scan_step_A, detector_pixel_size_rezA, patternshape, rot_angle_deg=0):
-    px_size=1/(detector_pixel_size_rezA*patternshape[-1])
+    pixel_size=1/(detector_pixel_size_rezA*patternshape[-1])
     positions=np.empty((x_range*y_range,2))
     i=0
     for ind1 in range(0,y_range,1):
@@ -115,10 +115,10 @@ def get_offset(x_range, y_range, scan_step_A, detector_pixel_size_rezA, patterns
     offx=-np.min(positions[:,1])*scan_step_A
     return offy, offx
        
-def get_positions_px_size(x_range, y_range,scan_step_A, detector_pixel_size_rezA, patternshape, rot_angle_deg=0, flip_x=False,flip_y=False, print_flag=False):
-    px_size=1/(detector_pixel_size_rezA*patternshape[-1])
+def get_positions_pixel_size(x_range, y_range,scan_step_A, detector_pixel_size_rezA, patternshape, rot_angle_deg=0, flip_x=False,flip_y=False, print_flag=False):
+    pixel_size=1/(detector_pixel_size_rezA*patternshape[-1])
     if print_flag:
-        sys.stdout.write("\npixel size in A: %.3e"%px_size)
+        sys.stdout.write("\npixel size in A: %.3e"%pixel_size)
     positions=np.empty((x_range*y_range,2))
     i=0
     for ind1 in range(0,y_range,1):
@@ -137,13 +137,13 @@ def get_positions_px_size(x_range, y_range,scan_step_A, detector_pixel_size_rezA
         positions[:,0]*=-1
     positions[:,0]=positions[:,0]-np.min(positions[:,0])
     positions[:,1]=positions[:,1]-np.min(positions[:,1])
-    positions*=scan_step_A/px_size
-    return positions, px_size
+    positions*=scan_step_A/pixel_size
+    return positions, pixel_size
 
 
-def get_grid_for_upsampled_image(pypty_params, image,image_px_size ):
-    scx, scy=np.meshgrid(np.arange(0, image.shape[1],1)*image_px_size,
-                        np.arange(0, image.shape[0],1)*image_px_size,
+def get_grid_for_upsampled_image(pypty_params, image,image_pixel_size ):
+    scx, scy=np.meshgrid(np.arange(0, image.shape[1],1)*image_pixel_size,
+                        np.arange(0, image.shape[0],1)*image_pixel_size,
                         indexing="xy")
     rot_ang=pypty_params["PLRotation_deg"]*np.pi/180
     sc_prime_x,sc_prime_y=scx * np.cos(rot_ang) - scy * np.sin(rot_ang), scx * np.sin(rot_ang) + scy * np.cos(rot_ang)
@@ -155,7 +155,6 @@ def get_grid_for_upsampled_image(pypty_params, image,image_px_size ):
                         rot_angle_deg=-1*pypty_params["PLRotation_deg"])
     sc_prime_x, sc_prime_y=sc_prime_x+ofx, sc_prime_y+ofy
     sc=np.swapaxes(np.array([sc_prime_y.flatten(), sc_prime_x.flatten()]),0,1)
-    
     return sc
 
     
@@ -169,12 +168,13 @@ def append_exp_params(experimental_params, pypty_params=None):
     path_data_h5=experimental_params.get("data_path", "")
     output_folder=experimental_params.get("output_folder", "")
     path_json=experimental_params.get("path_json", "")
-
+    
     acc_voltage=experimental_params.get("acc_voltage", None)
     rez_pixel_size_A=experimental_params.get("rez_pixel_size_A", None)
     rez_pixel_size_mrad=experimental_params.get("rez_pixel_size_mrad", None)
     conv_semiangle_mrad=experimental_params.get("conv_semiangle_mrad", None)
-
+    
+    
     aperture=experimental_params.get("aperture", None)
     data_pad=experimental_params.get("data_pad", None)
     upsample_pattern=experimental_params.get("upsample_pattern",1)
@@ -185,12 +185,14 @@ def append_exp_params(experimental_params, pypty_params=None):
     flip_x_positions = experimental_params.get("flip_x_positions", False)
     flip_y_positions = experimental_params.get("flip_y_positions", False)
     defocus=experimental_params.get("defocus", 0)
-    PLRotation_deg=experimental_params.get("PLRotation_deg", 0)
+    PLRotation_deg=experimental_params.get("PLRotation_deg", None)
     total_thickness=experimental_params.get("total_thickness", 1)
     num_slices=experimental_params.get("num_slices", 1)
     bright_threshold=experimental_params.get("bright_threshold", 0.1)
     plot=experimental_params.get("plot", True)
     print_flag=experimental_params.get("print_flag", True)
+    save_preprocessing_files=experimental_params.get("save_preprocessing_files", True)
+    
     comx=None
     comy=None
     try:
@@ -283,14 +285,14 @@ def append_exp_params(experimental_params, pypty_params=None):
             rez_pixel_size_A/=upsample_pattern
     else:
         rez_pixel_size_A=rez_pixel_size_mrad*1e-3/(upsample_pattern*wavelength)
-    positions, old_px_size=get_positions_px_size(x_range, y_range, scan_step_A, detector_pixel_size_rezA=rez_pixel_size_A, patternshape=[mean_pattern.shape[0],mean_pattern.shape[1]], rot_angle_deg=-1*PLRotation_deg, flip_x=flip_x_positions,flip_y=flip_y_positions, print_flag=print_flag)
+    positions, old_pixel_size=get_positions_pixel_size(x_range, y_range, scan_step_A, detector_pixel_size_rezA=rez_pixel_size_A, patternshape=[mean_pattern.shape[0],mean_pattern.shape[1]], rot_angle_deg=-1*PLRotation_deg, flip_x=flip_x_positions,flip_y=flip_y_positions, print_flag=print_flag)
     old_shape=mean_pattern.shape[1]
     if data_pad is None: data_pad=int(np.ceil(old_shape/4));
     new_shape=old_shape+2*data_pad
-    new_px_size=old_px_size*old_shape/new_shape
+    new_pixel_size=old_pixel_size*old_shape/new_shape
     positions *= new_shape/old_shape
     if print_flag:
-        sys.stdout.write("\nPixel size after padding: %.2e Å"%new_px_size)
+        sys.stdout.write("\nPixel size after padding: %.2e Å"%new_pixel_size)
     aperture=np.pad(aperture, data_pad, mode="constant", constant_values=0)
     if pypty_params is None:
         pypty_params={
@@ -300,8 +302,8 @@ def append_exp_params(experimental_params, pypty_params=None):
         'obj': np.ones((1,1,num_slices,1), dtype=np.complex128),
         'acc_voltage': acc_voltage,
         'slice_distances': np.array([total_thickness/num_slices]),
-        'pixel_size_x_A': new_px_size,
-        'pixel_size_y_A': new_px_size,
+        'pixel_size_x_A': new_pixel_size,
+        'pixel_size_y_A': new_pixel_size,
         'aperture_mask': aperture,
         'extra_probe_defocus': defocus,
         'data_pad': data_pad,
@@ -316,13 +318,14 @@ def append_exp_params(experimental_params, pypty_params=None):
         pypty_params['positions']=positions
         pypty_params['acc_voltage']=acc_voltage
         pypty_params['slice_distances']=np.array([total_thickness/num_slices])
-        pypty_params['pixel_size_x_A']=new_px_size
-        pypty_params['pixel_size_y_A']=new_px_size
+        pypty_params['pixel_size_x_A']=new_pixel_size
+        pypty_params['pixel_size_y_A']=new_pixel_size
         pypty_params['aperture_mask']=aperture
         pypty_params['extra_probe_defocus']=defocus
         pypty_params['data_pad']=data_pad
         pypty_params['probe']=None
         pypty_params['obj']=np.ones((1,1,num_slices,1), dtype=np.complex128)
+    pypty_params["save_preprocessing_files"]=save_preprocessing_files
     pypty_params["aberrations"]=aberrations
     pypty_params["mean_pattern"]=mean_pattern_as_it_is
     pypty_params["upsample_pattern"]=upsample_pattern

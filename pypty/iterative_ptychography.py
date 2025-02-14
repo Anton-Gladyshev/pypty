@@ -8,13 +8,9 @@ import pickle
 import types
 import copy
 import inspect
-
-
 from pypty.fft import *
 from pypty.utils import *
 from pypty.loss_and_direction import *
-
-
 try:
     import cupyx.scipy.ndimage as ndi
     import cupy as cp
