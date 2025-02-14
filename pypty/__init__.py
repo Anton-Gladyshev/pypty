@@ -8,4 +8,5 @@ from pypty.loss_and_direction import *
 from pypty.multislice import *
 from pypty.tcbf import *
 from pypty.utils import *
-
+from pypty.signal_extraction import *
+from pypty.visualize_and_analyze import *
