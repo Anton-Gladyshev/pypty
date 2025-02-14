@@ -4,7 +4,7 @@ try:
 except:
     import numpy as cp
     import scipy.fft as sf
-    
+### 2D FFT
 def fftfreq(length, sampling=1):
     return sf.fftfreq(length, sampling)
 def ifftfreq(length, sampling=1):
@@ -36,4 +36,3 @@ def ifftn(arr, axes=(0,1,2)):
 def fftn(arr, axes=(0,1,2)):
     y=sf.fftn(arr, axes=axes)
     return y
-
