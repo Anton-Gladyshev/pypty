@@ -1,0 +1,12 @@
+Metadata-Version: 2.1
+Name: pypty
+Version: 2.0
+Summary: A CuPy-based set of scripts for multisclie reconstrcutions on a GPU. Can be configured for STEM (ptychograpgy), TEM (tilt or focal series) or pretty much any combination of this things.
+Home-page: UNKNOWN
+Author: Anton Gladyshev
+License: UNKNOWN
+Platform: UNKNOWN
+License-File: LICENSE
+
+UNKNOWN
+
