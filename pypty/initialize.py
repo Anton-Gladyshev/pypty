@@ -565,7 +565,7 @@ def tiltbeamtodata(pypty_params, align_type="com"):
             scan_size=[h5data.shape[0], h5data.shape[1]]
             h5data=h5file.reshape(h5data.shape[0]* h5data.shape[1], h5data.shape[2],h5data.shape[3])
     pacbed=np.sum(h5data, 0)
-    beam_fft=np.sum(np.abs(np.fft.fftshift(np.fft.fft2(probe, axes=(0,1)), axes=(0,1)))**2, -1)[data_pad:-data_pad,data_pad:-data_pad,0]
+    beam_fft=np.sum(np.abs(np.fft.fftshift(np.fft.fft2(probe, axes=(0,1)), axes=(0,1)))**2, -1)[data_pad:-data_pad,data_pad:-data_pad]
     if align_type=="com":
         x=np.arange(pacbed.shape[0])
         x=x-np.mean(x)
