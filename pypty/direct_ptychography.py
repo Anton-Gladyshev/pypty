@@ -57,7 +57,8 @@ def wdd(pypty_params, eps_wiener=1e-3, thresh=None, save=0):
     extra_probe_defocus=pypty_params.get('extra_probe_defocus', 0)
     wavelength=12.4 /((2*511.0+acc_voltage)*acc_voltage)**0.5
     if mean_pattern is None:
-        mean_pattern=cp.asarray(np.mean(data[:100,:100], axis=(0,1)))
+        mean_pattern=np.mean(data[:100,:100], axis=(0,1))
+    mean_pattern=cp.asarray(mean_pattern)
     if probe is None:
         probe=cp.expand_dims(cp.fft.fftshift(ifft2_ishift(cp.sqrt(mean_pattern))),-1)
     if extra_probe_defocus!=0: probe=apply_defocus_probe(probe, extra_probe_defocus,acc_voltage, pixel_size_x_A, pixel_size_y_A,cp.complex64, cp.float32, cp);
