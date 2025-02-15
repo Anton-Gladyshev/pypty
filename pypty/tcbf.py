@@ -340,8 +340,8 @@ def run_tcbf_alignment(params, binning_for_fit=[8],
             plt.title("tcBF image at bin %d. Iteration %d"%(bin_fac, index_bin))
             plt.axis("off")
             if save:
-                plt.savefig(pypty_params["output_folder"]+"/tcbf/tcbf_bin_"+str(index_bin)+"_image.png", dpi=200)
-                np.save(pypty_params["output_folder"]+"/tcbf/tcbf_bin_"+str(index_bin)+"_image.npy", image_bf_binned_plot)
+                plt.savefig(pypty_params["output_folder"]+"/tcbf/tcbf_image_"+str(index_bin)+".png", dpi=200)
+                np.save(pypty_params["output_folder"]+"/tcbf/tcbf_image_"+str(index_bin)+".npy", image_bf_binned_plot)
             if not(plot):
                 plt.close()
             else:
@@ -518,7 +518,7 @@ def run_tcbf_alignment(params, binning_for_fit=[8],
             ax[0].set_title("Fitted shifts")
             ax[1].set_title("Fitted CTF grad")
             if save:
-                fig.savefig(pypty_params["output_folder"]+"/tcbf/tcbf_bin"+str(index_bin)+"_shifts.png", dpi=200)
+                fig.savefig(pypty_params["output_folder"]+"/tcbf/tcbf_shifts_"+str(index_bin)+".png", dpi=200)
             if not(plot):
                 fig.close()
             else:
