@@ -97,9 +97,9 @@ def getdpcpot(pypty_params, hpass=0, lpass=0, save=True, comx=None, comy=None, p
 
 
 
-def iterative_dpc(pypty_params, COMx=None, COMy=None, px_size=None,print_flag=False,save=True,
-                select=None,  hpass=0, lpass=0, step_size=0.1,
-                num_iterations=100, beta=0.5, bin_fac=1, use_backtracking=True, pad_width=5):
+def iterative_dpc(pypty_params, num_iterations=100, beta=0.5, hpass=0, lpass=0, step_size=0.1,
+                COMx=None, COMy=None, px_size=None,print_flag=False,save=True,
+                select=None, plot=True, bin_fac=1, use_backtracking=True, pad_width=5):
     save=pypty_params.get("save_preprocessing_files", save)
     if save:
         try:
