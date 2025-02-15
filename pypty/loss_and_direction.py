@@ -24,7 +24,7 @@ def loss_and_direction(this_obj, full_probe, this_pos_array, this_pos_correction
    # start_gpu = cp.cuda.Event()
    # end_gpu = cp.cuda.Event()
    # start_gpu.record()
-    if 'lsq_compressed'==algorithm_type or algorithm_type=='epie_compressed':
+    if 'lsq_compressed'==algorithm_type:
         masks_len=masks.shape[0] #int
     pattern_number, loss, sse=len(this_chopped_sequence),0,0
     fourier_probe_grad=None
