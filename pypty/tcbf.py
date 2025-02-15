@@ -340,8 +340,8 @@ def run_tcbf_alignment(params, binning_for_fit=[8],
             plt.title("tcBF image at bin %d. Iteration %d"%(bin_fac, index_bin))
             plt.axis("off")
             if save:
-                plt.savefig(pypty_params["output_folder"]+"/tcbf/"+str(index_bin)+"png", dpi=200)
-                np.save(pypty_params["output_folder"]+"/tcbf/tcbf_"+str(index_bin)+".npy", image_bf_binned_plot)
+                plt.savefig(pypty_params["output_folder"]+"/tcbf/tcbf_bin_"+str(index_bin)+"_image.png", dpi=200)
+                np.save(pypty_params["output_folder"]+"/tcbf/tcbf_bin_"+str(index_bin)+"_image.npy", image_bf_binned_plot)
             if not(plot):
                 plt.close()
             else:
@@ -507,7 +507,7 @@ def run_tcbf_alignment(params, binning_for_fit=[8],
         if print_flag:
             sys.stdout.write("\nCTF fitted successfully: %s."%(result.success))
             sys.stdout.flush()
-        if plot: ## plot the results
+        if plot or save: ## plot the results
             ctf_grad_x, ctf_grad_y=get_ctf_derivatives(aberrations, binned_kx_detector_suc,binned_ky_detector_suc,  wavelength, angle_offset)
             fig, ax=plt.subplots(1,2, figsize=(10,5))
             ap_show=rotate(aperture_binned, angle=0, axes=(1, 0), reshape=False, order=0)
@@ -517,6 +517,12 @@ def run_tcbf_alignment(params, binning_for_fit=[8],
             ax[1].quiver(binned_kx_detector_suc,binned_ky_detector_suc, ctf_grad_x, ctf_grad_y,  color="red", capstyle="round")
             ax[0].set_title("Fitted shifts")
             ax[1].set_title("Fitted CTF grad")
+            if save:
+                fig.savefig(pypty_params["output_folder"]+"/tcbf/tcbf_bin"+str(index_bin)+"_shifts.png", dpi=200)
+            if not(plot):
+                fig.close()
+            else:
+                fig.show()
             plt.show()
         if print_flag:
             num_abs=len(aberrations)
