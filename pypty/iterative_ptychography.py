@@ -32,7 +32,6 @@ except:
 
 def run_ptychography(pypty_params):
     global obj, probe, pool, pinned_pool, positions, positions_correction, tilts, tilts_correction, defocus_array, beam_current, history_bfgs
-    params=pypty_params.copy()
     obj,probe, positions, positions_correction, tilts, tilts_correction, defocus_array, beam_current = None, None, None, None, None, None,None, None
     reset_bfgs_history()
     try:
@@ -40,8 +39,11 @@ def run_ptychography(pypty_params):
         pinned_pool=cp.get_default_pinned_memory_pool()
     except:
         pass
+        
     if type(params)==str:
-        params=load_params(params)
+        params=load_params(pypty_params)
+    else:
+        params=pypty_params.copy()
     xp =  params.get('backend', cp) ## currently not used, but usefull for future:
     default_dtype=params.get('default_dtype', "double")
     if default_dtype=="double":
