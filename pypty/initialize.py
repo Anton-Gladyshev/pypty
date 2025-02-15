@@ -568,7 +568,7 @@ def tiltbeamtodata(pypty_params, align_type="com"):
     pacbed=np.sum(h5data, 0)
     beam_fft=np.sum(np.abs(np.fft.fftshift(np.fft.fft2(probe, axes=(0,1)), axes=(0,1)))**2, -1)[data_pad:-data_pad,data_pad:-data_pad]
     if upsample_pattern!=1:
-        beam_fft=downsample_something_3d(beam_fft, upsample_pattern, np)
+        beam_fft=downsample_something(beam_fft, upsample_pattern, np)
     if align_type=="com":
         x=np.arange(pacbed.shape[0])
         x=x-np.mean(x)
