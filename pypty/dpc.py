@@ -29,7 +29,7 @@ def getdpcpot(pypty_params, hpass=0, lpass=0, save=True, comx=None, comy=None, p
     if save:
         try:
             os.makedirs(pypty_params["output_folder"], exist_ok=True)
-            os.makedirs(pypty_params["output_folder"]+"/dpc/", exist_ok=True)
+            os.makedirs(pypty_params["output_folder"]+"dpc/", exist_ok=True)
         except:
             sys.stdout.write("output folder was not created!")
     dataset_h5=pypty_params.get("data_path", "")
@@ -90,9 +90,9 @@ def getdpcpot(pypty_params, hpass=0, lpass=0, save=True, comx=None, comy=None, p
     pypty_params["comx"]=comx
     pypty_params["comy"]=comy
     if save:
-        np.save(pypty_params["output_folder"]+"/dpc/idpc.npy", pot)
+        np.save(pypty_params["output_folder"]+"dpc/idpc.npy", pot)
     pypty_params["PLRotation_deg"]=angle*180/np.pi
-    return pot, pypty_params, rcomx, rcomy
+    return pot, pypty_params
 
 
 
@@ -104,7 +104,7 @@ def iterative_dpc(pypty_params, COMx=None, COMy=None, px_size=None,print_flag=Fa
     if save:
         try:
             os.makedirs(pypty_params["output_folder"], exist_ok=True)
-            os.makedirs(pypty_params["output_folder"]+"/dpc/", exist_ok=True)
+            os.makedirs(pypty_params["output_folder"]+"dpc/", exist_ok=True)
         except:
             sys.stdout.write("output folder was not created!")
     dataset_h5=pypty_params.get("data_path", "")
@@ -207,7 +207,7 @@ def iterative_dpc(pypty_params, COMx=None, COMy=None, px_size=None,print_flag=Fa
             sys.stdout.flush()
     padded_phase=padded_phase[:Ny, :Nx]
     if save:
-        np.save(pypty_params["output_folder"]+"/dpc/iterative_dpc.npy", padded_phase)
+        np.save(pypty_params["output_folder"]+"dpc/iterative_dpc.npy", padded_phase)
     return padded_phase
 
 
@@ -234,7 +234,6 @@ def iterative_poisson_solver(laplace, phase=None, select=None,px_size=1,print_fl
         mask[(1-select).astype(bool)]=0
     mask=xp.pad(mask, [[0,pad_width],[0,pad_width]])
     laplace=xp.asarray(laplace)
-    
     
     for iteration in range(num_iterations):
         dely, delx=xp.gradient(padded_phase, px_size, edge_order=1)

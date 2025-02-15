@@ -199,6 +199,7 @@ def append_exp_params(experimental_params, pypty_params=None):
         os.makedirs(output_folder, exist_ok=True)
     except:
         pass
+    if output_folder[:-1]!="/": output_folder+="/";
     try:
         with open(path_json, 'r') as file:
             jsondata = json.load(file)

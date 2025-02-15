@@ -43,7 +43,7 @@ def wdd(pypty_params, eps_wiener=1e-3, thresh=None, save=0):
     
     try:
         os.makedirs(pypty_params["output_folder"], exist_ok=True)
-        os.makedirs(pypty_params["output_folder"]+"/wdd/", exist_ok=True)
+        os.makedirs(pypty_params["output_folder"]+"wdd/", exist_ok=True)
     except:
         sys.stdout.write("output folder was not created!")
     pixel_size_x_A*=(data.shape[2]+2*data_pad)/data.shape[2]
@@ -162,7 +162,7 @@ def wdd(pypty_params, eps_wiener=1e-3, thresh=None, save=0):
     except:
         pass
     if save:
-        np.save(pypty_params["output_folder"]+"/wdd/object.npy", o)
-        np.save(pypty_params["output_folder"]+"/wdd/probe.npy", p)
+        np.save(pypty_params["output_folder"]+"wdd/object.npy", o)
+        np.save(pypty_params["output_folder"]+"wdd/probe.npy", p)
     return o, probe
 
