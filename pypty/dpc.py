@@ -107,7 +107,6 @@ def iterative_dpc(pypty_params, COMx=None, COMy=None, px_size=None,print_flag=Fa
             os.makedirs(pypty_params["output_folder"]+"/dpc/", exist_ok=True)
         except:
             sys.stdout.write("output folder was not created!")
-    
     dataset_h5=pypty_params.get("data_path", "")
     scan_size=pypty_params.get("scan_size", None)
     angle=pypty_params.get("PLRotation_deg", 0)*np.pi/180
@@ -146,7 +145,6 @@ def iterative_dpc(pypty_params, COMx=None, COMy=None, px_size=None,print_flag=Fa
     rcomy =-COMx * np.sin(angle) + COMy * np.cos(angle)
     COMx=rcomx-np.mean(rcomx)
     COMy=rcomy-np.mean(rcomy)
-
     if select is None:
         Ny, Nx = COMx.shape
     else:
