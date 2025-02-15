@@ -546,7 +546,7 @@ def get_focussed_probe_from_vacscan(pypty_params, mean_pattern):
         points=np.swapaxes(np.array([x.flatten(),y.flatten()]), 0,1)
         x2, y2=np.meshgrid(np.linspace(0,1,upsample_pattern*mean_pattern.shape[1]), np.linspace(0,1,upsample_pattern*mean_pattern.shape[0]))
         mean_pattern=np.abs(griddata(points, mean_pattern.flatten(), (x2, y2), method='cubic'))
-        mean_pattern=np.pad(np.abs(mean_pattern),data_pad, mode="constant", constant_values=0)
+    mean_pattern=np.pad(mean_pattern, data_pad)
     focussed_probe=np.expand_dims(np.fft.fftshift(np.fft.ifft2(np.fft.ifftshift((mean_pattern**0.5)))),-1)
     pypty_params["probe"]=focussed_probe
     return pypty_params
