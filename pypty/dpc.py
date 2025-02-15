@@ -83,8 +83,6 @@ def getdpcpot(pypty_params, hpass=0, lpass=0, save=True, comx=None, comy=None, p
         this_x=np.arange(scan_size[1])
         this_y=np.arange(scan_size[0])
         this_x,this_y=np.meshgrid(this_x, this_y, indexing="xy")
-        #ax.quiver(this_x, this_y, -comx, -comy, units="xy", color="red", capstyle="round")
-        #fig.colorbar(im, ax=ax)
         ax.set_title("DPC potential")
         ax.axis("off")
         ax.axis("off")
