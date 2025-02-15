@@ -164,6 +164,6 @@ def wdd(pypty_params, eps_wiener=1e-3, thresh=None, save=0):
         pass
     if save:
         np.save(pypty_params["output_folder"]+"wdd/object.npy", o)
-        np.save(pypty_params["output_folder"]+"wdd/probe.npy", p)
+        np.save(pypty_params["output_folder"]+"wdd/probe.npy", probe)
     return o, probe
 

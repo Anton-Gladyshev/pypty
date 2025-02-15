@@ -25,7 +25,7 @@ def GetPLRotation(dpcx, dpcy):
     R = result.x[0]
     return R
 
-def getdpcpot(pypty_params, hpass=0, lpass=0, save=True, comx=None, comy=None, plot=True):
+def fft_based_dpc(pypty_params, hpass=0, lpass=0, save=True, comx=None, comy=None, plot=True):
     save=pypty_params.get("save_preprocessing_files", save)
     if save:
         try:
