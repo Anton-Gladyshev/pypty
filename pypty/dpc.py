@@ -99,7 +99,9 @@ def getdpcpot(pypty_params, hpass=0, lpass=0, save=True, comx=None, comy=None, p
 
 
 
-def iterative_dpc(COMx, COMy, phase=None, select=None,px_size=1,print_flag=False, hpass=0, lpass=0, step_size=0.1, num_iterations=100, beta=0.5, bin_fac=1, use_backtracking=True, pad_width=1, save=True):
+def iterative_dpc(pypty_params, COMx=None, COMy=None, px_size=None,print_flag=False,save=True,
+                select=None,  hpass=0, lpass=0, step_size=0.1,
+                num_iterations=100, beta=0.5, bin_fac=1, use_backtracking=True, pad_width=5):
     save=pypty_params.get("save_preprocessing_files", save)
     if save:
         try:
@@ -107,14 +109,51 @@ def iterative_dpc(COMx, COMy, phase=None, select=None,px_size=1,print_flag=False
             os.makedirs(pypty_params["output_folder"]+"/dpc/", exist_ok=True)
         except:
             sys.stdout.write("output folder was not created!")
+    
+    dataset_h5=pypty_params.get("data_path", "")
+    scan_size=pypty_params.get("scan_size", None)
+    angle=pypty_params.get("PLRotation_deg", 0)*np.pi/180
+    rez_pixel_size_A=pypty_params.get("rez_pixel_size_A", 1)
+    scan_size=pypty_params.get("scan_size", None)
+    plot=pypty_params.get("plot", plot)
+    print_flag=pypty_params.get("print_flag", print_flag)
+    px_size=pypty_params.get("scan_step_A", px_size)
+    if dataset_h5[-3:]==".h5":
+        dataset_h5=h5py.File(dataset_h5, "r")
+        dataset_h5=dataset_h5["data"]
+    elif dataset_h5[-4:]==".npy":
+        dataset_h5=np.load(dataset_h5)
+        if len(dataset_h5.shape)==4:
+            scan_size=[dataset_h5.shape[0], dataset_h5.shape[1]]
+            dataset_h5=dataset_h5.reshape(dataset_h5.shape[0]* dataset_h5.shape[1], dataset_h5.shape[2],dataset_h5.shape[3])
+    if (COMx is None) or (COMy is None):
+        COMx=pypty_params.get('comx', None)
+        COMy=pypty_params.get('comy', None)
+    if (COMx is None) or (COMy is None):
+        x,y=np.arange(dataset_h5.shape[-1])*rez_pixel_size_A, np.arange(dataset_h5.shape[-2])*rez_pixel_size_A
+        x,y=np.meshgrid(x-np.mean(x), y-np.mean(y), indexing="xy")
+        ssum=np.empty(scan_size)
+        if (comx is None) or (comy is None):
+            COMx=np.empty(scan_size)
+            COMy=np.empty(scan_size)
+            for index_data_y in range(scan_size[0]):
+                for index_data_x in range(scan_size[1]):
+                    dataindex=index_data_x+index_data_y*scan_size[1]
+                    ssum[index_data_y, index_data_x]=np.sum(dataset_h5[dataindex])
+                    COMx[index_data_y, index_data_x]=np.sum(dataset_h5[dataindex]*x)
+                    COMy[index_data_y, index_data_x]=np.sum(dataset_h5[dataindex]*y)
+            COMx=comx/ssum.astype(np.float32)
+            COMy=comy/ssum.astype(np.float32)
+    rcomx = COMx * np.cos(angle) + COMy * np.sin(angle)
+    rcomy =-COMx * np.sin(angle) + COMy * np.cos(angle)
+    COMx=rcomx-np.mean(rcomx)
+    COMy=rcomy-np.mean(rcomy)
+
     if select is None:
         Ny, Nx = COMx.shape
     else:
         Ny, Nx = select.shape
-    if phase is None:
-        padded_phase = np.random.rand(Ny+pad_width, Nx+pad_width)*1e-3
-    else:
-        padded_phase = np.pad(phase, [[0,pad_width],[0,pad_width]])
+    padded_phase = np.random.rand(Ny+pad_width, Nx+pad_width)*1e-3
     kx, ky=np.meshgrid(np.fft.fftshift(np.fft.fftfreq(padded_phase.shape[1], px_size)), np.fft.fftshift(np.fft.fftfreq(padded_phase.shape[0], px_size)))
     k2=kx**2+ky**2
     k4=lpass*k2**2
@@ -174,8 +213,6 @@ def iterative_dpc(COMx, COMy, phase=None, select=None,px_size=1,print_flag=False
     if save:
         np.save(pypty_params["output_folder"]+"/dpc/iterative_dpc.npy", padded_phase)
     return padded_phase
-
-
 
 
 

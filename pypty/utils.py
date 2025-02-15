@@ -668,7 +668,8 @@ def prepare_main_loop_params(algorithm,probe, obj,positions,tilts, measured_data
     if not(probe_constraint_mask is None):
         aperture_mask=probe_constraint_mask
     return obj, positions, 0, sequence, wavelength, full_pos_correction, tilts_correction, aperture_mask
-def prepare_saving_stuff(output_folder, save_loss_log):
+    
+def prepare_saving_stuff(output_folder, save_loss_log, epoch_prev):
     try:
         os.makedirs(output_folder, exist_ok=True)
     except:
@@ -677,13 +678,12 @@ def prepare_saving_stuff(output_folder, save_loss_log):
         os.remove(output_folder+"params.pkl")
     except:
         pass
-    if save_loss_log:
+    if save_loss_log and epoch_prev==0:
         os.system("touch "+output_folder+"loss.csv")
         with open(output_folder+"loss.csv", 'w+', newline='') as loss_list:
             fieldnames=["epoch", "loss", "sse"]
             write_loss=csv.DictWriter(loss_list,fieldnames=fieldnames)
             write_loss.writeheader()
-
         
 def print_pypty_header(data_path, output_folder, save_loss_log):
     sys.stdout.write("\n***************************************************** *************************\n************************ Starting PyPty Reconstruction ***********************\n******************************************************************************\n")
@@ -694,8 +694,6 @@ def print_pypty_header(data_path, output_folder, save_loss_log):
         sys.stdout.write("\nThe log file will be saved as %s" %output_folder+"loss.csv")
     sys.stdout.write("\n******************************************************************************\n******************************************************************************\n******************************************************************************")
     sys.stdout.flush()
-
-        
 
 def save_current_checkpoint_obj_probe(output_folder, obj, probe, tilts_correction, full_pos_correction, positions, tilts, static_background, current_probe_step, current_obj_step, current_probe_pos_step, current_tilts_step, current_static_background_step, current_aberrations_array_step, aberrations_array, beam_current, bcstep, xp):
     if current_obj_step:

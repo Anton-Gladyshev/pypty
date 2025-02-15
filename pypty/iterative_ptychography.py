@@ -64,7 +64,9 @@ def run_ptychography(pypty_params):
     ## Saving and printing
     output_folder = params.get('output_folder', "")
     save_loss_log = params.get('save_loss_log', True)
-    prepare_saving_stuff(output_folder, save_loss_log)
+    epoch_prev = int(params.get('epoch_prev', 0))
+
+    prepare_saving_stuff(output_folder, save_loss_log, epoch_prev)
     if output_folder[-1]!="/": output_folder+="/";
     save_params(output_folder+"params.pkl", params) ### save the params
     print_pypty_header(data_path, output_folder, save_loss_log)
@@ -112,7 +114,6 @@ def run_ptychography(pypty_params):
     algorithm = params.get('algorithm', "lsq_sqrt")
     update_batch = params.get('update_batch', "full")
     epoch_max = int(params.get('epoch_max', 200))
-    epoch_prev = int(params.get('epoch_prev', 0))
     randomize = params.get('randomize', True)
     wolfe_c1_constant = params.get('wolfe_c1_constant', 0.5)
     wolfe_c2_constant=params.get('wolfe_c2_constant', 0.999999)
