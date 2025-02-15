@@ -40,7 +40,7 @@ def run_ptychography(pypty_params):
     except:
         pass
         
-    if type(params)==str:
+    if type(pypty_params)==str:
         params=load_params(pypty_params)
     else:
         params=pypty_params.copy()
