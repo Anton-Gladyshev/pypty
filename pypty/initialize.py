@@ -141,9 +141,9 @@ def get_positions_pixel_size(x_range, y_range,scan_step_A, detector_pixel_size_r
     return positions, pixel_size
 
 
-def get_grid_for_upsampled_image(pypty_params, image,image_pixel_size ):
-    scx, scy=np.meshgrid(np.arange(0, image.shape[1],1)*image_pixel_size,
-                        np.arange(0, image.shape[0],1)*image_pixel_size,
+def get_grid_for_upsampled_image(pypty_params, image,image_pixel_size, left_zero_of_scan_grid=0, top_zero_of_scan_grid=0):
+    scx, scy=np.meshgrid((np.arange(0, image.shape[1],1)-left_zero_of_scan_grid)*image_pixel_size,
+                        (np.arange(0, image.shape[0],1)-top_zero_of_scan_grid)*image_pixel_size,
                         indexing="xy")
     rot_ang=pypty_params["PLRotation_deg"]*np.pi/180
     sc_prime_x,sc_prime_y=scx * np.cos(rot_ang) - scy * np.sin(rot_ang), scx * np.sin(rot_ang) + scy * np.cos(rot_ang)
