@@ -452,6 +452,8 @@ def loss_and_direction(this_obj, full_probe, this_pos_array, this_pos_correction
    # end_gpu.synchronize()
    # t_gpu = cp.cuda.get_elapsed_time(start_gpu, end_gpu)
    # print("\n", t_gpu)
+    this_pos_array=this_pos_array[:,:,0]
+    this_tilt_array=this_tilt_array[:,:,0,0]
     if this_step_pos_correction>0 and fast_axis_reg_weight_positions>0:
         something=this_pos_array+this_pos_correction
         ind_loss, reg_grad=compute_fast_axis_constraint_on_grid(something, scan_size, fast_axis_reg_weight_positions)
@@ -463,13 +465,13 @@ def loss_and_direction(this_obj, full_probe, this_pos_array, this_pos_correction
         pos_grad+=reg_grad;
         loss+=ind_loss
     if this_step_tilts>0 and current_slow_axis_reg_weight_tilts>0:
-        something=this_tilt_array+this_tilts_correction
+        something=this_tilt_array
         for i_t_ind in range(0,6,2):
             ind_loss, reg_grad=compute_slow_axis_constraint_on_grid(something[:,i_t_ind:i_t_ind+2], scan_size, current_slow_axis_reg_weight_tilts, current_slow_axis_reg_coeff_tilts)
             tilts_grad[:,i_t_ind:i_t_ind+2]+=reg_grad;
             loss+=ind_loss
     if this_step_tilts>0 and fast_axis_reg_weight_tilts>0:
-        something=this_tilt_array+this_tilts_correction
+        something=this_tilt_array
         ind_loss, reg_grad=compute_fast_axis_constraint_on_grid(something, scan_size, fast_axis_reg_weight_tilts)
         tilts_grad+=reg_grad
         loss+=ind_loss
