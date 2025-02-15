@@ -14,7 +14,7 @@ from pypty.fft import *
 from pypty.utils import *
 
 
-def wdd(pypty_params,  eps_wiener=1e-3, thresh=None, save=0):
+def wdd(pypty_params, eps_wiener=1e-3, thresh=None, save=0):
     global cpu_mode
     if not(cpu_mode):
         cp.fft.config.clear_plan_cache()

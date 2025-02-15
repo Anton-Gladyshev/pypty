@@ -19,17 +19,14 @@ from pypty.fft import *
 from pypty.utils import *
 
 def run_tcbf_alignment(params, binning_for_fit=[8],
-                        save=True, optimize_angle=False,
-                        plot_CTF_shifts=True, plot_inter_image=True,
-                        refine_box_dim=10,
-                        upsample=3, reference_type="bf",
+                        save=True, optimize_angle=True,
+                        refine_box_dim=10, upsample=3,
+                        reference_type="bf",cross_corr_type="phase",
                         scan_pad=None, cancel_large_shifts=None, compensate_lowfreq_drift=False,
                         aperture=None, append_lowfreq_shifts_to_params=True, subscan_region=None,
-                        interpolate_scan_factor=1,
-                        cross_corr_type="phase",n_aberrations_to_fit=12, aberrations=None,
-                        binning_cross_corr=1,
-                        phase_cross_corr_formula=False, f_scale_lsq=1,x_scale_lsq=1,
-                        loss_lsq="linear", tol_ctf=1e-8):
+                        interpolate_scan_factor=1, n_aberrations_to_fit=12, aberrations=None,
+                        binning_cross_corr=1, phase_cross_corr_formula=False,
+                        f_scale_lsq=1,x_scale_lsq=1, loss_lsq="linear", tol_ctf=1e-8):
     """
     This function fit the beam CTF to the shifts between the individual pixel images of the 4d-stem dataset. The shift estimation is done via phase-cross correaltion. The shift of the CTF can be done either on an aberration basis or on a full discretized grid.
     inputs:
@@ -335,7 +332,7 @@ def run_tcbf_alignment(params, binning_for_fit=[8],
         if not cpu_mode:
             reference_x=reference_x.get()
             reference_y=reference_y.get()
-        if (plot and plot_inter_image) or save: ## plot the tcBF estimate
+        if plot or save: ## plot the tcBF estimate
             image_bf_binned_plot=cp.real(ifft2(image_bf_binned_fourier))
             if not(cpu_mode):
                 image_bf_binned_plot=image_bf_binned_plot.get()
@@ -345,7 +342,7 @@ def run_tcbf_alignment(params, binning_for_fit=[8],
             if save:
                 plt.savefig(pypty_params["output_folder"]+"/tcbf/"+str(index_bin)+"png", dpi=200)
                 np.save(pypty_params["output_folder"]+"/tcbf/tcbf_"+str(index_bin)+".npy", image_bf_binned_plot)
-            if not(plot and plot_inter_image):
+            if not(plot):
                 plt.close()
             else:
                 plt.show()
@@ -510,7 +507,7 @@ def run_tcbf_alignment(params, binning_for_fit=[8],
         if print_flag:
             sys.stdout.write("\nCTF fitted successfully: %s."%(result.success))
             sys.stdout.flush()
-        if plot and plot_CTF_shifts: ## plot the results
+        if plot: ## plot the results
             ctf_grad_x, ctf_grad_y=get_ctf_derivatives(aberrations, binned_kx_detector_suc,binned_ky_detector_suc,  wavelength, angle_offset)
             fig, ax=plt.subplots(1,2, figsize=(10,5))
             ap_show=rotate(aperture_binned, angle=0, axes=(1, 0), reshape=False, order=0)
@@ -600,7 +597,10 @@ def run_tcbf_alignment(params, binning_for_fit=[8],
     return pypty_params
 
 
-def upsampled_tcbf(pypty_params, upsample=5, pad=10,compensate_lowfreq_drift=False, default_float=64,round_shifts=False,xp=np,save=0,max_parallel_fft=100, bin_fac=1):
+def upsampled_tcbf(pypty_params, upsample=5, pad=10,
+                    compensate_lowfreq_drift=False,
+                    default_float=64, round_shifts=False,
+                    xp=cp, save=0, max_parallel_fft=100, bin_fac=1):
     """
     Run a tcBF reconstruction on an upsampled grid. Note that usually before doing so you need to execute run_tcbf_alignment fucntion to adjust pypty_params.
     inputs:

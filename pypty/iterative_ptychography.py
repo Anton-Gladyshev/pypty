@@ -30,7 +30,6 @@ try:
 except:
     pool, pinned_pool=None, None
 
-
 def run_ptychography(pypty_params):
     global obj, probe, pool, pinned_pool, positions, positions_correction, tilts, tilts_correction, defocus_array, beam_current, history_bfgs
     params=pypty_params.copy()
