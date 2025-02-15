@@ -556,6 +556,7 @@ def tiltbeamtodata(pypty_params, align_type="com"):
     probe=pypty_params["probe"]
     data_path=pypty_params["data_path"]
     data_pad=pypty_params["data_pad"]
+    upsample_pattern=pypty_params["upsample_pattern"]
     if data_path[-3:]==".h5":
         h5file=h5py.File(data_path, "r")
         h5data=h5file["data"]
@@ -566,6 +567,8 @@ def tiltbeamtodata(pypty_params, align_type="com"):
             h5data=h5file.reshape(h5data.shape[0]* h5data.shape[1], h5data.shape[2],h5data.shape[3])
     pacbed=np.sum(h5data, 0)
     beam_fft=np.sum(np.abs(np.fft.fftshift(np.fft.fft2(probe, axes=(0,1)), axes=(0,1)))**2, -1)[data_pad:-data_pad,data_pad:-data_pad]
+    if upsample_pattern!=1:
+        beam_fft=downsample_something_3d(beam_fft, upsample_pattern, np)
     if align_type=="com":
         x=np.arange(pacbed.shape[0])
         x=x-np.mean(x)
@@ -574,8 +577,8 @@ def tiltbeamtodata(pypty_params, align_type="com"):
         comypac=np.average(y, weights=pacbed)
         comxbeam=np.average(x, weights=beam_fft)
         comybeam=np.average(y, weights=beam_fft)
-        shift_x=comxpac-comxbeam
-        shift_y=comypac-comybeam
+        shift_x=upsample_pattern*(comxpac-comxbeam)
+        shift_y=upsample_pattern*(comypac-comybeam)
     else:
         beam_fft=np.fft.fft2(beam_fft)
         pacbed=np.fft.fft2(pacbed)
@@ -609,10 +612,9 @@ def tiltbeamtodata(pypty_params, align_type="com"):
             else:
                 shift_y=0
                 
-        shift_x=indx-shift_x-cross.shape[1]//2
-        shift_y=indy-shift_y-cross.shape[1]//2
+        shift_x=upsample_pattern*(indx-shift_x-cross.shape[1]//2)
+        shift_y=upsample_pattern*(indy-shift_y-cross.shape[1]//2)
     print("\nShifting beam by %.2e px along x and by %.2e px along y."%(shift_x, shift_y))
-
     kx,ky=np.meshgrid(np.fft.fftshift(np.fft.fftfreq(probe.shape[1])), np.fft.fftshift(np.fft.fftfreq(probe.shape[0])))
     kernel=np.exp(2j*np.pi*(kx*shift_x+ky*shift_y))[:,:,None]
     probe*=kernel
