@@ -1,5 +1,6 @@
 import numpy as np
 import sys
+import os
 import h5py
 import matplotlib.pyplot as plt
 from scipy.optimize import minimize
