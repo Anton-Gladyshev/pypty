@@ -6,10 +6,8 @@ import matplotlib.pyplot as plt
 from tqdm import tqdm
 try:
     import cupy as cp
-    cpu_mode=False
 except:
     import numpy as cp
-    cpu_mode=True
 from pypty.fft import *
 from pypty.utils import *
 
@@ -26,11 +24,12 @@ def wdd(pypty_params, eps_wiener=1e-3, thresh=None, save=0):
         o - 2d complex Object
         probe - 2d complex beam
     """
-    global cpu_mode
-    if not(cpu_mode):
+    try:
         cp.fft.config.clear_plan_cache()
         cp.get_default_memory_pool().free_all_blocks()
         cp.get_default_pinned_memory_pool().free_all_blocks()
+    except:
+        pass
     data_path = pypty_params.get('data_path', "")
     data_is_numpy_and_flip_ky=pypty_params.get("data_is_numpy_and_flip_ky", False)
     scan_size=np.copy(np.array(pypty_params.get('scan_size', [0,0])))
@@ -132,20 +131,24 @@ def wdd(pypty_params, eps_wiener=1e-3, thresh=None, save=0):
         nonlocal ap_conj,probe, qx_rot, qy_rot, rho_x, rho_y, rez_pixel_size_A
         ap_shift=shift_aperuture(probe, qx_rot[i,j]/rez_pixel_size_A, qy_rot[i,j]/rez_pixel_size_A, rho_x, rho_y)
         return ifft2_ishift(ap_conj*ap_shift)
-    if not(cpu_mode):
+    try:
         cp.fft.config.clear_plan_cache()
         cp.get_default_memory_pool().free_all_blocks()
         cp.get_default_pinned_memory_pool().free_all_blocks()
+    except:
+        pass
     data=data.astype(cp.complex64)   ## y,x,k_y,k_x
     for i in tqdm(range(data.shape[2])):
         for j in range(data.shape[3]):
             dd=data[:,:,i,j]
             dd=shift_fft2(dd) # qy, qx,ky,kx, dataset G
             data[:,:,i,j]=dd
-    if not(cpu_mode):
+    try:
         cp.fft.config.clear_plan_cache()
         cp.get_default_memory_pool().free_all_blocks()
         cp.get_default_pinned_memory_pool().free_all_blocks()
+    except:
+        pass
     sys.stdout.write("\n-->1st FFT done")
     for i in tqdm(range(data.shape[0])):
         for j in range(data.shape[1]):
@@ -159,10 +162,12 @@ def wdd(pypty_params, eps_wiener=1e-3, thresh=None, save=0):
                 dd[where]=dd[where]/wdij[where]
                 dd[(1-where).astype(bool)]=0
             data[i,j,:,:]=dd # Chi_o, qy,qx, rho_y, rho_x
-    if not(cpu_mode):
+    try:
         cp.fft.config.clear_plan_cache()
         cp.get_default_memory_pool().free_all_blocks()
         cp.get_default_pinned_memory_pool().free_all_blocks()
+    except:
+        pass
     sys.stdout.write("\n-->2nd FFT done")
     min_k_ind=cp.unravel_index(cp.argmin(kx**2+ky**2),[data.shape[2],data.shape[3]])
     min_q_ind=cp.unravel_index(cp.argmin(qx_rot**2+qy_rot**2),[data.shape[0],data.shape[1]])

@@ -201,8 +201,7 @@ def run_tcbf_alignment(params, binning_for_fit=[8],
         for dummyi2 in tqdm(range(dataset_h5.shape[1])):
             for dummyi3 in range(dataset_h5.shape[2]):
                 this_data=(dataset_h5[:, dummyi2,dummyi3]).reshape(scan_size)
-               # if not(cpu_mode):
-                #    this_data=this_data.get()
+            
                 this_data=RectBivariateSpline(np.arange(scan_size[0]), np.arange(scan_size[1]), this_data, ky=3, kx=3)(upsampled_y, upsampled_x)
                 new_data[:, dummyi2,dummyi3]=this_data.flatten()
         dataset_h5=cp.asarray(new_data)

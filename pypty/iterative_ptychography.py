@@ -14,22 +14,18 @@ from pypty.loss_and_direction import *
 try:
     import cupyx.scipy.ndimage as ndi
     import cupy as cp
-    cpu_mode=False
-    pool=cp.get_default_memory_pool()
-    pinned_pool=cp.get_default_pinned_memory_pool()
 except:
     import scipy.ndimage as ndi
     import numpy as cp
-    cpu_mode=True
-    pool, pinned_pool=None, None
 
 
 
 
-history_bfgs, obj,probe, positions, positions_correction, tilts, tilts_correction, static_background, aberrations_array, beam_current = None, None, None, None, None, None,None, None,None, None
+
+history_bfgs, obj,probe, positions, positions_correction, tilts, tilts_correction, static_background, aberrations_array, beam_current, pool, pinned_pool = None, None, None, None, None, None,None, None,None, None, None, None
 def run_ptychography(pypty_params):
     """
-    Launches iterative ptychographic reconstuction.
+    Launch iterative ptychographic reconstuction.
     Inputs:
         -pypty_params (dictionary)
     Outputs:

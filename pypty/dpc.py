@@ -25,7 +25,12 @@ def get_curl_derivative(angle, dpcx, dpcy):
     return std_derivative * curl_derivative
 def GetPLRotation(dpcx, dpcy):
     """
-    Curl minimization via scipy Powell method - find the angle! Input COMx, COMy (NxM arrays), output - angle in rad. (float) 
+    Curl minimization via scipy Powell method - find the angle! 
+    Inputs
+        COMx, 
+        COMy (NxM arrays), 
+    Outputs:
+        angle in rad. (float) 
     """
     sys.stdout.write("\nStarting the DPC rotation angle calculation!")
     sys.stdout.flush()

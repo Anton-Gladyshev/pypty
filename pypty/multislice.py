@@ -1,10 +1,8 @@
 try:
     import cupyx
     import cupy as cp
-    cpu_mode=False
 except:
     import numpy as cp
-    cpu_mode=True
 from pypty.fft import *
 from pypty.utils import *
 

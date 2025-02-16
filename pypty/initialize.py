@@ -11,7 +11,7 @@ from pypty.dpc import *
 
 def create_pypty_data(path_input, path_output, swap_axes=False,flip_ky=False,flip_kx=False, flip_y=False,flip_x=False,comcalc_len=1000, comx=None, comy=None, bin=1, crop_left=None, crop_right=None, crop_top=None, crop_bottom=None, normalize=True, cutoff_ratio=None, pad_k=0, data_dtype=np.float32, rescale=1, exist_ok=True):
     """
-    Create a PyPty-compatible .h5 data.
+    Create a PyPty-style .h5 data.
         path_input - path to a dataset to be transformed (either .h5 or .npy array)
         path_output - path where pypty-dataset will be stored
         
@@ -246,7 +246,7 @@ def append_exp_params(experimental_params, pypty_params=None):
         -fov_nm - float, FOV along the fast axis in nm.
         -special_postions_A - 2d numpy array, default None. If you acquiered a data on a special non-rectangular grid, please specify the positions in Å via this array for all measurements in a following form: [y_0,x_0],[y_1,x_1],....[y_n,x_n]]
         
-        -PLRotation_deg - float, rotation angle between scan and detector axes. Default None. If None, a DPC measurement will be exectuted to get this angle. !!!!!!! Note that negative pl rot values rotate scan counter clock wise diffraction space clock wise !!!!!!!!!!!
+        -PLRotation_deg - float, rotation angle between scan and detector axes. Default None. If None, a DPC measurement will be exectuted to get this angle. !!!!!!! Note that negative PLRotation_deg values rotate scan counter clockwise and diffraction space clockwise !!!!!!!!!!!
         -data_is_numpy_and_flip_ky - boolean Flag. Default is False. If no PyPty-style h5 data was created, this flag will flip the y-axis of diffraction patterns.
         
         -total_thickness - total thickness of a sample in Å. Has no effect if num_slices is 1 and propagation method (pypty_params entry) is multislice 
@@ -479,7 +479,22 @@ def append_exp_params(experimental_params, pypty_params=None):
     return pypty_params
     
     
-def get_ptycho_obj_from_scan(params, num_slices=None, array_phase=None,array_abs=None, scale_phase=1, scale_abs=1, cutoff=None, scan_array_A=None, return_array=False, fill_value_type="edge", xp=np):
+def get_ptycho_obj_from_scan(params, num_slices=None, array_phase=None,array_abs=None, scale_phase=1, scale_abs=1,  scan_array_A=None, fill_value_type=None):
+    """
+    Create an intial guess for the object based on another arrays via interpolation. You can use output of dpc, wdd of tcBF reconstructions to generate it.
+    Inputs:
+        params- dictionary with callibrated pypty parameters.
+        num_slices- integer, number of slices. Dominates over the entry "num_slices" in pypty parameters. Can be also specified as "auto". Then the number of slices will be computed such that the phase shift in each slice does not exceed 0.75*pi
+        array_phase- 2D array for the phase (Default none, meaning 0 phase shift)
+        array_abs- 2D array for the amplitude (Default none, meaning no absorption or gain)
+        scale_phase- float, default 1 (rescale for the phase array)
+        scale_abs- float, default 1 (rescale for the abs array)
+        
+        scan_array_A- default None. Array indicating the pixels of the array_phase and array_abs on the reconstruction grid. Not requiered if array_phase and array_abs are sampled on the scan grid. 
+        fill_value_type- Default is None. Indicates what to fill on the edges of the arrays and beyond. None  fills 0s for phase and 1s for amplitude. Other options are "edge" and "median".
+    Outputs:
+        params- updated dictionary
+    """
     data_path=params.get("data_path", "")
     try:
         if data_path[-2:]=="h5":
@@ -515,8 +530,8 @@ def get_ptycho_obj_from_scan(params, num_slices=None, array_phase=None,array_abs
     pixel_size_x_A=params.get("pixel_size_x_A", 1)
     scan_step_A=params.get("scan_step_A", 1)
     total_thickness=params.get("total_thickness", 1)
-    if cutoff is None:
-        cutoff=pixel_size_x_A/scan_step_A
+    
+    cutoff=pixel_size_x_A/scan_step_A
     use_full_FOV=params.get("use_full_FOV", False)
     positions=np.round(positions).astype(int)
     if scan_array_A is None:
@@ -561,24 +576,28 @@ def get_ptycho_obj_from_scan(params, num_slices=None, array_phase=None,array_abs
                 fill_value=0
         f_abs=CloughTocher2DInterpolator(list(zip(scan_x, scan_y)), array_abs.flatten(), fill_value=fill_value)
         abs_ptycho=f_abs(im_X,im_Y)
-    ptycho=scale_abs*(abs_ptycho**(1/num_slices))*xp.exp(1j*phase_ptycho*scale_phase/num_slices)
+    ptycho=scale_abs*(abs_ptycho**(1/num_slices))*np.exp(1j*phase_ptycho*scale_phase/num_slices)
     if not(sequence is None) and not(use_full_FOV):
         minx, miny, maxx, maxy=np.min(positions[sequence,1]), np.min(positions[sequence,0]), np.max(positions[sequence,1]), np.max(positions[sequence,0])
         ptycho=ptycho[miny:maxy+psy, minx: maxx+ psx]
     
     ptycho=np.expand_dims(np.tile(np.expand_dims(ptycho,-1), (num_slices)),-1)
-    if xp!=np:
-        ptycho=ptycho.get()
     params["slice_distances"] =  np.array([total_thickness / num_slices])
     params["obj"] = ptycho
-    if not return_array:
-        del ptycho
-        ptycho=None
-    return params, ptycho
+    return params
 
 
 
 def create_aberrations_chunks(pypty_params,chop_size, n_abs):
+    """
+    Creates chunks, i.e. multiple subscans with independent beam aberrations. Usefull for large fields of view where the beam is varyying. If applied, the iterative reconstruction will have the same beam in each subscan, but apply a different CTF in each of these regions.
+    Inputs:
+        pypty_params- dictionary with callibrated pypty parameters.
+        chop_size- size of each subscan (width in scan points)
+        n_abs- number of aberrations in each chop.
+    Outputs:
+        pypty_params- updatedd dictionary
+    """
     scan_size=pypty_params.get("scan_size", None)
     sh0,sh1=scan_size
     aberration_marker=np.zeros((sh0,sh1))
@@ -593,6 +612,14 @@ def create_aberrations_chunks(pypty_params,chop_size, n_abs):
 
 
 def create_probe_marker_chunks(pypty_params,chop_size):
+    """
+    Creates chunks, i.e. multiple subscans with independent beam aberrations. Usefull for large fields of view where the beam is varyying. If applied, the iterative reconstruction will have the a differenet beam in each of these subscans.
+    Inputs:
+        pypty_params- dictionary with callibrated pypty parameters.
+        chop_size- size of each subscan (width in scan points)
+    Outputs:
+        pypty_params- updatedd dictionary
+    """
     scan_size=pypty_params.get("scan_size", None)
     sh0,sh1=scan_size
     probe_marker=np.zeros((sh0,sh1))
@@ -608,17 +635,21 @@ def create_probe_marker_chunks(pypty_params,chop_size):
 
 
 
-def create_sequence_box(pypty_params, left, top, width, height):
-    seq=[]
-    scan_size=pypty_params["scan_size"]
-    for ii1 in range(top, top+height, 1):
-        for jj1 in range(left, left+width, 1):
-            seq.append(scan_size[1]*ii1+jj1)
-    pypty_params["sequence"]=seq
-    return pypty_params
     
     
 def create_sub_sequence(pypty_params, left, top, width, height, sub):
+    """
+    Creates subsequence for a quick reconstruction in a small ROI. 
+    Inputs:
+        pypty_params- dictionary with callibrated pypty parameters.
+        left- integer (left edge in scan points)
+        top- integer (top edge in scan points)
+        width- integer, (width in scan points)
+        height- integer (height in scan points)
+        sub- integer. If larer than 1, only every sub's measurement along fast- and slow- axes will end up in a sequence
+    Outputs:
+        pypty_params- updatedd dictionary
+    """
     seq=[]
     scan_size=pypty_params["scan_size"]
     ii1_list=np.arange(top, top+height, sub)
@@ -634,7 +665,17 @@ def create_sub_sequence(pypty_params, left, top, width, height, sub):
     
     
     
-def create_sequence_from_points(pypty_params, im, yf,xf, width_roi=20):
+def create_sequence_from_points(pypty_params, yf,xf, width_roi=20):
+    """
+    Creates subsequence for a quick reconstruction in a small ROI. This function is useful if you have only a few interesting features in a scan and want to perform a reconsturction around them.
+    Inputs:
+        pypty_params- dictionary with callibrated pypty parameters.
+        yf- list of integers containing y-coordinates of features (in scan points)
+        yf- list of integers containing x-coordinates of features (in scan points)
+        width_roi- integer, (width in scan points)
+    Outputs:
+        pypty_params- updatedd dictionary
+    """
     scan_size=pypty_params["scan_size"]
     seq=[]
     for i in range(len(yf)):
@@ -651,6 +692,14 @@ def create_sequence_from_points(pypty_params, im, yf,xf, width_roi=20):
 
 
 def rotate_scan_grid(pypty_params, angle_deg):
+    """
+    This function rotates the scan grid.
+    Inputs:
+        pypty_params- dictionary with callibrated pypty parameters.
+        angle_deg- angle of rotation is degrees.
+    Outputs:
+        pypty_params- updatedd dictionary
+    """
     old_pl_rot   = pypty_params["PLRotation_deg"]
     new_pl_rot   = old_pl_rot + angle_deg
     old_postions = pypty_params["positions"]
@@ -681,6 +730,14 @@ def conjugate_beam(pypty_params):
     
     
 def get_focussed_probe_from_vacscan(pypty_params, mean_pattern):
+    """
+    This function creates a focussed probe from a vacuum measurement.
+    Inputs:
+        pypty_params- dictionary with callibrated pypty parameters.
+        mean_pattern- 2D diffraction pattern acquiered in vacuum.
+    Outputs:
+        pypty_params- updatedd dictionary
+    """
     upsample_pattern= pypty_params.get("upsample_pattern", 1)
     data_pad=pypty_params.get("data_pad", 0)
     if upsample_pattern!=1:
@@ -695,6 +752,14 @@ def get_focussed_probe_from_vacscan(pypty_params, mean_pattern):
 
 
 def tiltbeamtodata(pypty_params, align_type="com"):
+    """
+    This function alines the momentum space of the beam with the diffraction patterns in a dataset.
+    Inputs:
+        pypty_params- dictionary with callibrated pypty parameters.
+        align_type- string, defualt is "com", meaning center of mass. Other option is phase cross-correlation, which is activated by any value other than "com".
+    Outputs:
+        pypty_params- updatedd dictionary
+    """
     probe=pypty_params["probe"]
     data_path=pypty_params["data_path"]
     data_pad=pypty_params.get("data_pad", 0)
@@ -769,10 +834,18 @@ def tiltbeamtodata(pypty_params, align_type="com"):
     return pypty_params
 
 
-
-
-
-def get_approx_beam_tilt(pypty_params, power=3, make_binary=False, com_mask=None, percentile_filter_value=None,percentile_filter_size=10):
+def get_approx_beam_tilt(pypty_params, power=3, make_binary=False, percentile_filter_value=None,percentile_filter_size=10):
+    """
+    This function estimates the drift (scan-postion dependent tilt of the diffraction pattern). 
+    Inputs:
+        pypty_params- dictionary with callibrated pypty parameters.
+        power- power of the polynominal fit, Possible values are: integers, np.inf or "inf"
+        make_binary- boolean flag, default is False. If float larger than 0, the patterns will be made binary based on a treshold mean_value*make_binary
+        percentile_filter_value- default is None, if not None a percentile filter with a given value will be applied to the resulting tilt maps to make them smooth.
+        percentile_filter_size- intereger, default 10. Size of the percentile filter.
+    Outputs:
+        pypty_params- updatedd dictionary
+    """
     dataset_h5=pypty_params.get("data_path", "")
     pixel_size_x_A=pypty_params.get("pixel_size_x_A", 1)
     rez_pixel_size_A=pypty_params.get("rez_pixel_size_A", 1)
@@ -800,8 +873,6 @@ def get_approx_beam_tilt(pypty_params, power=3, make_binary=False, com_mask=None
             plt.imshow(np.mean(dataset_h5, 0))
             plt.axis("off")
             plt.show()
-    if com_mask is None:
-        com_mask=pypty_params.get("com_mask", None)
     comx=pypty_params.get("aperture_shifts_x", pypty_params.get("comx", None))
     comy=pypty_params.get("aperture_shifts_y", pypty_params.get("comy", None))
     
@@ -838,14 +909,9 @@ def get_approx_beam_tilt(pypty_params, power=3, make_binary=False, com_mask=None
                     X.append((x**i) * (y**j))
         X=np.swapaxes(np.array(X),0,1)
         X_full=np.copy(X)
-        if not(com_mask is None):
-            com_mask=com_mask.flatten()
-            X=X[com_mask,:]
-            cropped_comx=comx[com_mask]
-            cropped_comy=comy[com_mask]
-        else:
-            cropped_comx=comx
-            cropped_comy=comy
+        
+        cropped_comx=comx
+        cropped_comy=comy
         coefficients_comx, residuals, rank, s = np.linalg.lstsq(X, cropped_comx, rcond=None)
         coefficients_comy, residuals, rank, s = np.linalg.lstsq(X, cropped_comy, rcond=None)
         fitted_comx=np.zeros_like(x)

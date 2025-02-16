@@ -11,11 +11,9 @@ from scipy.interpolate import griddata
 try:
     import cupy as cp
     import cupyx.scipy.fft as sf
-    cpu_mode=False
 except:
     import numpy as cp
     import scipy.fft as sf
-    cpu_mode=True
     
 from pypty.fft import *
 

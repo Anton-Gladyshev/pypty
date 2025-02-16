@@ -8,8 +8,6 @@ from scipy.interpolate import griddata
 
 
 
-
-
 def getvirtualhaadf(pypty_params, save=True):
     dataset_h5=pypty_params.get("data_path", "")
     scan_size=pypty_params.get("scan_size", None)
