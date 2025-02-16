@@ -7,25 +7,36 @@ from scipy.optimize import minimize
 
 
 def get_curl(angle, dpcx, dpcy):
+    """
+    Objective function for minimization. This particular function was copied from a DPC plugin written by Jordan Hachtel.
+    """
     rotx, roty = dpcx * np.cos(angle) - dpcy * np.sin(angle), dpcx * np.sin(angle) + dpcy * np.cos(angle)
     gXY, gXX = np.gradient(rotx); gYY, gYX = np.gradient(roty)
     curl=np.std(gXY - gYX)
     return curl
 def get_curl_derivative(angle, dpcx, dpcy):
+    """
+    Get derivate of an objective with respect to angle
+    """
     rotx, roty = dpcx * np.cos(angle) - dpcy * np.sin(angle), dpcx * np.sin(angle) + dpcy * np.cos(angle)
     gXY, gXX = np.gradient(rotx); gYY, gYX = np.gradient(roty)
     std_derivative = 1 / np.sqrt(len(gXY) - 1)
     curl_derivative = np.sum((gXX + gYY) * (-dpcx * np.sin(angle) - dpcy * np.cos(angle)))
     return std_derivative * curl_derivative
 def GetPLRotation(dpcx, dpcy):
+    """
+    Curl minimization via scipy Powell method - find the angle! Input COMx, COMy (NxM arrays), output - angle in rad. (float) 
+    """
     sys.stdout.write("\nStarting the DPC rotation angle calculation!")
     sys.stdout.flush()
     result = minimize(get_curl, x0=0, method="Powell", args=(dpcx, dpcy), bounds=[(-np.pi, np.pi)], tol=1e-4, options={"maxiter":100})
-    #print(result)
     R = result.x[0]
     return R
 
 def fft_based_dpc(pypty_params, hpass=0, lpass=0, save=True, comx=None, comy=None, plot=True):
+    """
+    FFT-based DPC phase reconstruction. If you setted up the pypty_params properly, you would only need to specify the hpass and lpass values, both are non-negative floats.
+    """
     save=pypty_params.get("save_preprocessing_files", save)
     if save:
         try:
