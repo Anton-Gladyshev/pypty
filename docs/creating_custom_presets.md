@@ -18,14 +18,14 @@ For an easy preset configuration, please see the initialize module. It allows to
 | `data_is_numpy_and_flip_ky`      | `False`                      | Flag indicating if data is NumPy format and whether to flip ky.  Use it if your patterns are flipped and you don't want to modify the stored dataset.'|
 | `data_shift_vector`              | `[0,0]`                      | Shift vector applied to data.  Use it if you want to shift your patterns on the fly without modifying the stored dataset. All patterns will be shifted by provided number of pixels. |
 | `upsample_pattern`               | `1`                          | Upsampling factor. If your beam footprint ends up being larger than the extent (in far-field mode), use it to artificially upsample the beam in reciprocal space. This is experimental feature and you do want to apply windowing constraints later! |
-| `sequence`                       | `None`                       | Sequence used in processing. This is a list indiciating the measuremnts that will be used for iterative refinement. If none, all measurements will contribute. This parameter is usefull for reconstructions on subscans if you don't want to create additional data files. |
-| `use_full_FOV`                   | `True`                       | Flag to use full field of view. It is only usefull if you provided a sequence. True will result in an object that can accomodate all measurements, False will create an object that accomodates only selected measurements.|
+| `sequence`                       | `None`                       | Sequence used in data processing. This is a list indiciating the measuremnts that will be used for iterative refinement. If None, all measurements will contribute. This parameter is usefull for reconstructions on subscans if you don't want to create additional data files. |
+| `use_full_FOV`                   | `True`                       | Boolean flag. It is only usefull if you provided a sequence. True will result in an object that can accomodate all measurements, False will create an object that accomodates only selected measurements.|
 
 ## Saving and Printing
 | Parameter                        | Default Value               | Description |
 |-----------------------------------|-----------------------------|-------------|
-| `output_folder`                  | `""`                         | Folder to save output. |
-| `save_loss_log`                  | `True`                       | Flag to save loss log. |
+| `output_folder`                  | `""`                         | Path to a folder to save the output files. |
+| `save_loss_log`                  | `True`                       | Boolean flag. If true, the loss log will be saved as loss.csv |
 | `epoch_prev`                     | `0`                          | Previous epoch count. Usefull for restaring a reconstruction.|
 | `save_checkpoints_every_epoch`   | `False`                      | Save checkpoints every epoch.  |
 | `save_inter_checkpoints`         | `True`                       | Save intermediate checkpoints.  It will create .npy arrays co.npy for the object, cp.npy for probe, cg.npy for the scan grid, ct.npy for the tilts, cs.npy for static background and cb.npy for the beam current. |
@@ -48,10 +48,10 @@ For an easy preset configuration, please see the initialize module. It allows to
 | `obj`                            | `np.ones((1, 1, num_slices, 1))` | Initial guess for transmission function to be retrieved. Shape is (y,x,z,modes). If the y and x dimensions are not sufficent for a scan grid, object will be padded with ones.  |
 | `probe`                          | `None`                       | Real-space probe. Shape should be (y,x,modes). For a very advanced experiment probe can be four dimensional where the last dimension accounts for different beams for different measurements. In this case you should specify a probe_marker. If Note, the PyPty will automatically initialize the beam from the dataset. For more see section beam initialization.|
 | `positions`                      | `np.array([[0.0, 0.0]])`     | Scan positions. Units should be pixels of your reconstruction. The shape of postions array shold be `[N_measurements, 2]`. Or to be more presice is should look like [[y0,x0],[y1,x1],....[yn,xn]]. For single-shot type of experiments you can define one common scan point, e.g. [[0,0]. |
-| `tilts`                          | `np.array([[0.0, 0.0, 0.0, 0.0, 0.0, 0.0]])` | Tilt angles in real and reciprocal spaces. There are 3 types of tilts in PyPty framework. First one is a beam tilt before the specimen, i.e. a shift in aperture plane. Second type is a tilt inside of a specimen, i.e. after each slice the beam is shifted in real space. Third type is a post-specimen tilt i.e. a shift in a detector plane.  All three types of shifts are contained in this tilt array. The shape should be  [N_measurements, 6].  Or to be more presice is should look like [[y0before,x0before, y0inside, x0inside, y0after, x0after ],.... [ynbefore,x0before, yninside, xninside, ynafter, xnafter ]]. For single-shot type of experiments you can define one common tilt.|
-| `tilt_mode`                      | `0`                          | Mode for applying tilts. inside 0, 3,4\nbefore 2,4\nafter 1,3,4 |
-| `static_background`              | `0`                          | Static background intensity. |
-| `beam_current`                   | `None`                       | Electron beam current. |
+| `tilts`                          | `np.array([[0.0, 0.0, 0.0, 0.0, 0.0, 0.0]])` | Tilt angles in real and reciprocal spaces. There are 3 types of tilts in PyPty framework: before, inside and after. First one is a beam tilt before the specimen, i.e. a shift in aperture plane. Second type is a tilt inside of a specimen, i.e. after each slice the beam is shifted in real space. Third type is a post-specimen tilt i.e. a shift in a detector plane.  All three types of shifts are contained in this tilt array. The shape should be  [N_measurements, 6].  Or to be more presice is should look like [[y0before,x0before, y0inside, x0inside, y0after, x0after ],.... [ynbefore,x0before, yninside, xninside, ynafter, xnafter ]]. For single-shot type of experiments you can define one common tilt.|
+| `tilt_mode`                      | `0`                          | Mode for applying tilts. tilt inside 0, 3,4; tilt before 2,4; tilt after 1,3,4;|
+| `static_background`              | `0`                          | Static background intensity. It should be numpy array with the same shape as the initial patterns but padded by data_pad//upsample_pattern. Leave it 0 for no static offset on the diffractions patterns |
+| `beam_current`                   | `None`                       | Numpy array accounting for different current (or exposure times) during different measuremtns. If not None (no variation), it should be 1D array with length corresponding to the total number of measurements. |
 
 ## Spatial Calibration
 | Parameter                        | Default Value               | Description |
@@ -64,8 +64,8 @@ For an easy preset configuration, please see the initialize module. It allows to
 ## Propagation, Windowing, and Resizing
 | Parameter                        | Default Value               | Description |
 |-----------------------------------|-----------------------------|-------------|
-| `propmethod`                     | `"multislice"`              | Method used for wave propagation. |
-| `allow_subPixel_shift`           | `True`                       | Allow subpixel shifts. |
+| `propmethod`                     | `"multislice"`              | Method used for wave propagation. Default is "multislice". Other options are additive splitting- "better_multislice" and "yoshida". The last two options have higher precision than multislice, but requiere more time. |
+| `allow_subPixel_shift`           | `True`                       | Allow subpixel shifts. If False, positions will be rounded to integer values until you start to refine them.|
 | `dynamically_resize_yx_object`   | `False`                      | Dynamically resize the object. |
 | `extra_space_on_side_px`         | `0`                          | Extra space added around the object (pixels). |
 
