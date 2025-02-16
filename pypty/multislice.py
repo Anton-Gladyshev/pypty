@@ -175,7 +175,7 @@ def yoshida_multislice_grads(dLoss_dP_out, waves_multislice, this_obj_chopped, o
     for i_update in range(num_slices-1,-1,-1):
         if not(is_single_dist):
             prop_distance=this_distances[i_update]
-            propagator_phase_space_1=cp.expand_dims(cp.exp(3.141592653j*sigma_yoshida*this_distances[ind_multislice]*(this_wavelength*q2+2*(qx*this_tan_x+qy*this_tan_y)))*mask_clean,(-1,-2)) ### to fix: add clean_mask
+            propagator_phase_space_1=cp.expand_dims(cp.exp(3.141592653j*sigma_yoshida*this_distances[ind_multislice]*(this_wavelength*q2+2*(qx*this_tan_x+qy*this_tan_y)))*mask_clean,(-1,-2)) 
             propagator_phase_space_2=cp.expand_dims(cp.exp(3.141592653j*(1-2*sigma_yoshida)*this_distances[ind_multislice]*(this_wavelength*q2+2*(qx*this_tan_x+qy*this_tan_y)))*mask_clean,(-1,-2))
         ## get the  object and half of the object (conjugated)
         transmission_func_0=cp.conjugate(cp.expand_dims(this_obj_chopped[:, :,:, i_update, :], 3))

@@ -39,15 +39,21 @@ def get_aperture(params):
     data_pad=params.get("data_pad", 0)
     plot=params.get("plot", False)
     threshold=params.get("bright_threshold", 0.4)
+    data_is_numpy_and_flip_ky=params.get("data_is_numpy_and_flip_ky", False)
     if data_path[-2:]=="h5":
         this_file=h5py.File(data_path, "r")
         dataset=this_file['data']
     else:
         dataset=np.load(data_path, mmap_mode="r")
+        if data_is_numpy_and_flip_ky:
+            if len(dataset.shape)==4
+                dataset=dataset[:,:,::-1,:]
+            else:
+                dataset=dataset[:,::-1,:]
     if len(dataset.shape)==3:
-        meanpat=np.mean(dataset[:], 0)
+        meanpat=np.mean(dataset, 0)
     if len(dataset.shape)==4:
-        meanpat=np.mean(dataset[:,:], (0,1))
+        meanpat=np.mean(dataset, (0,1))
     meanpat/=np.max(meanpat)
     meanpat=meanpat>threshold
     meanpat=np.pad(meanpat, data_pad)

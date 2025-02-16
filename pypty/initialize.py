@@ -123,6 +123,19 @@ def create_pypty_data(path_input, path_output, swap_axes=False,flip_ky=False,fli
 
     
 def get_offset(x_range, y_range, scan_step_A, detector_pixel_size_rezA, patternshape, rot_angle_deg=0):
+    """
+    get_offset, i.e. number of pixels from the top and left of the reconstruction grid and the first point of the scan grid. In PyPty framework, scan grid is usually rotated to compensate the misalignment between scan- and detector- axes. Also, a reconstruction grid is larger than the scanned FOV, this is done to accomodate the extent of the probe. 
+    Inputs
+        x_range- number of points on the fast axis
+        y_range- number of points on the slow axis
+        scan_step_A- STEM pixel size (in Angstrom)
+        detector_pixel_size_rezA- pixel size in a detector plane (A^-1)
+        patternshape- shape of the diffraction patterns.
+        rot_angle_deg- angle between scan and detector axers
+    Outputs
+        offy- offset in y direction (reconstruction pixels)
+        offx- offset in x direction (reconstruction pixels)
+    """
     pixel_size=1/(detector_pixel_size_rezA*patternshape[-1])
     positions=np.empty((x_range*y_range,2))
     i=0
@@ -167,6 +180,19 @@ def get_positions_pixel_size(x_range, y_range,scan_step_A, detector_pixel_size_r
 
 
 def get_grid_for_upsampled_image(pypty_params, image,image_pixel_size, left_zero_of_scan_grid=0, top_zero_of_scan_grid=0):
+    """
+    This function calculates where pixel of an arbitary image (e.g. upsampled tcBF image) will land on a grid corresponding to a ptychographic reconstruction.
+    Inputs:
+        -pypty_params- dictionary with callibrated pypty parameters
+        -image, the image (2D numpy array) for which the computation should be done
+        -image_pixel_size, pixel size of the image (in Å)
+        -left_zero_of_scan_grid- integer. 
+        -top_zero_of_scan_grid- integer.
+        Both left_zero_of_scan_grid and top_zero_of_scan_grid incicate after how many image pixels does the actual scan grid. For example, if your image extens beyond the actual scan grid, this two values are positive. If the image is created from a subscan, these two values should de negative.
+    Outputs:
+        -sc - flattened meshgrid [[y,x],..[]] with coordinates of image pixels on a reconsturction basis
+    """
+
     scx, scy=np.meshgrid((np.arange(0, image.shape[1],1)-left_zero_of_scan_grid)*image_pixel_size,
                         (np.arange(0, image.shape[0],1)-top_zero_of_scan_grid)*image_pixel_size,
                         indexing="xy")
@@ -215,7 +241,7 @@ def append_exp_params(experimental_params, pypty_params=None):
         -aberrations - list or 1d numpy array containing beam aberrations (in Å). Aberrations are stored in Krivanek notation, e.g. C10, C12a, C12b, C21a, C21b, C23a, C23b, C30 etc
         -defocus - float, default 0. Extra probe defocus besides the one contained in aberrations.
         
-        -scan_size - tuple of two ints, number of scan points along fast (y) and slow (x) axes. Optional. If no scan step or position grid is provided, it will be used to get the scan step
+        -scan_size - tuple of two ints, number of scan points along slow (y) and fast (x) axes. Optional. If no scan step or position grid is provided, it will be used to get the scan step
         -scan_step_A - float, scan step (STEM pixel size) in Å.
         -fov_nm - float, FOV along the fast axis in nm.
         -special_postions_A - 2d numpy array, default None. If you acquiered a data on a special non-rectangular grid, please specify the positions in Å via this array for all measurements in a following form: [y_0,x_0],[y_1,x_1],....[y_n,x_n]]

@@ -127,31 +127,30 @@ def fft_based_dpc(pypty_params, hpass=0, lpass=0, save=False, comx=None, comy=No
 
 def iterative_dpc(pypty_params, num_iterations=100, beta=0.5, hpass=0, lpass=0, step_size=0.1,
                 COMx=None, COMy=None, px_size=None,print_flag=False,save=False,
-                select=None, plot=True, bin_fac=1, use_backtracking=True, pad_width=5):
+                select=None, plot=True, use_backtracking=True, pad_width=5):
     """
     Iterative DPC phase reconstruction. If you setted up the pypty_params properly, you would only need to specify the hpass and lpass values, both are non-negative floats.
     Inputs:
         pypty_params - dictionary with callibrated pypty params
         
-        num_iterations=100, 
-        beta=0.5, 
+        num_iterations - int, default 100. Number of iterations to perform 
+        beta, float strictly between 0 and 1. Default is 0.5. Step reduction parameter for backtracking linesearch
         
         hpass- float, high pass value (default 0)
         lpass- float, low pass value (default 0)
         
-        step_size=0.1,
+        step_size- float, default 0.1. Update step.
         
         
         COMx- defalt None, 2D map, units are reciprocal pixels. Ignored if you have it in pypty_params.
         COMy- defalt None, 2D map, units are reciprocal pixels. Ignored if you have it in pypty_params.
-        px_size=None,
-        print_flag=False, Ignored if you provided print_flag in PyPty parameters.
-        save- default False, ignored if you provided save_preprocessing_files in pypty_params
-        select=None,         
+        px_size- pixel size of COM maps (scan step in A)
+        print_flag- bolean flag, default is False, Ignored if you provided print_flag in PyPty parameters.
+        save- bolean flag, default False, ignored if you provided save_preprocessing_files in pypty_params
+        select- 2D mask to select only specified regions. Default None   
         plot - default False, ignored if you provided plot in pypty_params
-        bin_fac=1, 
-        use_backtracking=True,
-        pad_width=5
+        use_backtracking- bolean flag. Default True.
+        pad_width- integer (Default 5). Padding of the phase that avoids artifacts of periodic boundary conditions.
     Outputs:
         pot- 2D phase reconstructions
     """
@@ -271,7 +270,30 @@ def iterative_dpc(pypty_params, num_iterations=100, beta=0.5, hpass=0, lpass=0, 
 
 
 
-def iterative_poisson_solver(laplace, phase=None, select=None,px_size=1,print_flag=False, hpass=0, lpass=0, step_size=0.1, num_iterations=100, beta=0.5, bin_fac=1, use_backtracking=True, pad_width=1, xp=np):
+def iterative_poisson_solver(laplace, num_iterations=100, beta=0.5, hpass=0, lpass=0, select=None,px_size=1,print_flag=False,  step_size=0.1,  use_backtracking=True, pad_width=1, xp=np):
+    """
+    Iterative solver for Poisson equation. 
+        laplace- 2D map, laplacian of the phase to be retrieved.
+
+        num_iterations - int, default 100. Number of iterations to perform 
+        beta, float strictly between 0 and 1. Default is 0.5. Step reduction parameter for backtracking linesearch
+        
+        hpass- float, high pass value (default 0)
+        lpass- float, low pass value (default 0)
+        
+        select- 2D mask to select only specified regions. Default None   
+
+        px_size- pixel size of laplacian
+        print_flag- bolean flag, default False
+
+        step_size- float, default 0.1. Update step.
+        use_backtracking- bolean flag. Default True.
+        pad_width- integer (Default 5). Padding of the phase that avoids artifacts of periodic boundary conditions.
+        
+        xp- backend module, i.e. cp (cupy) or np (numpy). Default is np.
+    Outputs:
+        pot- 2D phase reconstructions
+    """
     if print_flag:
         sys.stdout.write("\n******************************************************************************\n*************************** Solving Poisson Equation *************************\n******************************************************************************\n")
         sys.stdout.flush()
@@ -279,10 +301,7 @@ def iterative_poisson_solver(laplace, phase=None, select=None,px_size=1,print_fl
         Ny, Nx = laplace.shape
     else:
         Ny, Nx = select.shape
-    if phase is None:
-        padded_phase = xp.random.rand(Ny+pad_width, Nx+pad_width)*1e-5
-    else:
-        padded_phase = xp.pad(xp.asarray(phase), [[0,pad_width],[0,pad_width]])
+    padded_phase = xp.random.rand(Ny+pad_width, Nx+pad_width)*1e-5
     kx, ky=xp.meshgrid(xp.fft.fftshift(xp.fft.fftfreq(padded_phase.shape[1], px_size)), xp.fft.fftshift(xp.fft.fftfreq(padded_phase.shape[0], px_size)))
     k2=kx**2+ky**2
     k4=lpass*k2**2
@@ -341,8 +360,6 @@ def iterative_poisson_solver(laplace, phase=None, select=None,px_size=1,print_fl
             else:
                 sys.stdout.write(f"\nIteration {iteration}, Total Error: {error:.3e}, count: {count}, step: {step_size:.2e}")
             sys.stdout.flush()
-    try:
+    if xp!=np:
         padded_phase=padded_phase.get()
-    except:
-        pass
     return padded_phase[:Ny, :Nx]

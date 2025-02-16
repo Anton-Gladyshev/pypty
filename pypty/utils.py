@@ -8,7 +8,6 @@ import types
 import copy
 import inspect
 from scipy.interpolate import griddata
-
 try:
     import cupy as cp
     import cupyx.scipy.fft as sf

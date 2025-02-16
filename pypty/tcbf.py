@@ -7,14 +7,12 @@ from scipy.optimize import least_squares
 from scipy.interpolate import griddata, RectBivariateSpline
 from scipy.ndimage import rotate, binary_closing
 from tqdm import tqdm
-
 try:
     import cupy as cp
     cpu_mode=False
 except:
     import numpy as cp
     cpu_mode=True
-
 from pypty.fft import *
 from pypty.utils import *
 
@@ -82,7 +80,6 @@ def run_tcbf_alignment(params, binning_for_fit=[8],
     upsample_pattern=pypty_params.get("upsample_pattern",1)
     smart_memory=pypty_params.get("smart_memory", True)
     save=pypty_params.get("save_preprocessing_files", save)
-
     try:
         smart_memory=smart_memory(0)
     except:
@@ -93,7 +90,6 @@ def run_tcbf_alignment(params, binning_for_fit=[8],
         mask_sequence=np.ones(scan_size[0]*scan_size[1])
         mask_sequence[sequence]=0
         mask_sequence=mask_sequence.reshape(scan_size[0], scan_size[1])
-    
     if upsample_pattern!=1:
         if not(aperture is None):
             aperture=downsample_something(aperture, upsample_pattern, np)
@@ -108,7 +104,6 @@ def run_tcbf_alignment(params, binning_for_fit=[8],
         if aberrations is None:
             aberrations=list(np.zeros(n_aberrations_to_fit))
             aberrations[0]=-1*pypty_params.get("extra_probe_defocus", 0)
-    
     plot=pypty_params.get("plot", False)
     print_flag=pypty_params.get("print_flag", False)
     data_is_numpy_and_flip_ky=pypty_params.get("data_is_numpy_and_flip_ky", False)

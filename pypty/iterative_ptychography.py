@@ -28,6 +28,14 @@ except:
 
 history_bfgs, obj,probe, positions, positions_correction, tilts, tilts_correction, static_background, aberrations_array, beam_current = None, None, None, None, None, None,None, None,None, None
 def run_ptychography(pypty_params):
+    """
+    Launches iterative ptychographic reconstuction.
+    Inputs:
+        -pypty_params (dictionary)
+    Outputs:
+        - nothing (all results are saved in a dedicated folder)
+    pypty_params dictionary can be constructed from a predefined preset and a given dataset via append_exp_params() function. Otherwise one can create the  pypty_params dictionary by hand. For more info about creating pypty_params from scratch please reffer to https://github.com/Anton-Gladyshev/pypty/tree/main (info will be updated in the future) or contact Anton Gladyshev directly.
+    """
     global obj, probe, pool, pinned_pool, positions, positions_correction, tilts, tilts_correction, beam_current,aberrations_array, history_bfgs
     obj, probe, positions, positions_correction, tilts, tilts_correction, static_background, aberrations_array, beam_current = None, None, None, None, None, None,None, None, None
     reset_bfgs_history()
