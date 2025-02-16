@@ -349,7 +349,7 @@ def append_exp_params(experimental_params, pypty_params=None):
         x,y=np.meshgrid(np.linspace(0,1,mean_pattern_as_it_is.shape[1]),np.linspace(0,1,mean_pattern_as_it_is.shape[0]))
         points=np.swapaxes(np.array([x.flatten(),y.flatten()]), 0,1)
         x2, y2=np.meshgrid(np.linspace(0,1,upsample_pattern*mean_pattern_as_it_is.shape[1]), np.linspace(0,1,upsample_pattern*mean_pattern_as_it_is.shape[0]))
-        mean_pattern=np.abs(griddata(points, mean_pattern.flatten(), (x2, y2), method='cubic'))
+        mean_pattern=np.abs(griddata(points, mean_pattern_as_it_is.flatten(), (x2, y2), method='cubic'))
     else:
         mean_pattern=mean_pattern_as_it_is
     if aperture is None:
