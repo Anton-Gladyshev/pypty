@@ -1,23 +1,24 @@
-# Parameter Table
+# This is a table of PyPty parameters for creating custom presets. 
+For an easy preset configuration, please see the initialize module. It allows to easily create all arrays. But if your experiment is pretty complex, use this guide or provided examples to create your own.
 
 ## Backend Settings
-| Parameter      | Default Value | Description |
+| Parameter      | Default Value | Description | 
 |---------------|--------------|-------------|
-| `backend`     | `cp`         | Currently not used, but useful for future. |
-| `default_dtype` | `"double"` | Default data type for computations. |
+| `backend`     | `cp`         | Currently not used, but useful for future. Right now whenever cupy is availible, it is used as GPU backend. In no Cuda is detected, numpy is used as a CPU replacement |
+| `default_dtype` | `"double"` | Default data type for computations. Other option is "single" |
 
 ## Dataset
 | Parameter                        | Default Value               | Description |
 |-----------------------------------|-----------------------------|-------------|
-| `data_path`                      | `""`                         | Path to the dataset. |
-| `masks`                          | `None`                       | Mask data. |
-| `data_multiplier`                | `1`                          | Multiplier for data values. |
-| `data_pad`                       | `0`                          | Padding applied to data. |
-| `data_bin`                       | `1`                          | Binning factor for data. |
-| `data_is_numpy_and_flip_ky`      | `False`                      | Flag indicating if data is NumPy format and whether to flip ky. |
-| `data_shift_vector`              | `[0,0]`                      | Shift vector applied to data. |
-| `upsample_pattern`               | `1`                          | Pattern used for upsampling. |
-| `sequence`                       | `None`                       | Sequence used in processing. |
+| `data_path`                      | `""`                         | Path to the dataset.  It can be an .h5 file with a dataset "data" containing 3d measurement array (N_measurements, y,x). Other option is a 4d .npy array or 3d .npy array|
+| `masks`                          | `None`                       | Masks (virtual detectors) used for data compression. For uncompressed data leave it None. |
+| `data_multiplier`                | `1`                          | Multiplier for data values. Use it if you want to rescale your patterns on the fly without modifying the stored dataset. All patterns will be multiplied by this number. |
+| `data_pad`                       | `0`                          | Padding applied to data.  Use it if you want to pad your patterns on the fly without modifying the stored dataset. All patterns will be padded with zeros. We recomend to set it to 1/4 of the width of your patterns for optimal sampling conditions (in far-field mode).|
+| `data_bin`                       | `1`                          | Binning factor for data. Use it if you want to bin your patterns on the fly without modifying the stored dataset. All patterns will be binned by this number. |
+| `data_is_numpy_and_flip_ky`      | `False`                      | Flag indicating if data is NumPy format and whether to flip ky.  Use it if your patterns are flipped and you don't want to modify the stored dataset.'|
+| `data_shift_vector`              | `[0,0]`                      | Shift vector applied to data.  Use it if you want to shift your patterns on the fly without modifying the stored dataset. All patterns will be shifted by provided number of pixels. |
+| `upsample_pattern`               | `1`                          | Upsampling factor. If your beam footprint ends up being larger than the extent (in far-field mode), use it to artificially upsample the beam in reciprocal space. This is experimental feature and you do want to apply windowing constraints later! |
+| `sequence`                       | `None`                       | Sequence used in processing. This is a list indiciating the measuremnts that will be used for iterative refinement. If none, all measurements will contribute. This parameter is usefull for reconstructions on subscans if you don't want to create additional data files. |
 | `use_full_FOV`                   | `True`                       | Flag to use full field of view. |
 
 ## Saving and Printing
