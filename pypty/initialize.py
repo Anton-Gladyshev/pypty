@@ -634,6 +634,19 @@ def rotate_scan_grid(pypty_params, angle_deg):
     pypty_params["positions"]=old_postions
     return pypty_params
     
+
+def conjugate_beam(pypty_params):
+    aberrations=pypty_params.get("aberrations", None)
+    if not(aberrations is None):
+        pypty_params["aberrations"]=-1*aberrations
+    defocus=pypty_params.get("extra_probe_defocus", None)
+    if not(defocus is None):
+        pypty_params["extra_probe_defocus"]=-1*defocus
+    probe=pypty_params.get("probe", None)
+    if not(probe is None):
+        pypty_params["probe"]=np.fft.ifft2(np.conjugate(np.fft.fft2(probe, axes=(0,1))), axes=(0,1))
+    return pypty_params
+    
     
     
 def get_focussed_probe_from_vacscan(pypty_params, mean_pattern):
