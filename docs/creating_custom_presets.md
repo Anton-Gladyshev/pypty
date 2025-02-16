@@ -19,34 +19,34 @@ For an easy preset configuration, please see the initialize module. It allows to
 | `data_shift_vector`              | `[0,0]`                      | Shift vector applied to data.  Use it if you want to shift your patterns on the fly without modifying the stored dataset. All patterns will be shifted by provided number of pixels. |
 | `upsample_pattern`               | `1`                          | Upsampling factor. If your beam footprint ends up being larger than the extent (in far-field mode), use it to artificially upsample the beam in reciprocal space. This is experimental feature and you do want to apply windowing constraints later! |
 | `sequence`                       | `None`                       | Sequence used in processing. This is a list indiciating the measuremnts that will be used for iterative refinement. If none, all measurements will contribute. This parameter is usefull for reconstructions on subscans if you don't want to create additional data files. |
-| `use_full_FOV`                   | `True`                       | Flag to use full field of view. |
+| `use_full_FOV`                   | `True`                       | Flag to use full field of view. It is only usefull if you provided a sequence. True will result in an object that can accomodate all measurements, False will create an object that accomodates only selected measurements.|
 
 ## Saving and Printing
 | Parameter                        | Default Value               | Description |
 |-----------------------------------|-----------------------------|-------------|
 | `output_folder`                  | `""`                         | Folder to save output. |
 | `save_loss_log`                  | `True`                       | Flag to save loss log. |
-| `epoch_prev`                     | `0`                          | Previous epoch count. |
-| `save_checkpoints_every_epoch`   | `False`                      | Save checkpoints every epoch. |
-| `save_inter_checkpoints`         | `True`                       | Save intermediate checkpoints. |
-| `print_flag`                     | `3`                          | Print verbosity level. |
+| `epoch_prev`                     | `0`                          | Previous epoch count. Usefull for restaring a reconstruction.|
+| `save_checkpoints_every_epoch`   | `False`                      | Save checkpoints every epoch.  |
+| `save_inter_checkpoints`         | `True`                       | Save intermediate checkpoints.  It will create .npy arrays co.npy for the object, cp.npy for probe, cg.npy for the scan grid, ct.npy for the tilts, cs.npy for static background and cb.npy for the beam current. |
+| `print_flag`                     | `3`                          | Print verbosity level. 0 for no printing and 1 for just one overwritable line, 2 and 3 for most detailed outputs.|
 
 ## Experimental Parameters
 | Parameter                        | Default Value               | Description |
 |-----------------------------------|-----------------------------|-------------|
 | `acc_voltage`                    | `60`                         | Acceleration voltage in kV. |
 | `aperture_mask`                  | `None`                       | Mask for the aperture. |
-| `recon_type`                     | `"far_field"`                | Type of reconstruction (e.g., far-field). |
-| `alpha_near_field`               | `0`                          | Alpha parameter for near-field reconstruction. |
-| `defocus_array`                  | `np.array([0.0])`            | Array of defocus values. |
-| `Cs`                             | `0`                          | Spherical aberration coefficient. |
+| `recon_type`                     | `"far_field"`                | Type of reconstruction (e.g., "far-field").  Other option is "near_field"|
+| `alpha_near_field`               | `0`                          | Alpha parameter for near-field reconstruction & flux preservation. |
+| `defocus_array`                  | `np.array([0.0])`            | Array of defocus values for near-field measurement. Irrelevant for far-field. It can contain either just one value common for all measurements or indicate individual defocus for all measurements. Units - Angstroms!|
+| `Cs`                             | `0`                          | Spherical aberration coefficient. Units - Angstroms!|
 
 ## Ptycho Settings
 | Parameter                        | Default Value               | Description |
 |-----------------------------------|-----------------------------|-------------|
 | `num_slices`                     | `1`                          | Number of slices in the object. |
-| `obj`                            | `np.ones((1, 1, num_slices, 1))` | Object representation in reconstruction. |
-| `probe`                          | `None`                       | Probe representation. |
+| `obj`                            | `np.ones((1, 1, num_slices, 1))` | Initial guess for transmission function to be retrieved. Shape is (y,x,z,modes). If the y and x dimensions are not sufficent for a scan grid, object will be padded with ones.  |
+| `probe`                          | `None`                       | Real-space probe. Shape should be (y,x,modes). For a very advanced experiment probe can be four dimensional where the last dimension accounts for different beams for different measurements. In this case you should specify a probe_marker. |
 | `positions`                      | `np.array([[0.0, 0.0]])`     | Probe positions during scanning. |
 | `tilts`                          | `np.array([[0.0, 0.0, 0.0, 0.0, 0.0, 0.0]])` | Tilt angles in real and reciprocal space. |
 | `tilt_mode`                      | `0`                          | Mode for applying tilts. |
