@@ -219,7 +219,7 @@ def append_exp_params(experimental_params, pypty_params=None):
         -fov_nm - float, FOV along the fast axis in nm.
         -special_postions_A - 2d numpy array, default None. If you acquiered a data on a special non-rectangular grid, please specify the positions in Å via this array for all measurements in a following form: [y_0,x_0],[y_1,x_1],....[y_n,x_n]]
         
-        -PLRotation_deg - float, rotation angle between scan and detector axes. Default None. If None, a DPC measurement will be exectuted to get this angle.
+        -PLRotation_deg - float, rotation angle between scan and detector axes. Default None. If None, a DPC measurement will be exectuted to get this angle. !!!!!!! Note that negative pl rot values rotate scan counter clock wise diffraction space clock wise !!!!!!!!!!!
         -data_is_numpy_and_flip_ky - boolean Flag. Default is False. If no PyPty-style h5 data was created, this flag will flip the y-axis of diffraction patterns.
         
         -total_thickness - total thickness of a sample in Å. Has no effect if num_slices is 1 and propagation method (pypty_params entry) is multislice 
@@ -624,7 +624,7 @@ def rotate_scan_grid(pypty_params, angle_deg):
     new_pl_rot   = old_pl_rot + angle_deg
     old_postions = pypty_params["positions"]
     opy, opx=old_postions[:,0], old_postions[:,1]
-    rot_ang=np.pi
+    rot_ang=np.pi*angle_deg/180
     opx_prime, opy_prime=opx * np.cos(rot_ang) + opy * np.sin(rot_ang), -1*opx * np.sin(rot_ang) + opy * np.cos(rot_ang)
     opx_prime-=np.min(opx_prime)
     opy_prime-=np.min(opy_prime)
