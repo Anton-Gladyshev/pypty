@@ -2,12 +2,14 @@
 For an easy preset configuration, please see the initialize module. It allows to easily create all arrays. But if your experiment is pretty complex, use this guide or provided examples to create your own.
 
 ## Backend Settings
+
 | Parameter      | Default Value | Description | 
 |---------------|--------------|-------------|
 | `backend`     | `cp`         | Currently not used, but useful for future. Right now whenever cupy is availible, it is used as GPU backend. In no Cuda is detected, numpy is used as a CPU replacement |
 | `default_dtype` | `"double"` | Default data type for computations. Other option is "single" |
 
 ## Dataset
+
 | Parameter                        | Default Value               | Description |
 |-----------------------------------|-----------------------------|-------------|
 | `data_path`                      | `""`                         | Path to the dataset.  It can be an .h5 file with a dataset "data" containing 3d measurement array (N_measurements, y,x). Other option is a 4d .npy array or 3d .npy array|
@@ -22,6 +24,7 @@ For an easy preset configuration, please see the initialize module. It allows to
 | `use_full_FOV`                   | `True`                       | Boolean flag. It is only usefull if you provided a sequence. True will result in an object that can accomodate all measurements, False will create an object that accomodates only selected measurements.|
 
 ## Saving and Printing
+
 | Parameter                        | Default Value               | Description |
 |-----------------------------------|-----------------------------|-------------|
 | `output_folder`                  | `""`                         | Path to a folder to save the output files. |
@@ -32,16 +35,18 @@ For an easy preset configuration, please see the initialize module. It allows to
 | `print_flag`                     | `3`                          | Print verbosity level. 0 for no printing and 1 for just one overwritable line, 2 and 3 for most detailed outputs.|
 
 ## Experimental Parameters
+
 | Parameter                        | Default Value               | Description |
 |-----------------------------------|-----------------------------|-------------|
 | `acc_voltage`                    | `60`                         | Acceleration voltage in kV. |
 | `aperture_mask`                  | `None`                       | Mask for the aperture. |
 | `recon_type`                     | `"far_field"`                | Type of reconstruction (e.g., "far-field").  Other option is "near_field"|
 | `alpha_near_field`               | `0`                          | Alpha parameter for near-field reconstruction & flux preservation. |
-| `defocus_array`                  | `np.array([0.0])`            | Array of defocus values for near-field measurement. Irrelevant for far-field. It can contain either just one value common for all measurements or indicate individual defocus for all measurements. Units - Angstroms!|
+| `defocus_array`                  | `np.array([0.0])`            | Array of defocus values for near-field measurement. Irrelevant for far-field. It can contain either just one defocus common for all measurements or indicate individual values for all measurements. Units - Angstroms!|
 | `Cs`                             | `0`                          | Spherical aberration coefficient. Units - Angstroms!|
 
-## Ptycho Settings
+## Refinable arrays
+
 | Parameter                        | Default Value               | Description |
 |-----------------------------------|-----------------------------|-------------|
 | `num_slices`                     | `1`                          | Number of slices in the object. |
