@@ -33,9 +33,20 @@ def GetPLRotation(dpcx, dpcy):
     R = result.x[0]
     return R
 
-def fft_based_dpc(pypty_params, hpass=0, lpass=0, save=True, comx=None, comy=None, plot=True):
+def fft_based_dpc(pypty_params, hpass=0, lpass=0, save=False, comx=None, comy=None, plot=False):
     """
     FFT-based DPC phase reconstruction. If you setted up the pypty_params properly, you would only need to specify the hpass and lpass values, both are non-negative floats.
+    Inputs:
+        pypty_params - dictionary with callibrated pypty params
+        hpass- float, high pass value (default 0)
+        lpass- float, low pass value (default 0)
+        save- default False, ignored if you provided save_preprocessing_files in pypty_params
+        comx- defalt None, 2D map, units are reciprocal pixels. Ignored if you have it in pypty_params.
+        comy- defalt None, 2D map, units are reciprocal pixels. Ignored if you have it in pypty_params.
+        plot - default False, ignored if you provided plot in pypty_params
+    Outputs:
+        pot- 2D phase reconstructions
+        pypty_params- updated PyPty params with callibrated rotation angle
     """
     save=pypty_params.get("save_preprocessing_files", save)
     if save:
@@ -49,6 +60,8 @@ def fft_based_dpc(pypty_params, hpass=0, lpass=0, save=True, comx=None, comy=Non
     angle=pypty_params.get("PLRotation_deg", None)
     plot=pypty_params.get("plot", plot)
     data_is_numpy_and_flip_ky=pypty_params.get("data_is_numpy_and_flip_ky", False)
+    comx=pypty_params.get("comx")
+    comy=pypty_params.get("comy")
     if dataset_h5[-3:]==".h5":
         dataset_h5=h5py.File(dataset_h5, "r")
         dataset_h5=dataset_h5["data"]
@@ -113,8 +126,36 @@ def fft_based_dpc(pypty_params, hpass=0, lpass=0, save=True, comx=None, comy=Non
 
 
 def iterative_dpc(pypty_params, num_iterations=100, beta=0.5, hpass=0, lpass=0, step_size=0.1,
-                COMx=None, COMy=None, px_size=None,print_flag=False,save=True,
+                COMx=None, COMy=None, px_size=None,print_flag=False,save=False,
                 select=None, plot=True, bin_fac=1, use_backtracking=True, pad_width=5):
+    """
+    Iterative DPC phase reconstruction. If you setted up the pypty_params properly, you would only need to specify the hpass and lpass values, both are non-negative floats.
+    Inputs:
+        pypty_params - dictionary with callibrated pypty params
+        
+        num_iterations=100, 
+        beta=0.5, 
+        
+        hpass- float, high pass value (default 0)
+        lpass- float, low pass value (default 0)
+        
+        step_size=0.1,
+        
+        
+        COMx- defalt None, 2D map, units are reciprocal pixels. Ignored if you have it in pypty_params.
+        COMy- defalt None, 2D map, units are reciprocal pixels. Ignored if you have it in pypty_params.
+        px_size=None,
+        print_flag=False, Ignored if you provided print_flag in PyPty parameters.
+        save- default False, ignored if you provided save_preprocessing_files in pypty_params
+        select=None,         
+        plot - default False, ignored if you provided plot in pypty_params
+        bin_fac=1, 
+        use_backtracking=True,
+        pad_width=5
+    Outputs:
+        pot- 2D phase reconstructions
+    """
+
     save=pypty_params.get("save_preprocessing_files", save)
     if save:
         try:

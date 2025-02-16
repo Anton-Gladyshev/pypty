@@ -19,38 +19,47 @@ from pypty.fft import *
 from pypty.utils import *
 
 def run_tcbf_alignment(params, binning_for_fit=[8],
-                        save=True, optimize_angle=True,
+                        save=True, optimize_angle=True,  aberrations=None, n_aberrations_to_fit=12,
+                        reference_type="bf",
                         refine_box_dim=10, upsample=3,
-                        reference_type="bf",cross_corr_type="phase",
-                        scan_pad=None, cancel_large_shifts=None, compensate_lowfreq_drift=False,
-                        aperture=None, append_lowfreq_shifts_to_params=True, subscan_region=None,
-                        interpolate_scan_factor=1, n_aberrations_to_fit=12, aberrations=None,
+                        cross_corr_type="phase", cancel_large_shifts=None,
+                        
+                        scan_pad=None, aperture=None, subscan_region=None,
+    
+                        compensate_lowfreq_drift=False, append_lowfreq_shifts_to_params=True,
+                        interpolate_scan_factor=1,
                         binning_cross_corr=1, phase_cross_corr_formula=False,
                         f_scale_lsq=1,x_scale_lsq=1, loss_lsq="linear", tol_ctf=1e-8):
     """
-    This function fit the beam CTF to the shifts between the individual pixel images of the 4d-stem dataset. The shift estimation is done via phase-cross correaltion. The shift of the CTF can be done either on an aberration basis or on a full discretized grid.
+    This function fits the beam CTF to the shifts between the individual pixel images of the 4d-stem dataset. The shift estimation is done via cross-correaltion.
     inputs:
         pypty_params - dictionary with experimental parameters and reconsturciton settings. For more please see functions append_exp_params() and run_ptychography()
-        aberrations- list with an initial guess for aberrations.
         binning_for_fit- list of binning values at which the fit will be performed. To do 4 iterations at binning value of 8 it should be [8,8,8,8]
-        save - boolean flag. If true, the intermidate tcBF images on the intial scan grid will be saved as .png
-        tol_ctf - tolerance for CTF fit
-        n_aberrations_to_fit - integer. If the inital guess for aberrations is not provided, the code with try to initialize them as a list of zeros with this length
-        plot_CTF_shifts - boolean flag
-        plot_inter_image - boolean flag
-        save_inter_imags - boolean flag
-        refine_box_dim - radius of a box in which the shifts between the images will be refined. The cross-correlation can estimate the shift only on the initial grid. To get a more precise value, we have to interpolate. This is done here via a cubic spline.
-        upsample - the upsampling of the cross-correlation for precise maximum estimation.
+
+        save - boolean flag. If true, the intermidate tcBF images on the intial scan grid will be saved as .png. Ignored if you provided save_preprocessing_files in pypty_params.
+        optimize_angle - boolean flag. Allows to fit the PL rotation angle with aberrations
+        aberrations- list with an initial guess for aberrations. Ignored if provided in pypty_params.
+        n_aberrations_to_fit - integer. If the inital guess for aberrations is not provided, the code with try to initialize them as a list of zeros with this length. Ignored if aberrations are provided in pypty_params.
+
         reference_type - by default is set to "bf". In this case all pixel images will be correlated to the tcbf estimate. The other option is "zero". In this case the images will be correlated to the image of the pixel closest to the optical axis
-        optimize_angle - experimental feature. Should allow to fit the PL rotation angle
-        scan_pad - amount of scan positions to add to the edges in order to prevent wrap around artifacts. If None the code will figure it out automatically
-        cancel_large_shifts - None or float strictly between 0 and 1. If not None, the abnoramally large shifts will be ignored in the CTF fit.
-        compensate_lowfreq_drift - boolean flag. If True the code will try to cancel the aperture drift.
-        aperture - boolean mask for aperture. If None the code will try to get it from the pypty_params. Note that the function append_exp_params generates the aperture automatically
-        append_lowfreq_shifts_to_params - boolean flag. If true, the lowfreq drift correction will be stored in pypty_params. This should accelerate the later preparation of the data.
-        subscan_region,  None or list of subscan boundaries (left, top, right, bottom) on which one should do the fit.
-        interpolate_scan_factor, integer default 1. If larger than 1 the scan will be upsampled via interpolation. This is an experimental feature!!!
+        refine_box_dim - radius of a box in which the shifts between the images will be refined. The cross-correlation can estimate the shift only on the initial grid. To get a more precise value, we have to interpolate. This is done here via a cubic spline.
+        upsample - the upsampling of the cross-correlation for precise maximum estimation. (Note the image itself will not be upsampled. For this feature please reffer to upsampled_tcbf() function)
+
         cross_corr_type - type of cross correlation. Default "phase" for phase cross correlation that should perform better with noisy data. Anything but "phase" will result in a classical Foruier-correlation.
+        cancel_large_shifts - None or float strictly between 0 and 1. If not None, the abnoramally large shifts will be ignored in the CTF fit.
+        scan_pad - amount of scan positions to add to the edges in order to prevent wrap around artifacts. If None the code will figure it out automatically
+
+        aperture - boolean mask for aperture. If None the code will try to get it from the pypty_params. Note that the function append_exp_params generates the aperture automatically
+        subscan_region,  None or list of subscan boundaries (left, top, right, bottom) on which one should do the fit.
+        compensate_lowfreq_drift - boolean flag. If True the code will try to cancel the drift of the patterns for larges fields of view.
+        append_lowfreq_shifts_to_params - boolean flag. If true, the lowfreq drift correction will be stored in pypty_params. This should accelerate the later preparation of the data.
+
+        interpolate_scan_factor, integer default 1. If larger than 1 the scan will be upsampled via interpolation. This is an experimental feature! For creating good upsampled images plese see upsampled_tcbf() function.
+        The Fit of the CTF is done via scipy least squares. You can supply it with followng parameters: 
+            f_scale_lsq - default 1 (controlls f_scale)
+            x_scale_lsq - default 1 (controlls x_scale)
+            loss_lsq - default "linear" (controlls loss type)
+            tol_ctf - default is 1e-8, (controlls tolerance "ftol" parameter)
     outputs:
         pypty_params - updated dictionary with parameters.
     """
@@ -616,12 +625,13 @@ def upsampled_tcbf(pypty_params, upsample=5, pad=10,
         upsample - integer upsampling factor
         pad - amount of scan positions to add to the sides to eliminate wrap-around artifacts
         compensate_lowfreq_drift - boolean flag. If true, the code will try to compensate drifts of an aperture. Requieres to run_tcbf_alignemnt beforehand!!!
-        default_float- 64 or 32 for better memory
-        round_shifts - boolean. If true, shifts will be rounded.
-        xp - backend. numpy or Cupy
-        save - boolean flag. Default false.
-        max_parallel_fft - amount of FFTs to do in a vectorized fashion.
         bin_fac - binning for the data in reciprocal space. Default 1 (no binning).
+
+        default_float- 64 or 32 for better memory management
+        round_shifts - boolean. If true, shifts will be rounded. And alignment will be done via roll(). If False, FFT-shift will be used. The last option is more precise, but creates artifacts on the edges
+        xp - backend. numpy or Cupy
+        save - boolean flag. Default false. Ignored if you provided save_preprocessing_files in pypty_params
+        max_parallel_fft - amount of FFTs to do in a vectorized fashion.
     outputs:
         O_r - real valued tcBF image
     """

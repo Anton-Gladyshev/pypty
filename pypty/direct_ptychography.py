@@ -15,6 +15,17 @@ from pypty.utils import *
 
 
 def wdd(pypty_params, eps_wiener=1e-3, thresh=None, save=0):
+    """
+    This function performs Wigner distribution deconvolution.
+    Inputs:
+        pypty_params - dictionary with callibrated parametes
+        eps_wiener- float, default 1e-3: epsilon parameter for wiener filter
+        thresh- float, default None. Controlls an alternative way for deconvolution. If it is provided, then eps_wiener is ignored and denominator values below this threshold are set to 1 while the corresponding norminator values are set to 0.
+        save- default False, ignored if you provided save_preprocessing_files in pypty_params
+    Outputs:
+        o - 2d complex Object
+        probe - 2d complex beam
+    """
     global cpu_mode
     if not(cpu_mode):
         cp.fft.config.clear_plan_cache()
