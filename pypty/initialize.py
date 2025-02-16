@@ -26,7 +26,7 @@ def create_pypty_data(path_input, path_output, swap_axes=False,flip_ky=False,fli
         bin - integer (default 1), binning value applied to the last two axes.
         crop_left - integer (default None / 0) - left cropping of the patterns.
         crop_right - integer (default None / 0) - right cropping of the patterns.
-        crop_top=None - integer (default None / 0) - top cropping of the patterns.
+        crop_top - integer (default None / 0) - top cropping of the patterns.
         crop_bottom - integer (default None / 0) - bottom cropping of the patterns.
         normalize - boolean flag (default True). If true, patterns will be rescaled so that on average the sum over a pattern is 1
         cutoff_ratio - float, default None. If not None, the values that are futher than cutoff_ratio x width/2 will be zeroed. 
@@ -196,6 +196,7 @@ def append_exp_params(experimental_params, pypty_params=None):
     
     experimental_params should contain following entries:
         -data_path - path to a PyPty-style 3d .h5 file [N_measurements, ky,kx] or .npy Nion-style 4d-stem dataset (or 3d .npy dataset)
+        -masks - 3d numpy array or None. if data is compressed provide the virtual detectors (masks) shape should be [N_masks,ky,kx]
         -output_folder - path to an outputfolder where the results will be stored
         -path_json - path to a nion-style json file with metadata (optional)
         -acc_voltage - float, accelerating voltage in kV
@@ -236,6 +237,7 @@ def append_exp_params(experimental_params, pypty_params=None):
         pypty_params=load_params(pypty_params)
     
     path_data_h5=experimental_params.get("data_path", "")
+    masks=experimental_params.get("masks", None)
     output_folder=experimental_params.get("output_folder", "")
     path_json=experimental_params.get("path_json", "")
     
@@ -345,6 +347,8 @@ def append_exp_params(experimental_params, pypty_params=None):
         if print_flag:
             sys.stdout.write("\niDPC rotation angle is %.2f deg. (Rotation of the reciprocal space with respect to real space.)"%PLRotation_deg)
     mean_pattern_as_it_is=np.mean(h5data, axis=0)
+    if not(masks is None):
+        mean_pattern_as_it_is=np.sum(masks*mean_pattern_as_it_is[:,None,None], axis=0)
     if upsample_pattern!=1:
         x,y=np.meshgrid(np.linspace(0,1,mean_pattern_as_it_is.shape[1]),np.linspace(0,1,mean_pattern_as_it_is.shape[0]))
         points=np.swapaxes(np.array([x.flatten(),y.flatten()]), 0,1)
@@ -422,7 +426,8 @@ def append_exp_params(experimental_params, pypty_params=None):
         pypty_params['data_pad']=data_pad
         pypty_params['probe']=None
         pypty_params['obj']=np.ones((1,1,num_slices,1), dtype=np.complex128)
-        
+    pypty_params["masks"]=masks
+    if not(masks is None): pypty_params["algorithm"]="lsq_compressed";
     pypty_params["data_is_numpy_and_flip_ky"]=data_is_numpy_and_flip_ky
     pypty_params["save_preprocessing_files"]=save_preprocessing_files
     pypty_params["aberrations"]=aberrations
@@ -741,7 +746,7 @@ def tiltbeamtodata(pypty_params, align_type="com"):
 
 
 
-def get_approx_beam_tilt(pypty_params, power=3, make_binary=False, com_mask=None, percentile_filter_value=None,percentile_filter_size=10 ):
+def get_approx_beam_tilt(pypty_params, power=3, make_binary=False, com_mask=None, percentile_filter_value=None,percentile_filter_size=10):
     dataset_h5=pypty_params.get("data_path", "")
     pixel_size_x_A=pypty_params.get("pixel_size_x_A", 1)
     rez_pixel_size_A=pypty_params.get("rez_pixel_size_A", 1)

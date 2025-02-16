@@ -616,6 +616,7 @@ def make_states_orthogonal(probe_states):
             else:
                 probe_states[:,:,ind1]=probe_states[:,:,ind1]-probe_states[:,:,ind2]*(cp.sum(cp.conjugate(probe_states[:,:,ind2])*probe_states[:,:,ind1]))/(1e-10+cp.sum(cp.abs(probe_states[:,:,ind2])**2))
     return probe_states
+    
 def make_basis_orthogonal(vectors):
     n=vectors.shape[0]
     for ind1 in range(n):
