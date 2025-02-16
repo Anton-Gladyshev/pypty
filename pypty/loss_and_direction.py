@@ -60,10 +60,10 @@ def loss_and_direction(this_obj, full_probe, this_pos_array, this_pos_correction
         shift_probe_mask_yx=cp.stack((shift_probe_mask_y, shift_probe_mask_x), axis=1) #(1, 2, y, x)
     is_multislice = num_slices>1 or propmethod=="better_multislice" or propmethod=="yoshida"
     is_single_defocus = recon_type=="far_field" or defocus_array.shape[0]==1
-    helper_flag_1= this_step_probe>0 or this_beam_current_step>0
-    helper_flag_2= helper_flag_1 or this_step_aberrations_array>0
-    helper_flag_3= helper_flag_2 or (this_step_tilts>0 and (tilt_mode==2 or tilt_mode==4))
-    helper_flag_4= helper_flag_3 or this_step_pos_correction>0
+    helper_flag_1= this_step_probe or this_beam_current_step
+    helper_flag_2= helper_flag_1 or this_step_aberrations_array
+    helper_flag_3= helper_flag_2 or (this_step_tilts and (tilt_mode==2 or tilt_mode==4))
+    helper_flag_4= helper_flag_3 or this_step_pos_correction
     if not(aberration_marker is None):
         num_abs=aberrations_array.shape[1]
         if aberrations_polynomials is None:
@@ -107,7 +107,7 @@ def loss_and_direction(this_obj, full_probe, this_pos_array, this_pos_correction
         static_background_is_there=cp.max(static_square)>1e-20
     else:
         static_background_is_there=False
-    probe_shift_flag=cp.sum(this_pos_correction**2)!=0.0 or this_step_pos_correction>0
+    probe_shift_flag=cp.sum(this_pos_correction**2)!=0.0 or this_step_pos_correction
     tcsl=len(this_chopped_sequence)
     sh0=compute_batch if compute_batch<=tcsl else tcsl
     if propmethod=="multislice":
@@ -120,7 +120,7 @@ def loss_and_direction(this_obj, full_probe, this_pos_array, this_pos_correction
     this_exit_wave           = cp.empty((sh0, this_ps,this_ps,         n_probe_modes,n_obj_modes   ), dtype=default_complex)
     if multiple_scenarios:
         full_probe=cp.moveaxis(full_probe,3,0)
-        if this_step_probe>0:
+        if this_step_probe:
             probe_grad=cp.moveaxis(probe_grad, 3,0)
     else:
         full_probe=full_probe[None, :,:,:]
@@ -326,7 +326,7 @@ def loss_and_direction(this_obj, full_probe, this_pos_array, this_pos_correction
                 dLoss_dint*=2
         if not(is_fully_coherent):
             dLoss_dint/=(n_probe_modes*n_obj_modes)
-        if this_step_static_background>0 and static_background_is_there:
+        if this_step_static_background and static_background_is_there:
             static_background_grad+=cp.sum(dLoss_dint,0)*2*static_background*this_loss_weight
         if upsample_pattern!=1:
             dLoss_dint=upsample_something_3d(dLoss_dint, upsample_pattern, False, xp)
@@ -340,7 +340,7 @@ def loss_and_direction(this_obj, full_probe, this_pos_array, this_pos_correction
                 dLoss_dWave=this_wave*cp.expand_dims(dLoss_dint, (-1,-2))
             fouirer_wave_grad=this_loss_weight * fft2(dLoss_dWave, axes=(1,2))*cp.conjugate(CTF) #(n_m, y,x, mp, mo)
             dLoss_dP_out=ifft2(fouirer_wave_grad, axes=(1,2))
-            if this_step_tilts>0:
+            if this_step_tilts:
                 if tilt_mode==0 or tilt_mode==3 or tilt_mode==4:
                     rsc=-12.566370614359172/(fouirer_wave_grad.shape[1]*fouirer_wave_grad.shape[2])
                     fouirer_wave_grad*=cp.conjugate(fourier_exit_wave)
@@ -357,7 +357,7 @@ def loss_and_direction(this_obj, full_probe, this_pos_array, this_pos_correction
                     tilts_grad[tiltind,3]+=dL_dtilt_x*rsc
         if not(tilting_mask_real_space_after is None):
             dLoss_dP_out = dLoss_dP_out * cp.conjugate(tilting_mask_real_space_after)
-            if this_step_tilts>0:
+            if this_step_tilts:
                 grad_tilting_kernel = -2 * dLoss_dP_out * cp.conjugate(this_exit_wave_before_tilt)
                 if is_fully_coherent:
                     dL_dtilt=cp.sum(cp.real(grad_tilting_kernel[:,None,:,:,0,0]*yx_real_grid_tilt[:,:,:,:,0]), (2,3), dtype=cp.float64).astype(default_float)
@@ -385,7 +385,7 @@ def loss_and_direction(this_obj, full_probe, this_pos_array, this_pos_correction
                 fourier_probe_grad=fft2(interm_probe_grad, axes=(1,2))
                 fourier_probe_grad=fourier_probe_grad*cp.conjugate(shift_probe_mask)[:,:,:,None]
                 interm_probe_grad=ifft2(fourier_probe_grad, axes=(1,2))
-                if this_step_pos_correction>0:
+                if this_step_pos_correction:
                     shift_mask_grad=cp.conjugate(this_probe_fourier)*fourier_probe_grad ## vectorize this one as well
                     sh = -2/(this_probe_fourier.shape[1]*this_probe_fourier.shape[2]) ## -1 for conj, 2 for real-grad shape for ifft
                     if n_probe_modes==1:
@@ -400,7 +400,7 @@ def loss_and_direction(this_obj, full_probe, this_pos_array, this_pos_correction
             if helper_flag_3:
                 if not(tilting_mask_real_space_before is None):
                     interm_probe_grad*=cp.conjugate(tilting_mask_real_space_before)
-                    if this_step_tilts>0:
+                    if this_step_tilts:
                         grad_tilting_kernel=-2 * interm_probe_grad * cp.conjugate(this_probe_before_tilt)
                         if n_probe_modes==1:
                             dL_dtilt=cp.sum(cp.real(grad_tilting_kernel[:,None,:,:,0]*yx_real_grid_tilt[:,:,:,0]),(2,3),  dtype=cp.float64).astype(default_float)
@@ -416,7 +416,7 @@ def loss_and_direction(this_obj, full_probe, this_pos_array, this_pos_correction
                         if fourier_probe_grad is None: fourier_probe_grad=fft2(interm_probe_grad, axes=(1,2));
                         fourier_probe_grad*=cp.conjugate(local_aberrations_phase_plate[:,:,:,None])
                         interm_probe_grad=ifft2(fourier_probe_grad, axes=(1,2))
-                        if this_step_aberrations_array>0:
+                        if this_step_aberrations_array:
                             sh = 2/(fourier_probe_grad.shape[1]*fourier_probe_grad.shape[2])
                             defgr=sh*cp.sum(cp.real((fourier_probe_grad*cp.conjugate(this_fourier_probe_before_local_aberrations))[:,None, :,:,:]*cp.conjugate(aberrations_polynomials[None,:,:,:,None])), axis=(2,3,4), dtype=cp.float64).astype(default_float)
                             scatteradd_abers(aberrations_array_grad, aberration_marker[tcs], defgr)
@@ -427,20 +427,20 @@ def loss_and_direction(this_obj, full_probe, this_pos_array, this_pos_correction
                             if fourier_probe_grad is None: fourier_probe_grad=fft2(interm_probe_grad, axes=(1,2));
                             interm_probe_grad=ifft2(fourier_probe_grad*cp.conjugate(this_phase_plate[:,:,:,None]), (1,2))
                         if fluctuating_current_flag:
-                            if this_beam_current_step>0:
+                            if this_beam_current_step:
                                 if n_probe_modes==1:
                                     beam_current_grad[tcs]=2*cp.sign(thisbc)*cp.sum(cp.real(interm_probe_grad[:,:,:,0]*cp.conjugate(this_probe_before_fluctuations[:,:,:,0])), (1,2), dtype=cp.float64).astype(default_float)
                                 else:
                                     beam_current_grad[tcs]=2*cp.sign(thisbc)*cp.sum(cp.real(interm_probe_grad*cp.conjugate(this_probe_before_fluctuations)), (1,2,3))
-                            if this_step_probe>0:
+                            if this_step_probe:
                                 interm_probe_grad=interm_probe_grad*beam_current_values
-                        if this_step_probe>0:
+                        if this_step_probe:
                             if multiple_scenarios:
                                 scatteradd_probe(probe_grad, probe_marker[tcs], interm_probe_grad)
                             else:
                                 probe_grad+=cp.sum(interm_probe_grad,0)
     loss*=this_loss_weight
-    if this_step_probe>0:
+    if this_step_probe:
         if multiple_scenarios: probe_grad=cp.moveaxis(probe_grad, 0,3);
         probe_grad=fft2(probe_grad, (0,1), overwrite_x=True)
         if multiple_scenarios:
@@ -454,23 +454,23 @@ def loss_and_direction(this_obj, full_probe, this_pos_array, this_pos_correction
    # print("\n", t_gpu)
     this_pos_array=this_pos_array[:,:,0]
     this_tilt_array=this_tilt_array[:,:,0,0]
-    if this_step_pos_correction>0 and fast_axis_reg_weight_positions>0:
+    if this_step_pos_correction and fast_axis_reg_weight_positions>0:
         something=this_pos_array+this_pos_correction
         ind_loss, reg_grad=compute_fast_axis_constraint_on_grid(something, scan_size, fast_axis_reg_weight_positions)
         pos_grad+=reg_grad;
         loss+=ind_loss
-    if this_step_pos_correction>0 and current_slow_axis_reg_weight_positions>0:
+    if this_step_pos_correction and current_slow_axis_reg_weight_positions>0:
         something=this_pos_array+this_pos_correction
         ind_loss, reg_grad = compute_slow_axis_constraint_on_grid(something, scan_size, current_slow_axis_reg_weight_positions, current_slow_axis_reg_coeff_positions)
         pos_grad+=reg_grad;
         loss+=ind_loss
-    if this_step_tilts>0 and current_slow_axis_reg_weight_tilts>0:
+    if this_step_tilts and current_slow_axis_reg_weight_tilts>0:
         something=this_tilt_array
         for i_t_ind in range(0,6,2):
             ind_loss, reg_grad=compute_slow_axis_constraint_on_grid(something[:,i_t_ind:i_t_ind+2], scan_size, current_slow_axis_reg_weight_tilts, current_slow_axis_reg_coeff_tilts)
             tilts_grad[:,i_t_ind:i_t_ind+2]+=reg_grad;
             loss+=ind_loss
-    if this_step_tilts>0 and fast_axis_reg_weight_tilts>0:
+    if this_step_tilts and fast_axis_reg_weight_tilts>0:
         something=this_tilt_array
         ind_loss, reg_grad=compute_fast_axis_constraint_on_grid(something, scan_size, fast_axis_reg_weight_tilts)
         tilts_grad+=reg_grad
@@ -481,12 +481,12 @@ def loss_and_direction(this_obj, full_probe, this_pos_array, this_pos_correction
         loss+=l1_reg_term
         object_grad+=l1_object_grad
         del grad_mask,l1_reg_term,l1_object_grad # forget about it
-    if probe_reg_weight>0 and this_step_probe>0:
+    if probe_reg_weight>0 and this_step_probe:
         probe_reg_term, reg_probe_grad = compute_probe_constraint(full_probe, aperture_mask, probe_reg_weight, True)
         loss+=probe_reg_term
         probe_grad+=reg_probe_grad
         del reg_probe_grad, probe_reg_term
-    if this_step_probe>0 and current_window_weight>0:
+    if this_step_probe and current_window_weight>0:
         probe_reg_term, reg_probe_grad = compute_window_constraint(full_probe, current_window, current_window_weight)
         loss+=probe_reg_term
         probe_grad+=reg_probe_grad

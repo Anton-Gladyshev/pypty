@@ -408,9 +408,6 @@ def padprobetodatanearfield(probe, measured_data_shape, data_pad, upsample_patte
 
 
 
-
-
-
 def save_updated_arrays(output_folder, epoch,current_probe_step, current_probe_pos_step, current_tilts_step,current_obj_step, obj, probe, tilts_correction, full_pos_correction, positions, tilts, static_background, current_aberrations_array_step, current_static_background_step,count, current_loss, current_sse, aberrations, beam_current, current_beam_current_step, save_flag, save_loss_log, xp):
     if save_loss_log:
         if epoch%save_loss_log==0:

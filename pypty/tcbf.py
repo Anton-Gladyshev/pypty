@@ -102,6 +102,7 @@ def run_tcbf_alignment(params, binning_for_fit=[8],
     
     plot=pypty_params.get("plot", False)
     print_flag=pypty_params.get("print_flag", False)
+    data_is_numpy_and_flip_ky=pypty_params.get("data_is_numpy_and_flip_ky", False)
     num_abs=len(aberrations)
     possible_n, possible_m, possible_ab=convert_num_to_nmab(num_abs)
     aber_print, s=nmab_to_strings(possible_n, possible_m, possible_ab), ""
@@ -121,7 +122,8 @@ def run_tcbf_alignment(params, binning_for_fit=[8],
         if len(dataset_h5.shape)==4:
             scan_size=[dataset_h5.shape[0], dataset_h5.shape[1]]
             dataset_h5=dataset_h5.reshape(dataset_h5.shape[0]* dataset_h5.shape[1], dataset_h5.shape[2],dataset_h5.shape[3])
-    
+        if data_is_numpy_and_flip_ky:
+            dataset_h5=dataset_h5[:,::-1, :]
    
     ## if bf disc is wobbling, try to compensate it, also we can save this shifts for ptycho reconsturction coming after this alignment!
     if compensate_lowfreq_drift:
@@ -635,7 +637,7 @@ def upsampled_tcbf(pypty_params, upsample=5, pad=10,
     rez_pixel_size_A= pypty_params.get("rez_pixel_size_A", 1)
     upsample_pattern= pypty_params.get("upsample_pattern", 1)
     save=pypty_params.get("save_preprocessing_files", save)
-
+    data_is_numpy_and_flip_ky=pypty_params.get("data_is_numpy_and_flip_ky", False)
     xp=cp  #pypty_params.get("backend", cp)
     if data_pad!=0:
         aperture=aperture[data_pad:-data_pad,data_pad:-data_pad]
@@ -651,7 +653,8 @@ def upsampled_tcbf(pypty_params, upsample=5, pad=10,
         if len(patterns.shape)==4:
             scan_size=[patterns.shape[0], patterns.shape[1]]
             patterns=patterns.reshape(patterns.shape[0]* patterns.shape[1], patterns.shape[2],patterns.shape[3])
-            
+        if data_is_numpy_and_flip_ky:
+            patterns=patterns[:,::-1, :]
     comx= pypty_params.get("aperture_shifts_x", pypty_params.get("comx", None)) # pypty_params.get("comx", None)
     comy=pypty_params.get("aperture_shifts_y", pypty_params.get("comy", None)) #pypty_params.get("comy", None)
     print_flag=pypty_params.get("print_flag", 1)

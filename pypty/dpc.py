@@ -37,6 +37,7 @@ def fft_based_dpc(pypty_params, hpass=0, lpass=0, save=True, comx=None, comy=Non
     scan_size=pypty_params.get("scan_size", None)
     angle=pypty_params.get("PLRotation_deg", None)
     plot=pypty_params.get("plot", plot)
+    data_is_numpy_and_flip_ky=pypty_params.get("data_is_numpy_and_flip_ky", False)
     if dataset_h5[-3:]==".h5":
         dataset_h5=h5py.File(dataset_h5, "r")
         dataset_h5=dataset_h5["data"]
@@ -45,6 +46,8 @@ def fft_based_dpc(pypty_params, hpass=0, lpass=0, save=True, comx=None, comy=Non
         if len(dataset_h5.shape)==4:
             scan_size=[dataset_h5.shape[0], dataset_h5.shape[1]]
             dataset_h5=dataset_h5.reshape(dataset_h5.shape[0]* dataset_h5.shape[1], dataset_h5.shape[2],dataset_h5.shape[3])
+        if data_is_numpy_and_flip_ky:
+            dataset_h5=dataset_h5[:,::-1, :]
     if (comx is None) or (comy is None):
         comx=np.zeros(dataset_h5.shape[0])
         comy=np.zeros(dataset_h5.shape[0])
@@ -116,6 +119,7 @@ def iterative_dpc(pypty_params, num_iterations=100, beta=0.5, hpass=0, lpass=0, 
     plot=pypty_params.get("plot", plot)
     print_flag=pypty_params.get("print_flag", print_flag)
     px_size=pypty_params.get("scan_step_A", px_size)
+    data_is_numpy_and_flip_ky=pypty_params.get("data_is_numpy_and_flip_ky", False)
     if dataset_h5[-3:]==".h5":
         dataset_h5=h5py.File(dataset_h5, "r")
         dataset_h5=dataset_h5["data"]
@@ -124,6 +128,8 @@ def iterative_dpc(pypty_params, num_iterations=100, beta=0.5, hpass=0, lpass=0, 
         if len(dataset_h5.shape)==4:
             scan_size=[dataset_h5.shape[0], dataset_h5.shape[1]]
             dataset_h5=dataset_h5.reshape(dataset_h5.shape[0]* dataset_h5.shape[1], dataset_h5.shape[2],dataset_h5.shape[3])
+        if data_is_numpy_and_flip_ky:
+            dataset_h5=dataset_h5[:,::-1, :]
     if (COMx is None) or (COMy is None):
         COMx=pypty_params.get('comx', None)
         COMy=pypty_params.get('comy', None)

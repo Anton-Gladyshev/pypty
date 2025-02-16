@@ -21,6 +21,7 @@ def wdd(pypty_params, eps_wiener=1e-3, thresh=None, save=0):
         cp.get_default_memory_pool().free_all_blocks()
         cp.get_default_pinned_memory_pool().free_all_blocks()
     data_path = pypty_params.get('data_path', "")
+    data_is_numpy_and_flip_ky=pypty_params.get("data_is_numpy_and_flip_ky", False)
     scan_size=np.copy(np.array(pypty_params.get('scan_size', [0,0])))
     if data_path[-3:]==".h5":
         data=h5py.File(data_path, "r")["data"]
@@ -30,7 +31,8 @@ def wdd(pypty_params, eps_wiener=1e-3, thresh=None, save=0):
         if len(data.shape)==4:
             scan_size=[data.shape[0], data.shape[1]]
             data=data.reshape(data.shape[0]* data.shape[1], data.shape[2],data.shape[3])
-    
+        if data_is_numpy_and_flip_ky:
+            data=data[:,::-1, :]
     data_pad = pypty_params.get('data_pad', 0)
     acc_voltage=pypty_params.get('acc_voltage', 60)
     probe=pypty_params.get('probe', None)

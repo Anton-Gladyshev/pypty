@@ -9,24 +9,49 @@ from pypty.utils import *
 from pypty.dpc import *
 
 
-def create_h5_file_from_numpy(path_numpy, path_h5, swap_axes=False,flip_ky=False,flip_kx=False, flip_y=False,flip_x=False,comcalc_len=1000, comx=None, comy=None, bin=1, crop_left=None, crop_right=None, crop_top=None, crop_bottom=None, normalize=True, cutoff_ratio=None, pad_k=0, data_dtype=np.float32, rescale=1, exist_ok=True):
+def create_pypty_data(path_input, path_output, swap_axes=False,flip_ky=False,flip_kx=False, flip_y=False,flip_x=False,comcalc_len=1000, comx=None, comy=None, bin=1, crop_left=None, crop_right=None, crop_top=None, crop_bottom=None, normalize=True, cutoff_ratio=None, pad_k=0, data_dtype=np.float32, rescale=1, exist_ok=True):
+    """
+    Create a PyPty-compatible .h5 data.
+        path_input - path to a dataset to be transformed (either .h5 or .npy array)
+        path_output - path where pypty-dataset will be stored
+        
+        swap_axes - boolean flag (default False) - swaps the last two coordianates
+        flip_ky - boolean flag (default False) - flips the second last axis
+        flip_kx - boolean flag (default False) - flips the  last axis
+        flip_y  - boolean flag (default False) - flips the first axis
+        flip_x  - boolean flag (default False) - flips the second axis
+        comcalc_len - integer (default 1000), number of measurements to estimate the center 
+        comx - integer or None (default None), x-center of the measuremts (if None it will be computed)
+        comy - integer or None (default None), y-center of the measuremts (if None it will be computed)
+        bin - integer (default 1), binning value applied to the last two axes.
+        crop_left - integer (default None / 0) - left cropping of the patterns.
+        crop_right - integer (default None / 0) - right cropping of the patterns.
+        crop_top=None - integer (default None / 0) - top cropping of the patterns.
+        crop_bottom - integer (default None / 0) - bottom cropping of the patterns.
+        normalize - boolean flag (default True). If true, patterns will be rescaled so that on average the sum over a pattern is 1
+        cutoff_ratio - float, default None. If not None, the values that are futher than cutoff_ratio x width/2 will be zeroed. 
+        pad_k- integer (default 0), padding of the last two axes
+        data_dtype- dtyle of the output file, default is np.float32, 
+        rescale- float, default 1. If not 1, patterns will be divided by this number
+        exist_ok- boolean flag (default True). Do not overwrite the file if it already exists.
+    """
     sys.stdout.write("\n******************************************************************************\n************************ Creating an .h5 File ********************************\n******************************************************************************\n")
     sys.stdout.flush()
-    if os.path.isfile(path_h5):
+    if os.path.isfile(path_output):
         print("\n.h5 File exists!")
         if exist_ok:
             return None
         else:
             print("\nDeleting the exitsting one!")
-            if path_h5[-3:]==".h5" and path_numpy!=path_h5:
+            if path_output[-3:]==".h5" and path_input!=path_output:
                 try:
-                    os.remove(path_h5)
+                    os.remove(path_output)
                 except:
                     pass
-    if path_numpy[-4:]==".npy":
-        data=np.load(path_numpy)
+    if path_input[-4:]==".npy":
+        data=np.load(path_input)
     else:
-        f0=h5py.File(path_numpy, "r")
+        f0=h5py.File(path_input, "r")
         data=np.array(f0["data"])
         f0.close()
     if flip_y:
@@ -91,7 +116,7 @@ def create_h5_file_from_numpy(path_numpy, path_h5, swap_axes=False,flip_ky=False
         data=np.pad(data, [[0,0],[pad_k, pad_k],[pad_k,pad_k]])
     if not(data_dtype is None):
         data=data.astype(data_dtype)
-    f=h5py.File(path_h5, "a")
+    f=h5py.File(path_output, "a")
     f.create_dataset("data", data=data)
     f.close()
 
@@ -160,6 +185,51 @@ def get_grid_for_upsampled_image(pypty_params, image,image_pixel_size, left_zero
     
     
 def append_exp_params(experimental_params, pypty_params=None):
+    """
+    Callibrate an extisting PyPty preset to new data. 
+    
+    Inputs:
+        -experimental_params - dictionary
+        -pypty_params - dictionary / sting-path to an existing preset / None
+    Output:
+        -pypty_params - dictionary
+    
+    experimental_params should contain following entries:
+        -data_path - path to a PyPty-style 3d .h5 file [N_measurements, ky,kx] or .npy Nion-style 4d-stem dataset (or 3d .npy dataset)
+        -output_folder - path to an outputfolder where the results will be stored
+        -path_json - path to a nion-style json file with metadata (optional)
+        -acc_voltage - float, accelerating voltage in kV
+        
+        One or multiple of the following callibrations:
+            -rez_pixel_size_A - reciprocal pixel size in Å^-1
+            -rez_pixel_size_mrad - reciprocal pixel size in mrad
+            
+            -conv_semiangle_mrad - beam convergence semi-angle in mrad
+            -aperture - (optional)- binary 2D mask
+            -bright_threshold - threshold to estimate an aperture, everything above threshold times maximum value in a pacbed will be concidered as bright field disk.
+        
+        -data_pad - int, reciprocal space padding. If None (default), pading is 1/4 of the total width of a diffraction pattern
+        -upsample_pattern - int, default 1 (no upsampling)
+        
+        -aberrations - list or 1d numpy array containing beam aberrations (in Å). Aberrations are stored in Krivanek notation, e.g. C10, C12a, C12b, C21a, C21b, C23a, C23b, C30 etc
+        -defocus - float, default 0. Extra probe defocus besides the one contained in aberrations.
+        
+        -scan_size - tuple of two ints, number of scan points along fast (y) and slow (x) axes. Optional. If no scan step or position grid is provided, it will be used to get the scan step
+        -scan_step_A - float, scan step (STEM pixel size) in Å.
+        -fov_nm - float, FOV along the fast axis in nm.
+        -special_postions_A - 2d numpy array, default None. If you acquiered a data on a special non-rectangular grid, please specify the positions in Å via this array for all measurements in a following form: [y_0,x_0],[y_1,x_1],....[y_n,x_n]]
+        
+        -PLRotation_deg - float, rotation angle between scan and detector axes. Default None. If None, a DPC measurement will be exectuted to get this angle.
+        -data_is_numpy_and_flip_ky - boolean Flag. Default is False. If no PyPty-style h5 data was created, this flag will flip the y-axis of diffraction patterns.
+        
+        -total_thickness - total thickness of a sample in Å. Has no effect if num_slices is 1 and propagation method (pypty_params entry) is multislice 
+        -num_slices - integer, number of slices, default is 1.
+        
+        -plot - boolean Flag, default is True 
+        -print_flag - integer. Default is 1. If 0 nothing will be printed. 1 prints only thelatest state of the computation, 2 prints every state and 3 gives the most details about the linesearch progress in iterative optimization.
+        -save_preprocessing_files - Boolean Flag. Default is True. 
+        
+    """
     sys.stdout.write("\n******************************************************************************\n******** Attaching the experimental parameters to your PyPty preset. *********\n******************************************************************************\n")
     sys.stdout.flush()
     if type(pypty_params)==str:
@@ -173,22 +243,25 @@ def append_exp_params(experimental_params, pypty_params=None):
     rez_pixel_size_A=experimental_params.get("rez_pixel_size_A", None)
     rez_pixel_size_mrad=experimental_params.get("rez_pixel_size_mrad", None)
     conv_semiangle_mrad=experimental_params.get("conv_semiangle_mrad", None)
-    
-    
     aperture=experimental_params.get("aperture", None)
+    bright_threshold=experimental_params.get("bright_threshold", 0.1)
+    
     data_pad=experimental_params.get("data_pad", None)
     upsample_pattern=experimental_params.get("upsample_pattern",1)
-    aberrations = experimental_params.get("aberrations",np.zeros(8))
+    aberrations = experimental_params.get("aberrations", np.zeros(8))
+    defocus=experimental_params.get("defocus", 0)
+
     scan_size=experimental_params.get("scan_size", None)
     scan_step_A=experimental_params.get("scan_step_A", None)
     fov_nm=experimental_params.get("fov_nm", None)
-    flip_x_positions = experimental_params.get("flip_x_positions", False)
-    flip_y_positions = experimental_params.get("flip_y_positions", False)
-    defocus=experimental_params.get("defocus", 0)
+    special_postions_A=experimental_params.get("special_postions_A", None)
+ 
     PLRotation_deg=experimental_params.get("PLRotation_deg", None)
+    data_is_numpy_and_flip_ky=experimental_params.get("data_is_numpy_and_flip_ky", False)
+    
     total_thickness=experimental_params.get("total_thickness", 1)
     num_slices=experimental_params.get("num_slices", 1)
-    bright_threshold=experimental_params.get("bright_threshold", 0.1)
+    
     plot=experimental_params.get("plot", True)
     print_flag=experimental_params.get("print_flag", True)
     save_preprocessing_files=experimental_params.get("save_preprocessing_files", True)
@@ -214,8 +287,13 @@ def append_exp_params(experimental_params, pypty_params=None):
         if len(h5data.shape)==4:
             scan_size=[h5data.shape[0], h5data.shape[1]]
             h5data=h5file.reshape(h5data.shape[0]* h5data.shape[1], h5data.shape[2],h5data.shape[3])
+        if data_is_numpy_and_flip_ky:
+            h5data=h5data[:,::-1, :]
     if scan_size is None:
-        scan_size=jsondata['metadata']['scan']['scan_size'];
+        try:
+            scan_size=jsondata['metadata']['scan']['scan_size'];
+        except:
+            pass
     if acc_voltage is None:
         try:
             acc_voltage=jsondata['metadata']['hardware_source']['high_tension_v']*1e-3; ##kV
@@ -234,7 +312,11 @@ def append_exp_params(experimental_params, pypty_params=None):
         except:
             fov_nm=0
             print("\nNo scan-FOV provided, specify scan step!")
-    if scan_step_A is None: scan_step_A=fov_nm*10/scan_size[0]
+    if scan_step_A is None:
+        try:
+            scan_step_A=fov_nm*10/scan_size[0]
+        except:
+            pass
     
     # conv_semiangle_mrad
     # rez_pixel_size_A
@@ -263,7 +345,13 @@ def append_exp_params(experimental_params, pypty_params=None):
         if print_flag:
             sys.stdout.write("\niDPC rotation angle is %.2f deg. (Rotation of the reciprocal space with respect to real space.)"%PLRotation_deg)
     mean_pattern_as_it_is=np.mean(h5data, axis=0)
-    mean_pattern=upsample_something(mean_pattern_as_it_is, upsample_pattern, True, np)
+    if upsample_pattern!=1:
+        x,y=np.meshgrid(np.linspace(0,1,mean_pattern_as_it_is.shape[1]),np.linspace(0,1,mean_pattern_as_it_is.shape[0]))
+        points=np.swapaxes(np.array([x.flatten(),y.flatten()]), 0,1)
+        x2, y2=np.meshgrid(np.linspace(0,1,upsample_pattern*mean_pattern_as_it_is.shape[1]), np.linspace(0,1,upsample_pattern*mean_pattern_as_it_is.shape[0]))
+        mean_pattern=np.abs(griddata(points, mean_pattern.flatten(), (x2, y2), method='cubic'))
+    else:
+        mean_pattern=mean_pattern_as_it_is
     if aperture is None:
         aperture=mean_pattern>bright_threshold*np.max(mean_pattern)
     if plot:
@@ -286,8 +374,16 @@ def append_exp_params(experimental_params, pypty_params=None):
             rez_pixel_size_A/=upsample_pattern
     else:
         rez_pixel_size_A=rez_pixel_size_mrad*1e-3/(upsample_pattern*wavelength)
-    positions, old_pixel_size=get_positions_pixel_size(x_range, y_range, scan_step_A, detector_pixel_size_rezA=rez_pixel_size_A, patternshape=[mean_pattern.shape[0],mean_pattern.shape[1]], rot_angle_deg=-1*PLRotation_deg, flip_x=flip_x_positions,flip_y=flip_y_positions, print_flag=print_flag)
     old_shape=mean_pattern.shape[1]
+    if special_postions_A is None:
+        positions, old_pixel_size=get_positions_pixel_size(x_range, y_range, scan_step_A, detector_pixel_size_rezA=rez_pixel_size_A, patternshape=[mean_pattern.shape[0],mean_pattern.shape[1]], rot_angle_deg=-1*PLRotation_deg, flip_x=False,flip_y=False, print_flag=print_flag)
+    else:
+        old_pixel_size=1/(rez_pixel_size_A*old_shape)
+        positions=special_postions_A/old_pixel_size
+        positions[:,0]-=np.min(positions[:,0])
+        positions[:,1]-=np.min(positions[:,1])
+        
+    
     if data_pad is None: data_pad=int(np.ceil(old_shape/4));
     new_shape=old_shape+2*data_pad
     new_pixel_size=old_pixel_size*old_shape/new_shape
@@ -326,6 +422,8 @@ def append_exp_params(experimental_params, pypty_params=None):
         pypty_params['data_pad']=data_pad
         pypty_params['probe']=None
         pypty_params['obj']=np.ones((1,1,num_slices,1), dtype=np.complex128)
+        
+    pypty_params["data_is_numpy_and_flip_ky"]=data_is_numpy_and_flip_ky
     pypty_params["save_preprocessing_files"]=save_preprocessing_files
     pypty_params["aberrations"]=aberrations
     pypty_params["mean_pattern"]=mean_pattern_as_it_is
@@ -555,8 +653,9 @@ def get_focussed_probe_from_vacscan(pypty_params, mean_pattern):
 def tiltbeamtodata(pypty_params, align_type="com"):
     probe=pypty_params["probe"]
     data_path=pypty_params["data_path"]
-    data_pad=pypty_params["data_pad"]
+    data_pad=pypty_params.get("data_pad", 0)
     upsample_pattern=pypty_params["upsample_pattern"]
+    data_is_numpy_and_flip_ky=pypty_params.get("data_is_numpy_and_flip_ky", False)
     if data_path[-3:]==".h5":
         h5file=h5py.File(data_path, "r")
         h5data=h5file["data"]
@@ -565,8 +664,12 @@ def tiltbeamtodata(pypty_params, align_type="com"):
         if len(h5data.shape)==4:
             scan_size=[h5data.shape[0], h5data.shape[1]]
             h5data=h5file.reshape(h5data.shape[0]* h5data.shape[1], h5data.shape[2],h5data.shape[3])
-    pacbed=np.sum(h5data, 0)
-    beam_fft=np.sum(np.abs(np.fft.fftshift(np.fft.fft2(probe, axes=(0,1)), axes=(0,1)))**2, -1)[data_pad:-data_pad,data_pad:-data_pad]
+        if data_is_numpy_and_flip_ky:
+            h5data=h5data[:,::-1, :]
+    pacbed=pypty_params.get("mean_pattern", np.sum(h5data, 0))
+    beam_fft=np.sum(np.abs(np.fft.fftshift(np.fft.fft2(probe, axes=(0,1)), axes=(0,1)))**2, -1)
+    if data_pad!=0:
+        beam_fft=beam_fft[data_pad:-data_pad,data_pad:-data_pad]
     if upsample_pattern!=1:
         beam_fft=downsample_something(beam_fft, upsample_pattern, np)
     if align_type=="com":
@@ -631,6 +734,7 @@ def get_approx_beam_tilt(pypty_params, power=3, make_binary=False, com_mask=None
     rez_pixel_size_A=pypty_params.get("rez_pixel_size_A", 1)
     acc_voltage=pypty_params.get("acc_voltage", 60)
     scan_size=pypty_params.get("scan_size", None)
+    data_is_numpy_and_flip_ky=pypty_params.get("data_is_numpy_and_flip_ky", False)
     if dataset_h5[-3:]==".h5":
         dataset_h5=h5py.File(dataset_h5,  "r")["data"]
     elif dataset_h5[-4:]==".npy":
@@ -638,6 +742,8 @@ def get_approx_beam_tilt(pypty_params, power=3, make_binary=False, com_mask=None
         if len(dataset_h5.shape)==4:
             scan_size=[dataset_h5.shape[0],dataset_h5.shape[1]]
             dataset_h5=dataset_h5.reshape(dataset_h5.shape[0]*dataset_h5.shape[1],dataset_h5.shape[2], dataset_h5.shape[3] )
+        if data_is_numpy_and_flip_ky:
+            dataset_h5=dataset_h5[:,::-1, :]
     plot=pypty_params.get("plot", False)
     print_flag=pypty_params.get("print_flag", False)
     sequence=pypty_params.get("sequence", None)
