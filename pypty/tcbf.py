@@ -92,7 +92,7 @@ def run_tcbf_alignment(params, binning_for_fit=[8],
         mask_sequence=mask_sequence.reshape(scan_size[0], scan_size[1])
     if upsample_pattern!=1:
         if not(aperture is None):
-            diaperture=downsample_something(aperture, upsample_pattern, np)
+            aperture=downsample_something(aperture, upsample_pattern, np)
         data_pad=data_pad//upsample_pattern
         rez_pixel_size_A*=upsample_pattern
     if data_pad!=0 and not(aperture is None):
