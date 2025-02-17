@@ -293,7 +293,7 @@ As a general rule of thumb, we suggest configuring lambda functions so that once
 
 
 
-# If you have any questions after reading this guide, the following papers, books and links might explain the working principle of the code:
+## If you have any questions after reading this guide, the following papers, books and links might explain the working principle of the code:
 
 ## Multi-slice formalism and the NN-style approach
 1) Earl J. Kirkland. Advanced Computing  in Electron Microscopy 
