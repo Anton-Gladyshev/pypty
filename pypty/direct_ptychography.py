@@ -73,6 +73,8 @@ def wdd(pypty_params, eps_wiener=1e-3, thresh=None, save=0):
     mean_pattern=cp.asarray(mean_pattern)
     if probe is None:
         probe=cp.expand_dims(cp.fft.fftshift(ifft2_ishift(cp.sqrt(mean_pattern))),-1)
+    else:
+        probe=cp.asarray(probe)
     if extra_probe_defocus!=0: probe=apply_defocus_probe(probe, extra_probe_defocus,acc_voltage, pixel_size_x_A, pixel_size_y_A,cp.complex64, cp.float32, cp);
     probe=probe[:,:,0]
     if not(aberrations is None):
