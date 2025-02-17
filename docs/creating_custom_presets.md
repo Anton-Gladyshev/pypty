@@ -1,11 +1,11 @@
 # This is a table of PyPty parameters for creating custom presets. 
-For an easy preset configuration, please see the initialize module. It allows to easily create all arrays. But if your experiment is pretty complex, use this guide or provided examples to create your own.
+For an easy preset configuration, please reffer to the initialize module. It allows to easily create all arrays. But if your experiment is pretty complex, use this guide and provided examples to create your own.
 
 ## Backend Settings
 
 | Parameter      | Default Value | Description | 
 |---------------|--------------|-------------|
-| `backend`     | `cp`         | Currently not used, but useful for future. Right now whenever cupy is availible, it is used as GPU backend. In no Cuda is detected, numpy is used as a CPU replacement |
+| `backend`     | `cp`         | Currently not used, but will be a feature in future. Right now whenever cupy is availible, it is used as GPU backend. In no Cuda is detected, numpy is used as a CPU replacement. We do plan to add suport for Apple Silion, but wait for an optimal library to apper.|
 | `default_dtype` | `"double"` | Default data type for computations. Other option is "single" |
 
 ## Dataset
@@ -17,7 +17,7 @@ For an easy preset configuration, please see the initialize module. It allows to
 | `data_multiplier`                | `1`                          | Multiplier for data values. Use it if you want to rescale your patterns on the fly without modifying the stored dataset. All patterns will be multiplied by this number. |
 | `data_pad`                       | `0`                          | Padding applied to data.  Use it if you want to pad your patterns on the fly without modifying the stored dataset. All patterns will be padded with zeros. We recomend to set it to 1/4 of the width of your patterns for optimal sampling conditions (in far-field mode).|
 | `data_bin`                       | `1`                          | Binning factor for data. Use it if you want to bin your patterns on the fly without modifying the stored dataset. All patterns will be binned by this number. |
-| `data_is_numpy_and_flip_ky`      | `False`                      | Flag indicating if data is NumPy format and whether to flip ky.  Use it if your patterns are flipped and you don't want to modify the stored dataset.'|
+| `data_is_numpy_and_flip_ky`      | `False`                      | Flag indicating that data is in NumPy format and whether to flip ky.  Use it if your patterns are flipped and you don't want to modify the stored dataset. Other option is to create a pypty-style h5 dataset.'|
 | `data_shift_vector`              | `[0,0]`                      | Shift vector applied to data.  Use it if you want to shift your patterns on the fly without modifying the stored dataset. All patterns will be shifted by provided number of pixels. |
 | `upsample_pattern`               | `1`                          | Upsampling factor. If your beam footprint ends up being larger than the extent (in far-field mode), use it to artificially upsample the beam in reciprocal space. This is experimental feature and you do want to apply windowing constraints later! |
 | `sequence`                       | `None`                       | Sequence used in data processing. This is a list indiciating the measuremnts that will be used for iterative refinement. If None, all measurements will contribute. This parameter is usefull for reconstructions on subscans if you don't want to create additional data files. |
@@ -45,11 +45,21 @@ For an easy preset configuration, please see the initialize module. It allows to
 | `defocus_array`                  | `np.array([0.0])`            | Array of defocus values for near-field measurement. Irrelevant for far-field. It can contain either just one defocus common for all measurements or indicate individual values for all measurements. Units - Angstroms!|
 | `Cs`                             | `0`                          | Spherical aberration coefficient. Units - Angstroms!|
 
+## Spatial Calibration
+| Parameter                        | Default Value               | Description |
+|-----------------------------------|-----------------------------|-------------|
+| `slice_distances`                | `np.array([10])`            | Distances between object slices. Units are Angstroms, you can specify just one value common for all slices, or provide individual ones. |
+| `pixel_size_x_A`                 | `1`                          | Pixel size in x-direction (Angstroms). |
+| `pixel_size_y_A`                 | `1`                          | Pixel size in y-direction (Angstroms). |
+| `scan_size`                      | `None`                       | Tuple destibing number of scan points in y- and x- directions, only required for constraining postions and tilts. |
+| `num_slices`                     | `1`                          | Number of slices in the object. |
+
+
+
 ## Refinable arrays
 
 | Parameter                        | Default Value               | Description |
 |-----------------------------------|-----------------------------|-------------|
-| `num_slices`                     | `1`                          | Number of slices in the object. |
 | `obj`                            | `np.ones((1, 1, num_slices, 1))` | Initial guess for transmission function to be retrieved. Shape is (y,x,z,modes). If the y and x dimensions are not sufficent for a scan grid, object will be padded with ones.  |
 | `probe`                          | `None`                       | Real-space probe. Shape should be (y,x,modes). For a very advanced experiment probe can be four dimensional where the last dimension accounts for different beams for different measurements. In this case you should specify a probe_marker. If Note, the PyPty will automatically initialize the beam from the dataset. For more see section beam initialization.|
 | `positions`                      | `np.array([[0.0, 0.0]])`     | Scan positions. Units should be pixels of your reconstruction. The shape of postions array shold be `[N_measurements, 2]`. Or to be more presice is should look like [[y0,x0],[y1,x1],....[yn,xn]]. For single-shot type of experiments you can define one common scan point, e.g. [[0,0]. |
@@ -58,13 +68,7 @@ For an easy preset configuration, please see the initialize module. It allows to
 | `static_background`              | `0`                          | Static background intensity. It should be numpy array with the same shape as the initial patterns but padded by data_pad//upsample_pattern. Leave it 0 for no static offset on the diffractions patterns |
 | `beam_current`                   | `None`                       | Numpy array accounting for different current (or exposure times) during different measuremtns. If not None (no variation), it should be 1D array with length corresponding to the total number of measurements. |
 
-## Spatial Calibration
-| Parameter                        | Default Value               | Description |
-|-----------------------------------|-----------------------------|-------------|
-| `slice_distances`                | `np.array([10])`            | Distances between object slices. Units are Angstroms, you can specify just one value common for all slices, or provide individual ones. |
-| `pixel_size_x_A`                 | `1`                          | Pixel size in x-direction (Angstroms). |
-| `pixel_size_y_A`                 | `1`                          | Pixel size in y-direction (Angstroms). |
-| `scan_size`                      | `None`                       | Tuple destibing number of scan points in y- and x- directions, only required for constraining postions and tilts. |
+
 
 ## Propagation, Shifting and Resizing
 | Parameter                        | Default Value               | Description |
@@ -73,6 +77,63 @@ For an easy preset configuration, please see the initialize module. It allows to
 | `allow_subPixel_shift`           | `True`                       | Allow subpixel shifts. If False, positions will be rounded to integer values until you start to refine them.|
 | `dynamically_resize_yx_object`   | `False`                      | If position update becomes too large, object will be padded with ones in order to properly accomodate the updated grid. When specified as a positive integer, resizing will happen every time positon correction exceeds this integer value. |
 | `extra_space_on_side_px`         | `0`                          | Extra space added around the object (pixels). |
+
+
+## Bandwidth Limitation
+| Parameter                    | Default Value   | Description |
+|------------------------------|----------------|-------------|
+| `damping_cutoff_multislice`  | `2/3`          | This is a frequency cutoff for multislice beam propgation. Anything larger than 2/3 will result in aliasing artifacts, we recommend to keep it smaller than this value|
+| `smooth_rolloff`             | `0`            | Rolloff parameter for smooth frequency cutoffs. |
+| `update_extra_cut`           | `0.005`        | Extra frequency cutoff for a full object. During multislice only cropped ROIs of object are bandwidthlimited to avoid artifacts in a full transmission function, we suggest to limit it as well. Full object will have a limit of damping_cutoff_multislice-update_extra_cut of the largest spatial frequency.|
+| `lazy_clean`                 | `False`        | Whether to perform lazy cleaning. If True, full transmission function will not be bandwidth limited (only the cropped ROIs will be). We recommend to keep it False. |
+
+## Optimization Settings
+| Parameter                  | Default Value  | Description |
+|----------------------------|---------------|-------------|
+| `algorithm`                | `"lsq_sqrt"`  | Error metric used for comparing outcome of a reconstruction with measurement. Optipns are "lsq_sqrt"- Gaussian statistic, "ml" for Poisson, "lsq" for classic summed squared error and "lsq_sqrt_2" for modified Gaussian statistic|
+| `epoch_max`                | `200`         | Maximum number of epochs (iterations). |
+| `wolfe_c1_constant`        | `0.5`         | Wolfe condition parameter (C1). PyPty is supplied with weak Wolfe conditions. This parameter prevents update step being too large. C1 shold be postive and smaller than C2 constant. Larger C1 values are less forgiving and make step smaller. |
+| `wolfe_c2_constant`        | `0.999999`    | Wolfe condition parameter (C2). This parameter prevents update step being too small. C2 should be sticktly larger than C1 but smaller than 1. Larger C2 values are more forgiving and allow larger steps. |
+| `loss_weight`              | `1`           | Weight applied to the loss function. |
+| `max_count`                | `None`        | Maximum number of forward-backward propagations for one linesearch iteration. When exceeded, algorithm terminates the linesearch, the update is rejected and the history is restarted. Set to None or np.inf if you don't want to use this option.|
+| `reduce_factor`            | `0.5`         | Factor for reducing step size. Applied when 1st Wolfe condition is not satistied.|
+| `optimism`                 | `2`           | Optimism factor in optimization. Applied when 2nd Wolfe condition is not satistied. |
+| `min_step`                 | `1e-20`       | Minimum step size allowed. When the actual step is smaller than this value, algorithm terminates the linesearch, the update is rejected and the history is restarted. Set to zero if you don't want to use this option.|
+| `hist_length`              | `10`          | PyPty optimization is essentialy a two-loop BFGS algorithm. History length controlls the behaviour of update constuction. Gradients and updates of previous N=hist_length iterations will be stored and used for l-BFGS update construction. Set to 0 for classical gradient descent, 1 for Hestenes–Stiefel conjugate gradient, any integer larger than 1 for limited-memory BFGS algorithm and np.inf for true BFGS algorithm.  |
+| `update_step_bfgs`         | `1`           | Common step applied to all refinable quantities. By default, after the first iteration, a Barzilai-Borwein method is used to inistialize the inverse Hessian, so most of the time, an update step of 1 should be accepted. Only during the very first iteration the linesearch might take some time to find an appropriate step. |
+| `reset_history_flag`       | `None`        | Flag to reset optimization history. See section "lambda-types" in the end of this document. If provided, history will be manually resetted. |
+
+## Updating refinable arrays
+| Parameter                  | Default Value | Description |
+|----------------------------|--------------|-------------|
+| `update_probe`             | `1`          | Whether to update the probe. |
+| `update_obj`               | `1`          | Whether to update the object. |
+| `update_probe_pos`         | `0`          | Whether to update probe position. |
+| `update_tilts`             | `0`          | Whether to update tilt angles. |
+| `update_beam_current`      | `0`          | Whether to update beam current. |
+| `update_aberrations_array` | `0`          | Whether to update aberrations array. |
+| `update_static_background` | `0`          | Whether to update static background. |
+
+## Multiple Illumination Functions
+| Parameter                  | Default Value     | Description |
+|----------------------------|------------------|-------------|
+| `aberrations_array`        | `np.array([[0.0]])` | Array of aberration values. |
+| `phase_plate_in_h5`        | `None`           | Phase plate stored in HDF5 format. |
+| `aberration_marker`        | `None`           | Marker for aberrations. |
+| `probe_marker`             | `None`           | Marker for probe states. |
+
+## Memory Usage
+| Parameter                | Default Value       | Description |
+|--------------------------|--------------------|-------------|
+| `load_one_by_one`        | `True`             | Load data one by one to save memory. |
+| `smart_memory`           | `True`             | Enable smart memory management. |
+| `remove_fft_cache`       | `False`            | Whether to remove FFT cache. |
+| `compute_batch`          | `1`                | Batch size for computation. |
+| `force_dataset_dtype`    | `default_float_cpu`| Force dataset data type. |
+| `preload_to_cpu`        | `False`            | Preload data to CPU. |
+| `force_pad`             | `False`            | Whether to force padding. |
+
+
 
 ## Constraints
 | Parameter                        | Default Value               | Description |

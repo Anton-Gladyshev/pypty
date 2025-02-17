@@ -86,8 +86,13 @@ def run_ptychography(pypty_params):
     alpha_near_field = default_float_cpu(params.get('alpha_near_field', 0))
     defocus_array = params.get('defocus_array', np.array([0.0])).astype(default_float_cpu)
     Cs = default_float_cpu(params.get('Cs', 0))
-    ### ptycho stuff
+    ## spatial callibration of the object
+    slice_distances = params.get('slice_distances', np.array([10]))
+    pixel_size_x_A = default_float_cpu(params.get('pixel_size_x_A', 1))
+    pixel_size_y_A = default_float_cpu(params.get('pixel_size_y_A', 1))
+    scan_size= params.get('scan_size', None)
     num_slices=params.get('num_slices', 1)
+    ### ptycho stuff
     obj = params.get('obj', np.ones((1, 1, num_slices, 1))).astype(default_complex_cpu)
     probe = params.get('probe', None)
     positions = params.get('positions', np.array([[0.0, 0.0]])).astype(default_float_cpu)
@@ -95,12 +100,7 @@ def run_ptychography(pypty_params):
     tilt_mode=params.get('tilt_mode', 0) ## tilt mode 0: tilt only inside of the specimen, 1 tilt only after the specimen; 2 for tilt before and after the specimen;  3 tilt inside and after the specimen; 4 is for tilting before, inside and after;
     static_background=params.get('static_background', 0)
     beam_current=params.get('beam_current', None)
-    ## spatial callibration of the object
-    slice_distances = params.get('slice_distances', np.array([10]))
-    pixel_size_x_A = default_float_cpu(params.get('pixel_size_x_A', 1))
-    pixel_size_y_A = default_float_cpu(params.get('pixel_size_y_A', 1))
-    scan_size= params.get('scan_size', None)
-    
+  
     ## Propagation method, windowing and dinamic resizing
     propmethod = params.get('propmethod', "multislice")
     allow_subPixel_shift = params.get('allow_subPixel_shift', True)
@@ -115,9 +115,7 @@ def run_ptychography(pypty_params):
     
     ## optimization settings
     algorithm = params.get('algorithm', "lsq_sqrt")
-    update_batch = params.get('update_batch', "full")
     epoch_max = int(params.get('epoch_max', 200))
-    randomize = params.get('randomize', True)
     wolfe_c1_constant = params.get('wolfe_c1_constant', 0.5)
     wolfe_c2_constant=params.get('wolfe_c2_constant', 0.999999)
     loss_weight = params.get('loss_weight', 1)
@@ -273,7 +271,6 @@ def run_ptychography(pypty_params):
             this_smart_memory=smart_memory(epoch)
         except:
             this_smart_memory=smart_memory
-        if randomize: full_sequence=random.sample(full_sequence, len(full_sequence));
         if not(reset_history_flag is None):
             if reset_history_flag(epoch): reset_bfgs_history();
         try:
