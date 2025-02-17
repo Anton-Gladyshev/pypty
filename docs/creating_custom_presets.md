@@ -1,6 +1,21 @@
 # PyPty Parameters for Creating Custom Presets
 
-For an easy preset configuration, please refer to the `initialize` module. It allows easy creation of all arrays. However, if your experiment is complex, use this guide and the provided examples to create your own.
+For an easy preset configuration, please refer to the `pypty.initialize` module. It allows easy creation of all arrays. However, if your experiment is complex, use this guide and the provided examples to create your own.
+
+### Before starting this guide, one important usage case must be discussed.
+PyPty is an iterative algorithm and, as you will see, it requires a number of input parameters. Some of these parameters can be specified in an iteration-dependent fashion using a lambda function. This function should take a single input argument and return the desired value for a given epoch.
+
+For example, if you want to save checkpoints every 10 epochs, you can set `save_checkpoints_every_epoch` as:
+
+```python
+lambda x: x % 10 == 0```
+The parameters that can be written in this way are marked as `pypty-lambda` **type** in the  **Default Data Type** column. They can also be specified as a sting containing the code, e.g. ```python save_checkpoints_every_epoch = "lambda x: x % 10 == 0"```
+
+We do not recommend applying constraints every n epochs, as PyPty’s BFGS algorithm attempts to construct a Hessian matrix, and such modifications can disrupt this process.
+As a general rule of thumb, we suggest configuring lambda functions so that once an optimization parameter is activated, it maintains a consistent value throughout execution.
+
+
+
 
 ---
 
@@ -8,7 +23,7 @@ For an easy preset configuration, please refer to the `initialize` module. It al
 
 | Parameter      | Default Value | Default Data Type | Description |
 |---------------|--------------|--------------------|-------------|
-| `backend`     | `cp`         | `str`             | Currently not used, but will be a feature in the future. Right now, whenever CuPy is available, it is used as the GPU backend. If no CUDA is detected, NumPy is used as a CPU replacement. We plan to add support for Apple Silicon, but we are waiting for an optimal library to appear. |
+| `backend`     | `cp`         | `NumPy-like python module`             | Currently not used, but will be a feature in the future. Right now, whenever CuPy is available, it is used as the GPU backend. If no CUDA is detected, NumPy is used as a CPU replacement. We plan to add support for Apple Silicon, but we are waiting for an optimal library to appear. |
 | `default_dtype` | `"double"`  | `str`             | Default data type for computations. Another option is `"single"`. |
 
 ---
@@ -23,9 +38,9 @@ For an easy preset configuration, please refer to the `initialize` module. It al
 | `data_pad`                       | `0`                          | `int`              | Padding applied to data. Use it to pad patterns on the fly without modifying the stored dataset. We recommend setting it to **1/4 of the pattern width** for optimal sampling conditions in far-field mode. |
 | `data_bin`                       | `1`                          | `int`              | Binning factor for data. Used to bin patterns on the fly without modifying the stored dataset. All patterns will be binned by this number. |
 | `data_is_numpy_and_flip_ky`      | `False`                      | `bool`             | Flag indicating whether the data is in NumPy format and whether to flip `ky`. Useful if patterns are flipped and you don’t want to modify the stored dataset. Another option is to create a PyPty-style `.h5` dataset. |
-| `data_shift_vector`              | `[0,0]`                      | `list`             | Shift vector applied to data. Used to shift patterns on the fly without modifying the stored dataset. All patterns will be shifted by the specified number of pixels. |
-| `upsample_pattern`               | `1`                          | `int`              | Upsampling factor. If the beam footprint is larger than the extent (in far-field mode), this can artificially upsample the beam in reciprocal space. **Experimental feature!** Windowing constraints may be required. |
-| `sequence`                       | `None`                       | `list` or `None`   | Sequence used in data processing. This is a list indicating the measurements that will be used for iterative refinement. If `None`, all measurements contribute. This parameter is useful for reconstructions on subscans without creating additional data files. |
+| `data_shift_vector`              | `[0,0]`                      | `list`             | Shift vector (list with two-values) applied to measurements. Used to shift patterns on the fly without modifying the stored dataset. All patterns will be shifted by the specified number of pixels. |
+| `upsample_pattern`               | `1`                          | `int`              | Upsampling factor. If the beam footprint is larger than the extent (in far-field mode), this allows to artificially upsample the beam in reciprocal space. **Experimental feature!** Windowing constraints may be required. |
+| `sequence`                       | `None`                       | `list` or `None` or `pypty_lambda`     | Sequence used in data processing. This is a list indicating the measurements that will be used for iterative refinement. If `None`, all measurements contribute. This parameter is useful for reconstructions on subscans without creating additional data files. |
 | `use_full_FOV`                   | `True`                       | `bool`             | Boolean flag. Only useful if a sequence is provided. If `True`, the object can accommodate all measurements. If `False`, the object accommodates only selected measurements. |
 
 ---
@@ -93,7 +108,7 @@ For an easy preset configuration, please refer to the `initialize` module. It al
 |-----------------------------------|-----------------------------|--------------------|-------------|
 | `propmethod`                     | `"multislice"`              | `str`              | Wave propagation method. Options: `"multislice"`, `"better_multislice"`, and `"yoshida"`. The last two are **higher precision but slower**. |
 | `allow_subPixel_shift`           | `True`                       | `bool`             | Allow **subpixel shifts**. If `False`, positions will be rounded to integers until refined. |
-| `dynamically_resize_yx_object`   | `False`                      | `bool` or `int`    | If position updates become too large, the object will be padded to accommodate the new scan grid. If set to a **positive integer**, resizing occurs when position updates exceed this value. |
+| `dynamically_resize_yx_object`   | `False`                      | `bool` or `int`  or `pypty_lambda`    | If position updates become too large, the object will be padded to accommodate the new scan grid. If set to a **positive integer**, resizing occurs when position updates exceed this value. |
 | `extra_space_on_side_px`         | `0`                          | `int`              | Extra space added around the object in **pixels**. |
 
 ---
@@ -115,19 +130,19 @@ For an easy preset configuration, please refer to the `initialize` module. It al
 |----------------------------|---------------|--------------------|-------------|
 | `algorithm`                | `"lsq_sqrt"`  | `str`              | Error metric for reconstruction comparison. Options: `"lsq_sqrt"` (Gaussian), `"ml"` (Poisson), `"lsq"` (sum of squared error), and `"lsq_sqrt_2"` (modified Gaussian). |
 | `epoch_max`                | `200`         | `int`              | Maximum number of **epochs (iterations)**. |
-| `wolfe_c1_constant`        | `0.5`         | `float`            | **Wolfe condition parameter (C1)**. Prevents update steps from being too large. Must be **> 0** and **< C2**. Larger values restrict step size. |
-| `wolfe_c2_constant`        | `0.999999`    | `float`            | **Wolfe condition parameter (C2)**. Prevents update steps from being too small. Must be **> C1** but **< 1**. Larger values allow larger steps. |
-| `loss_weight`              | `1`           | `float`            | Weight applied to the **loss function**. |
+| `wolfe_c1_constant`        | `0.5`         | `float`  or `pypty_lambda`   | **Wolfe condition parameter (C1)**. Prevents update steps from being too large. Must be **> 0** and **< C2**. Larger values restrict step size. |
+| `wolfe_c2_constant`        | `0.999999`    | `float`   or `pypty_lambda`          | **Wolfe condition parameter (C2)**. Prevents update steps from being too small. Must be **> C1** but **< 1**. Larger values allow larger steps. |
+| `loss_weight`              | `1`           | `float`    or `pypty_lambda`         | Weight applied to the **loss function**. |
 | `max_count`                | `None`        | `int` or `None`    | Maximum number of forward-backward propagations per **line search iteration**. If exceeded, the update is **rejected** and history is reset. Use `None` or `np.inf` to disable. |
 | `reduce_factor`            | `0.5`         | `float`            | Factor for **reducing step size** when the first Wolfe condition **is not met**. |
 | `optimism`                 | `2`           | `float`            | Factor for **increasing step size** when the second Wolfe condition **is not met**. |
 | `min_step`                 | `1e-20`       | `float`            | **Minimum step size**. If the step falls below this value, the algorithm **resets history**. Use `0` to disable. |
-| `hist_length`              | `10`          | `int` or `np.inf`  | **BFGS optimization history length**. Values: `0` (Gradient Descent), `1` (Conjugate Gradient), `N>1` (Limited-memory BFGS), `np.inf` (Full BFGS). |
-| `update_step_bfgs`         | `1`           | `float` or |Common step applied to all refinable quantities. By default, after the first iteration, a Barzilai-Borwein method is used to inistialize the inverse Hessian, so most of the time, an update step of 1 should be accepted. Only during the very first iteration the linesearch might take some time to find an appropriate step. |
-| `phase_only_obj`                 | `False`       | `bool`  |Whether to consider the object as phase-only. |
-| `tune_only_probe_phase`          | `False`       | `bool`  |Optimize only the reciprocal-space phase (CTF) of the probe. |
-| `tune_only_probe_abs`            | `False`       | `bool`  |Optimize only the reciprocal-space amplitude (aperture) of the probe. |
-| `reset_history_flag`       | `None`        | `None` or `lambda` |Flag to reset optimization history. See section "lambda-types" in the end of this document. If provided, history will be manually resetted. |
+| `hist_length`              | `10`          | `int` or `np.inf` or `pypty_lambda`  | **BFGS optimization history length**. Values: `0` (Gradient Descent), `1` (Conjugate Gradient), `N>1` (Limited-memory BFGS), `np.inf` (Full BFGS). |
+| `update_step_bfgs`         | `1`           | `float` or `pypty_lambda`  |Common step applied to all refinable quantities. By default, after the first iteration, a Barzilai-Borwein method is used to inistialize the inverse Hessian, so most of the time, an update step of 1 should be accepted. Only during the very first iteration the linesearch might take some time to find an appropriate step. |
+| `phase_only_obj`                 | `False`       | `bool` or `pypty_lambda`   |Whether to consider the object as phase-only. |
+| `tune_only_probe_phase`          | `False`       | `bool` or `pypty_lambda`  |Optimize only the reciprocal-space phase (CTF) of the probe. |
+| `tune_only_probe_abs`            | `False`       | `bool` or `pypty_lambda`  |Optimize only the reciprocal-space amplitude (aperture) of the probe. |
+| `reset_history_flag`       | `None`        | `None` or `pypty_lambda`  |Flag to reset optimization history. See section "lambda-types" in the end of this document. If provided, history will be manually resetted. |
 
 
 ---
@@ -136,13 +151,13 @@ For an easy preset configuration, please refer to the `initialize` module. It al
 
 | Parameter                  | Default Value | Default Data Type | Description |
 |----------------------------|--------------|--------------------|-------------|
-| `update_probe`             | `1`          | `bool`              | Whether to update the **probe** (`1` for yes, `0` for no). |
-| `update_obj`               | `1`          | `bool`              | Whether to update the **object** (`1` for yes, `0` for no). |
-| `update_probe_pos`         | `0`          | `bool`              | Whether to update **probe positions** (`1` for yes, `0` for no). |
-| `update_tilts`             | `0`          | `bool`              | Whether to update **tilt angles** (`1` for yes, `0` for no). |
-| `update_beam_current`      | `0`          | `bool`              | Whether to update **beam current** (`1` for yes, `0` for no). |
-| `update_aberrations_array` | `0`          | `bool`              | Whether to update **aberration array** (`1` for yes, `0` for no). |
-| `update_static_background` | `0`          | `bool`              | Whether to update **static background** (`1` for yes, `0` for no). |
+| `update_probe`             | `1`          | `bool`   or `pypty_lambda`            | Whether to update the **probe** (`1` for yes, `0` for no). |
+| `update_obj`               | `1`          | `bool`   or `pypty_lambda`            | Whether to update the **object** (`1` for yes, `0` for no). |
+| `update_probe_pos`         | `0`          | `bool`   or `pypty_lambda`            | Whether to update **probe positions** (`1` for yes, `0` for no). |
+| `update_tilts`             | `0`          | `bool`   or `pypty_lambda`            | Whether to update **tilt angles** (`1` for yes, `0` for no). |
+| `update_beam_current`      | `0`          | `bool`    or `pypty_lambda`           | Whether to update **beam current** (`1` for yes, `0` for no). |
+| `update_aberrations_array` | `0`          | `bool`   or `pypty_lambda`            | Whether to update **aberration array** (`1` for yes, `0` for no). |
+| `update_static_background` | `0`          | `bool`   or `pypty_lambda`            | Whether to update **static background** (`1` for yes, `0` for no). |
 
 
 ---
@@ -164,7 +179,7 @@ For an easy preset configuration, please refer to the `initialize` module. It al
 | Parameter                | Default Value       | Default Data Type | Description |
 |--------------------------|--------------------|--------------------|-------------|
 | `load_one_by_one`        | `True`             | `bool`             | If `True`, data is **loaded dynamically** to save GPU memory. If `False`, all data is loaded at once (faster but memory-intensive). |
-| `smart_memory`           | `True`             | `bool`             | If `True`, **memory is managed intelligently**, clearing cache when necessary to prevent memory fragmentation. |
+| `smart_memory`           | `True`             | `bool`   or `pypty_lambda`            | If `True`, **memory is managed intelligently**, clearing cache when necessary to prevent memory fragmentation. |
 | `remove_fft_cache`       | `False`            | `bool`             | If `True`, **FFT cache is removed** periodically to save memory. **(Experimental feature)** |
 | `compute_batch`          | `1`                | `int`              | **Batch size for multislice computation.** Increasing this can speed up reconstruction but requires more GPU memory. |
 | `force_dataset_dtype`    | `default_float_cpu`| `numpy.dtype`      | Forces the dataset to be stored in a specified **data type**. Can help reduce memory usage at the cost of precision. |
@@ -177,23 +192,23 @@ For an easy preset configuration, please refer to the `initialize` module. It al
 
 | Parameter                        | Default Value               | Default Data Type | Description |
 |-----------------------------------|-----------------------------|--------------------|-------------|
-| `mixed_variance_weight`          | `0`                          | `float`            | Regularization weight that prevents **low-frequency variations** between object states. |
-| `mixed_variance_sigma`           | `0.5`                        | `float`            | Controls the **spatial frequency range** affected by `mixed_variance_weight`. |
+| `mixed_variance_weight`          | `0`                          | `float`   or `pypty_lambda`          | Regularization weight that prevents **low-frequency variations** between object states. |
+| `mixed_variance_sigma`           | `0.5`                        | `float`   or `pypty_lambda`          | Controls the **spatial frequency range** affected by `mixed_variance_weight`. |
 | `probe_constraint_mask`          | `None`                       | `numpy.ndarray` or `None` | Mask for **probe constraint in reciprocal space**. Masked pixels are **regularized using L2 norm**. |
 | `probe_reg_constraint_weight`    | `0`                          | `float`            | L2 regularization weight for the **probe in reciprocal space**. |
-| `window_weight`                  | `0`                          | `float`            | L2 regularization weight for the **probe in real space**. |
-| `window`                         | `None`                       | `numpy.ndarray` or `None` | **Window function** used to constrain the probe in real space. Masked pixels are damped using L2 regularization. |
+| `window_weight`                  | `0`                          | `float`   or `pypty_lambda`           | L2 regularization weight for the **probe in real space**. |
+| `window`                         | `None`                       | `numpy.ndarray` or `None` or or `pypty_lambda` | **Window function** used to constrain the probe in real space. Masked pixels are damped using L2 regularization. It can be either a 2d- real valued array with the same shape as upsampled and padded beam **or** a list containing two values: inner radius (fraction) and outer radius (fraction). Fractions will be multiplied with half of the probe width, everything inside of window will be kept intact, everything outside will be zeroed and intermediate values will be slighly damped.|
 | `abs_norm_weight`                | `0`                          | `float`            | L1 regularization weight applied to the **absorptive potential** (negative log of the transmission function’s absolute value). |
-| `phase_norm_weight`              | `0`                          | `float`            | L1 regularization weight applied to the **phase of the object**. |
-| `atv_weight`                     | `0`                          | `float`            | Weight for **Adaptive Total Variation (ATV)** regularization on the transmission function. |
-| `atv_q`                          | `1`                          | `float`            | ATV **q parameter** (controls the strength of smoothing). Recommended: `1`. |
-| `atv_p`                          | `2`                          | `float`            | ATV **p parameter** (`1` = L1-like regularization, `2` = L2-like smoothing). Recommended: `2`. |
-| `fast_axis_reg_weight_positions` | `0`                          | `float`            | Regularization weight for **fast-axis scan positions**. |
-| `fast_axis_reg_weight_tilts`     | `0`                          | `float`            | Regularization weight for **fast-axis tilts**. |
-| `slow_axis_reg_weight_positions` | `0`                          | `float`            | Regularization weight for **slow-axis scan positions**. |
-| `slow_axis_reg_coeff_positions`  | `0`                          | `float`            | Regularization coefficient for **slow-axis scan positions**. |
-| `slow_axis_reg_weight_tilts`     | `0`                          | `float`            | Regularization weight for **slow-axis tilts**. |
-| `slow_axis_reg_coeff_tilts`      | `0`                          | `float`            | Regularization coefficient for **slow-axis tilts**. |
+| `phase_norm_weight`              | `0`                          | `float`   or `pypty_lambda`          | L1 regularization weight applied to the **phase of the object**. |
+| `atv_weight`                     | `0`                          | `float`   or `pypty_lambda`          | Weight for **Adaptive Total Variation (ATV)** regularization on the transmission function. |
+| `atv_q`                          | `1`                          | `float`   or `pypty_lambda`          | ATV **q parameter** (controls the strength of smoothing). Recommended: `1`. |
+| `atv_p`                          | `2`                          | `float`  or `pypty_lambda`           | ATV **p parameter** (`1` = L1-like regularization, `2` = L2-like smoothing). Recommended: `2`. |
+| `fast_axis_reg_weight_positions` | `0`                          | `float` or `pypty_lambda`            | Regularization weight for **fast-axis scan positions**. |
+| `fast_axis_reg_weight_tilts`     | `0`                          | `float`  or `pypty_lambda`           | Regularization weight for **fast-axis tilts**. |
+| `slow_axis_reg_weight_positions` | `0`                          | `float`  or `pypty_lambda`           | Regularization weight for **slow-axis scan positions**. |
+| `slow_axis_reg_coeff_positions`  | `0`                          | `float`  or `pypty_lambda`           | Regularization coefficient for **slow-axis scan positions**. |
+| `slow_axis_reg_weight_tilts`     | `0`                          | `float`  or `pypty_lambda`           | Regularization weight for **slow-axis tilts**. |
+| `slow_axis_reg_coeff_tilts`      | `0`                          | `float`  or `pypty_lambda`           | Regularization coefficient for **slow-axis tilts**. |
 
 ---
 
@@ -203,20 +218,20 @@ For an easy preset configuration, please refer to the `initialize` module. It al
 
 | Parameter                         | Default Value  | Default Data Type | Description |
 |-----------------------------------|---------------|--------------------|-------------|
-| `apply_gaussian_filter`          | `False`       | `bool`             | Applies a **Gaussian filter** to the **phase** of the object. |
-| `apply_gaussian_filter_amplitude`| `False`       | `bool`             | Applies a **Gaussian filter** to the **amplitude** of the object. |
-| `beta_wedge`                     | `0`           | `float`            | **Removes high kz frequencies** for low kx and ky in **3D object FFTs**. |
-| `keep_probe_states_orthogonal`   | `False`       | `bool`             | Enforces **orthogonality of probe modes**. |
+| `apply_gaussian_filter`          | `False`       | `bool`   or `pypty_lambda`           | Applies a **Gaussian filter** to the **phase** of the object. |
+| `apply_gaussian_filter_amplitude`| `False`       | `bool`    or `pypty_lambda`          | Applies a **Gaussian filter** to the **amplitude** of the object. |
+| `beta_wedge`                     | `0`           | `float`  or `pypty_lambda`           | **Removes high kz frequencies** for low kx and ky in **3D object FFTs**. |
+| `keep_probe_states_orthogonal`   | `False`       | `bool`  or `pypty_lambda`            | Enforces **orthogonality of probe modes**. |
 | `do_charge_flip`                 | `False`       | `bool`             | Performs **charge flipping** on the object. |
 | `cf_delta_phase`                 | `0.1`         | `float`            | **Delta phase** for charge flipping. |
 | `cf_delta_abs`                   | `0.01`        | `float`            | **Delta amplitude** for charge flipping. |
-| `do_charge_flip`                 | `False`       | `bool`      or `lambda`        |Perform charge flipping on the object. |
-| `cf_delta_phase`                 | `0.1`         |`float` or `lambda`            | Delta phase for charge flipping. |
-| `cf_delta_abs`                   | `0.01`        | `float` or `lambda`        |Delta amplitude for charge flipping. |
-| `cf_beta_phase`                  | `-0.95`       | `float` or `lambda`         |Beta phase parameter for charge flipping. |
-| `cf_beta_abs`                    | `-0.95`       | `float` or `lambda`          |Beta amplitude parameter for charge flipping. |
-| `fancy_sigma`                    | `None`        | `None` or `float` or `lambda`             |Custom sigma parameter to enforce atomicity. |
-| `restart_from_vacuum`            | `None`        | `bool` or `None`   | **Resets the object to 1** while keeping other parameters unchanged. |
+| `do_charge_flip`                 | `False`       | `bool`      or `pypty_lambda`        |Perform charge flipping on the object. |
+| `cf_delta_phase`                 | `0.1`         |`float` or `pypty_lambda`         | Delta phase for charge flipping. |
+| `cf_delta_abs`                   | `0.01`        | `float` or `pypty_lambda`        |Delta amplitude for charge flipping. |
+| `cf_beta_phase`                  | `-0.95`       | `float` or `pypty_lambda`          |Beta phase parameter for charge flipping. |
+| `cf_beta_abs`                    | `-0.95`       | `float` or `pypty_lambda`          |Beta amplitude parameter for charge flipping. |
+| `fancy_sigma`                    | `None`        | `None` or `float` oor `pypty_lambda`             |Custom sigma parameter to enforce atomicity. |
+| `restart_from_vacuum`            | `None`        | `bool` or `pypty_lambda`    | **Resets the object to 1** while keeping other parameters unchanged. |
 
 ---
 

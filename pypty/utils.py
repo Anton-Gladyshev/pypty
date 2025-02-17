@@ -463,36 +463,30 @@ def create_static_background_from_nothing(static_background, probe, damping_cuto
 def create_probe_from_nothing(probe, data_pad, mean_pattern, aperture_mask, tilt_mode, tilts, dataset, estimate_aperture_based_on_binary, pixel_size_x_A, acc_voltage, data_multiplier, masks, params, data_shift_vector, data_bin, upsample_pattern, default_complex_cpu, print_flag, algorithm, measured_data_shape, n_obj_modes, probe_marker, recon_type, defocus_array, Cs):
     if type(probe)!=np.ndarray:
         if probe is None or probe=="aperture":
-            if probe=="aperture":
-                if data_pad>0:
-                    mean_pattern=aperture_mask[data_pad:-data_pad, data_pad:-data_pad]
-                else:
-                    mean_pattern=aperture_mask
+            if tilt_mode and not("compressed" in algorithm):
+                sub_tilts=np.copy(tilts[:1000,:])
+                sub_tilts=sub_tilts[:,4:]-sub_tilts[:,:2]
+                sub_data=np.array(dataset[:1000,:,:]).astype(default_complex_cpu)
+                if estimate_aperture_based_on_binary:
+                    mean_sub=np.mean(sub_data)
+                    sub_data=sub_data>mean_sub*estimate_aperture_based_on_binary
+                sub_data=np.fft.fftshift(np.fft.fft2(sub_data, axes=(1,2)), axes=(1,2))
+                stx,sty=np.meshgrid(np.fft.fftshift(np.fft.fftfreq(dataset.shape[2])), np.fft.fftshift(np.fft.fftfreq(measured_data_shape[1])), indexing="xy")
+                rsc=(data_pad*2+measured_data_shape[2])*pixel_size_x_A*np.sqrt(acc_voltage*(acc_voltage+2*511))/12.4
+                tiltx=sub_tilts[:,1]*rsc
+                tilty=sub_tilts[:,0]*rsc
+                subkernel=np.exp(2j*np.pi*(stx[None,:,:]*tiltx[:,None,None]+sty[None,:,:]*tilty[:,None,None]))
+                sub_data=sub_data*subkernel
+                mean_pattern=np.mean(np.abs(np.fft.ifft2(np.fft.ifftshift(sub_data, axes=(1,2)), axes=(1,2))), axis=0)
+                if estimate_aperture_based_on_binary:
+                    mean_pattern_mean=np.mean(mean_pattern)
+                    mean_pattern[mean_pattern<mean_pattern_mean*estimate_aperture_based_on_binary]=0
+                del sub_data, subkernel, stx,sty
             else:
-                if tilt_mode and not("compressed" in algorithm):
-                    sub_tilts=np.copy(tilts[:1000,:])
-                    sub_tilts=sub_tilts[:,4:]-sub_tilts[:,:2]
-                    sub_data=np.array(dataset[:1000,:,:]).astype(default_complex_cpu)
-                    if estimate_aperture_based_on_binary:
-                        mean_sub=np.mean(sub_data)
-                        sub_data=sub_data>mean_sub*estimate_aperture_based_on_binary
-                    sub_data=np.fft.fftshift(np.fft.fft2(sub_data, axes=(1,2)), axes=(1,2))
-                    stx,sty=np.meshgrid(np.fft.fftshift(np.fft.fftfreq(dataset.shape[2])), np.fft.fftshift(np.fft.fftfreq(measured_data_shape[1])), indexing="xy")
-                    rsc=(data_pad*2+measured_data_shape[2])*pixel_size_x_A*np.sqrt(acc_voltage*(acc_voltage+2*511))/12.4
-                    tiltx=sub_tilts[:,1]*rsc
-                    tilty=sub_tilts[:,0]*rsc
-                    subkernel=np.exp(2j*np.pi*(stx[None,:,:]*tiltx[:,None,None]+sty[None,:,:]*tilty[:,None,None]))
-                    sub_data=sub_data*subkernel
-                    mean_pattern=np.mean(np.abs(np.fft.ifft2(np.fft.ifftshift(sub_data, axes=(1,2)), axes=(1,2))), axis=0)
-                    if estimate_aperture_based_on_binary:
-                        mean_pattern_mean=np.mean(mean_pattern)
-                        mean_pattern[mean_pattern<mean_pattern_mean*estimate_aperture_based_on_binary]=0
-                    del sub_data, subkernel, stx,sty
+                if mean_pattern is None:
+                    mean_pattern=np.mean(dataset[:1000], axis=0)*data_multiplier
                 else:
-                    if mean_pattern is None:
-                        mean_pattern=np.mean(dataset[:1000], axis=0)*data_multiplier
-                    else:
-                        mean_pattern*=data_multiplier
+                    mean_pattern*=data_multiplier
             if not(masks is None):
                 mean_pattern=np.sum(masks*mean_pattern[:,None, None], axis=0)
             # Shift, bin, pad, rescale!
