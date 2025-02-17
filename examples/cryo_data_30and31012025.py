@@ -89,7 +89,6 @@ pypty_params={
     
 ### append experimental params to preset
 pypty_params=pypty.initialize.append_exp_params(experimental_params, pypty_params)
-pypty_params["aperture"]=vac_pattern
 
 pypty_params=pypty.tcbf.run_tcbf_alignment(
         pypty_params,

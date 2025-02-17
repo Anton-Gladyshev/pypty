@@ -94,8 +94,7 @@ pypty_params={
     
 ### append experimental params to preset
 pypty_params=pypty.initialize.append_exp_params(experimental_params, pypty_params)
-pypty_params["aperture"]=vac_pattern
-
+### run tcbf
 pypty_params=pypty.tcbf.run_tcbf_alignment(
         pypty_params,
         binning_for_fit=np.tile([5], 30),
@@ -107,11 +106,11 @@ pypty_params=pypty.tcbf.run_tcbf_alignment(
         tol_ctf=1e-8,
         optimize_angle=True
         )
-
+## flip if positive defocus
 if pypty_params["aberrations"][0]>0:
     pypty_params=pypty.initialize.rotate_scan_grid(pypty_params, angle_deg=-180)
     pypty_params=pypty.initialize.conjugate_beam(pypty_params)
-    
+## upsampled tcbf
 ups=3
 tcbf_image,tcbf_px_size = pypty.tcbf.upsampled_tcbf(pypty_params, upsample=ups,
                                     pad=10, default_float=32,round_shifts=True)
@@ -125,7 +124,7 @@ tcbf_image_phase=pypty.dpc.iterative_poisson_solver(laplace=laplace,
             
 tcbf_image_phase=(tcbf_image_phase-np.min(tcbf_image_phase))
 tcbf_image_phase=(tcbf_image_phase/np.max(tcbf_image_phase))-0.5
-
+## interpolate and get initial guess
 pypty_params=pypty.initialize.get_ptycho_obj_from_scan(pypty_params,
                                         array_phase=tcbf_image_phase,array_abs=None,
                                         scale_phase=0.75, scale_abs=1, 
@@ -134,6 +133,6 @@ pypty_params=pypty.initialize.get_ptycho_obj_from_scan(pypty_params,
 
 pypty_params=pypty.initialize.get_focussed_probe_from_vacscan(pypty_params, vac_pattern)
 pypty_params=pypty.initialize.tiltbeamtodata(pypty_params, align_type="com")
-
+## max. verbose & run
 pypty_params["print_flag"]=3
 pypty.iterative_ptychography.run_ptychography(pypty_params)
