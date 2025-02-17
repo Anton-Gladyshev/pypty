@@ -138,9 +138,9 @@ As a general rule of thumb, we suggest configuring lambda functions so that once
 
 | Parameter                  | Default Value  | Default Data Type | Description |
 |----------------------------|---------------|--------------------|-------------|
-| `algorithm`                | `"lsq_sqrt"`  | `str`              | Error metric for reconstruction comparison. Options: `"lsq_sqrt"` (Gaussian), `"ml"` (Poisson), `"lsq"` (sum of squared error), and `"lsq_sqrt_2"` (modified Gaussian). |
+| `algorithm`                | `"lsq_sqrt"`  | `str`              | Error metric for reconstruction comparison. Options: `"lsq_sqrt"` (Gaussian), `"ml"` (Poisson), `"lsq"` (classic summed squared error), and `"lsq_sqrt_2"` (modified Gaussian). If data is compressed via virtual detectors, the only option is `"lsq_compressed"` (summed squared error  between signals). |
 | `epoch_max`                | `200`         | `int`              | Maximum number of **epochs (iterations)**. |
-| `wolfe_c1_constant`        | `0.5`         | `float`  or `pypty_lambda`   | **Wolfe condition parameter (C1)**. Prevents update steps from being too large. Must be **> 0** and **< C2**. Larger values restrict step size. |
+| `wolfe_c1_constant`        | `0.5`         | `float`  or `pypty_lambda`   | **Wolfe condition parameter (C1)**. Prevents update steps from being too large. Must be **> 0** and **< C2**. Larger values enforce shorter step size. |
 | `wolfe_c2_constant`        | `0.999999`    | `float`   or `pypty_lambda`          | **Wolfe condition parameter (C2)**. Prevents update steps from being too small. Must be **> C1** but **< 1**. Larger values allow larger steps. |
 | `loss_weight`              | `1`           | `float`    or `pypty_lambda`         | Weight applied to the **loss function**. |
 | `max_count`                | `None`        | `int` or `None`    | Maximum number of forward-backward propagations per **line search iteration**. If exceeded, the update is **rejected** and history is reset. Use `None` or `np.inf` to disable. |
