@@ -5,16 +5,16 @@ For an easy preset configuration, please refer to the `pypty.initialize` module.
 ### Before starting this guide, one important usage case must be discussed.
 PyPty is an iterative algorithm and, as you will see, it requires a number of input parameters. Some of these parameters can be specified in an iteration-dependent fashion using a lambda function. This function should take a single input argument and return the desired value for a given epoch.
 
-For example, if you want to save checkpoints every 10 epochs, you can set `save_checkpoints_every_epoch` as:
+For example, if you want to apply smart_memory parameter every 10 epochs, you can set `smart_memory` in `pypty_params` dictionary as:
 
 ```python
-lambda x: x % 10 == 0
+smart_memory: lambda x: x % 10 == 0;
 ```
 
 The parameters that can be written in this way are marked as `pypty_lambda` **type** in the  **Default Data Type** column. They can also be specified as a sting containing the code, e.g. 
 
 ```python
-"lambda x: x % 10 == 0"
+smart_memory: "lambda x: x % 10 == 0";
 ```
 
 We do not recommend applying constraints every n epochs, as PyPty’s BFGS algorithm attempts to construct a Hessian matrix, and such modifications can disrupt this process.
@@ -58,8 +58,8 @@ As a general rule of thumb, we suggest configuring lambda functions so that once
 | `output_folder`                  | `""`                         | `str`              | Path to the folder where output files will be saved. |
 | `save_loss_log`                  | `True`                       | `bool`             | Boolean flag. If `True`, the loss log will be saved as `loss.csv`. |
 | `epoch_prev`                     | `0`                          | `int`              | Previous epoch count. Useful for restarting a reconstruction. |
-| `save_checkpoints_every_epoch`   | `False`                      | `bool`             | Save checkpoints every epoch. |
-| `save_inter_checkpoints`         | `True`                       | `bool`             | Save intermediate checkpoints. This will create `.npy` arrays: `co.npy` for the object, `cp.npy` for the probe, `cg.npy` for the scan grid, `ct.npy` for the tilts, `cs.npy` for the static background, and `cb.npy` for the beam current. |
+| `save_checkpoints_every_epoch`   | `False`                      | `bool`   or `int`          | Save checkpoints every epoch. If `True`, checkpoints will be always saved, if it is provided as an integer, checkpoints will be saved every n'th epoch.  |
+| `save_inter_checkpoints`         | `True`                       | `bool`  or `int`           | Save intermediate **overwritable** checkpoints. This will create `.npy` arrays: `co.npy` for the object, `cp.npy` for the probe, `cg.npy` for the scan grid, `ct.npy` for the tilts, `cs.npy` for the static background, and `cb.npy` for the beam current. If `True`, checkpoints will be always saved, if it is provided as an integer, checkpoints will be saved every n'th epoch. |
 | `print_flag`                     | `3`                          | `int`              | Print verbosity level: `0` for no printing, `1` for one overwritable line, `2` for moderate output, and `3` for detailed outputs. |
 
 ---
