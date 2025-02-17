@@ -66,7 +66,7 @@ For an easy preset configuration, please see the initialize module. It allows to
 | `pixel_size_y_A`                 | `1`                          | Pixel size in y-direction (Angstroms). |
 | `scan_size`                      | `None`                       | Tuple destibing number of scan points in y- and x- directions, only required for constraining postions and tilts. |
 
-## Propagation, Windowing, and Resizing
+## Propagation, Shifting and Resizing
 | Parameter                        | Default Value               | Description |
 |-----------------------------------|-----------------------------|-------------|
 | `propmethod`                     | `"multislice"`              | Method used for wave propagation. Default is "multislice". Other options are additive splitting- "better_multislice" and "yoshida". The last two options have higher precision than multislice, but requiere more time. |
@@ -98,8 +98,8 @@ For an easy preset configuration, please see the initialize module. It allows to
 ## Beam Initialization
 | Parameter                        | Default Value               | Description |
 |-----------------------------------|-----------------------------|-------------|
-| `n_hermite_probe_modes`          | `None`                       | Number of Hermite probe modes. |
-| `defocus_spread_modes`           | `None`                       | Modes for defocus spread. |
+| `n_hermite_probe_modes`          | `None`                       | Number of Hermite probe modes. Tuple of two values: [nx, ny]. When provided, probe modes will be created based on Hermite polynomials. |
+| `defocus_spread_modes`           | `None`                       | Modes for defocus spread. 1D numpy array with different defocus values. When provided, probe modes will be intialized by defocussing the beam.|
 | `aberrations`                    | `None`                       | Aberration coefficients. |
 | `extra_probe_defocus`            | `0`                          | Extra probe defocus. |
 | `estimate_aperture_based_on_binary` | `False`                   | Estimate aperture based on binary mask. |
