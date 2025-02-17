@@ -1,5 +1,5 @@
 """"
-This file describes the reconstruction procedure for the scans we acquiered on 30.01.2025. 
+This file describes the reconstruction procedure for the scans we acquiered on 30.01.2025 and for the majority of scans acquired on 31.01.2025 (expect 51-64 that require upsampling)
 """
 
 import cupy as cp
@@ -130,5 +130,5 @@ pypty_params=pypty.initialize.get_ptycho_obj_from_scan(pypty_params,
 pypty_params=pypty.initialize.get_focussed_probe_from_vacscan(pypty_params, vac_pattern)
 pypty_params=pypty.initialize.tiltbeamtodata(pypty_params, align_type="com")
 
-
+pypty_params["print_flag"]=3
 pypty.iterative_ptychography.run_ptychography(pypty_params)

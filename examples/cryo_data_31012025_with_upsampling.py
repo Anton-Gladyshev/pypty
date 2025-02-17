@@ -36,7 +36,7 @@ experimental_params={
     'fov_nm': 353,
     'aberrations': [-1.3e4,0,0,0,0,0,0,0,0,0,0,0,0,0,0], # only initial guess
     'acc_voltage': 200, ## kV
-    'upsample_pattern': 2,               ###<-------------------   this is key feature
+    'upsample_pattern': 2,               ###<-------------------   this is a key feature
     'data_pad': 112,
     'PLRotation_deg': -90.0, # deg # only initial guess
     'bright_threshold': 0.2,
@@ -55,8 +55,8 @@ pypty_params={
     
     ## key differecne in upsampled runs: window constraint
     
-    'window': [0.7, 0.9], ###<-------------------   this is key feature
-    'window_weight': 1e-3,###<-------------------   this is key feature
+    'window': [0.7, 0.9], ###<-------------------   this is a key feature
+    'window_weight': 1e-3,###<-------------------   this is a key feature
     
     
     'hist_length': 5,
@@ -135,5 +135,5 @@ pypty_params=pypty.initialize.get_ptycho_obj_from_scan(pypty_params,
 pypty_params=pypty.initialize.get_focussed_probe_from_vacscan(pypty_params, vac_pattern)
 pypty_params=pypty.initialize.tiltbeamtodata(pypty_params, align_type="com")
 
-
+pypty_params["print_flag"]=3
 pypty.iterative_ptychography.run_ptychography(pypty_params)
