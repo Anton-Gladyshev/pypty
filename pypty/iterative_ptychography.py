@@ -126,9 +126,12 @@ def run_ptychography(pypty_params):
     
     hist_length=params.get('hist_length', 10)
     update_step_bfgs=params.get('update_step_bfgs', 1)
-
-    reset_history_flag=params.get('reset_history_flag', None)
+    phase_only_obj = params.get('phase_only_obj', False)
+    tune_only_probe_phase = params.get('tune_only_probe_phase', False)
+    tune_only_probe_abs=params.get('tune_only_probe_abs', False)
     
+    reset_history_flag=params.get('reset_history_flag', None)
+
     update_probe = params.get('update_probe', 1)
     update_obj = params.get('update_obj', 1)
     update_probe_pos = params.get('update_probe_pos', 0)
@@ -177,9 +180,7 @@ def run_ptychography(pypty_params):
     apply_gaussian_filter=params.get('apply_gaussian_filter', False)
     apply_gaussian_filter_amplitude=params.get('apply_gaussian_filter_amplitude', False)
     
-    phase_only_obj = params.get('phase_only_obj', False)
-    tune_only_probe_phase = params.get('tune_only_probe_phase', False)
-    tune_only_probe_abs=params.get('tune_only_probe_abs', False)
+  
     beta_wedge = params.get('beta_wedge', 0) ## to do for bfgs!!!
     keep_probe_states_orthogonal = params.get('keep_probe_states_orthogonal', False) ## to do for bfgs!!!
     
@@ -189,8 +190,8 @@ def run_ptychography(pypty_params):
     cf_beta_phase = params.get('cf_beta_phase', -0.95)
     cf_beta_abs = params.get('cf_beta_abs', -0.95)
     fancy_sigma=params.get('fancy_sigma', None)
-    ### Messing with the reconstruciton
     restart_from_vacuum=params.get('restart_from_vacuum', [])
+    
     ### beam initialisation
     n_hermite_probe_modes=params.get('n_hermite_probe_modes', None)
     defocus_spread_modes=params.get('defocus_spread_modes', None)
@@ -273,10 +274,13 @@ def run_ptychography(pypty_params):
             this_smart_memory=smart_memory
         if not(reset_history_flag is None):
             if reset_history_flag(epoch): reset_bfgs_history();
-        try:
-            restart_flag=restart_from_vacuum(epoch)
-        except:
-            restart_flag=epoch in restart_from_vacuum
+        if not(restart_from_vacuum is None):
+            try:
+                restart_flag=restart_from_vacuum(epoch)
+            except:
+                restart_flag=False
+        else:
+            restart_flag=False
         if restart_flag:
             obj=xp.ones_like(obj);
             reset_bfgs_history()

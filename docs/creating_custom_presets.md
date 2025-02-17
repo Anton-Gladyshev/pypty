@@ -101,6 +101,9 @@ For an easy preset configuration, please reffer to the initialize module. It all
 | `min_step`                 | `1e-20`       | Minimum step size allowed. When the actual step is smaller than this value, algorithm terminates the linesearch, the update is rejected and the history is restarted. Set to zero if you don't want to use this option.|
 | `hist_length`              | `10`          | PyPty optimization is essentialy a two-loop BFGS algorithm. History length controlls the behaviour of update constuction. Gradients and updates of previous N=hist_length iterations will be stored and used for l-BFGS update construction. Set to 0 for classical gradient descent, 1 for Hestenes–Stiefel conjugate gradient, any integer larger than 1 for limited-memory BFGS algorithm and np.inf for true BFGS algorithm.  |
 | `update_step_bfgs`         | `1`           | Common step applied to all refinable quantities. By default, after the first iteration, a Barzilai-Borwein method is used to inistialize the inverse Hessian, so most of the time, an update step of 1 should be accepted. Only during the very first iteration the linesearch might take some time to find an appropriate step. |
+| `phase_only_obj`                 | `False`       | Whether to consider the object as phase-only. |
+| `tune_only_probe_phase`          | `False`       | Optimize only the reciprocal-space phase (CTF) of the probe. |
+| `tune_only_probe_abs`            | `False`       | Optimize only the reciprocal-space amplitude (aperture) of the probe. |
 | `reset_history_flag`       | `None`        | Flag to reset optimization history. See section "lambda-types" in the end of this document. If provided, history will be manually resetted. |
 
 ## Updating refinable arrays
@@ -117,25 +120,26 @@ For an easy preset configuration, please reffer to the initialize module. It all
 ## Multiple Illumination Functions
 | Parameter                  | Default Value     | Description |
 |----------------------------|------------------|-------------|
-| `aberrations_array`        | `np.array([[0.0]])` | Array of aberration values. |
-| `phase_plate_in_h5`        | `None`           | Phase plate stored in HDF5 format. |
-| `aberration_marker`        | `None`           | Marker for aberrations. |
-| `probe_marker`             | `None`           | Marker for probe states. |
+| `aberrations_array`        | `np.array([[0.0]])` | Array of aberration values. Note that this array is accouting for a varying beam and is usefull for large fields of view where the beam is litteraly changing. If applied, the iterative reconstruction will split your field of view into multiple subscans and have the same beam in each of them, but apply a different CTF in each of these regions. This array should have a shape of [N_subscans, N_aberrations]. If you are shure that your illumination function is not changing, leave it aside.|
+| `phase_plate_in_h5`        | `None`           | Phase plate stored in HDF5 format. For each of the measurements, you can apply a different phase plate. You have to create an h5 file with dataset ["configs"]. This array should have a shape [N_measrurements, Y_probe, X_probe]. Note that probe dimenstions assumed to be padded and upsampled. Phase plate is applied to all modes of your beam.|
+| `aberration_marker`        | `None`           | Marker for multiple CTFs. If you provided an aberrations_array, you should also specify this marker. This marker should be a 1D array of length N_measurements and each enty should have an index of a particular CTF stored in aberrations_array. |
+| `probe_marker`             | `None`           | If your beam is varying too strongly and specifying aberrations_array is not sufficint, you can create completely independent beams for each subscan. In this case you initialize the probe with shape [y,x,N_modes, N_subscans] and provide this marker as 1D array with length [N_measurements] where each entry contains an index of a beam to use for a particular measurement.  |
 
 ## Memory Usage
 | Parameter                | Default Value       | Description |
 |--------------------------|--------------------|-------------|
-| `load_one_by_one`        | `True`             | Load data one by one to save memory. |
-| `smart_memory`           | `True`             | Enable smart memory management. |
-| `remove_fft_cache`       | `False`            | Whether to remove FFT cache. |
-| `compute_batch`          | `1`                | Batch size for computation. |
-| `force_dataset_dtype`    | `default_float_cpu`| Force dataset data type. |
-| `preload_to_cpu`        | `False`            | Preload data to CPU. |
-| `force_pad`             | `False`            | Whether to force padding. |
+| `load_one_by_one`        | `True`             | Load data one by one to save memory. If True, the full dataset will NOT be loaded into GPU memory and only the patterns that are being processed will be converted on-the-fly. If False, the alogorithm runs faster, but takes more GPU memory.|
+| `smart_memory`           | `True`             | Enable smart memory management. If True, pool and pinned pool will be occasionally cleared after heavy computations to avoid memory fragmentation and the FFT cache will be cleared. False results in a slightly faster runtime, but can cause memory leaks.|
+| `remove_fft_cache`       | `False`            | Whether to remove FFT cache. Experimental feature that should enable smart memory without clearing the FFT cache. Currently not fully implemented.|
+| `compute_batch`          | `1`                | Batch size for multislice computation. PyPty computes the gradients for all patterns at once via a for-loop iterating through all the measurements. You can partially vectorize this loop via this parameter to make the computsation faster. Larger values result in faster computations, but you should find out which value is best for your GPU. For Tesla V100 compute_batch of 8 saturates the GPU with fairly larger object and patterns, for H100, compute batches of up to 100 can be used. |
+| `force_dataset_dtype`    | `default_float_cpu`| Force dataset data type. Numpy dtype. If you want to optimize memory usage via a loss of precision, you can specify a different datatype for your dataset. |
+| `preload_to_cpu`        | `False`            | Preload data to CPU. If your data is stored as .h5 file, you can accelerate the memory transfers by avoiding lazy-loading. |
+| `force_pad`             | `False`            | Whether to force padding. If you pad your data with zeros, you can do it either on-the-fly to avoid storing the zeros in your GPU memory (force_pad=False), or accelerate the reconstruction by padding during the very first epoch (force_pad=True). True uses MUCH more GPU memory.  |
 
 
 
-## Constraints
+## Constraints contributing to the loss
+
 | Parameter                        | Default Value               | Description |
 |-----------------------------------|-----------------------------|-------------|
 | `mixed_variance_weight`          | `0`                          | Custom mixed object constraint preventing variation of the states at lower spatial frequencies. This parameter controlls the strength of a regularization.|
@@ -156,15 +160,35 @@ For an easy preset configuration, please reffer to the initialize module. It all
 | `slow_axis_reg_weight_tilts`     | `0`                          | Regularization weight for slow-axis tilts. |
 | `slow_axis_reg_coeff_tilts`      | `0`                          | Regularization coefficient for slow-axis tilts. |
 
+
+## Constraints that Modify the Object and Probe 'By Hand'. 
+### Warning: when applied, this constraints always reset the BFGS history 
+
+| Parameter                         | Default Value  | Description |
+|-----------------------------------|---------------|-------------|
+| `apply_gaussian_filter`          | `False`       | Apply a Gaussian filter to the phase of object.  |
+| `apply_gaussian_filter_amplitude`| `False`       | Apply a Gaussian filter to the amplitude of object. |
+| `beta_wedge`                     | `0`           | Missing wedge beta parameter. 3D Objects FFT will be cleaned to avoid high kz frequencies for low kx and ky. |
+| `keep_probe_states_orthogonal`   | `False`       | Keep probe modes orthogonal to each other. |
+| `do_charge_flip`                 | `False`       | Perform charge flipping on the object. |
+| `cf_delta_phase`                 | `0.1`         | Delta phase for charge flipping. |
+| `cf_delta_abs`                   | `0.01`        | Delta amplitude for charge flipping. |
+| `cf_beta_phase`                  | `-0.95`       | Beta phase parameter for charge flipping. |
+| `cf_beta_abs`                    | `-0.95`       | Beta amplitude parameter for charge flipping. |
+| `fancy_sigma`                    | `None`        | Custom sigma parameter to engource atomicity. |
+| `restart_from_vacuum`            | `None`          | Restart reconstruction from a vacuum state. Object will be set to 1 while everything else will remain the same. |
+
+
+
 ## Beam Initialization
 | Parameter                        | Default Value               | Description |
 |-----------------------------------|-----------------------------|-------------|
 | `n_hermite_probe_modes`          | `None`                       | Number of Hermite probe modes. Tuple of two values: [nx, ny]. When provided, probe modes will be created based on Hermite polynomials. |
 | `defocus_spread_modes`           | `None`                       | Modes for defocus spread. 1D numpy array with different defocus values. When provided, probe modes will be intialized by defocussing the beam.|
-| `aberrations`                    | `None`                       | Aberration coefficients. |
-| `extra_probe_defocus`            | `0`                          | Extra probe defocus. |
-| `estimate_aperture_based_on_binary` | `False`                   | Estimate aperture based on binary mask. |
-| `beam_ctf`                       | `None`                       | Beam contrast transfer function. |
-| `mean_pattern`                   | `None`                       | Mean diffraction pattern. |
+| `aberrations`                    | `None`                       | Aberration coefficients. This should be list or 1d numpy array containing beam aberrations (in Å). Aberrations are stored in Krivanek notation, e.g. C10, C12a, C12b, C21a, C21b, C23a, C23b, C30 etc. If None, no CTF will be applied.|
+| `extra_probe_defocus`            | `0`                          | Extra probe defocus in Angstrom. Usefull for propagating the intial beam in multislice reconstrctions. |
+| `estimate_aperture_based_on_binary` | `0`                   | Estimate aperture based on binary treshold. If postive, the aperture will be estimated based on data entries that are larger than the mean value times `estimate_aperture_based_on_binary  |
+| `beam_ctf`                       | `None`                       | Beam CTF. If not None, it must be a 2D Numpy array with the same shape as upsampled (and padded or unpadded) probe. |
+| `mean_pattern`                   | `None`                       | If the beam is None, and this array is provided, probe will be created from this array via an inverse Fourier transform.  |
 
 
