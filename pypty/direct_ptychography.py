@@ -177,7 +177,7 @@ def wdd(pypty_params, eps_wiener=1e-3, thresh=None, save=0):
     o=ifft2_ishift(o)
     try:
         o=o.get()
-        p=p.get()
+        probe=probe.get()
     except:
         pass
     if save:
