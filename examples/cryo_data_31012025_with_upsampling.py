@@ -128,7 +128,7 @@ tcbf_image_phase=(tcbf_image_phase/np.max(tcbf_image_phase))-0.5
 
 pypty_params=pypty.initialize.get_ptycho_obj_from_scan(pypty_params,
                                         array_phase=tcbf_image_phase,array_abs=None,
-                                        scale_phase=0.75, scale_abs=1, cutoff=10,
+                                        scale_phase=0.75, scale_abs=1, 
                                         scan_array_A=sc, fill_value_type=0)
 
 

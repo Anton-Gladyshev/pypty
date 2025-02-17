@@ -546,8 +546,8 @@ def get_ptycho_obj_from_scan(params, num_slices=None, array_phase=None,array_abs
     max_y_px,max_x_px=np.max(positions[:,0])+psy, np.max(positions[:,1])+psx
     image_gird_y, image_gird_x=np.arange(max_y_px), np.arange(max_x_px)
     im_X,im_Y=np.meshgrid(image_gird_x, image_gird_y, indexing="xy")
-    if xp==np:
-        interpolator=CloughTocher2DInterpolator
+    
+    interpolator=CloughTocher2DInterpolator
     #else:
      #   interpolator=cupyx.scipy.interpolate.CloughTocher2DInterpolator
     #cupyx.scipy.interpolate.CloughTocher2DInterpolator
@@ -749,6 +749,27 @@ def get_focussed_probe_from_vacscan(pypty_params, mean_pattern):
     focussed_probe=np.expand_dims(np.fft.fftshift(np.fft.ifft2(np.fft.ifftshift((mean_pattern**0.5)))),-1)
     pypty_params["probe"]=focussed_probe
     return pypty_params
+
+def append_aperture_to_params(pypty_params, mean_pattern):
+    """
+    Append a measured aperture (vacuum measurement). This function will apply padding an upsampling to the aprture.
+    Inputs:
+        pypty_params- dictionary with callibrated pypty parameters.
+        mean_pattern- apperture to be appended
+    returns:
+        pypty_params- updated dictionary
+    """
+    upsample_pattern= pypty_params.get("upsample_pattern", 1)
+    data_pad=pypty_params.get("data_pad", 0)
+    if upsample_pattern!=1:
+        x,y=np.meshgrid(np.linspace(0,1,mean_pattern.shape[1]),np.linspace(0,1,mean_pattern.shape[0]))
+        points=np.swapaxes(np.array([x.flatten(),y.flatten()]), 0,1)
+        x2, y2=np.meshgrid(np.linspace(0,1,upsample_pattern*mean_pattern.shape[1]), np.linspace(0,1,upsample_pattern*mean_pattern.shape[0]))
+        mean_pattern=np.abs(griddata(points, mean_pattern.flatten(), (x2, y2), method='cubic'))
+    mean_pattern=np.pad(mean_pattern, data_pad)
+    pypty_params["aperture_mask"]=mean_pattern
+    return pypty_params
+
 
 
 def tiltbeamtodata(pypty_params, align_type="com"):
