@@ -287,9 +287,8 @@ As a general rule of thumb, we suggest configuring lambda functions so that once
 ---
 
 
-
-
-## If you have any questions after reading this guide, the following papers, books and links might explain the working principle of the code:
+# Relevant literature
+If you have any questions after reading this guide, the following papers, books and links might explain the working principle of the code:
 
 ## Multi-slice formalism and the NN-style approach
 1) Earl J. Kirkland. Advanced Computing  in Electron Microscopy 
@@ -304,21 +303,35 @@ As a general rule of thumb, we suggest configuring lambda functions so that once
 ### Maximum Likelihood (ML):
 6) P. Thibault and M. Guizar-Sicairos. Maximum-likelihood refinement for coherent diffractive imaging 
 
-
 ### Compressed LSQ:
 7) A. Gladyshev et al. Lossy Compression of Electron Diffraction Patterns for Ptychography via Change of Basis
 
+### lsq_sqrt and lsq_sqrt2:
+8) P. Godard et al. (2012). Noise models for low counting rate coherent diffraction imaging
+
 ## Mixed state formalism:
-8) P Thibault & A.Menzel Reconstructing state mixtures from diffraction measurements— Flux-preserving formalism (for near-field imaging)
-9) C. Koch A flux-preserving non-linear inline holography reconstruction algorithm for partially coherent electrons
+9) P Thibault & A.Menzel Reconstructing state mixtures from diffraction measurements— Flux-preserving formalism (for near-field imaging)
+## Near-field imaging
+10) C. Koch A flux-preserving non-linear inline holography reconstruction algorithm for partially coherent electrons
 
 ## Tilted propagator:
-10) Earl J. Kirkland. Advanced Computing  in Electron Microscopy 
-11) H. She, J. Cui and R. Yu. Deep sub-angstrom resolution imaging by electron ptychography with misorientation correction
+11) Earl J. Kirkland. Advanced Computing  in Electron Microscopy 
+12) H. She, J. Cui and R. Yu. Deep sub-angstrom resolution imaging by electron ptychography with misorientation correction
 
 ## Regularization constaints:
-12) M. Schloz et al. Overcoming information reduced data and experimentally uncertain parameters in ptychography with regularized optimization 
-13) A. Gladyshev et al. Lossy Compression of Electron Diffraction Patterns for Ptychography via Change of Basis
+13) M. Schloz et al. Overcoming information reduced data and experimentally uncertain parameters in ptychography with regularized optimization 
+14) A. Gladyshev et al. Lossy Compression of Electron Diffraction Patterns for Ptychography via Change of Basis
 
 ## Linesearch
-14) L. Armijo (1966). Minimization of functions having Lipschitz continuous first partial derivatives
+15) L. Armijo (1966). Minimization of functions having Lipschitz continuous first partial derivatives
+16) P. Wolfe (1969). Convergence Conditions for Ascent Methods
+
+
+## BFGS algotithm
+17) C. G. Broyden (1970). The convergence of a class of double-rank minimization algorithms
+18) Fletcher, R. (1970). A New Approach to Variable Metric Algorithms
+19) D. Goldfarb (1970). A Family of Variable Metric Updates Derived by Variational Means
+20) D. F. Shanno (1970). Conditioning of quasi-Newton methods for function minimization
+
+## Complex derivatives 
+21) W. Wirtinger (1927). Zur formalen theorie der funktionen von mehr komplexen veränderlichen. 
