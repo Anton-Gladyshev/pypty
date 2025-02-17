@@ -44,7 +44,7 @@ def get_aperture(params):
     else:
         dataset=np.load(data_path, mmap_mode="r")
         if data_is_numpy_and_flip_ky:
-            if len(dataset.shape)==4
+            if len(dataset.shape)==4:
                 dataset=dataset[:,:,::-1,:]
             else:
                 dataset=dataset[:,::-1,:]
