@@ -8,7 +8,9 @@ This is a **phase retrieval** code that can be applied to **near-field or far-fi
 - **Mixed-state formalism** for probe description.
 - **Multislice formalism** to model multiple scattering events.
 - **Refinable probe positions** for improved accuracy.
-- **Modified Fresnel propagator** to handle **tilted illumination**The code is written by Anton Gladyshev (AG SEM, Physics Department, Humboldt-Universität zu Berlin). 
+- **Modified Fresnel propagator** to handle **tilted illumination**
+
+The code is written by Anton Gladyshev (AG SEM, Physics Department, Humboldt-Universität zu Berlin). 
 
 
 
