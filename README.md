@@ -1,15 +1,13 @@
-# PyPty 2.0
+# Overview
 
-## Overview
-
-This is a **phase retrieval** code that can be applied to **near-field or far-field imaging** in **TEM/STEM**. It can be applied to do **iterative ptychography**, **direct ptychography** (Wigner distribution deconsvolution), **differential phase contrast**, **tilt-corrected bright field**, **focal series reconstructions** and **LARBED reconstructions**.
+PyPty is a **phase retrieval** code that can be applied to **near-field or far-field imaging** in **TEM/STEM**. It can be applied to do **iterative ptychography**, **direct ptychography** (Wigner distribution deconsvolution), **differential phase contrast**, **tilt-corrected bright field**, **focal series reconstructions** and **LARBED reconstructions**.
 
 The code is written by Anton Gladyshev (AG SEM, Physics Department, Humboldt-Universität zu Berlin). 
 
 
 
 
-## Setting Up the Python Environment and Installating PyPty
+# Setting Up the Python Environment and Installating PyPty
 
 To create a proper Python environment and install PyPty, you can use **conda**, **mamba**, or **micromamba**. With **conda**, use:
 
@@ -22,7 +20,7 @@ $ conda activate pypty
 $ pip install .
 ```
 
-## Examples
+# Examples
 
 The examples will be provided in the `examples folder`. To to configure a **completely custom preset**, please reffer to the next section.
  
@@ -34,9 +32,8 @@ The main function of PyPty package providing an iterative ptychographic reconstu
 
 For an easy preset configuration, please refer to the `pypty.initialize` module. It allows easy creation of all arrays. However, for a non-trivial experiment please follow this guide to create your own dictionary and fill in the requiered entries.
 
-
-
-### Before starting this guide, one important usage case must be discussed.
+#### Lambda-type in PyPty
+Before starting this guide, one important usage case must be discussed.
 PyPty is an iterative algorithm and, as you will see, it requires a number of input parameters. Some of these parameters can be specified in an iteration-dependent fashion using a lambda function. This function should take a single input argument and return the desired value for a given epoch.
 
 For example, if you want to apply smart_memory parameter every 10 epochs, you can set `smart_memory` in `pypty_params` dictionary as:
