@@ -75,9 +75,9 @@ As a general rule of thumb, we suggest configuring lambda functions so that once
 | `acc_voltage`                    | `60`                         | `float`            | Acceleration voltage in kV. |
 | `aperture_mask`                  | `None`                       | `numpy.ndarray` or `None` | Mask for the aperture. Can be used for reciprocal probe constaint later (see section constraints).|
 | `recon_type`                     | `"far_field"`                | `str`              | Type of reconstruction. Options: `"far_field"` or `"near_field"`. |
-| `alpha_near_field`               | `0`                          | `float`            | Alpha parameter for near-field reconstruction & flux preservation. |
+| `alpha_near_field`               | `0.0`                          | `float`            | Alpha parameter for near-field reconstruction & flux preservation. |
 | `defocus_array`                  | `np.array([0.0])`            | `numpy.ndarray`    | Array of defocus values for near-field measurement. Irrelevant for far-field. It can contain either a single common defocus value for all measurements or individual values for each measurement. **Units: Angstroms.** |
-| `Cs`                             | `0`                          | `float`            | Spherical aberration coefficient. **Units: Angstroms.** |
+| `Cs`                             | `0.0`                          | `float`            | Spherical aberration coefficient. **Units: Angstroms.** |
 
 ---
 
@@ -85,17 +85,13 @@ As a general rule of thumb, we suggest configuring lambda functions so that once
 
 | Parameter                        | Default Value               | Default Data Type | Description |
 |-----------------------------------|-----------------------------|--------------------|-------------|
-| `slice_distances`                | `np.array([10])`            | `numpy.ndarray`    | Distances between object slices. **Units: Angstroms.** You can specify a single value common for all slices or provide individual values. |
-| `pixel_size_x_A`                 | `1`                          | `float`            | Pixel size in the **x-direction** (**Angstroms**). |
-| `pixel_size_y_A`                 | `1`                          | `float`            | Pixel size in the **y-direction** (**Angstroms**). |
+| `slice_distances`                | `np.array([10.0])`            | `numpy.ndarray`    | Distances between object slices. **Units: Angstroms.** You can specify a single value common for all slices or provide individual values. |
+| `pixel_size_x_A`                 | `1.0`                          | `float`            | Pixel size in the **x-direction** (**Angstroms**). |
+| `pixel_size_y_A`                 | `1.0`                          | `float`            | Pixel size in the **y-direction** (**Angstroms**). |
 | `scan_size`                      | `None`                       | `tuple` or `None`  | Tuple describing the number of scan points in **y- and x- directions**. Required for constraining positions and tilts. |
 | `num_slices`                     | `1`                          | `int`              | Number of slices in the object. |
 
 ---
-
-
-
-
 
 
 ## Refinable Arrays
@@ -105,9 +101,9 @@ As a general rule of thumb, we suggest configuring lambda functions so that once
 | `obj`                            | `np.ones((1, 1, num_slices, 1))` | `numpy.ndarray`    | Initial guess for the transmission function to be retrieved. Shape: `(y, x, z, modes)`. If the `y` and `x` dimensions are insufficient for the scan grid, the object will be padded with ones. |
 | `probe`                          | `None`                       | `numpy.ndarray` or `None` | Real-space probe. Shape: `(y, x, modes)`. For advanced experiments, the probe can be 4D `(y, x, modes, subscans)`. If `None`, PyPty will automatically initialize the beam from the dataset. |
 | `positions`                      | `np.array([[0.0, 0.0]])`     | `numpy.ndarray`    | Scan positions in **pixels** of the reconstruction. Shape: `[N_measurements, 2]`, formatted as `[[y0, x0], [y1, x1], ..., [yn, xn]]`. Single-shot experiments can define one common scan point, e.g., `[[0,0]]`. |
-| `tilts`                          | `np.array([[0.0, 0.0, 0.0, 0.0, 0.0, 0.0]])` | `numpy.ndarray` | Tilt angles in **real and reciprocal spaces**. Shape: `[N_measurements, 6]`. Format: `[[y0_before, x0_before, y0_inside, x0_inside, y0_after, x0_after], ..., [yN, xN]]`. Single-shot experiments can define one common tilt. |
+| `tilts`                          | `np.array([[0.0, 0.0, 0.0, 0.0, 0.0, 0.0]])` | `numpy.ndarray` | Tilt angles in **real and reciprocal spaces**. There are 3 types of tilts in PyPty framework: before, inside and after. First one is a beam tilt before the specimen, i.e. a shift in aperture plane. Second type is a tilt inside of a specimen, i.e. after each slice the beam is shifted in real space. Third type is a post-specimen tilt i.e. a shift in a detector plane.  All three types of shifts are contained in this tilt array. Shape:  `[N_measurements, 6]`. Format: `[[y0_before, x0_before, y0_inside, x0_inside, y0_after, x0_after], ..., [yN, xN]]`. Single-shot experiments can define one common tilt (with shape `[1, 6]`). |
 | `tilt_mode`                      | `0`                          | `int`              | Mode for applying tilts: `0, 3, 4` for **inside**, `2, 4` for **before**, and `1, 3, 4` for **after** the specimen. |
-| `static_background`              | `0`                          | `numpy.ndarray` or `int` | Static background intensity. Shape should match initial patterns but padded by `data_pad//upsample_pattern`. Use `0` for no static offset. |
+| `static_background`              | `0`                          | `numpy.ndarray` or `float` | Static background intensity. Shape should match initial patterns but padded by `data_pad//upsample_pattern`. Use `0` for no static offset. If provided as postive float, the algorithm will initialize the backgrund with a proper shape on its own.|
 | `beam_current`                   | `None`                       | `numpy.ndarray` or `None` | Accounts for different currents (or exposure times) during measurements. If provided, must be a **1D array** with length matching `N_measurements`. |
 
 ---
