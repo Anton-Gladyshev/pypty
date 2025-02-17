@@ -647,7 +647,7 @@ def upsampled_tcbf(pypty_params, upsample=5, pad=10,
         aperture=aperture[data_pad:-data_pad,data_pad:-data_pad]
     if upsample_pattern!=1:
         aperture=downsample_something(aperture, upsample_pattern, np)
-        
+        rez_pixel_size_A*=upsample_pattern
     scan_size= np.copy(pypty_params.get("scan_size", None))
     if data_path[-3:]==".h5":
         f=h5py.File(data_path, "r")

@@ -842,7 +842,6 @@ def bfgs_update(algorithm_type, this_slice_distances, this_step_probe, this_step
     if not(new_aberrations_array is None): aberrations_array=1*new_aberrations_array;
     if not(new_beam_current is None): beam_current=1*new_beam_current;
     if not(static_background is None): static_background=1*new_static_background;
-    
     return total_loss, this_sse
 
 
