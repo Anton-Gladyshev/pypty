@@ -176,14 +176,17 @@ def wdd(pypty_params, eps_wiener=1e-3, thresh=None, save=0):
     o=cp.sum(data, axis=(2,3)) ## summing is equivalent to taking the zero freq component of the FFT with respect to ky,kx
     prefactor=cp.sqrt(cp.abs(o[min_q_ind[0],min_q_ind[1]]))
     o=o/prefactor
-    o=ifft2_ishift(o)
+    o=ifft2_ishift(o, overwrite_x=True)
     try:
-        o=o.get()
-        probe=probe.get()
+        o2=o.get()
     except:
-        pass
+        o2=o
+    try:
+        probe2=probe.get()
+    except:
+        probe2=probe
     if save:
-        np.save(pypty_params["output_folder"]+"wdd/object.npy", o)
-        np.save(pypty_params["output_folder"]+"wdd/probe.npy", probe)
-    return o, probe
+        np.save(pypty_params["output_folder"]+"wdd/object.npy", o2)
+        np.save(pypty_params["output_folder"]+"wdd/probe.npy", probe2)
+    return o2, probe2
 
