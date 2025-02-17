@@ -14,7 +14,7 @@ lambda x: x % 10 == 0
 The parameters that can be written in this way are marked as `pypty-lambda` **type** in the  **Default Data Type** column. They can also be specified as a sting containing the code, e.g. 
 
 ```python
-save_checkpoints_every_epoch = "lambda x: x % 10 == 0"
+"lambda x: x % 10 == 0"
 ```
 
 We do not recommend applying constraints every n epochs, as PyPty’s BFGS algorithm attempts to construct a Hessian matrix, and such modifications can disrupt this process.
