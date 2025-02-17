@@ -32,7 +32,7 @@ The main function of PyPty package providing an iterative ptychographic reconstu
 
 For an easy preset configuration, please refer to the `pypty.initialize` module. It allows easy creation of all arrays. However, for a non-trivial experiment please follow this guide to create your own dictionary and fill in the requiered entries.
 
-#### Lambda-type in PyPty
+## Lambda-type in PyPty
 Before starting this guide, one important usage case must be discussed.
 PyPty is an iterative algorithm and, as you will see, it requires a number of input parameters. Some of these parameters can be specified in an iteration-dependent fashion using a lambda function. This function should take a single input argument and return the desired value for a given epoch.
 
@@ -52,7 +52,7 @@ We do not recommend applying constraints every n epochs, as PyPty’s BFGS algor
 As a general rule of thumb, we suggest configuring lambda functions so that once an optimization parameter is activated, it maintains a consistent value throughout execution.
 
 
-
+## Full list of paramerers for run_ptychography()
 
 ---
 
