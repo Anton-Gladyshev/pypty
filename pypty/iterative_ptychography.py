@@ -743,11 +743,7 @@ def bfgs_update(algorithm_type, this_slice_distances, this_step_probe, this_step
         
     probe=1*new_probe
     obj=1*new_obj
-    positions_correction=1*new_positions_correction
-    tilts_correction=1*new_tilts_correction
-    if not(new_aberrations_array is None): aberrations_array=1*new_aberrations_array;
-    if not(new_beam_current is None): beam_current=1*new_beam_current;
-    if not(static_background is None): static_background=1*new_static_background;
+   
     
     this_step_obj=actual_step if update_obj else 0
     this_step_probe=actual_step if update_probe else 0
@@ -841,6 +837,12 @@ def bfgs_update(algorithm_type, this_slice_distances, this_step_probe, this_step
                     history_bfgs["obj_hist_s"][itemind]=xp.pad(item, pad_width, mode="constant", constant_values=0)
                 for itemind, item in enumerate(history_bfgs["obj_hist_y"]):
                     history_bfgs["obj_hist_y"][itemind]=xp.pad(item, pad_width, mode="constant", constant_values=0)
+    positions_correction=1*new_positions_correction
+    tilts_correction=1*new_tilts_correction
+    if not(new_aberrations_array is None): aberrations_array=1*new_aberrations_array;
+    if not(new_beam_current is None): beam_current=1*new_beam_current;
+    if not(static_background is None): static_background=1*new_static_background;
+    
     return total_loss, this_sse
 
 
