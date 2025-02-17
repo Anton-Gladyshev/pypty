@@ -2,13 +2,7 @@
 
 ## Overview
 
-This is a **phase retrieval** code that can be applied to **near-field or far-field imaging** in **TEM/STEM**.  
-
-### Key Features:
-- **Mixed-state formalism** for probe description.
-- **Multislice formalism** to model multiple scattering events.
-- **Refinable probe positions** for improved accuracy.
-- **Modified Fresnel propagator** to handle **tilted illumination**
+This is a **phase retrieval** code that can be applied to **near-field or far-field imaging** in **TEM/STEM**. It can be applied to do iterative ptychography, direct ptychography, differential phase contrast, tilt-corrected bright field, focal series reconstructions and LARBED reconstructions.
 
 The code is written by Anton Gladyshev (AG SEM, Physics Department, Humboldt-Universität zu Berlin). 
 
