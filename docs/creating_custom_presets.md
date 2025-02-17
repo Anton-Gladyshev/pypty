@@ -32,7 +32,7 @@ For an easy preset configuration, please see the initialize module. It allows to
 | `epoch_prev`                     | `0`                          | Previous epoch count. Usefull for restaring a reconstruction.|
 | `save_checkpoints_every_epoch`   | `False`                      | Save checkpoints every epoch.  |
 | `save_inter_checkpoints`         | `True`                       | Save intermediate checkpoints.  It will create .npy arrays co.npy for the object, cp.npy for probe, cg.npy for the scan grid, ct.npy for the tilts, cs.npy for static background and cb.npy for the beam current. |
-| `print_flag`                     | `3`                          | Print verbosity level. 0 for no printing and 1 for just one overwritable line, 2 and 3 for most detailed outputs.|
+| `print_flag`                     | `3`                          | Print verbosity level. 0 for no printing, 1 for just one overwritable line, 2 and 3 for most detailed outputs.|
 
 ## Experimental Parameters
 
@@ -61,33 +61,33 @@ For an easy preset configuration, please see the initialize module. It allows to
 ## Spatial Calibration
 | Parameter                        | Default Value               | Description |
 |-----------------------------------|-----------------------------|-------------|
-| `slice_distances`                | `np.array([10])`            | Distances between slices in the object. |
+| `slice_distances`                | `np.array([10])`            | Distances between object slices. Units are Angstroms, you can specify just one value common for all slices, or provide individual ones. |
 | `pixel_size_x_A`                 | `1`                          | Pixel size in x-direction (Angstroms). |
 | `pixel_size_y_A`                 | `1`                          | Pixel size in y-direction (Angstroms). |
-| `scan_size`                      | `None`                       | Scan size of the probe. |
+| `scan_size`                      | `None`                       | Tuple destibing number of scan points in y- and x- directions, only required for constraining postions and tilts. |
 
 ## Propagation, Windowing, and Resizing
 | Parameter                        | Default Value               | Description |
 |-----------------------------------|-----------------------------|-------------|
 | `propmethod`                     | `"multislice"`              | Method used for wave propagation. Default is "multislice". Other options are additive splitting- "better_multislice" and "yoshida". The last two options have higher precision than multislice, but requiere more time. |
 | `allow_subPixel_shift`           | `True`                       | Allow subpixel shifts. If False, positions will be rounded to integer values until you start to refine them.|
-| `dynamically_resize_yx_object`   | `False`                      | Dynamically resize the object. |
+| `dynamically_resize_yx_object`   | `False`                      | If position update becomes too large, object will be padded with ones in order to properly accomodate the updated grid. When specified as a positive integer, resizing will happen every time positon correction exceeds this integer value. |
 | `extra_space_on_side_px`         | `0`                          | Extra space added around the object (pixels). |
 
 ## Constraints
 | Parameter                        | Default Value               | Description |
 |-----------------------------------|-----------------------------|-------------|
-| `mixed_variance_weight`          | `0`                          | Mixed variance weight. |
-| `mixed_variance_sigma`           | `0.5`                        | Mixed variance sigma. |
-| `probe_constraint_mask`          | `None`                       | Mask for probe constraint. |
-| `probe_reg_constraint_weight`    | `0`                          | Probe regularization weight. |
-| `window_weight`                  | `0`                          | Window function weight. |
-| `window`                         | `None`                       | Window function. |
-| `abs_norm_weight`                | `0`                          | Absolute normalization weight. |
-| `phase_norm_weight`              | `0`                          | Phase normalization weight. |
-| `atv_weight`                     | `0`                          | Adaptive Total Variation (ATV) weight. |
-| `atv_q`                          | `1`                          | ATV q parameter. |
-| `atv_p`                          | `2`                          | ATV p parameter. |
+| `mixed_variance_weight`          | `0`                          | Custom mixed object constraint preventing variation of the states at lower spatial frequencies. This parameter controlls the strength of a regularization.|
+| `mixed_variance_sigma`           | `0.5`                        | Custom mixed object constraint preventing variation of the states at lower spatial frequencies. This parameter controlls the range of spatial frequencies. |
+| `probe_constraint_mask`          | `None`                       | Mask for probe constraint in reciprocal space. Masked pixel will be damped via l2-regularization. |
+| `probe_reg_constraint_weight`    | `0`                          | Reciprocal space probe l2-regularization weight. |
+| `window_weight`                  | `0`                          | Real space probe l2-regularization weight.|
+| `window`                         | `None`                       | Window function used for probe constraint in real space. Masked pixel will be damped via l2-regularization. |
+| `abs_norm_weight`                | `0`                          | Weight applied to the l1 norm of an absorptive potential (negative log of transmission functions absolute value) |
+| `phase_norm_weight`              | `0`                          | Weight applied to the l1 norm of an electrostatic potential (phase of complex transmission functions) |
+| `atv_weight`                     | `0`                          | Adaptive Total Variation (ATV) weight applied to transmission function|
+| `atv_q`                          | `1`                          | ATV q parameter. We suggest to keep it 1|
+| `atv_p`                          | `2`                          | ATV p parameter. p constrolls the behaviour of ATV. 1 yiels l1-style regularization and 2 - l2. |
 | `fast_axis_reg_weight_positions` | `0`                          | Regularization weight for fast-axis positions. |
 | `fast_axis_reg_weight_tilts`     | `0`                          | Regularization weight for fast-axis tilts. |
 | `slow_axis_reg_weight_positions` | `0`                          | Regularization weight for slow-axis positions. |
