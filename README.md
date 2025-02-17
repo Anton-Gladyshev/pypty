@@ -2,7 +2,7 @@
 
 ## Overview
 
-This is a **phase retrieval** code that can be applied to **near-field or far-field imaging** in **TEM/STEM**. It can be applied to do iterative ptychography, direct ptychography, differential phase contrast, tilt-corrected bright field, focal series reconstructions and LARBED reconstructions.
+This is a **phase retrieval** code that can be applied to **near-field or far-field imaging** in **TEM/STEM**. It can be applied to do **iterative ptychography**, **direct ptychography** (Wigner distribution deconsvolution), **differential phase contrast**, **tilt-corrected bright field**, **focal series reconstructions** and **LARBED reconstructions**.
 
 The code is written by Anton Gladyshev (AG SEM, Physics Department, Humboldt-Universität zu Berlin). 
 
