@@ -36,7 +36,7 @@ def run_tcbf_alignment(params, binning_for_fit=[8],
 
         save - boolean flag. If true, the intermidate tcBF images on the intial scan grid will be saved as .png. Ignored if you provided save_preprocessing_files in pypty_params.
         optimize_angle - boolean flag. Allows to fit the PL rotation angle with aberrations
-        aberrations- list with an initial guess for aberrations. Ignored if provided in pypty_params.
+        aberrations- list with an initial guess for aberrations. Dominates over the ones provided in pypty_params.
         n_aberrations_to_fit - integer. If the inital guess for aberrations is not provided, the code with try to initialize them as a list of zeros with this length. Ignored if aberrations are provided in pypty_params.
 
         reference_type - by default is set to "bf". In this case all pixel images will be correlated to the tcbf estimate. The other option is "zero". In this case the images will be correlated to the image of the pixel closest to the optical axis
