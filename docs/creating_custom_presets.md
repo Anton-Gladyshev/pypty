@@ -1,6 +1,10 @@
 # PyPty Parameters for Creating Custom Presets
 
-For an easy preset configuration, please refer to the `pypty.initialize` module. It allows easy creation of all arrays. However, if your experiment is complex, use this guide and the provided examples to create your own.
+The main function of PyPty package is iterative ptychographic reconsturction launched via `run_ptychography()` functon. It takes a single argument- `pypty_params` dictionary describing your preset.
+
+For an easy preset configuration, please refer to the `pypty.initialize` module. It allows easy creation of all arrays. However, if your experiment is complex, use this guide and the provided examples to create your own dictionary and fill in requiered entries.
+
+
 
 ### Before starting this guide, one important usage case must be discussed.
 PyPty is an iterative algorithm and, as you will see, it requires a number of input parameters. Some of these parameters can be specified in an iteration-dependent fashion using a lambda function. This function should take a single input argument and return the desired value for a given epoch.
