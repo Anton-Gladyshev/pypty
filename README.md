@@ -22,7 +22,7 @@ $ pip install .
 
 # Examples
 
-The examples will be provided in the `examples folder`. To to configure a **completely custom preset**, please reffer to the next section.
+The examples will be provided in the `examples` folder. To to configure a **completely custom preset**, please reffer to the next section.
  
  
 # PyPty Parameters for Creating Custom Presets
