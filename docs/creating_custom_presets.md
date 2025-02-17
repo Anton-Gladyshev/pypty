@@ -9,7 +9,11 @@ For example, if you want to save checkpoints every 10 epochs, you can set `save_
 
 ```python
 lambda x: x % 10 == 0```
-The parameters that can be written in this way are marked as `pypty-lambda` **type** in the  **Default Data Type** column. They can also be specified as a sting containing the code, e.g. ```python save_checkpoints_every_epoch = "lambda x: x % 10 == 0"```
+
+The parameters that can be written in this way are marked as `pypty-lambda` **type** in the  **Default Data Type** column. They can also be specified as a sting containing the code, e.g. 
+```python 
+save_checkpoints_every_epoch = "lambda x: x % 10 == 0"
+```
 
 We do not recommend applying constraints every n epochs, as PyPty’s BFGS algorithm attempts to construct a Hessian matrix, and such modifications can disrupt this process.
 As a general rule of thumb, we suggest configuring lambda functions so that once an optimization parameter is activated, it maintains a consistent value throughout execution.
