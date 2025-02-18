@@ -14,7 +14,7 @@ from pypty.multislice import *
 
 half_master_propagator_phase_space, master_propagator_phase_space, q2, qx, qy, exclude_mask, x_real_grid_tilt, y_real_grid_tilt, shift_probe_mask_x, shift_probe_mask_y, exclude_mask_ishift, probe_runx, probe_runy, yx_real_grid_tilt, shift_probe_mask_yx, aberrations_polynomials=None, None,None, None,None, None,None, None, None, None, None, None,None,None,None,None
 def loss_and_direction(this_obj, full_probe, this_pos_array, this_pos_correction, this_tilt_array, this_tilts_correction, this_distances,  measured_array,  algorithm_type, this_wavelength, this_step_probe, this_step_obj, this_step_pos_correction, this_step_tilts, masks, pixel_size_x_A, pixel_size_y_A, recon_type, Cs, defocus_array, alpha_near_field, damping_cutoff_multislice, smooth_rolloff, propmethod, this_chopped_sequence, load_one_by_one, data_multiplier, data_pad, phase_plate_in_h5, this_loss_weight, data_bin, data_shift_vector, upsample_pattern, static_background, this_step_static_background, tilt_mode, aberration_marker, probe_marker, aberrations_array, compute_batch, phase_only_obj, beam_current, this_beam_current_step, this_step_aberrations_array, default_float, default_complex, xp, is_first_epoch,
-                       scan_size,fast_axis_reg_weight_positions, current_slow_axis_reg_weight_positions,current_slow_axis_reg_coeff_positions, current_slow_axis_reg_weight_tilts,current_slow_axis_reg_coeff_tilts, fast_axis_reg_weight_tilts, aperture_mask, probe_reg_weight, current_window_weight, current_window, phase_norm_weight, abs_norm_weight, atv_weight, atv_q, atv_p, mixed_variance_weight, mixed_variance_sigma, smart_memory):
+                       scan_size,fast_axis_reg_weight_positions, current_slow_axis_reg_weight_positions,current_slow_axis_reg_coeff_positions, current_slow_axis_reg_weight_tilts,current_slow_axis_reg_coeff_tilts, fast_axis_reg_weight_tilts, aperture_mask, probe_reg_weight, current_window_weight, current_window, phase_norm_weight, abs_norm_weight, atv_weight, atv_q, atv_p, mixed_variance_weight, mixed_variance_sigma, smart_memory, print_flag):
     """
     This is an internal PyPty function for iterative Ptychography. It does both forward and backward propagations. Inputs are the parameters of the experiment and outputs are loss, SSE and the gradients of the loss with respect to refinable arrays. 
     """
@@ -441,6 +441,7 @@ def loss_and_direction(this_obj, full_probe, this_pos_array, this_pos_correction
    # end_gpu.synchronize()
    # t_gpu = cp.cuda.get_elapsed_time(start_gpu, end_gpu)
    # print("\n", t_gpu)
+    if print_flag==4: loss_print_copy=1*loss;
     this_pos_array=this_pos_array[:,:,0]
     this_tilt_array=this_tilt_array[:,:,0,0]
     if this_step_probe and multiple_scenarios: probe_grad=cp.moveaxis(probe_grad, 0,3);
@@ -449,48 +450,68 @@ def loss_and_direction(this_obj, full_probe, this_pos_array, this_pos_correction
         ind_loss, reg_grad=compute_fast_axis_constraint_on_grid(something, scan_size, fast_axis_reg_weight_positions)
         pos_grad+=reg_grad
         loss+=ind_loss
+        if print_flag==4:
+            sys.stdout.write("\nWith weight %.3e, Positions fast axis constaint is %2 %% of the main loss"%(fast_axis_reg_weight_positions, ind_loss*100/loss_print_copy));
     if this_step_pos_correction and current_slow_axis_reg_weight_positions>0:
         something=this_pos_array+this_pos_correction
         ind_loss, reg_grad = compute_slow_axis_constraint_on_grid(something, scan_size, current_slow_axis_reg_weight_positions, current_slow_axis_reg_coeff_positions)
         pos_grad+=reg_grad;
         loss+=ind_loss
+        if print_flag==4:
+            sys.stdout.write("\nWith weight %.3e, Positions slow axis constaint is %2 %% of the main loss"%(current_slow_axis_reg_weight_positions, ind_loss*100/loss_print_copy));
     if this_step_tilts and current_slow_axis_reg_weight_tilts>0:
         something=this_tilt_array
         for i_t_ind in range(0,6,2):
             ind_loss, reg_grad=compute_slow_axis_constraint_on_grid(something[:,i_t_ind:i_t_ind+2], scan_size, current_slow_axis_reg_weight_tilts, current_slow_axis_reg_coeff_tilts)
             tilts_grad[:,i_t_ind:i_t_ind+2]+=reg_grad;
             loss+=ind_loss
+        if print_flag==4:
+            sys.stdout.write("\nWith weight %.3e, Tilts slow axis constaint is %2 %% of the main loss"%(current_slow_axis_reg_weight_tilts, ind_loss*100/loss_print_copy));
     if this_step_tilts and fast_axis_reg_weight_tilts>0:
         something=this_tilt_array
         ind_loss, reg_grad=compute_fast_axis_constraint_on_grid(something, scan_size, fast_axis_reg_weight_tilts)
         tilts_grad+=reg_grad
         loss+=ind_loss
+        if print_flag==4:
+            sys.stdout.write("\nWith weight %.3e, Tilts fast axis constaint is %2 %% of the main loss"%(fast_axis_reg_weight_tilts, ind_loss*100/loss_print_copy));
     if (phase_norm_weight+abs_norm_weight)>0: # l_1 norm of the potentials
         grad_mask=generate_mask_for_grad_from_pos(this_obj.shape[1], this_obj.shape[0], this_pos_array, full_probe.shape[1],full_probe.shape[0], 0)
         l1_reg_term, l1_object_grad=compute_full_l1_constraint(this_obj, abs_norm_weight, phase_norm_weight, grad_mask, True, smart_memory)
         loss+=l1_reg_term
         object_grad+=l1_object_grad
         del grad_mask,l1_reg_term,l1_object_grad # forget about it
+        if print_flag==4:
+            sys.stdout.write("\nWith abs weight of %.3e and phase weight of %.3e, l1 constaint is %2 %% of the main loss"%(abs_norm_weight, phase_norm_weight, l1_reg_term*100/loss_print_copy));
     if probe_reg_weight>0 and this_step_probe:
         probe_reg_term, reg_probe_grad = compute_probe_constraint(full_probe, aperture_mask, probe_reg_weight, True)
         loss+=probe_reg_term
         probe_grad+=reg_probe_grad
         del reg_probe_grad, probe_reg_term
+        if print_flag==4:
+            sys.stdout.write("\nWith weight %.3e, Probe recprocal-space constaint is %2 %% of the main loss"%(probe_reg_weight, probe_reg_term*100/loss_print_copy));
     if this_step_probe and current_window_weight>0:
         probe_reg_term, reg_probe_grad = compute_window_constraint(full_probe, current_window, current_window_weight)
         loss+=probe_reg_term
         probe_grad+=reg_probe_grad
         del reg_probe_grad, probe_reg_term #forget about it
+        if print_flag==4:
+            sys.stdout.write("\nWith weight %.3e, Probe real-space constaint is %2 %% of the main loss"%(current_window_weight, probe_reg_term*100/loss_print_copy));
     if atv_weight>0:
         atv_reg_term, atv_object_grad = compute_atv_constraint(this_obj, atv_weight, atv_q, atv_p, pixel_size_x_A, pixel_size_y_A, None, True, smart_memory)
         loss+=atv_reg_term
         object_grad+=atv_object_grad
         del atv_object_grad, atv_reg_term
+        if print_flag==4:
+            sys.stdout.write("\nWith weight %.3e, ATV constaint is %2 %% of the main loss"%(atv_weight, atv_reg_term*100/loss_print_copy));
     if mixed_variance_weight>0 and this_obj.shape[-1]>1:
         mixed_variance_reg_term, mixed_variance_grad=compute_mixed_object_variance_constraint(this_obj, mixed_variance_weight, mixed_variance_sigma, True, smart_memory)
         loss+=mixed_variance_reg_term
         object_grad+=mixed_variance_grad
         del mixed_variance_reg_term, mixed_variance_grad # forget about it
+        if print_flag==4:
+            sys.stdout.write("\nWith weight %.3e, Mixed variance constaint is %2 %% of the main loss"%(mixed_variance_weight, mixed_variance_reg_term*100/loss_print_copy));
+    if print_flag==4:
+        sys.stdout.flush()
     if loss!=loss:
         raise ValueError('A very specific bad thing. Loss is Nan.')
     if this_step_probe:

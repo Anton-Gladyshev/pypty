@@ -253,7 +253,7 @@ def append_exp_params(experimental_params, pypty_params=None):
         -num_slices - integer, number of slices, default is 1.
         
         -plot - boolean Flag, default is True 
-        -print_flag - integer. Default is 1. If 0 nothing will be printed. 1 prints only thelatest state of the computation, 2 prints every state and 3 gives the most details about the linesearch progress in iterative optimization.
+        -print_flag - integer. Default is 1. If 0 nothing will be printed. 1 prints only thelatest state of the computation, 2 prints every state as a separate line. 3 prints the linesearch progress in iterative optimization. 4 prints everything that 3 does and if constraints are applied, it prints how they contribute so that a user can configure the weights properly.
         -save_preprocessing_files - Boolean Flag. Default is True. 
         
     """
@@ -532,7 +532,7 @@ def get_ptycho_obj_from_scan(params, num_slices=None, array_phase=None,array_abs
     total_thickness=params.get("total_thickness", 1)
     
     cutoff=pixel_size_x_A/scan_step_A
-    use_full_FOV=params.get("use_full_FOV", False)
+    use_full_FOV=params.get("use_full_FOV", True)
     positions=np.round(positions).astype(int)
     if scan_array_A is None:
         scan_y, scan_x=positions[:,0], positions[:,1]

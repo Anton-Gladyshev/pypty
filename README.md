@@ -91,7 +91,7 @@ As a general rule of thumb, we suggest configuring lambda functions so that once
 | `epoch_prev`                     | `0`                          | `int`              | Previous epoch count. Useful for restarting a reconstruction. |
 | `save_checkpoints_every_epoch`   | `False`                      | `bool`   or `int`          | Save checkpoints every epoch. If `True`, checkpoints will be always saved, if it is provided as an integer, checkpoints will be saved every n'th epoch.  |
 | `save_inter_checkpoints`         | `True`                       | `bool`  or `int`           | Save intermediate **overwritable** checkpoints. This will create `.npy` arrays: `co.npy` for the object, `cp.npy` for the probe, `cg.npy` for the scan grid, `ct.npy` for the tilts, `cs.npy` for the static background, and `cb.npy` for the beam current. If `True`, checkpoints will be always saved, if it is provided as an integer, checkpoints will be saved every n'th epoch. |
-| `print_flag`                     | `3`                          | `int`              | Print verbosity level: `0` for no printing, `1` for one overwritable line, `2` for moderate output, and `3` for detailed outputs. |
+| `print_flag`                     | `3`                          | `int`              | Print verbosity level: `0` for no printing, `1` for one overwritable line, `2` and `3` for moderate output. `4` gives the most detailed output. |
 
 ---
 
