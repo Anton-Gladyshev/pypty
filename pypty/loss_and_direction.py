@@ -445,9 +445,7 @@ def loss_and_direction(this_obj, full_probe, this_pos_array, this_pos_correction
    # print("\n", t_gpu)
     this_pos_array=this_pos_array[:,:,0]
     this_tilt_array=this_tilt_array[:,:,0,0]
-    print(probe_grad.shape)
     if this_step_probe and multiple_scenarios: probe_grad=cp.moveaxis(probe_grad, 0,3);
-    print(probe_grad.shape)
     if this_step_pos_correction and fast_axis_reg_weight_positions>0:
         something=this_pos_array+this_pos_correction
         ind_loss, reg_grad=compute_fast_axis_constraint_on_grid(something, scan_size, fast_axis_reg_weight_positions)
