@@ -829,10 +829,10 @@ def bfgs_update(algorithm_type, this_slice_distances, this_step_probe, this_step
                     history_bfgs["obj_hist_s"][itemind]=xp.pad(item, pad_width, mode="constant", constant_values=0)
                 for itemind, item in enumerate(history_bfgs["obj_hist_y"]):
                     history_bfgs["obj_hist_y"][itemind]=xp.pad(item, pad_width, mode="constant", constant_values=0)
-    positions_correction=1*new_positions_correction is update_pos_correction else positions_correction
-    tilts_correction=1*new_tilts_correction  is update_tilts else tilts_correction
+    positions_correction=1*new_positions_correction if update_pos_correction else positions_correction
+    tilts_correction=1*new_tilts_correction  if update_tilts else tilts_correction
     aberrations_array=1*new_aberrations_array if update_aberrations_array else aberrations_array
-    beam_current=1*new_beam_current is update_beam_current else beam_current
+    beam_current=1*new_beam_current if update_beam_current else beam_current
     static_background= new_static_background if update_static_background else static_background
     return total_loss, this_sse
 
