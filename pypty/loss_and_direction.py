@@ -15,6 +15,10 @@ from pypty.multislice import *
 half_master_propagator_phase_space, master_propagator_phase_space, q2, qx, qy, exclude_mask, x_real_grid_tilt, y_real_grid_tilt, shift_probe_mask_x, shift_probe_mask_y, exclude_mask_ishift, probe_runx, probe_runy, yx_real_grid_tilt, shift_probe_mask_yx, aberrations_polynomials=None, None,None, None,None, None,None, None, None, None, None, None,None,None,None,None
 def loss_and_direction(this_obj, full_probe, this_pos_array, this_pos_correction, this_tilt_array, this_tilts_correction, this_distances,  measured_array,  algorithm_type, this_wavelength, this_step_probe, this_step_obj, this_step_pos_correction, this_step_tilts, masks, pixel_size_x_A, pixel_size_y_A, recon_type, Cs, defocus_array, alpha_near_field, damping_cutoff_multislice, smooth_rolloff, propmethod, this_chopped_sequence, load_one_by_one, data_multiplier, data_pad, phase_plate_in_h5, this_loss_weight, data_bin, data_shift_vector, upsample_pattern, static_background, this_step_static_background, tilt_mode, aberration_marker, probe_marker, aberrations_array, compute_batch, phase_only_obj, beam_current, this_beam_current_step, this_step_aberrations_array, default_float, default_complex, xp, is_first_epoch,
                        scan_size,fast_axis_reg_weight_positions, current_slow_axis_reg_weight_positions,current_slow_axis_reg_coeff_positions, current_slow_axis_reg_weight_tilts,current_slow_axis_reg_coeff_tilts, fast_axis_reg_weight_tilts, aperture_mask, probe_reg_weight, current_window_weight, current_window, phase_norm_weight, abs_norm_weight, atv_weight, atv_q, atv_p, mixed_variance_weight, mixed_variance_sigma, smart_memory):
+    """
+    This is an internal PyPty function for iterative Ptychography. It does both forward and backward propagations. Inputs are the parameters of the experiment and outputs are loss, SSE and the gradients of the loss with respect to refinable arrays. 
+    """
+    
     global pool, pinned_pool, half_master_propagator_phase_space, master_propagator_phase_space, q2, qx, qy, exclude_mask,exclude_mask_ishift, x_real_grid_tilt, y_real_grid_tilt,yx_real_grid_tilt, shift_probe_mask_x, shift_probe_mask_y,shift_probe_mask_yx, probe_runx,probe_runy, aberrations_polynomials
     if is_first_epoch:
         half_master_propagator_phase_space, master_propagator_phase_space, q2, qx, qy, exclude_mask,exclude_mask_ishift, x_real_grid_tilt, y_real_grid_tilt,yx_real_grid_tilt, shift_probe_mask_x, shift_probe_mask_y,shift_probe_mask_yx, probe_runx,probe_runy, aberrations_polynomials= None, None,None,None,None,None,None,None,None,None,None,None,None,None,None,None
@@ -140,15 +144,10 @@ def loss_and_direction(this_obj, full_probe, this_pos_array, this_pos_correction
                 else:
                     pinned_measured[:]=measured_chop
                     measured=cp.array(pinned_measured)
-                measured, *_ = preprocess_dataset(measured, False, algorithm_type, recon_type, data_shift_vector, data_bin, data_pad, upsample_pattern, data_multiplier, xp, False) ### preprocess
-                if data_pad!=0:
-                    measured=xp.pad(measured, [[0,0],[data_pad//upsample_pattern,data_pad//upsample_pattern],[data_pad,data_pad//upsample_pattern]])
+                measured, *_ = preprocess_dataset(measured, False, algorithm_type, recon_type, data_shift_vector, data_bin, data_pad, upsample_pattern, data_multiplier, xp, True) ### preprocess
         else:
             measured=measured_array[tcs]
-            measured, *_ = preprocess_dataset(measured, False, algorithm_type, recon_type, data_shift_vector, data_bin, data_pad, upsample_pattern, data_multiplier, xp, False)
-            if data_pad!=0:
-                measured=xp.pad(measured, [[0,0],[data_pad//upsample_pattern,data_pad//upsample_pattern],[data_pad//upsample_pattern,data_pad//upsample_pattern]])
-
+            measured, *_ = preprocess_dataset(measured, False, algorithm_type, recon_type, data_shift_vector, data_bin, data_pad, upsample_pattern, data_multiplier, xp, True)
         if recon_type=="near_field":
             if is_single_defocus:
                 defocind=0
@@ -384,7 +383,7 @@ def loss_and_direction(this_obj, full_probe, this_pos_array, this_pos_correction
                 fourier_probe_grad=fourier_probe_grad*cp.conjugate(shift_probe_mask)[:,:,:,None]
                 interm_probe_grad=ifft2(fourier_probe_grad, axes=(1,2))
                 if this_step_pos_correction:
-                    shift_mask_grad=cp.conjugate(this_probe_fourier)*fourier_probe_grad ## vectorize this one as well
+                    shift_mask_grad=cp.conjugate(this_probe_fourier)*fourier_probe_grad
                     sh = -2/(this_probe_fourier.shape[1]*this_probe_fourier.shape[2]) ## -1 for conj, 2 for real-grad shape for ifft
                     if n_probe_modes==1:
                         sh_grad=sh*cp.sum(cp.real(shift_probe_mask_yx[:,:,:,:]*shift_mask_grad[:,None,:,:,0]), (2,3), dtype=cp.float64).astype(default_float)
@@ -438,7 +437,6 @@ def loss_and_direction(this_obj, full_probe, this_pos_array, this_pos_correction
                             else:
                                 probe_grad+=cp.sum(interm_probe_grad,0)
     loss*=this_loss_weight
-   
    # end_gpu.record()
    # end_gpu.synchronize()
    # t_gpu = cp.cuda.get_elapsed_time(start_gpu, end_gpu)
@@ -495,7 +493,6 @@ def loss_and_direction(this_obj, full_probe, this_pos_array, this_pos_correction
         del mixed_variance_reg_term, mixed_variance_grad # forget about it
     if loss!=loss:
         raise ValueError('A very specific bad thing. Loss is Nan.')
-    
     if this_step_probe:
         probe_grad=fft2(probe_grad, (0,1), overwrite_x=True)
         if multiple_scenarios:
