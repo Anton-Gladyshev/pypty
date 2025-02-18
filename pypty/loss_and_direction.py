@@ -452,12 +452,13 @@ def loss_and_direction(this_obj, full_probe, this_pos_array, this_pos_correction
    # print("\n", t_gpu)
     this_pos_array=this_pos_array[:,:,0]
     this_tilt_array=this_tilt_array[:,:,0,0]
-    if this_step_pos_correction and fast_axis_reg_weight_positions>0:
+    if this_step_pos_correction>0 and fast_axis_reg_weight_positions>0:
         something=this_pos_array+this_pos_correction
         ind_loss, reg_grad=compute_fast_axis_constraint_on_grid(something, scan_size, fast_axis_reg_weight_positions)
-        pos_grad+=reg_grad;
+        print("\n", this_step_pos_correction, reg_grad.shape, pos_grad.shape)
+        pos_grad+=reg_grad
         loss+=ind_loss
-    if this_step_pos_correction and current_slow_axis_reg_weight_positions>0:
+    if this_step_pos_correction>0 and current_slow_axis_reg_weight_positions>0:
         something=this_pos_array+this_pos_correction
         ind_loss, reg_grad = compute_slow_axis_constraint_on_grid(something, scan_size, current_slow_axis_reg_weight_positions, current_slow_axis_reg_coeff_positions)
         pos_grad+=reg_grad;
