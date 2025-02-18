@@ -630,7 +630,6 @@ def upsampled_tcbf(pypty_params, upsample=5, pad=10,
         O_r - real valued tcBF image
     """
     bright_field_pixels=None
-    conv_angle_rad = pypty_params.get("conv_semiangle_mrad", 1)*1e-3
     acc_voltage_kV= pypty_params.get("acc_voltage", 60)
     scan_step= pypty_params.get("scan_step_A", 1)
     aperture= pypty_params.get("aperture_mask", 1)
