@@ -841,8 +841,8 @@ def bfgs_update(algorithm_type, this_slice_distances, this_step_probe, this_step
     beam_current=1*new_beam_current if update_beam_current else beam_current
     static_background= new_static_background if update_static_background else static_background
     
-    print("\n AFTER THE UPDATE:")
-    get_cupy_memory_usage()
+   # print("\n AFTER THE UPDATE:")
+   # get_cupy_memory_usage()
     
     return total_loss, this_sse
 

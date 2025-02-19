@@ -877,7 +877,7 @@ def get_cupy_memory_usage():
     print(f"Total GPU Memory Allocated: {total_allocated / (1024 ** 3):.4f} GB\n")
     print(f"Total GPU Memory Reserved: {total_reserved / (1024 ** 3):.4f} GB\n")
     memory_usage = []
-    for var_name, var_value in locals().items():
+    for var_name, var_value in nonlocals().items():
         if isinstance(var_value, cp.ndarray):  # Only check CuPy arrays
             mem_usage_gb = var_value.nbytes / (1024 ** 3)  # Convert bytes to GB
             memory_usage.append((var_name, mem_usage_gb, var_value.shape, var_value.dtype))

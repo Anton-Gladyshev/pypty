@@ -526,7 +526,7 @@ def loss_and_direction(this_obj, full_probe, this_pos_array, this_pos_correction
             probe_grad*=exclude_mask_ishift[0,:,:,None]
         probe_grad=ifft2(probe_grad, (0,1), overwrite_x=True);
         
-    get_cupy_memory_usage()
+    #get_cupy_memory_usage()
     
     return loss, sse, object_grad,  probe_grad, pos_grad, tilts_grad, static_background_grad, aberrations_array_grad, beam_current_grad
 
