@@ -173,9 +173,21 @@ def wdd(pypty_params, eps_wiener=1e-3, thresh=None, save=0):
     sys.stdout.write("\n-->2nd FFT done")
     min_k_ind=cp.unravel_index(cp.argmin(kx**2+ky**2),[data.shape[2],data.shape[3]])
     min_q_ind=cp.unravel_index(cp.argmin(qx_rot**2+qy_rot**2),[data.shape[0],data.shape[1]])
-    o=cp.sum(data, axis=(2,3)) ## summing is equivalent to taking the zero freq component of the FFT with respect to ky,kx
-    prefactor=cp.sqrt(cp.abs(o[min_q_ind[0],min_q_ind[1]]))
-    o=o/prefactor
+    print(min_q_ind)
+    data=cp.sum(data, axis=(2,3)) ## summing is equivalent to taking the zero freq component of the FFT with respect to ky,kx
+    try:
+        cp.get_default_memory_pool().free_all_blocks()
+        cp.get_default_pinned_memory_pool().free_all_blocks()
+    except:
+        pass
+    prefactor=cp.sqrt(cp.abs(data[min_q_ind[0],min_q_ind[1]]))
+    o=data/prefactor
+    del data
+    try:
+        cp.get_default_memory_pool().free_all_blocks()
+        cp.get_default_pinned_memory_pool().free_all_blocks()
+    except:
+        pass
     o=ifft2_ishift(o, overwrite_x=True)
     try:
         o2=o.get()
