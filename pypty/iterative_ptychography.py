@@ -229,7 +229,7 @@ def run_ptychography(pypty_params):
             history_size=hist_length(0)
         except:
             history_size=hist_length
-        compute_batch,load_one_by_one, smart_memory = get_memory(compute_batch, load_one_by_one, history_size, measured_data_shape, memory_satiration, smart_memory, data_pad, obj.shape, probe.shape, default_dtype, propmethod, print_flag)
+        compute_batch, load_one_by_one, smart_memory = get_compute_batch(compute_batch, load_one_by_one, history_size, measured_data_shape, memory_satiration, smart_memory, data_pad, obj.shape, probe.shape, default_dtype, propmethod, print_flag)
         
     try:
         obj, probe, positions,positions_correction, tilts, tilts_correction, masks, defocus_array, slice_distances, aperture_mask, dataset, static_background, aberrations_array, beam_current=try_to_gpu(obj, probe, positions,positions_correction, tilts, tilts_correction, masks, defocus_array, slice_distances, aperture_mask, dataset, load_one_by_one, static_background, aberrations_array, beam_current, default_float, default_complex, default_int, xp) ##Convert numpy arrays to cupy arrays
