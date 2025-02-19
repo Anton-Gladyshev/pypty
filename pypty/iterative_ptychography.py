@@ -151,7 +151,7 @@ def run_ptychography(pypty_params):
     load_one_by_one= params.get('load_one_by_one', True)
     smart_memory = params.get('smart_memory', True)
     remove_fft_cache = params.get('remove_fft_cache', False)
-    compute_batch=params.get('compute_batch', 1)
+    compute_batch=params.get('compute_batch', "auto")
     force_dataset_dtype=params.get('force_dataset_dtype', default_float_cpu)
     preload_to_cpu=params.get('preload_to_cpu', False)
     force_pad=params.get('force_pad', False)
