@@ -915,8 +915,11 @@ def get_compute_batch(compute_batch, load_one_by_one, hist_size, measured_data_s
     elif print_flag:
         sys.stdout.write("\nWe suggest to use compute batch of %d"%(suggested_compute_batch))
     sys.stdout.flush()
-    if total_mem_device_Gb<20:
-        smart_memory=True
+    try:
+        test=smart_memory(0)
+    except:
+        if total_mem_device_Gb<20:
+            smart_memory=True
     return suggested_compute_batch, load_one_by_one, smart_memory
 
     
