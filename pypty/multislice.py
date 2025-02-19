@@ -161,7 +161,7 @@ def yoshida_multislice(full_probe, this_obj_chopped, num_slices, n_obj_modes, n_
         waves_multislice[:, :,:,ind_multislice, :,:,6]=wave # psi6, cutoff
         wave=wave*transmission_func_1  # exit wave, aka next input wave # x2 cutoff
         wave=fourier_clean_3d(wave, cutoff=damping_cutoff_multislice, rolloff=smooth_rolloff, default_float=default_float, xp=cp)# cutoff
-    return cp.conjugate(waves_multislice), wave
+    return waves_multislice, wave
     
 def yoshida_multislice_grads(dLoss_dP_out, waves_multislice, this_obj_chopped, object_grad, tilts_grad, is_single_dist, this_distances, exclude_mask, this_wavelength, q2, qx, this_tan_x, qy, this_tan_y, num_slices, n_probe_modes, n_obj_modes,tiltind, this_step_tilts,  master_propagator_phase_space, half_master_propagator_phase_space, damping_cutoff_multislice, smooth_rolloff, tilt_mode,  compute_batch, mask_clean, masked_pixels_y, masked_pixels_x, default_float, default_complex):
     sigma_yoshida=(2+2**(-1/3)+2**(1/3))/3

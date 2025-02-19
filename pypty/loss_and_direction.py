@@ -233,6 +233,7 @@ def loss_and_direction(this_obj, full_probe, this_pos_array, this_pos_correction
                     half_master_propagator_phase_space=cp.expand_dims(cp.exp(-3.141592654j*(sigma_yoshida)*this_distances[0]*(this_wavelength*q2+2*(qx*this_tan_x_inside+qy*this_tan_y_inside)))*exclude_mask_ishift,(-1,-2))
                     master_propagator_phase_space=cp.expand_dims(cp.exp(-3.141592654j*(1-2*sigma_yoshida)*this_distances[0]*(this_wavelength*q2+2*(qx*this_tan_x_inside+qy*this_tan_y_inside)))*exclude_mask_ishift,(-1,-2))
                 waves_multislice, this_exit_wave=yoshida_multislice(this_probe, this_obj_chopped, num_slices, n_obj_modes, n_probe_modes, this_distances, this_wavelength, q2, qx, qy, exclude_mask, is_single_dist, this_tan_x_inside,this_tan_y_inside, damping_cutoff_multislice, smooth_rolloff, master_propagator_phase_space,  half_master_propagator_phase_space, exclude_mask_ishift, waves_multislice,this_exit_wave, default_float, default_complex)
+                waves_multislice=cp.conjugate(waves_multislice)
         if tilt_mode==1 or tilt_mode>=3: ## after if tilt mode is 1, 3 or 4
             tilting_mask_real_space_after=cp.exp(x_real_grid_tilt*this_tan_x_after+y_real_grid_tilt*this_tan_y_after)[:,:,:,:, None]
             if propmethod=="multislice" and num_slices==1:

@@ -196,7 +196,6 @@ def wdd(pypty_params, eps_wiener=1e-3, thresh=None, save=0):
     prefactor=o[min_q_ind[0],min_q_ind[1]]
     prefactor=cp.sqrt(cp.abs(prefactor))
     o/=prefactor
-    
     o=ifft2_ishift(o, overwrite_x=True)
     try:
         o2=o.get()
