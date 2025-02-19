@@ -880,4 +880,4 @@ def get_cupy_memory_usage():
             memory_usage.append((var_name, mem_usage_gb, var_value.shape, var_value.dtype))
     memory_usage.sort(key=lambda x: x[1], reverse=True)
     for var_name, mem_usage_gb, shape, dtype in memory_usage:
-        print(f"\nVariable: {var_name}, Memory: {mem_usage_gb:.4f} GB, Shape: {shape}, Dtype: {dtype}"
+        print(f"\nVariable: {var_name}, Memory: {mem_usage_gb:.4f} GB, Shape: {shape}, Dtype: {dtype}")
