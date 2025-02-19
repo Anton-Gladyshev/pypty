@@ -890,7 +890,6 @@ def get_cupy_memory_usage():
 def get_compute_batch(compute_batch, load_one_by_one, hist_size, measured_data_shape, memory_satiration, smart_memory, data_pad, obj_shape, probe_shape,  dtype="double", propmethod="multislice", print_flag=True):
     device = cp.cuda.Device(0)
     total_mem_device_Gb=  device.mem_info[0] / (1024 **3)
-    
     if propmethod=="multislice":
         waves_shape=2
     if propmethod=="yoshida":

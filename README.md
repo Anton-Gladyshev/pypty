@@ -175,7 +175,7 @@ As a general rule of thumb, we suggest configuring lambda functions so that once
 | `phase_only_obj`                 | `False`       | `bool` or `pypty_lambda`   |Whether to consider the object as phase-only. |
 | `tune_only_probe_phase`          | `False`       | `bool` or `pypty_lambda`  |Optimize only the reciprocal-space phase (CTF) of the probe. |
 | `tune_only_probe_abs`            | `False`       | `bool` or `pypty_lambda`  |Optimize only the reciprocal-space amplitude (aperture) of the probe. |
-| `reset_history_flag`       | `None`        | `None` or `pypty_lambda`  |Flag to reset optimization history. See section "lambda-types" in the end of this document. If provided, history will be manually resetted. |
+| `reset_history_flag`       | `False`        | `bool` or `pypty_lambda`  |Flag to reset optimization history. See section "lambda-types" in this document. If provided, history will be manually resetted. |
 
 
 ---
@@ -264,7 +264,7 @@ As a general rule of thumb, we suggest configuring lambda functions so that once
 | `cf_beta_phase`                  | `-0.95`       | `float` or `pypty_lambda`          |Beta phase parameter for charge flipping. |
 | `cf_beta_abs`                    | `-0.95`       | `float` or `pypty_lambda`          |Beta amplitude parameter for charge flipping. |
 | `fancy_sigma`                    | `None`        | `None` or `float` oor `pypty_lambda`             |Custom sigma parameter to enforce atomicity. |
-| `restart_from_vacuum`            | `None`        | `bool` or `pypty_lambda`    | **Resets the object to 1** while keeping other parameters unchanged. |
+| `restart_from_vacuum`            | `False`        | `bool` or `pypty_lambda`    | **Resets the object to 1** while keeping other parameters unchanged. See section "lambda-types" in this document.   |
 
 ---
 

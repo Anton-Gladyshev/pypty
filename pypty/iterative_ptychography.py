@@ -130,7 +130,7 @@ def run_ptychography(pypty_params):
     tune_only_probe_phase = params.get('tune_only_probe_phase', False)
     tune_only_probe_abs=params.get('tune_only_probe_abs', False)
     
-    reset_history_flag=params.get('reset_history_flag', None)
+    reset_history_flag=params.get('reset_history_flag', False)
 
     update_probe = params.get('update_probe', 1)
     update_obj = params.get('update_obj', 1)
@@ -190,7 +190,7 @@ def run_ptychography(pypty_params):
     cf_beta_phase = params.get('cf_beta_phase', -0.95)
     cf_beta_abs = params.get('cf_beta_abs', -0.95)
     fancy_sigma=params.get('fancy_sigma', None)
-    restart_from_vacuum=params.get('restart_from_vacuum', [])
+    restart_from_vacuum=params.get('restart_from_vacuum', False)
     
     ### beam initialisation
     n_hermite_probe_modes=params.get('n_hermite_probe_modes', None)
@@ -272,29 +272,17 @@ def run_ptychography(pypty_params):
     t0=time.time()
     is_first_epoch=True ## Just a flag that will enable recomputing of propagation- & shift- meshgrids
     for epoch in range(epoch_prev,epoch_max,1):
+        current_restart_from_vacuum, this_reset_history_flag, this_smart_memory, current_wolfe_c1_constant,current_wolfe_c2_constant, current_window_weight, current_hist_length, current_slow_axis_reg_weight_tilts, current_slow_axis_reg_coeff_tilts, current_slow_axis_reg_weight_positions, current_slow_axis_reg_coeff_positions, current_fast_axis_reg_weight_positions,current_fast_axis_reg_weight_tilts, current_update_step_bfgs, current_apply_gaussian_filter_amplitude, current_apply_gaussian_filter, current_keep_probe_states_orthogonal, current_loss_weight, current_phase_norm_weight, current_abs_norm_weight, current_probe_reg_constraint_weight, current_do_charge_flip, current_atv_weight, current_beta_wedge, current_tune_only_probe_phase, current_mixed_variance_weight,current_mixed_variance_sigma, current_phase_only_obj, current_tune_only_probe_abs, current_dynamically_resize_yx_object, current_beam_current_step, current_probe_step, current_obj_step, current_probe_pos_step, current_tilts_step, current_static_background_step, current_aberrations_array_step =               get_value_for_epoch([restart_from_vacuum, reset_history_flag, smart_memory, wolfe_c1_constant,wolfe_c2_constant, window_weight, hist_length, slow_axis_reg_weight_tilts, slow_axis_reg_coeff_titls, slow_axis_reg_weight_positions, slow_axis_reg_coeff_positions, fast_axis_reg_weight_positions,fast_axis_reg_weight_tilts, update_step_bfgs, apply_gaussian_filter_amplitude, apply_gaussian_filter, keep_probe_states_orthogonal, loss_weight, phase_norm_weight, abs_norm_weight, probe_reg_constraint_weight, do_charge_flip, atv_weight, beta_wedge, tune_only_probe_phase, mixed_variance_weight,mixed_variance_sigma, phase_only_obj, tune_only_probe_abs, dynamically_resize_yx_object, update_beam_current, update_probe, update_obj, update_probe_pos, update_tilts, update_static_background, update_aberrations_array], epoch, default_float_cpu)
         try:
             full_sequence=sequence(epoch)
         except:
             full_sequence=sequence
-        try:
-            this_smart_memory=smart_memory(epoch)
-        except:
-            this_smart_memory=smart_memory
-        if not(reset_history_flag is None):
-            if reset_history_flag(epoch): reset_bfgs_history();
-        if not(restart_from_vacuum is None):
-            try:
-                restart_flag=restart_from_vacuum(epoch)
-            except:
-                restart_flag=False
-        else:
-            restart_flag=False
-        if restart_flag:
+        if this_reset_history_flag: reset_bfgs_history();
+        if current_restart_from_vacuum:
             obj=xp.ones_like(obj);
             reset_bfgs_history()
         count, save_flag=0, False ## count for measurements
         if save_checkpoints_every_epoch: save_flag= epoch%save_checkpoints_every_epoch==0;
-        current_wolfe_c1_constant,current_wolfe_c2_constant, current_window_weight, current_hist_length, current_slow_axis_reg_weight_tilts, current_slow_axis_reg_coeff_tilts, current_slow_axis_reg_weight_positions, current_slow_axis_reg_coeff_positions, current_fast_axis_reg_weight_positions,current_fast_axis_reg_weight_tilts, current_update_step_bfgs, current_apply_gaussian_filter_amplitude, current_apply_gaussian_filter, current_keep_probe_states_orthogonal, current_loss_weight, current_phase_norm_weight, current_abs_norm_weight, current_probe_reg_constraint_weight, current_do_charge_flip, current_atv_weight, current_beta_wedge, current_tune_only_probe_phase, current_mixed_variance_weight,current_mixed_variance_sigma, current_phase_only_obj, current_tune_only_probe_abs, current_dynamically_resize_yx_object, current_beam_current_step, current_probe_step, current_obj_step, current_probe_pos_step, current_tilts_step, current_static_background_step, current_aberrations_array_step =               get_value_for_epoch([wolfe_c1_constant,wolfe_c2_constant, window_weight, hist_length, slow_axis_reg_weight_tilts, slow_axis_reg_coeff_titls, slow_axis_reg_weight_positions, slow_axis_reg_coeff_positions, fast_axis_reg_weight_positions,fast_axis_reg_weight_tilts, update_step_bfgs, apply_gaussian_filter_amplitude, apply_gaussian_filter, keep_probe_states_orthogonal, loss_weight, phase_norm_weight, abs_norm_weight, probe_reg_constraint_weight, do_charge_flip, atv_weight, beta_wedge, tune_only_probe_phase, mixed_variance_weight,mixed_variance_sigma, phase_only_obj, tune_only_probe_abs, dynamically_resize_yx_object, update_beam_current, update_probe, update_obj, update_probe_pos, update_tilts, update_static_background, update_aberrations_array], epoch, default_float_cpu)
         if current_window_weight>0:
             if len(window)==2:
                 this_window=get_window(probe.shape[0], window[0], window[1])
@@ -303,7 +291,6 @@ def run_ptychography(pypty_params):
         else:
             this_window=None
         if current_aberrations_array_step: beam_current=try_to_initialize_beam_current(beam_current,measured_data_shape, default_float, xp);
-        
         full_sequence=np.sort(np.array(full_sequence))
         current_loss, current_sse  =  bfgs_update(algorithm, slice_distances, current_probe_step, current_obj_step, current_probe_pos_step,current_tilts_step, dataset, wavelength, masks, pixel_size_x_A, pixel_size_y_A, current_phase_norm_weight, current_abs_norm_weight, min_step, current_probe_reg_constraint_weight,aperture_mask, recon_type, defocus_array, Cs, alpha_near_field, damping_cutoff_multislice, smooth_rolloff, update_extra_cut,  current_keep_probe_states_orthogonal, current_do_charge_flip,cf_delta_phase, cf_delta_abs, cf_beta_phase, cf_beta_abs, current_phase_only_obj, current_beta_wedge, current_wolfe_c1_constant, current_wolfe_c2_constant, current_atv_weight, atv_q, atv_p, current_tune_only_probe_phase, propmethod, full_sequence, load_one_by_one, data_multiplier,data_pad, phase_plate_in_h5, print_flag, current_loss_weight, max_count, reduce_factor, optimism, current_mixed_variance_weight, current_mixed_variance_sigma, data_bin, data_shift_vector, this_smart_memory, default_float, default_complex, default_int, upsample_pattern, current_static_background_step, tilt_mode, fancy_sigma, current_tune_only_probe_abs, aberration_marker, current_aberrations_array_step, probe_marker, compute_batch, this_window, current_window_weight, current_dynamically_resize_yx_object, lazy_clean, current_apply_gaussian_filter, current_apply_gaussian_filter_amplitude, current_beam_current_step, xp, remove_fft_cache, is_first_epoch, current_hist_length, current_update_step_bfgs, current_fast_axis_reg_weight_positions, current_fast_axis_reg_weight_tilts, scan_size, current_slow_axis_reg_weight_positions, current_slow_axis_reg_coeff_positions, current_slow_axis_reg_weight_tilts, current_slow_axis_reg_coeff_tilts)
         is_first_epoch=False
