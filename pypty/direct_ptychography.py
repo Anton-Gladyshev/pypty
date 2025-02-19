@@ -51,8 +51,7 @@ def wdd(pypty_params, eps_wiener=1e-3, thresh=None, save=0):
     pixel_size_y_A = pypty_params.get('pixel_size_y_A', 1)
     save=pypty_params.get('save_preprocessing_files', save)
     mean_pattern=pypty_params.get('mean_pattern', None)
-
-    
+    upsample_pattern=pypty_params.get('upsample_pattern', None)
     try:
         os.makedirs(pypty_params["output_folder"], exist_ok=True)
         os.makedirs(pypty_params["output_folder"]+"wdd/", exist_ok=True)
@@ -76,7 +75,13 @@ def wdd(pypty_params, eps_wiener=1e-3, thresh=None, save=0):
     else:
         probe=cp.asarray(probe)
     if extra_probe_defocus!=0: probe=apply_defocus_probe(probe, extra_probe_defocus,acc_voltage, pixel_size_x_A, pixel_size_y_A,cp.complex64, cp.float32, cp);
-    probe=probe[:,:,0]
+#    probe=padprobetodatafarfield(probe, data.shape, 0, 1)
+    if len(probe.shape)==3:
+        probe=probe[:,:,0]
+    else:
+        probe=probe[:,:,0,0]
+    
+    
     if not(aberrations is None):
         num_abs=len(aberrations)
         possible_n, possible_m, possible_ab=convert_num_to_nmab(num_abs)
