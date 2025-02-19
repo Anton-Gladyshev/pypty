@@ -869,15 +869,27 @@ def phase_cross_corr_align(im_ref_fft, im_2_fft, refine_box_dim, upsample, x_rea
 
 
 
-
+# Function to get memory usage of all CuPy variables in GB (sorted by size)
 def get_cupy_memory_usage():
-    total_allocated = cp.cuda.memory.get_allocated_memory()
-    print(f"\nTotal GPU Memory Allocated: {total_allocated / (1024 ** 3):.4f} GB\n")
+    # Get memory pool statistics
+    mempool = cp.get_default_memory_pool()
+    total_allocated = mempool.used_bytes()  # Total allocated GPU memory
+    total_reserved = mempool.total_bytes()  # Total reserved GPU memory (including fragmentation)
+    print("\n")
+    print(f"Total GPU Memory Allocated: {total_allocated / (1024 ** 3):.4f} GB\n")
+    print(f"Total GPU Memory Reserved: {total_reserved / (1024 ** 3):.4f} GB\n")
+
+    # Store variables and their sizes
     memory_usage = []
+
     for var_name, var_value in globals().items():
         if isinstance(var_value, cp.ndarray):  # Only check CuPy arrays
             mem_usage_gb = var_value.nbytes / (1024 ** 3)  # Convert bytes to GB
             memory_usage.append((var_name, mem_usage_gb, var_value.shape, var_value.dtype))
+
+    # Sort variables by memory usage (largest first)
     memory_usage.sort(key=lambda x: x[1], reverse=True)
+
+    # Print sorted results with new lines (\n)
     for var_name, mem_usage_gb, shape, dtype in memory_usage:
-        print(f"\nVariable: {var_name}, Memory: {mem_usage_gb:.4f} GB, Shape: {shape}, Dtype: {dtype}")
+        print(f"Variable: {var_name}\nMemory: {mem_usage_gb:.4f} GB\nShape: {shape}\nDtype: {dtype}\n")
