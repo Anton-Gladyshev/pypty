@@ -56,7 +56,8 @@ def better_multislice(full_probe, this_obj_chopped, num_slices, n_obj_modes, n_p
         waves_multislice[:,:,:,ind_multislice, :,:,8]=wave        # input_wave for this slice!!!
         waves_multislice[:,:,:,ind_multislice, :,:,9]=fourier_wave#Fourier
         wave= (2/3)*(help_psi_14+help_psi_24)-(1/6)*(help_psi_32+help_psi_42)
-    return cp.conjugate(waves_multislice), wave ## all waves and just the exit wave
+    cp.conjugate(waves_multislice, out=waves_multislice)
+    return waves_multislice, wave ## all waves and just the exit wave
     
 def better_multislice_grads(dLoss_dP_out, waves_multislice, this_obj_chopped, object_grad, tilts_grad, is_single_dist, this_distances, exclude_mask, this_wavelength, q2, qx, this_tan_x, qy, this_tan_y, num_slices, n_probe_modes, n_obj_modes,tiltind, this_step_tilts,  master_propagator_phase_space, half_master_propagator_phase_space, damping_cutoff_multislice, smooth_rolloff, tilt_mode,  compute_batch, mask_clean, masked_pixels_y, masked_pixels_x, default_float, default_complex):
     sh0=this_obj_chopped.shape[0]
@@ -242,7 +243,8 @@ def multislice(full_probe, this_obj_chopped, num_slices, n_obj_modes, n_probe_mo
             waves_multislice[:, :,:,ind_multislice, :, :, 1]=wave ### FFT of \psi^{out}_{ind\ multislice}, x2 cutoff, but it is needed only for tilts grads,  we will set the x1 cutoff later!
             wave*=propagator_phase_space
             wave=ifft2(wave, axes=(1,2), overwrite_x=True) # x1 cutoff
-    return cp.conjugate(waves_multislice), wave
+    cp.conjugate(waves_multislice, out=waves_multislice)
+    return waves_multislice, wave
 
 
 def multislice_grads(dLoss_dP_out, waves_multislice, this_obj_chopped, object_grad, tilts_grad, is_single_dist,this_distances, exclude_mask, this_wavelength, q2, qx, this_tan_x, qy, this_tan_y, num_slices, n_obj_modes,tiltind, master_propagator_phase_space, this_step_tilts, damping_cutoff_multislice, smooth_rolloff, tilt_mode,  compute_batch, mask_clean, this_step_probe, this_step_obj, this_step_pos_correction, masked_pixels_y, masked_pixels_x, default_float, default_complex, helper_flag_4):

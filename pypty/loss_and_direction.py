@@ -423,11 +423,14 @@ def loss_and_direction(this_obj, full_probe, this_pos_array, this_pos_correction
                     if helper_flag_1:
                         if phase_plate_active:
                             if fourier_probe_grad is None: fourier_probe_grad=fft2(interm_probe_grad, axes=(1,2));
-                            interm_probe_grad=ifft2(fourier_probe_grad*cp.conjugate(this_phase_plate[:,:,:,None]), (1,2))
+                            cp.conjugate(this_phase_plate, out=this_phase_plate)
+                            interm_probe_grad=ifft2(fourier_probe_grad*this_phase_plate[:,:,:,None], (1,2))
                         if fluctuating_current_flag:
                             if this_beam_current_step:
                                 if n_probe_modes==1:
-                                    beam_current_grad[tcs]=2*cp.sign(thisbc)*cp.sum(cp.real(interm_probe_grad[:,:,:,0]*cp.conjugate(this_probe_before_fluctuations[:,:,:,0])), (1,2), dtype=cp.float64).astype(default_float)
+                                    cp.conjugate(this_probe_before_fluctuations, out=this_probe_before_fluctuations)
+                                    
+                                    beam_current_grad[tcs]=2*cp.sign(thisbc)*cp.sum(cp.real(interm_probe_grad[:,:,:,0]*this_probe_before_fluctuations[:,:,:,0]), (1,2), dtype=cp.float64).astype(default_float)
                                 else:
                                     beam_current_grad[tcs]=2*cp.sign(thisbc)*cp.sum(cp.real(interm_probe_grad*cp.conjugate(this_probe_before_fluctuations)), (1,2,3))
                             if this_step_probe:
@@ -522,6 +525,9 @@ def loss_and_direction(this_obj, full_probe, this_pos_array, this_pos_correction
         else:
             probe_grad*=exclude_mask_ishift[0,:,:,None]
         probe_grad=ifft2(probe_grad, (0,1), overwrite_x=True);
+        
+    get_cupy_memory_usage()
+    
     return loss, sse, object_grad,  probe_grad, pos_grad, tilts_grad, static_background_grad, aberrations_array_grad, beam_current_grad
 
 

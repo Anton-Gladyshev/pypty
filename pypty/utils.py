@@ -866,3 +866,18 @@ def phase_cross_corr_align(im_ref_fft, im_2_fft, refine_box_dim, upsample, x_rea
         shift_y, shift_x=new_indy-im_2_fft.shape[0]//2, new_indx-im_2_fft.shape[1]//2
     im_2_fft_shifted=im_2_fft*np.exp(-2j*np.pi*(x_real*shift_x+y_real*shift_y))
     return im_2_fft_shifted
+
+
+
+
+def get_cupy_memory_usage():
+    total_allocated = cp.cuda.memory.get_allocated_memory()
+    print(f"\nTotal GPU Memory Allocated: {total_allocated / (1024 ** 3):.4f} GB\n")
+    memory_usage = []
+    for var_name, var_value in globals().items():
+        if isinstance(var_value, cp.ndarray):  # Only check CuPy arrays
+            mem_usage_gb = var_value.nbytes / (1024 ** 3)  # Convert bytes to GB
+            memory_usage.append((var_name, mem_usage_gb, var_value.shape, var_value.dtype))
+    memory_usage.sort(key=lambda x: x[1], reverse=True)
+    for var_name, mem_usage_gb, shape, dtype in memory_usage:
+        print(f"\nVariable: {var_name}, Memory: {mem_usage_gb:.4f} GB, Shape: {shape}, Dtype: {dtype}"
