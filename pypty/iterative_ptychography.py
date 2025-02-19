@@ -116,12 +116,12 @@ def run_ptychography(pypty_params):
     ## optimization settings
     algorithm = params.get('algorithm', "lsq_sqrt")
     epoch_max = int(params.get('epoch_max', 200))
-    wolfe_c1_constant = params.get('wolfe_c1_constant', 0.5)
-    wolfe_c2_constant=params.get('wolfe_c2_constant', 0.999999)
+    wolfe_c1_constant = params.get('wolfe_c1_constant', 0.1)
+    wolfe_c2_constant=params.get('wolfe_c2_constant', 0.9)
     loss_weight = params.get('loss_weight', 1)
-    max_count = params.get('max_count', None)
-    reduce_factor = default_float_cpu(params.get('reduce_factor', 0.5))
-    optimism = params.get('optimism', 2)
+    max_count = params.get('max_count', 20)
+    reduce_factor = default_float_cpu(params.get('reduce_factor', 0.1))
+    optimism = params.get('optimism', 3)
     min_step = params.get('min_step', 1e-20)
     
     hist_length=params.get('hist_length', 10)
