@@ -11,7 +11,6 @@ except:
 from pypty.fft import *
 from pypty.utils import *
 
-
 def wdd(pypty_params, eps_wiener=1e-3, thresh=None, save=0):
     """
     This function performs Wigner distribution deconvolution.
@@ -70,18 +69,25 @@ def wdd(pypty_params, eps_wiener=1e-3, thresh=None, save=0):
     if mean_pattern is None:
         mean_pattern=np.mean(data[:100,:100], axis=(0,1))
     mean_pattern=cp.asarray(mean_pattern)
-    if probe is None:
-        probe=cp.expand_dims(cp.fft.fftshift(ifft2_ishift(cp.sqrt(mean_pattern))),-1)
-    else:
+    if not(probe is None) and data_pad!=0:
+        probe=probe[data_pad:-data_pad,data_pad:-data_pad]
+    if not(probe is None) and upsample_pattern!=1:
         probe=cp.asarray(probe)
+        probe=shift_fft2(probe)
+        if len(probe.shape)==3:
+            probe=probe[:,:,0]
+        else:
+            probe=probe[:,:,0,0]
+        probe=downsample_something(probe, upsample_pattern, cp)
+    if not(probe is None):
+        probe=cp.asarray(probe)
+    else:
+        probe=cp.expand_dims(cp.fft.fftshift(ifft2_ishift(cp.sqrt(mean_pattern))),-1)
     if extra_probe_defocus!=0: probe=apply_defocus_probe(probe, extra_probe_defocus,acc_voltage, pixel_size_x_A, pixel_size_y_A,cp.complex64, cp.float32, cp);
-#    probe=padprobetodatafarfield(probe, data.shape, 0, 1)
     if len(probe.shape)==3:
         probe=probe[:,:,0]
     else:
         probe=probe[:,:,0,0]
-    
-    
     if not(aberrations is None):
         num_abs=len(aberrations)
         possible_n, possible_m, possible_ab=convert_num_to_nmab(num_abs)
@@ -93,6 +99,7 @@ def wdd(pypty_params, eps_wiener=1e-3, thresh=None, save=0):
         kx, ky=cp.meshgrid(kx,ky, indexing="xy")
         ctf= cp.asarray(get_ctf(aberrations, kx, ky, wavelength))
         probe=ifft2_ishift(shift_fft2(probe)*cp.exp(-1j*ctf))
+        
     def flatten_edge(x):
         smooth=np.ones_like(x)
         maxval=0.6*cp.max(x)
@@ -185,7 +192,9 @@ def wdd(pypty_params, eps_wiener=1e-3, thresh=None, save=0):
         cp.get_default_pinned_memory_pool().free_all_blocks()
     except:
         pass
-    prefactor=cp.sqrt(cp.abs(data[min_q_ind[0],min_q_ind[1]]))
+    
+    prefactor=data[min_q_ind[0],min_q_ind[1]]
+    prefactor=cp.sqrt(cp.abs(prefactor))
     o=data/prefactor
     del data
     try:
