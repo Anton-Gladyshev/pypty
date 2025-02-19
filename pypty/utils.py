@@ -911,10 +911,11 @@ def get_compute_batch(compute_batch, load_one_by_one, hist_size, measured_data_s
     if suggested_compute_batch<=5 and not(load_one_by_one):
         suggested_compute_batch=int(np.floor((total_mem_device_Gb*memory_satiration -update_memory)/per_compute_batch_memory))
         if print_flag:
-            sys.stdout.write("\nWe do not suggest to keep the dataset in the memory and manually set load_one_by_one to True. Optimal compute batch of %d will use %.1f %% of available memory."%(suggested_compute_batch, memory_satiration*100))
+            sys.stdout.write("\nWe do not suggest to keep the dataset in the memory and manually set load_one_by_one to True. Optimal compute batch is %d."%(suggested_compute_batch))
     elif print_flag:
-        sys.stdout.write("\nWe suggest to use compute batch of %d in order to use %.1f %% of the available memory."%(suggested_compute_batch, memory_satiration*100))
-    if memory_satiration>0.9:
+        sys.stdout.write("\nWe suggest to use compute batch of %d"%(suggested_compute_batch))
+    sys.stdout.flush()
+    if total_mem_device_Gb<20:
         smart_memory=True
     return suggested_compute_batch, load_one_by_one, smart_memory
 
