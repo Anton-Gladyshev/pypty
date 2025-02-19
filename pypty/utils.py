@@ -884,3 +884,40 @@ def get_cupy_memory_usage():
     memory_usage.sort(key=lambda x: x[1], reverse=True)
     for var_name, mem_usage_gb, shape, dtype in memory_usage:
         print(f"Variable: {var_name}\nMemory: {mem_usage_gb:.4f} GB\nShape: {shape}\nDtype: {dtype}\n")
+
+
+
+def get_compute_batch(compute_batch, load_one_by_one, hist_size, measured_data_shape, memory_satiration, smart_memory, data_pad, obj_shape, probe_shape,  dtype="double", propmethod="multislice", print_flag=True):
+    device = cp.cuda.Device(0)
+    total_mem_device_Gb=  device.mem_info[0] / (1024 **3)
+    
+    if propmethod=="multislice":
+        waves_shape=2
+    if propmethod=="yoshida":
+        waves_shape=7
+    if propmethod=="better_multislice":
+        waves_shape=10
+    if dtype=="double":
+        n_bytes=16
+    else:
+        n_bytes=8
+    probexyms= np.prod(probe_shape)
+    probexym=np.prod(probe_shape[:3])
+    probexy=np.prod(probe_shape[:2])
+    load_one_by_one_memory = (1-load_one_by_one)*np.prod(measured_data_shape) *n_bytes*0.5  /(1024 ** 3)
+    update_memory= ((6+2*hist_size) * np.prod(obj_shape) * n_bytes + (7+2*hist_size)*probexyms*n_bytes +  17*probexym + probexym*n_bytes)/(1024 ** 3)
+    per_compute_batch_memory =(probexym*obj_shape[2]*obj_shape[3]*waves_shape*n_bytes + probexy*obj_shape[3]*obj_shape[2]*n_bytes + 2*probexym*n_bytes + probexy*n_bytes*0.5 + 2* probexym*obj_shape[3]*n_bytes+ 2*np.prod(measured_data_shape[1:])*n_bytes + 2*probexym*n_bytes )/(1024 ** 3)
+    suggested_compute_batch=int(np.floor((total_mem_device_Gb*memory_satiration -update_memory - load_one_by_one_memory)/per_compute_batch_memory))
+    if suggested_compute_batch<=5 and not(load_one_by_one):
+        suggested_compute_batch=int(np.floor((total_mem_device_Gb*memory_satiration -update_memory)/per_compute_batch_memory))
+        if print_flag:
+            sys.stdout.write("\nWe do not suggest to keep the dataset in the memory and manually set load_one_by_one to True. Optimal compute batch of %d will use %.1f %% of available memory."%(suggested_compute_batch, memory_satiration*100))
+    elif print_flag:
+        sys.stdout.write("\nWe suggest to use compute batch of %d in order to use %.1f %% of the available memory."%(suggested_compute_batch, memory_satiration*100))
+    if memory_satiration>0.9:
+        smart_memory=True
+    return suggested_compute_batch, load_one_by_one, smart_memory
+
+    
+
+
