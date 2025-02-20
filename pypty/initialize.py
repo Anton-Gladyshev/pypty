@@ -9,10 +9,10 @@ from pypty.utils import *
 from pypty.dpc import *
 
 
-def create_pypty_data(path_input, path_output, swap_axes=False,flip_ky=False,flip_kx=False, flip_y=False,flip_x=False,comcalc_len=1000, comx=None, comy=None, bin=1, crop_left=None, crop_right=None, crop_top=None, crop_bottom=None, normalize=True, cutoff_ratio=None, pad_k=0, data_dtype=np.float32, rescale=1, exist_ok=True):
+def create_pypty_data(data, path_output, swap_axes=False,flip_ky=False,flip_kx=False, flip_y=False,flip_x=False,comcalc_len=1000, comx=None, comy=None, bin=1, crop_left=None, crop_right=None, crop_top=None, crop_bottom=None, normalize=True, cutoff_ratio=None, pad_k=0, data_dtype=np.float32, rescale=1, exist_ok=True):
     """
     Create a PyPty-style .h5 data.
-        path_input - path to a dataset to be transformed (either .h5 or .npy array)
+        data - path to a dataset to be transformed (either .h5 or .npy array) or ndarray containing a 4D-STEM dataset.
         path_output - path where pypty-dataset will be stored
         
         swap_axes - boolean flag (default False) - swaps the last two coordianates
@@ -43,17 +43,19 @@ def create_pypty_data(path_input, path_output, swap_axes=False,flip_ky=False,fli
             return None
         else:
             print("\nDeleting the exitsting one!")
-            if path_output[-3:]==".h5" and path_input!=path_output:
+            if path_output[-3:]==".h5" and data!=path_output:
                 try:
                     os.remove(path_output)
                 except:
                     pass
-    if path_input[-4:]==".npy":
-        data=np.load(path_input)
-    else:
-        f0=h5py.File(path_input, "r")
-        data=np.array(f0["data"])
-        f0.close()
+    if type(data)=="str":
+        if data[-4:]==".npy":
+            data=np.load(data)
+        else:
+            f0=h5py.File(data, "r")
+            data=np.array(f0["data"])
+            f0.close()
+    data=np.array(data)
     if flip_y:
         data=data[::-1,:,:,:]
     if flip_x:
