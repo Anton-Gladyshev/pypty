@@ -48,6 +48,7 @@ def create_pypty_data(data, path_output, swap_axes=False,flip_ky=False,flip_kx=F
                     os.remove(path_output)
                 except:
                     pass
+    
     if type(data)==str:
         if data[-4:]==".npy":
             data=np.load(data)
