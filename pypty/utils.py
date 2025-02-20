@@ -908,7 +908,7 @@ def get_compute_batch(compute_batch, load_one_by_one, hist_size, measured_data_s
     probexy=np.prod(probe_shape[:2])
     load_one_by_one_memory = (1-load_one_by_one)*np.prod(measured_data_shape) *n_bytes *0.5 /(1024 ** 3)
     update_memory= n_bytes*((6+2*hist_size) * np.prod(obj_shape) + (6+2*hist_size)*probexyms +  17*probexym + 9*n_meas*(3+1*hist_size)+ (3+1*hist_size)*probexy)/(1024 ** 3)
-    per_compute_batch_memory=probexym*obj_shape[2]*obj_shape[3]*waves_shape + 2*probexy + 17 + 6*probexym*obj_shape[3] + probexym*6 + probexym*5
+    per_compute_batch_memory=probexym*obj_shape[2]*obj_shape[3]*waves_shape + 3*probexy + 17 + 7*probexym*obj_shape[3] + probexym*13 
     per_compute_batch_memory*=n_bytes/(1024 ** 3)
     suggested_compute_batch=int(np.floor((total_mem_device_Gb*memory_satiration -update_memory - load_one_by_one_memory)/per_compute_batch_memory))
     if suggested_compute_batch<=5 and not(load_one_by_one):
