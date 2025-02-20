@@ -410,7 +410,7 @@ def save_updated_arrays(output_folder, epoch,current_probe_step, current_probe_p
         if epoch%save_loss_log==0:
             with open(output_folder+"loss.csv", mode='a', newline='') as loss_list:
                 fieldnames=["epoch", "loss", "sse", "initial step", "matching step", "N linesearch iterations",
-                "dir. derivative", "new dir. derivative", "F-axis postions", "S-axis positons", "S-axis tilts", "F-axis tilts", "l1 object", "Q-space probe", "R-space probe", "TV object", "V-object"]
+                "dir. derivative", "new dir. derivative", "F-axis postions reg.", "S-axis positons reg.", "S-axis tilts reg.", "F-axis tilts reg.", "l1 object reg.", "Q-space probe reg.", "R-space probe reg.", "TV object reg.", "V-object reg."]
                 write_loss=csv.DictWriter(loss_list,fieldnames=fieldnames)
                 write_loss.writerow({"epoch": epoch,
                                     "loss": current_loss,
@@ -688,7 +688,7 @@ def prepare_saving_stuff(output_folder, save_loss_log, epoch_prev):
         os.system("touch "+output_folder+"loss.csv")
         with open(output_folder+"loss.csv", 'w+', newline='') as loss_list:
             fieldnames=["epoch", "loss", "sse", "initial step", "matching step", "N linesearch iterations",
-                "dir. derivative", "new dir. derivative", "F-axis postions", "S-axis positons", "S-axis tilts", "F-axis tilts", "l1 object", "Q-space probe", "R-space probe", "TV object", "V-object"]
+                "dir. derivative", "new dir. derivative", "F-axis postions reg.", "S-axis positons reg.", "S-axis tilts reg.", "F-axis tilts reg.", "l1 object reg.", "Q-space probe reg.", "R-space probe reg.", "TV object reg.", "V-object reg."]
             write_loss=csv.DictWriter(loss_list,fieldnames=fieldnames)
             write_loss.writeheader()
         
