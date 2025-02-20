@@ -188,9 +188,9 @@ def outputlog_plots(loss_path, skip_first=0, plot_time=True):
             ax2 = ax.secondary_xaxis("top", functions=(forward,inverse)) # Create a dummy plot
             ax2.set_xlabel("time / s", fontsize = 14)
             #ax2.xaxis.set_major_locator(plt.MaxNLocator(6))
-            labels = ax2.get_xticklabels()
-            labels[0] =  ""
-            ax2.set_xticklabels(labels)
+            #labels = ax2.get_xticklabels()
+            #labels[0] =  ""
+            #ax2.set_xticklabels(labels)
         figs.append(fig)
         plt.show()
     return figs
