@@ -420,15 +420,15 @@ def save_updated_arrays(output_folder, epoch,current_probe_step, current_probe_p
                                     "N linesearch iterations": count_linesearch,
                                     "dir. derivative": d_value,
                                     "new dir. derivative": new_d_value,
-                                    "F-axis postions": constraint_contributions[0],
-                                    "S-axis positons": constraint_contributions[1],
-                                    "S-axis tilts": constraint_contributions[2],
-                                    "F-axis tilts": constraint_contributions[3],
-                                    "l1 object": constraint_contributions[4],
-                                    "Q-space probe": constraint_contributions[5],
-                                    "R-space probe": constraint_contributions[6],
-                                    "TV object": constraint_contributions[7],
-                                    "V-object": constraint_contributions[8]
+                                    "F-axis postions reg.": constraint_contributions[0],
+                                    "S-axis positons reg.": constraint_contributions[1],
+                                    "S-axis tilts reg.": constraint_contributions[2],
+                                    "F-axis tilts reg.": constraint_contributions[3],
+                                    "l1 object reg.": constraint_contributions[4],
+                                    "Q-space probe reg.": constraint_contributions[5],
+                                    "R-space probe reg.": constraint_contributions[6],
+                                    "TV object reg.": constraint_contributions[7],
+                                    "V-object reg.": constraint_contributions[8]
                                     })
     if save_flag:  ##last update in epoch
         if xp==np:
