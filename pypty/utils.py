@@ -447,6 +447,7 @@ def save_updated_arrays(output_folder, epoch,current_probe_step, current_probe_p
                                 "Total GiB":total_mem_device
                                 })
             else:
+                ssum_constr=cp.asarray(constraint_contributions).sum()
                 write_loss.writerow({"epoch": epoch,
                                 "loss": current_loss,
                                 "sse": current_sse,
@@ -455,7 +456,7 @@ def save_updated_arrays(output_folder, epoch,current_probe_step, current_probe_p
                                 "N linesearch iterations": count_linesearch,
                                 "dir. derivative": d_value,
                                 "new dir. derivative": new_d_value,
-                                "Constraints contribution": np.sum(constraint_contributions),
+                                "Constraints contribution": ssum_constr,
                                 "Allocated GiB": total_allocated,
                                 "Reserved GiB": total_reserved,
                                 "Total GiB":total_mem_device
