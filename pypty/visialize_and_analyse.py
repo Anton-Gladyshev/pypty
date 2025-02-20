@@ -6,6 +6,7 @@ from matplotlib.patches import Rectangle
 import matplotlib.patheffects as PathEffects
 from skimage.restoration import unwrap_phase
 from pypty.utils import *
+from tqdm import tqdm
 
 def plot_modes(ttt):
     if len(ttt.shape)==4:
@@ -193,5 +194,27 @@ def outputlog_plots(loss_path, skip_first=0, plot_time=True):
     return figs
 
 
+
+def radial_average(ff, r_bins, r_max, r_min, px_size_A, plot=True):
+    x_grid,y_grid=np.fft.fftshift(np.fft.fftfreq(ff.shape[1])), np.fft.fftshift(np.fft.fftfreq(ff.shape[0]))
+    x_grid,y_grid=np.meshgrid(x_grid, y_grid, indexing="xy")
+    mult=np.min([ff.shape[0], ff.shape[1]])
+    r_max*=mult
+    r_min*=mult
+    r=mult*(x_grid**2+y_grid**2)**0.5
+    unique_distances=np.arange(0, np.max(r), r_bins)
+    unique_distances=unique_distances[((unique_distances<=r_max)*(unique_distances>=r_min)).astype(bool)]
+    radial_avg=np.zeros_like(unique_distances)
+    if plot:
+        for iii in tqdm(range(len(unique_distances))):
+            distance=unique_distances[iii]
+            radial_mask = (r<=distance+r_bins)*(r>distance)
+            radial_avg[iii] = np.mean(ff[radial_mask])
+        fig=plt.figure(figsize=(10,3))
+        plt.plot(unique_distances/(mult*px_size_A), radial_avg, "-")
+        plt.xlabel("spatial freqency [A$^{-1}$]")
+        plt.yscale("log")
+        plt.show()
+    return fig
 
 
