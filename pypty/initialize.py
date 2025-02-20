@@ -9,7 +9,7 @@ from pypty.utils import *
 from pypty.dpc import *
 
 
-def create_pypty_data(data, path_output, swap_axes=False,flip_ky=False,flip_kx=False, flip_y=False,flip_x=False,comcalc_len=1000, comx=None, comy=None, bin=1, crop_left=None, crop_right=None, crop_top=None, crop_bottom=None, normalize=True, cutoff_ratio=None, pad_k=0, data_dtype=np.float32, rescale=1, exist_ok=True):
+def create_pypty_data(data, path_output, swap_axes=False,flip_ky=False,flip_kx=False, flip_y=False,flip_x=False,comcalc_len=1000, comx=None, comy=None, bin=1, crop_left=None, crop_right=None, crop_top=None, crop_bottom=None, normalize=False, cutoff_ratio=None, pad_k=0, data_dtype=np.float32, rescale=1, exist_ok=True):
     """
     Create a PyPty-style .h5 data.
         data - path to a dataset to be transformed (either .h5 or .npy array) or ndarray containing a 4D-STEM dataset.
@@ -28,7 +28,7 @@ def create_pypty_data(data, path_output, swap_axes=False,flip_ky=False,flip_kx=F
         crop_right - integer (default None / 0) - right cropping of the patterns.
         crop_top - integer (default None / 0) - top cropping of the patterns.
         crop_bottom - integer (default None / 0) - bottom cropping of the patterns.
-        normalize - boolean flag (default True). If true, patterns will be rescaled so that on average the sum over a pattern is 1
+        normalize - boolean flag (default False). If True, patterns will be rescaled so that on average the sum over a pattern is 1
         cutoff_ratio - float, default None. If not None, the values that are futher than cutoff_ratio x width/2 will be zeroed. 
         pad_k- integer (default 0), padding of the last two axes
         data_dtype- dtyle of the output file, default is np.float32, 
