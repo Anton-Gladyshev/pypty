@@ -5,7 +5,7 @@ setup(name="pypty",
     packages=['pypty'],
     author="Anton Gladyshev",
     install_requires=[
-        "numpy"
+        "numpy",
         "h5py",
         "matplotlib",
         "scipy",
@@ -13,7 +13,7 @@ setup(name="pypty",
         "tqdm"
     ],
     extras_require={
-        "gpu": ["cupy"],  
+        "gpu": ["cupy"],
     },
     zip_safe=False)
 
