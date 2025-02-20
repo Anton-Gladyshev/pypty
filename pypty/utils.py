@@ -414,7 +414,7 @@ def save_updated_arrays(output_folder, epoch,current_probe_step, current_probe_p
                 write_loss=csv.DictWriter(loss_list,fieldnames=fieldnames)
                 write_loss.writerow({"epoch": epoch,
                                     "loss": current_loss,
-                                    "sse": current_sse
+                                    "sse": current_sse,
                                     "initial step": current_update_step_bfgs,
                                     "matching step": actual_step,
                                     "N linesearch iterations": count,
