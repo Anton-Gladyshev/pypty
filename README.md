@@ -11,14 +11,24 @@ The code is written by Anton Gladyshev (AG SEM, Physics Department, Humboldt-Uni
 
 To create a proper Python environment and install PyPty, you can use **conda**, **mamba**, or **micromamba**. With **conda**, use:
 
-To , run the following commands:
+To install PyPty on a GPU, please run following commands
 ```bash
 $ git clone git@github.com:Anton-Gladyshev/pypty.git
 $ cd pypty
-$ conda env create -f pypty.yml
+$ conda env create -f pypty_gpu.yml
+$ conda activate pypty
+$ pip install .[gpu]
+```
+
+Alternatively, to install PyPty in CPU-mode you can do following:
+```bash
+$ git clone git@github.com:Anton-Gladyshev/pypty.git
+$ cd pypty
+$ conda env create -f pypty_cpu.yml
 $ conda activate pypty
 $ pip install .
 ```
+
 
 # Examples
 

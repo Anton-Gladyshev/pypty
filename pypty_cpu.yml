@@ -1,0 +1,11 @@
+name: pypty
+channels:
+- conda-forge
+dependencies:
+- numpy
+- python
+- h5py
+- matplotlib
+- scipy
+- scikit-image
+- tqdm
