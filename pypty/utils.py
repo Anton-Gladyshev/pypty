@@ -405,7 +405,7 @@ def padprobetodatanearfield(probe, measured_data_shape, data_pad, upsample_patte
 
 
 
-def save_updated_arrays(output_folder, epoch,current_probe_step, current_probe_pos_step, current_tilts_step,current_obj_step, obj, probe, tilts_correction, full_pos_correction, positions, tilts, static_background, current_aberrations_array_step, current_static_background_step,count, current_loss, current_sse, aberrations, beam_current, current_beam_current_step, save_flag, save_loss_log, constraint_contributions, actual_step, count, d_value, new_d_value,current_update_step_bfgs, xp):
+def save_updated_arrays(output_folder, epoch,current_probe_step, current_probe_pos_step, current_tilts_step,current_obj_step, obj, probe, tilts_correction, full_pos_correction, positions, tilts, static_background, current_aberrations_array_step, current_static_background_step,count, current_loss, current_sse, aberrations, beam_current, current_beam_current_step, save_flag, save_loss_log, constraint_contributions, actual_step, count_linesearch, d_value, new_d_value,current_update_step_bfgs, xp):
     if save_loss_log:
         if epoch%save_loss_log==0:
             with open(output_folder+"loss.csv", mode='a', newline='') as loss_list:
@@ -417,7 +417,7 @@ def save_updated_arrays(output_folder, epoch,current_probe_step, current_probe_p
                                     "sse": current_sse,
                                     "initial step": current_update_step_bfgs,
                                     "matching step": actual_step,
-                                    "N linesearch iterations": count,
+                                    "N linesearch iterations": count_linesearch,
                                     "dir. derivative": d_value,
                                     "new dir. derivative": new_d_value,
                                     "F-axis postions": constraint_contributions[0],
