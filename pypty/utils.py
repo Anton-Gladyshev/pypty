@@ -437,7 +437,7 @@ def save_updated_arrays(output_folder, epoch,current_probe_step, current_probe_p
                                     "Q-space probe reg.": constraint_contributions[5],
                                     "R-space probe reg.": constraint_contributions[6],
                                     "TV object reg.": constraint_contributions[7],
-                                    "V-object reg.": constraint_contributions[8]
+                                    "V-object reg.": constraint_contributions[8],
                                     "Allocated GiB": total_allocated,
                                     "Reserved GiB": total_reserved,
                                     "Total GiB":total_mem_device
