@@ -224,7 +224,7 @@ def run_ptychography(pypty_params):
     static_background=create_static_background_from_nothing(static_background, probe, damping_cutoff_multislice,data_pad,upsample_pattern,  default_float_cpu, recon_type) ## initializing static background
     obj, positions, t, sequence, wavelength, positions_correction, tilts_correction, aperture_mask = prepare_main_loop_params(algorithm,probe, obj,positions,tilts, measured_data_shape, acc_voltage, allow_subPixel_shift, sequence, use_full_FOV, print_flag, default_float_cpu, default_complex_cpu, default_int_cpu, probe_constraint_mask, aperture_mask, extra_space_on_side_px)  # now the we will initilize the object in this function (create from nothing if needed and pad an existing one if needed)
     if compute_batch=="auto":
-        memory_satiration=0.66
+        memory_satiration=0.7
         try:
             history_size=hist_length(0)
         except:
