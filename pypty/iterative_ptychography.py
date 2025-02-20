@@ -245,6 +245,7 @@ def run_ptychography(pypty_params):
         except:
             history_size=hist_length
         compute_batch, load_one_by_one, smart_memory = get_compute_batch(compute_batch, load_one_by_one, history_size, measured_data_shape, memory_satiration, smart_memory, data_pad, obj.shape, probe.shape, default_dtype, propmethod, print_flag)
+        
     try:
         first_smart_memory=smart_memory(0)
         first_smart_memory=True
