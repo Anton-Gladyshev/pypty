@@ -405,27 +405,25 @@ def padprobetodatanearfield(probe, measured_data_shape, data_pad, upsample_patte
 
 
 
-def save_updated_arrays(output_folder, epoch,current_probe_step, current_probe_pos_step, current_tilts_step,current_obj_step, obj, probe, tilts_correction, full_pos_correction, positions, tilts, static_background, current_aberrations_array_step, current_static_background_step,count, current_loss, current_sse, aberrations, beam_current, current_beam_current_step, save_flag, save_loss_log, constraint_contributions, actual_step, count_linesearch, d_value, new_d_value,current_update_step_bfgs, xp):
+def save_updated_arrays(output_folder, epoch,current_probe_step, current_probe_pos_step, current_tilts_step,current_obj_step, obj, probe, tilts_correction, full_pos_correction, positions, tilts, static_background, current_aberrations_array_step, current_static_background_step,count, current_loss, current_sse, aberrations, beam_current, current_beam_current_step, save_flag, save_loss_log, constraint_contributions, actual_step, count_linesearch, d_value, new_d_value,current_update_step_bfgs, t0, xp):
     if save_loss_log:
         with open(output_folder+"loss.csv", mode='a', newline='') as loss_list:
             if save_loss_log==2:
-                fieldnames=["epoch", "loss", "sse", "initial step", "matching step", "N linesearch iterations",
-                "dir. derivative", "new dir. derivative", "F-axis postions reg.", "S-axis positons reg.", "S-axis tilts reg.", "F-axis tilts reg.", "l1 object reg.", "Q-space probe reg.", "R-space probe reg.", "TV object reg.", "V-object reg.", "Allocated GiB", "Reserved GiB", "Total GiB"]
+                fieldnames=["epoch", "time", "loss", "sse", "initial step", "matching step", "N linesearch iterations",
+                "dir. derivative", "new dir. derivative", "F-axis postions reg.", "S-axis positons reg.", "S-axis tilts reg.", "F-axis tilts reg.", "l1 object reg.", "Q-space probe reg.", "R-space probe reg.", "TV object reg.", "V-object reg.", "Free GiB", "Total GiB"]
             else:
-                fieldnames=["epoch", "loss", "sse", "initial step", "matching step", "N linesearch iterations",
-                "dir. derivative", "new dir. derivative", "Constraints contribution", "Allocated GiB", "Reserved GiB", "Total GiB"]
+                fieldnames=["epoch", "time", "loss", "sse", "initial step", "matching step", "N linesearch iterations",
+                "dir. derivative", "new dir. derivative", "Constraints contribution", "Free GiB", "Total GiB"]
             if xp!=np:
-                mempool = cp.get_default_memory_pool()
-                total_allocated = mempool.used_bytes() / 1024 ** 3
-                total_reserved = mempool.total_bytes() / 1024 ** 3
                 device = cp.cuda.Device(0)
                 total_mem_device=  device.mem_info[1] / (1024 **3)
+                free_mem_device=   device.mem_info[0] / (1024 **3)
             else:
                 total_allocated,total_reserved, total_mem_device=0,0,0
-            
             write_loss=csv.DictWriter(loss_list,fieldnames=fieldnames)
             if save_loss_log==2:
                 write_loss.writerow({"epoch": epoch,
+                                "time / s": time.time()-t0,
                                 "loss": current_loss,
                                 "sse": current_sse,
                                 "initial step": current_update_step_bfgs,
@@ -442,9 +440,8 @@ def save_updated_arrays(output_folder, epoch,current_probe_step, current_probe_p
                                 "R-space probe reg.": constraint_contributions[6],
                                 "TV object reg.": constraint_contributions[7],
                                 "V-object reg.": constraint_contributions[8],
-                                "Allocated GiB": total_allocated,
-                                "Reserved GiB": total_reserved,
-                                "Total GiB":total_mem_device
+                                "Free GiB":  free_mem_device,
+                                "Total GiB": total_mem_device
                                 })
             else:
                 for dumbi1 in range(9):
@@ -455,6 +452,7 @@ def save_updated_arrays(output_folder, epoch,current_probe_step, current_probe_p
                 ssum_constr=np.sum(constraint_contributions)
                 write_loss.writerow({"epoch": epoch,
                                 "loss": current_loss,
+                                "time / s": time.time()-t0,
                                 "sse": current_sse,
                                 "initial step": current_update_step_bfgs,
                                 "matching step": actual_step,
@@ -462,8 +460,7 @@ def save_updated_arrays(output_folder, epoch,current_probe_step, current_probe_p
                                 "dir. derivative": d_value,
                                 "new dir. derivative": new_d_value,
                                 "Constraints contribution": ssum_constr,
-                                "Allocated GiB": total_allocated,
-                                "Reserved GiB": total_reserved,
+                                "Free GiB": free_mem_device,
                                 "Total GiB":total_mem_device
                                 })
                         
@@ -724,11 +721,11 @@ def prepare_saving_stuff(output_folder, save_loss_log, epoch_prev):
     if save_loss_log and epoch_prev==0:
         os.system("touch "+output_folder+"loss.csv")
         if save_loss_log==2:
-            fieldnames=["epoch", "loss", "sse", "initial step", "matching step", "N linesearch iterations",
-                "dir. derivative", "new dir. derivative", "F-axis postions reg.", "S-axis positons reg.", "S-axis tilts reg.", "F-axis tilts reg.", "l1 object reg.", "Q-space probe reg.", "R-space probe reg.", "TV object reg.", "V-object reg.", "Allocated GiB", "Reserved GiB", "Total GiB"]
+            fieldnames=["epoch", "time", "loss", "sse", "initial step", "matching step", "N linesearch iterations",
+                "dir. derivative", "new dir. derivative", "F-axis postions reg.", "S-axis positons reg.", "S-axis tilts reg.", "F-axis tilts reg.", "l1 object reg.", "Q-space probe reg.", "R-space probe reg.", "TV object reg.", "V-object reg.", "Free GiB", "Total GiB"]
         else:
-            fieldnames=["epoch", "loss", "sse", "initial step", "matching step", "N linesearch iterations",
-                "dir. derivative", "new dir. derivative", "Constraints contribution", "Allocated GiB", "Reserved GiB", "Total GiB"]
+            fieldnames=["epoch", "time", "loss", "sse", "initial step", "matching step", "N linesearch iterations",
+                "dir. derivative", "new dir. derivative", "Constraints contribution", "Free GiB", "Total GiB"]
         with open(output_folder+"loss.csv", 'w+', newline='') as loss_list:
             write_loss=csv.DictWriter(loss_list,fieldnames=fieldnames)
             write_loss.writeheader()
