@@ -410,7 +410,16 @@ def save_updated_arrays(output_folder, epoch,current_probe_step, current_probe_p
         if epoch%save_loss_log==0:
             with open(output_folder+"loss.csv", mode='a', newline='') as loss_list:
                 fieldnames=["epoch", "loss", "sse", "initial step", "matching step", "N linesearch iterations",
-                "dir. derivative", "new dir. derivative", "F-axis postions reg.", "S-axis positons reg.", "S-axis tilts reg.", "F-axis tilts reg.", "l1 object reg.", "Q-space probe reg.", "R-space probe reg.", "TV object reg.", "V-object reg."]
+                "dir. derivative", "new dir. derivative", "F-axis postions reg.", "S-axis positons reg.", "S-axis tilts reg.", "F-axis tilts reg.", "l1 object reg.", "Q-space probe reg.", "R-space probe reg.", "TV object reg.", "V-object reg.", "Allocated GiB", "Reserved GiB", "Total GiB"]
+                if xp!=np:
+                    mempool = cp.get_default_memory_pool()
+                    total_allocated = mempool.used_bytes() / 1024 ** 3
+                    total_reserved = mempool.total_bytes() / 1024 ** 3
+                    device = cp.cuda.Device(0)
+                    total_mem_device=  device.mem_info[1] / (1024 **3)
+                except:
+                    total_allocated,total_reserved, total_mem_device=0,0,0
+                
                 write_loss=csv.DictWriter(loss_list,fieldnames=fieldnames)
                 write_loss.writerow({"epoch": epoch,
                                     "loss": current_loss,
@@ -429,6 +438,9 @@ def save_updated_arrays(output_folder, epoch,current_probe_step, current_probe_p
                                     "R-space probe reg.": constraint_contributions[6],
                                     "TV object reg.": constraint_contributions[7],
                                     "V-object reg.": constraint_contributions[8]
+                                    "Allocated GiB": total_allocated,
+                                    "Reserved GiB": total_reserved,
+                                    "Total GiB":total_mem_device
                                     })
     if save_flag:  ##last update in epoch
         if xp==np:
@@ -688,7 +700,7 @@ def prepare_saving_stuff(output_folder, save_loss_log, epoch_prev):
         os.system("touch "+output_folder+"loss.csv")
         with open(output_folder+"loss.csv", 'w+', newline='') as loss_list:
             fieldnames=["epoch", "loss", "sse", "initial step", "matching step", "N linesearch iterations",
-                "dir. derivative", "new dir. derivative", "F-axis postions reg.", "S-axis positons reg.", "S-axis tilts reg.", "F-axis tilts reg.", "l1 object reg.", "Q-space probe reg.", "R-space probe reg.", "TV object reg.", "V-object reg."]
+                "dir. derivative", "new dir. derivative", "F-axis postions reg.", "S-axis positons reg.", "S-axis tilts reg.", "F-axis tilts reg.", "l1 object reg.", "Q-space probe reg.", "R-space probe reg.", "TV object reg.", "V-object reg.", "Allocated GiB", "Reserved GiB", "Total GiB"]
             write_loss=csv.DictWriter(loss_list,fieldnames=fieldnames)
             write_loss.writeheader()
         
