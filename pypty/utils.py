@@ -417,7 +417,7 @@ def save_updated_arrays(output_folder, epoch,current_probe_step, current_probe_p
                     total_reserved = mempool.total_bytes() / 1024 ** 3
                     device = cp.cuda.Device(0)
                     total_mem_device=  device.mem_info[1] / (1024 **3)
-                except:
+                else:
                     total_allocated,total_reserved, total_mem_device=0,0,0
                 
                 write_loss=csv.DictWriter(loss_list,fieldnames=fieldnames)
