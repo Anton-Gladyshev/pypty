@@ -409,10 +409,10 @@ def save_updated_arrays(output_folder, epoch,current_probe_step, current_probe_p
     if save_loss_log:
         with open(output_folder+"loss.csv", mode='a', newline='') as loss_list:
             if save_loss_log==2:
-                fieldnames=["epoch", "time", "loss", "sse", "initial step", "matching step", "N linesearch iterations",
+                fieldnames=["epoch", "time / s", "loss", "sse", "initial step", "matching step", "N linesearch iterations",
                 "dir. derivative", "new dir. derivative", "F-axis postions reg.", "S-axis positons reg.", "S-axis tilts reg.", "F-axis tilts reg.", "l1 object reg.", "Q-space probe reg.", "R-space probe reg.", "TV object reg.", "V-object reg.", "Free GiB", "Total GiB"]
             else:
-                fieldnames=["epoch", "time", "loss", "sse", "initial step", "matching step", "N linesearch iterations",
+                fieldnames=["epoch", "time / s", "loss", "sse", "initial step", "matching step", "N linesearch iterations",
                 "dir. derivative", "new dir. derivative", "Constraints contribution", "Free GiB", "Total GiB"]
             if xp!=np:
                 device = cp.cuda.Device(0)
@@ -721,10 +721,10 @@ def prepare_saving_stuff(output_folder, save_loss_log, epoch_prev):
     if save_loss_log and epoch_prev==0:
         os.system("touch "+output_folder+"loss.csv")
         if save_loss_log==2:
-            fieldnames=["epoch", "time", "loss", "sse", "initial step", "matching step", "N linesearch iterations",
+            fieldnames=["epoch", "time / s", "loss", "sse", "initial step", "matching step", "N linesearch iterations",
                 "dir. derivative", "new dir. derivative", "F-axis postions reg.", "S-axis positons reg.", "S-axis tilts reg.", "F-axis tilts reg.", "l1 object reg.", "Q-space probe reg.", "R-space probe reg.", "TV object reg.", "V-object reg.", "Free GiB", "Total GiB"]
         else:
-            fieldnames=["epoch", "time", "loss", "sse", "initial step", "matching step", "N linesearch iterations",
+            fieldnames=["epoch", "time / s", "loss", "sse", "initial step", "matching step", "N linesearch iterations",
                 "dir. derivative", "new dir. derivative", "Constraints contribution", "Free GiB", "Total GiB"]
         with open(output_folder+"loss.csv", 'w+', newline='') as loss_list:
             write_loss=csv.DictWriter(loss_list,fieldnames=fieldnames)
