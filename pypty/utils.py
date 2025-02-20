@@ -892,7 +892,7 @@ def get_compute_batch(compute_batch, load_one_by_one, hist_size, measured_data_s
     
     if propmethod=="multislice":
         waves_shape=2
-        obj_slice_multi=0
+        obj_slice_multi=1
         inter_wave_multi=1
     if propmethod=="yoshida":
         waves_shape=7
