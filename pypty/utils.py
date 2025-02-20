@@ -886,10 +886,9 @@ def get_cupy_memory_usage():
         print(f"Variable: {var_name}\nMemory: {mem_usage_gb:.4f} GB\nShape: {shape}\nDtype: {dtype}\n")
 
 
-
 def get_compute_batch(compute_batch, load_one_by_one, hist_size, measured_data_shape, memory_satiration, smart_memory, data_pad, obj_shape, probe_shape,  dtype, propmethod, print_flag):
     device = cp.cuda.Device(0)
-    total_mem_device_Gb = device.mem_info[0] / (1024 **3)
+    total_mem_device_Gb=  device.mem_info[0] / (1024 **3)
     
     if propmethod=="multislice":
         waves_shape=2
@@ -903,14 +902,13 @@ def get_compute_batch(compute_batch, load_one_by_one, hist_size, measured_data_s
     else:
         n_bytes=8
 
-    print(total_mem_device_Gb*memory_satiration)
     n_meas=measured_data_shape[0]
     probexyms= np.prod(probe_shape)
     probexym=np.prod(probe_shape[:3])
     probexy=np.prod(probe_shape[:2])
     load_one_by_one_memory = (1-load_one_by_one)*np.prod(measured_data_shape) *n_bytes *0.5 /(1024 ** 3)
     update_memory= n_bytes*((6+2*hist_size) * np.prod(obj_shape) + (6+2*hist_size)*probexyms +  17*probexym + 9*n_meas*(3+1*hist_size)+ (3+1*hist_size)*probexy)/(1024 ** 3)
-    per_compute_batch_memory=probexym*obj_shape[2]*obj_shape[3]*waves_shape + 2*probexy + 17 + 5*probexym*obj_shape[3] + probexym*5 + probexym*4
+    per_compute_batch_memory=probexym*obj_shape[2]*obj_shape[3]*waves_shape + 2*probexy + 17 + 6*probexym*obj_shape[3] + probexym*6 + probexym*5
     per_compute_batch_memory*=n_bytes/(1024 ** 3)
     suggested_compute_batch=int(np.floor((total_mem_device_Gb*memory_satiration -update_memory - load_one_by_one_memory)/per_compute_batch_memory))
     if suggested_compute_batch<=5 and not(load_one_by_one):
@@ -918,9 +916,9 @@ def get_compute_batch(compute_batch, load_one_by_one, hist_size, measured_data_s
         if suggested_compute_batch==0:
             suggested_compute_batch=1
         if print_flag:
-            sys.stdout.write("\nWe do not suggest to keep the dataset in the memory and manually set load_one_by_one to True. Optimal compute batch is %d."%(suggested_compute_batch))
+            sys.stdout.write("\nWe do not suggest to keep the dataset in the memory and manually set load_one_by_one to True. Optimal compute batch is %d. Predicted memory usage: %.2f GiB"%(suggested_compute_batch, total_mem_device_Gb*memory_satiration))
     elif print_flag:
-        sys.stdout.write("\nWe suggest to use compute batch of %d"%(suggested_compute_batch))
+        sys.stdout.write("\nWe suggest to use compute batch of %d. Predicted memory usage: %.2f GiB"%(suggested_compute_batch, total_mem_device_Gb*memory_satiration))
     sys.stdout.flush()
     try:
         test=smart_memory(0)
@@ -928,4 +926,3 @@ def get_compute_batch(compute_batch, load_one_by_one, hist_size, measured_data_s
         if total_mem_device_Gb<20:
             smart_memory=True
     return suggested_compute_batch, load_one_by_one, smart_memory
-

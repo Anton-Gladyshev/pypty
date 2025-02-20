@@ -525,12 +525,9 @@ def loss_and_direction(this_obj, full_probe, this_pos_array, this_pos_correction
         else:
             probe_grad*=exclude_mask_ishift[0,:,:,None]
         probe_grad=ifft2(probe_grad, (0,1), overwrite_x=True)
-        
     try:
-        pool=cp.get_default_memory_pool()
-        pinned_pool=cp.get_default_pinned_memory_pool()
-        pool.free_all_blocks()
-        pinned_pool.free_all_blocks()
+        cp.get_default_memory_pool().free_all_blocks()
+        cp.get_default_pinned_memory_pool().free_all_blocks()
     except:
         pass
     return loss, sse, object_grad,  probe_grad, pos_grad, tilts_grad, static_background_grad, aberrations_array_grad, beam_current_grad
