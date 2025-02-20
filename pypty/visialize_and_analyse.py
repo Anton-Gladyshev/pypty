@@ -192,7 +192,7 @@ def outputlog_plots(loss_path, skip_first=0, plot_time=True):
             # remove the first and the last labels
             labels[0] = labels[-1] = ""
             # set these new labels
-            ax2.set_yticklabels(labels)
+            ax2.set_xticklabels(labels)
         figs.append(fig)
         plt.show()
     return figs
