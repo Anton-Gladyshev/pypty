@@ -66,7 +66,7 @@ def run_ptychography(pypty_params):
     use_full_FOV = params.get('use_full_FOV', True)
     ## Saving and printing
     output_folder = params.get('output_folder', "")
-    save_loss_log = params.get('save_loss_log', True)
+    save_loss_log = params.get('save_loss_log', 1)
     epoch_prev = int(params.get('epoch_prev', 0))
 
     prepare_saving_stuff(output_folder, save_loss_log, epoch_prev)
