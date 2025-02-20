@@ -218,3 +218,55 @@ def radial_average(ff, r_bins, r_max, r_min, px_size_A, plot=True):
     return fig
 
 
+def complex_pca(data, n_components):
+    N_y, N_x, N_obs = data.shape
+    reshaped_data = data.reshape(-1, N_obs)
+    mean = np.mean(reshaped_data, axis=0)
+    centered_data = reshaped_data - mean
+    covariance_matrix = np.cov(centered_data, rowvar=False, bias=True)
+    eigenvalues, eigenvectors = np.linalg.eigh(covariance_matrix)
+    idx = np.argsort(eigenvalues)[::-1]
+    eigenvalues = eigenvalues[idx]
+    eigenvectors = eigenvectors[:, idx]
+    principal_components = eigenvectors[:, :n_components]
+    reduced_data = centered_data @ principal_components
+    data_reduced = reduced_data.reshape(N_y, N_x, n_components)
+    return data_reduced
+
+
+def complex_array_to_rgb(X, theme='dark', rmax=None):
+    '''Takes an array of complex number and converts it to an array of [r, g, b],
+    where phase gives hue and saturaton/value are given by the absolute value.
+    Especially for use with imshow for complex plots.'''
+    absmax = rmax or np.abs(X).max()
+    Y = np.zeros(X.shape + (3,), dtype='float')
+    Y[..., 0] = np.angle(X) / (2 * np.pi) % 1
+    if theme == 'light':
+        Y[..., 1] = np.clip(np.abs(X) / absmax, 0, 1)
+ #       Y[..., 2] = 1
+    elif theme == 'dark':
+        Y[..., 1] = 1
+        Y[..., 2] = np.clip(np.abs(X) / absmax, 0, 1)
+    Y = matplotlib.colors.hsv_to_rgb(Y)
+    return Y
+
+
+def plot_complex_modes(p, nm, sub):
+    sub=1
+    p2=np.abs(p)**2
+    pint=np.sum(np.abs(p)**2, (0,1))
+    pint=100*pint/np.sum(pint)
+    sort=np.argsort(pint)[::-1]
+    p=p[:,:,sort]
+    pint=pint[sort]
+    fig, axes=plt.subplots(sub,nm//sub, figsize=(4*nm//sub,4*sub))
+    try:
+        axes=axes.flatten()
+    except:
+        axes=[axes]
+    for i, ax in enumerate(axes):
+        ax.imshow(complex_array_to_rgb(p[::-1,::-1,i], theme='dark', rmax=np.max(np.abs(p))))
+        ax.axis("off")
+        ax.text(15,0.9*p.shape[0], "%.1e %%"%(pint[i]), fontsize=15)
+        
+    plt.show()
