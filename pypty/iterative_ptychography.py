@@ -264,7 +264,7 @@ def run_ptychography(pypty_params):
         pinned_pool.free_all_blocks()
     except:
         pass
-    save_current_checkpoint_obj_probe(output_folder, obj, probe, tilts_correction, positions_correction,positions, tilts, static_background,1,1,1,1,1,1, aberrations_array, beam_current, 1, xp)
+    save_current_checkpoint_obj_probe(output_folder, obj, probe, tilts_correction, positions_correction,positions, tilts, static_background, 1,1,1,0,0, 0, aberrations_array,beam_current, 0, xp)
     dataset, data_shift_vector, data_bin, data_pad, data_multiplier = preprocess_dataset(dataset, load_one_by_one, algorithm, recon_type, data_shift_vector, data_bin, data_pad, upsample_pattern, data_multiplier, xp, force_pad)
     #######----------------------------------------------------------------------------------------------------------------------------------
     #######------------------------------------------ HERE is the begin of the actual ptychography ------------------------------------------
@@ -298,7 +298,7 @@ def run_ptychography(pypty_params):
         if save_inter_checkpoints!=0:
             if epoch%save_inter_checkpoints==0: save_current_checkpoint_obj_probe(output_folder, obj, probe, tilts_correction, positions_correction,positions, tilts, static_background, current_probe_step, current_obj_step, current_probe_pos_step, current_tilts_step, current_static_background_step, current_aberrations_array_step, aberrations_array, beam_current, current_beam_current_step, xp);
         save_updated_arrays(output_folder, epoch,current_probe_step, current_probe_pos_step, current_tilts_step,current_obj_step, obj, probe, tilts_correction, positions_correction, positions, tilts,static_background, current_aberrations_array_step, current_static_background_step, count, current_loss, current_sse, aberrations_array, beam_current, current_beam_current_step, save_flag, save_loss_log, constraint_contributions, actual_step, count_linesearch, d_value, new_d_value,current_update_step_bfgs,t0, xp) # <-------------- save the results --------------
-    save_current_checkpoint_obj_probe(output_folder, obj, probe, tilts_correction, positions_correction,positions, tilts, static_background, 1,1,1,1,1, 1, aberrations_array,beam_current, 1, xp)
+    save_current_checkpoint_obj_probe(output_folder, obj, probe, tilts_correction, positions_correction,positions, tilts, static_background, 1,1,1,0,0, 0, aberrations_array,beam_current, 0, xp)
     obj, probe, positions, positions_correction, tilts, tilts_correction,static_background, aberrations_array,  beam_current=None, None, None, None, None,None, None, None, None
     try:
         cp.fft.config.clear_plan_cache()
