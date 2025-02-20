@@ -152,18 +152,17 @@ def add_scalebar_ax(ax, x,y, width, height, x_t, y_t, px_size, unit):
     rect.set_path_effects([PathEffects.withStroke(linewidth=2, foreground='black')])
 
 
-def outputlog_plots(path_outputlog, skip_first=0, plot_time=True):
+def outputlog_plots(loss_path, skip_first=0, plot_time=True):
     """
     Functon for plotting log file of PyPty.
     
     Inputs:
-        path_outputlog- pass to PyPty-csv file
+            loss_path- pass to PyPty-csv file
         skip_first- how many first iterations to skip (default 0)
         plot_time- boolean Flag. If True, second x-axis showing time in seconds will be added on top of the plot.
     Returns:
         figs- list of plotted figures.
     """
-    loss_path=output_folder+"loss.csv"
     dat=np.loadtxt(loss_path, skiprows=1+skip_first, delimiter=",")
     print(dat.shape)
     
