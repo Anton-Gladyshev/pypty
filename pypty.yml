@@ -2,6 +2,7 @@ name: pypty
 channels:
 - conda-forge
 dependencies:
+- numpy
 - python
 - cupy
 - h5py
