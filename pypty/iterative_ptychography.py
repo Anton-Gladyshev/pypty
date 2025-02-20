@@ -224,13 +224,6 @@ def run_ptychography(pypty_params):
     probe=create_probe_from_nothing(probe, data_pad, mean_pattern, aperture_mask, tilt_mode, tilts, dataset, estimate_aperture_based_on_binary, pixel_size_x_A, acc_voltage, data_multiplier, masks, data_shift_vector, data_bin, upsample_pattern, default_complex_cpu, print_flag, algorithm, measured_data_shape, obj.shape[-1], probe_marker, recon_type, defocus_array, Cs) ### create probe from nothing
     static_background=create_static_background_from_nothing(static_background, probe, damping_cutoff_multislice,data_pad,upsample_pattern,  default_float_cpu, recon_type) ## initializing static background
     obj, positions, t, sequence, wavelength, positions_correction, tilts_correction, aperture_mask = prepare_main_loop_params(algorithm,probe, obj,positions,tilts, measured_data_shape, acc_voltage, allow_subPixel_shift, sequence, use_full_FOV, print_flag, default_float_cpu, default_complex_cpu, default_int_cpu, probe_constraint_mask, aperture_mask, extra_space_on_side_px)  # now the we will initilize the object in this function (create from nothing if needed and pad an existing one if needed)
-    if compute_batch=="auto":
-        try:
-            history_size=hist_length(0)
-        except:
-            history_size=hist_length
-        compute_batch, load_one_by_one, smart_memory = get_compute_batch(compute_batch, load_one_by_one, history_size, measured_data_shape, memory_satiration, smart_memory, data_pad, obj.shape, probe.shape, default_dtype, propmethod, print_flag)
-        
     try:
         obj, probe, positions,positions_correction, tilts, tilts_correction, masks, defocus_array, slice_distances, aperture_mask, dataset, static_background, aberrations_array, beam_current=try_to_gpu(obj, probe, positions,positions_correction, tilts, tilts_correction, masks, defocus_array, slice_distances, aperture_mask, dataset, load_one_by_one, static_background, aberrations_array, beam_current, default_float, default_complex, default_int, xp) ##Convert numpy arrays to cupy arrays
     except:
@@ -246,6 +239,12 @@ def run_ptychography(pypty_params):
         obj, probe, positions,positions_correction, tilts, tilts_correction, masks, defocus_array, slice_distances, aperture_mask, dataset, static_background, aberrations_array, beam_current=try_to_gpu(obj, probe, positions,positions_correction, tilts, tilts_correction, masks, defocus_array, slice_distances, aperture_mask, dataset, load_one_by_one, static_background, aberrations_array, beam_current, default_float, default_complex, default_int, xp) ##Convert numpy arrays to cupy arrays
     probe=apply_probe_modulation(probe, extra_probe_defocus, acc_voltage, pixel_size_x_A, pixel_size_y_A, aberrations, print_flag, beam_ctf, n_hermite_probe_modes, defocus_spread_modes, probe_marker, default_complex, default_float, xp) #Here we will apply aberrations to an existing beam and create multiple modes
     probe=fourier_clean(probe, cutoff=damping_cutoff_multislice, rolloff=smooth_rolloff, default_float=default_float, xp=xp) # clean the beam and object just to be on a safe side
+    if compute_batch=="auto":
+        try:
+            history_size=hist_length(0)
+        except:
+            history_size=hist_length
+        compute_batch, load_one_by_one, smart_memory = get_compute_batch(compute_batch, load_one_by_one, history_size, measured_data_shape, memory_satiration, smart_memory, data_pad, obj.shape, probe.shape, default_dtype, propmethod, print_flag)
     try:
         first_smart_memory=smart_memory(0)
         first_smart_memory=True
