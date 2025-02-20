@@ -153,3 +153,31 @@ def add_scalebar_ax(ax, x,y, width, height, x_t, y_t, px_size, unit):
 
 
 
+def outputlog_plots(path_outputlog, skip_first=0):
+    loss_path=output_folder+"loss.csv"
+    dat=np.loadtxt(loss_path, skiprows=1, delimiter=",")
+    
+    dat.shape[1]==12:
+        fieldnames=["epoch", "time / s", "loss", "sse", "initial step", "matching step", "N linesearch iterations",
+                "dir. derivative", "new dir. derivative", "Constraints contribution", "Free GiB", "Total GiB"]
+    else:
+        fieldnames=["epoch", "time / s", "loss", "sse", "initial step", "matching step", "N linesearch iterations",
+                "dir. derivative", "new dir. derivative", "F-axis postions reg.", "S-axis positons reg.", "S-axis tilts reg.", "F-axis tilts reg.", "l1 object reg.", "Q-space probe reg.", "R-space probe reg.", "TV object reg.", "V-object reg.", "Free GiB", "Total GiB"]
+    
+    epoch=dat[:,0]
+    time=dat[:, 1]
+    for datai in range(2, dat.shape[1],1):
+        fig,ax = plt.subplots(figsize=(10,4), dpi=300)
+        ax2 = ax.twiny()
+        ax.plot(epoch_list[skip_first:], dat[datai,skip_first:], ".-",linewidth=2, alpha=0.7)#, label=tit[iii])
+        ax.set_xlabel("Iteration", fontsize = 14)
+        ax.set_ylabel("Loss", fontsize = 14)
+        ax2.plot(time[skip_first:], np.ones(dat.shape[0]-skip_first) # Create a dummy plot
+        ax2.cla()
+        ax2.set_xlabel("time / s", fontsize = 14)
+        plt.show()
+
+
+
+
+
