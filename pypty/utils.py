@@ -447,7 +447,12 @@ def save_updated_arrays(output_folder, epoch,current_probe_step, current_probe_p
                                 "Total GiB":total_mem_device
                                 })
             else:
-                ssum_constr=cp.asarray(constraint_contributions).sum()
+                for dumbi1 in range(9):
+                    try:
+                        constraint_contributions[dumbi1]=constraint_contributions[dumbi1].get()
+                    except:
+                        pass
+                ssum_constr=np.sum(constraint_contributions)
                 write_loss.writerow({"epoch": epoch,
                                 "loss": current_loss,
                                 "sse": current_sse,

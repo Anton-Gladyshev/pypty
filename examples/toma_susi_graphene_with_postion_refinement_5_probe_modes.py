@@ -28,7 +28,7 @@ experimental_params={
     'conv_semiangle_mrad': 33.8,
     'scan_size': [256,256],
     'scan_step_A': 0.18,
-    'fov_nm': 0.18*255,
+    'fov_nm': 0.018*255,
     'acc_voltage': 60, ## kV
     'upsample_pattern': 1,
     'aberrations': [200,0,0],## Angstrom # 200A
