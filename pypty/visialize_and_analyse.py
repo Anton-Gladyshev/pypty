@@ -7,7 +7,7 @@ import matplotlib.patheffects as PathEffects
 from skimage.restoration import unwrap_phase
 from pypty.utils import *
 from tqdm import tqdm
-
+import matplotlib
 def plot_modes(ttt):
     if len(ttt.shape)==4:
         for i in range(ttt.shape[-1]):
