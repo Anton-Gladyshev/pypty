@@ -825,6 +825,8 @@ def compute_hp_constraint_on_grid(something, scan_size, reg_weight, a_coeff):
     weight=(1-cp.exp(-0.5*kr/a_coeff**2))*reg_weight
     something_scan_size = 1*something.reshape(scan_size[0], scan_size[1],something.shape[-1])
     grad=fft2(something_scan_size, axes=(0,1))
+    grad[0,:,:]=0
+    grad[:,0,:]=0
     reg_term=cp.sum((cp.abs(grad)**2) * weight[:,:,None])
     grad=ifft2(grad*weight[:,:,None], axes=(0,1))
     grad=2*cp.real(grad)*scan_size[0]*scan_size[1]
