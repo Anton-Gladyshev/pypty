@@ -452,7 +452,7 @@ def loss_and_direction(this_obj, full_probe, this_pos_array, this_pos_correction
     this_tilt_array=this_tilt_array[:,:,0,0]
     if this_step_probe and multiple_scenarios: probe_grad=cp.moveaxis(probe_grad, 0,3);
     #######
-    if this_step_pos_correction and fast_axis_reg_weight_positions>0:
+    if this_step_pos_correction and fast_axis_reg_weight_positions!=0:
         something=this_pos_array+this_pos_correction
         if type(fast_axis_reg_weight_positions)==str:
             fraction=float(fast_axis_reg_weight_positions)
@@ -473,7 +473,7 @@ def loss_and_direction(this_obj, full_probe, this_pos_array, this_pos_correction
     else:
         constraint_contributions.append(0)
     #######
-    if this_step_pos_correction and current_hp_reg_weight_positions>0:
+    if this_step_pos_correction and current_hp_reg_weight_positions!=0:
         something=this_pos_array+this_pos_correction
         if type(current_hp_reg_weight_positions)==str:
             fraction=float(current_hp_reg_weight_positions)
@@ -494,7 +494,7 @@ def loss_and_direction(this_obj, full_probe, this_pos_array, this_pos_correction
     else:
         constraint_contributions.append(0)
     ########
-    if this_step_tilts and current_hp_reg_weight_tilts>0:
+    if this_step_tilts and current_hp_reg_weight_tilts!=0:
         something=this_tilt_array
         if type(current_hp_reg_weight_tilts)==str:
             fraction=float(current_hp_reg_weight_tilts)
@@ -515,7 +515,7 @@ def loss_and_direction(this_obj, full_probe, this_pos_array, this_pos_correction
     else:
         constraint_contributions.append(0)
     #######
-    if this_step_tilts and fast_axis_reg_weight_tilts>0:
+    if this_step_tilts and fast_axis_reg_weight_tilts!=0:
         something=this_tilt_array
         if type(fast_axis_reg_weight_tilts)==str:
             fraction=float(fast_axis_reg_weight_tilts)
@@ -536,7 +536,7 @@ def loss_and_direction(this_obj, full_probe, this_pos_array, this_pos_correction
     else:
         constraint_contributions.append(0)
     #######
-    if phase_norm_weight>0: # l_1 norm of the potential
+    if phase_norm_weight!=0: # l_1 norm of the potential
         grad_mask=generate_mask_for_grad_from_pos(this_obj.shape[1], this_obj.shape[0], this_pos_array, full_probe.shape[1],full_probe.shape[0], 0)
         if type(phase_norm_weight)==str:
             fraction=float(phase_norm_weight)
@@ -559,7 +559,7 @@ def loss_and_direction(this_obj, full_probe, this_pos_array, this_pos_correction
         constraint_contributions.append(0)
     ######
 
-    if probe_reg_weight>0 and this_step_probe:
+    if probe_reg_weight!=0 and this_step_probe:
         if type(probe_reg_weight)==str:
             fraction=float(probe_reg_weight)
             probe_reg_weight=1
@@ -580,7 +580,7 @@ def loss_and_direction(this_obj, full_probe, this_pos_array, this_pos_correction
     else:
         constraint_contributions.append(0)
     ########
-    if this_step_probe and current_window_weight>0:
+    if this_step_probe and current_window_weight!=0:
         if type(current_window_weight)==str:
             fraction=float(current_window_weight)
             current_window_weight=1
@@ -601,7 +601,7 @@ def loss_and_direction(this_obj, full_probe, this_pos_array, this_pos_correction
     else:
         constraint_contributions.append(0)
     ####
-    if atv_weight>0:
+    if atv_weight!=0:
         if type(atv_weight)==str:
             fraction=float(atv_weight)
             atv_weight=1
@@ -622,7 +622,7 @@ def loss_and_direction(this_obj, full_probe, this_pos_array, this_pos_correction
     else:
         constraint_contributions.append(0)
     #######
-    if mixed_variance_weight>0 and this_obj.shape[-1]>1:
+    if mixed_variance_weight!=0 and this_obj.shape[-1]>1:
         if type(mixed_variance_weight)==str:
             fraction=float(mixed_variance_weight)
             mixed_variance_weight=1
