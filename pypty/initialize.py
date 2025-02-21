@@ -222,7 +222,6 @@ def append_exp_params(experimental_params, pypty_params=None):
         -pypty_params - dictionary / sting-path to an existing preset / None
     Output:
         -pypty_params - dictionary
-    
     experimental_params should contain following entries:
         -data_path - path to a PyPty-style 3d .h5 file [N_measurements, ky,kx] or .npy Nion-style 4d-stem dataset (or 3d .npy dataset)
         -masks - 3d numpy array or None. if data is compressed provide the virtual detectors (masks) shape should be [N_masks,ky,kx]
@@ -237,7 +236,6 @@ def append_exp_params(experimental_params, pypty_params=None):
             -conv_semiangle_mrad - beam convergence semi-angle in mrad
             -aperture - (optional)- binary 2D mask
             -bright_threshold - threshold to estimate an aperture, everything above threshold times maximum value in a pacbed will be concidered as bright field disk.
-        
         -data_pad - int, reciprocal space padding. If None (default), pading is 1/4 of the total width of a diffraction pattern
         -upsample_pattern - int, default 1 (no upsampling)
         
@@ -303,7 +301,7 @@ def append_exp_params(experimental_params, pypty_params=None):
         os.makedirs(output_folder, exist_ok=True)
     except:
         pass
-    if output_folder[:-1]!="/": output_folder+="/";
+    if output_folder[-1:]!="/": output_folder+="/";
     try:
         with open(path_json, 'r') as file:
             jsondata = json.load(file)
