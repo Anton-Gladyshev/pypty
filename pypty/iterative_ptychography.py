@@ -271,18 +271,22 @@ def run_ptychography(pypty_params):
     #######----------------------------------------------------------------------------------------------------------------------------------
     t0=time.time()
     is_first_epoch=True ## Just a flag that will enable recomputing of propagation- & shift- meshgrids
-    constratins_prev=0
+    constratins_prev, prev_steps_sum=0,0
     for epoch in range(epoch_prev,epoch_max,1):
         current_restart_from_vacuum, this_reset_history_flag, this_smart_memory, current_wolfe_c1_constant,current_wolfe_c2_constant, current_window_weight, current_hist_length, current_hp_reg_weight_tilts, current_hp_reg_coeff_tilts, current_hp_reg_weight_positions, current_hp_reg_coeff_positions, current_fast_axis_reg_weight_positions,current_fast_axis_reg_weight_tilts, current_update_step_bfgs, current_apply_gaussian_filter_amplitude, current_apply_gaussian_filter, current_keep_probe_states_orthogonal, current_loss_weight, current_phase_norm_weight, current_abs_norm_weight, current_probe_reg_constraint_weight, current_do_charge_flip, current_atv_weight, current_beta_wedge, current_tune_only_probe_phase, current_mixed_variance_weight,current_mixed_variance_sigma, current_phase_only_obj, current_tune_only_probe_abs, current_dynamically_resize_yx_object, current_beam_current_step, current_probe_step, current_obj_step, current_probe_pos_step, current_tilts_step, current_static_background_step, current_aberrations_array_step =               get_value_for_epoch([restart_from_vacuum, reset_history_flag, smart_memory, wolfe_c1_constant,wolfe_c2_constant, window_weight, hist_length, hp_reg_weight_tilts, hp_reg_coeff_titls, hp_reg_weight_positions, hp_reg_coeff_positions, fast_axis_reg_weight_positions,fast_axis_reg_weight_tilts, update_step_bfgs, apply_gaussian_filter_amplitude, apply_gaussian_filter, keep_probe_states_orthogonal, loss_weight, phase_norm_weight, abs_norm_weight, probe_reg_constraint_weight, do_charge_flip, atv_weight, beta_wedge, tune_only_probe_phase, mixed_variance_weight,mixed_variance_sigma, phase_only_obj, tune_only_probe_abs, dynamically_resize_yx_object, update_beam_current, update_probe, update_obj, update_probe_pos, update_tilts, update_static_background, update_aberrations_array], epoch, default_float_cpu)
         constratins_new=0
         for c in [current_restart_from_vacuum, current_window_weight, current_hp_reg_weight_tilts, current_hp_reg_coeff_tilts, current_hp_reg_weight_positions, current_hp_reg_coeff_positions, current_fast_axis_reg_weight_positions,current_fast_axis_reg_weight_tilts, current_apply_gaussian_filter_amplitude, current_apply_gaussian_filter, current_keep_probe_states_orthogonal, current_loss_weight, current_phase_norm_weight, current_abs_norm_weight, current_probe_reg_constraint_weight, current_do_charge_flip, current_atv_weight, current_beta_wedge, current_tune_only_probe_phase, current_mixed_variance_weight,current_mixed_variance_sigma, current_phase_only_obj, current_tune_only_probe_abs]:
             constratins_new+= c!=0
-        if constratins_new!=constratins_prev or this_reset_history_flag:
+        new_steps_sum=0
+        for st in [current_beam_current_step, current_probe_step, current_obj_step, current_probe_pos_step, current_tilts_step, current_static_background_step, current_aberrations_array_step]:
+            new_steps_sum+=st!=0
+        if constratins_new!=constratins_prev or this_reset_history_flag or new_steps_sum<prev_steps_sum:
             reset_bfgs_history();
             if print_flag:
                 sys.stdout.write("\nResetting the history!")
                 sys.stdout.flush()
         constratins_prev=constratins_new
+        prev_steps_sum=new_steps_sum
         try:
             full_sequence=sequence(epoch)
         except:
@@ -334,7 +338,6 @@ def bfgs_update(algorithm_type, this_slice_distances, this_step_probe, this_step
     update_pos_correction = this_step_pos_correction>0
     update_static_background = this_step_static_background>0
     update_beam_current = this_beam_current_step>0
-    
     ## some flags
     smooth_rolloff_loss=0
     is_mixed_state=(probe.shape[-1]>1)
