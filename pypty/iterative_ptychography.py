@@ -414,7 +414,7 @@ def bfgs_update(algorithm_type, this_slice_distances, this_step_probe, this_step
         history_bfgs["empty_hist"]=False
     else: ### HERE we have a start to construct the BFGS update
         total_loss, this_sse, this_object_grad, this_probe_grad, this_pos_grad, this_tilts_grad, static_background_grad, this_grad_aberrations_array, this_beam_current_grad, constraint_contributions=history_bfgs["prev_loss"], history_bfgs["prev_sse"], history_bfgs["obj_grad"], history_bfgs["probe_grad"], history_bfgs["pos_grad"], history_bfgs["tilt_grad"], history_bfgs["static_background_grad"], history_bfgs["aberrations_grad"], history_bfgs["beam_current_grad"], history_bfgs["constraint_contributions"]
-        
+        updated_fast_axis_reg_weight_positions, updated_hp_reg_weight_positions, updated_hp_reg_weight_tilts, updated_fast_axis_reg_weight_tilts, updated_phase_norm_weight, updated_abs_norm_weight, updated_probe_reg_weight, updated_window_weight, updated_atv_weight, updated_mixed_variance_weight=history_bfgs["updated_weights"]
         rhos_hist=history_bfgs["rho_hist"]
         alphas=[]
         
@@ -690,6 +690,7 @@ def bfgs_update(algorithm_type, this_slice_distances, this_step_probe, this_step
     history_bfgs["beam_current_grad"]=new_beam_current_grad
     history_bfgs["aberrations_grad"]=new_grad_aberrations_array
     history_bfgs["constraint_contributions"]=new_constraint_contributions
+    history_bfgs["updated_weights"]=[updated_fast_axis_reg_weight_positions, updated_hp_reg_weight_positions, updated_hp_reg_weight_tilts, updated_fast_axis_reg_weight_tilts, updated_phase_norm_weight, updated_abs_norm_weight, updated_probe_reg_weight, updated_window_weight, updated_atv_weight, updated_mixed_variance_weight]
     yiTsi_tot=0
     if update_obj:
         yiTyi=cp.sum(cp.abs(history_bfgs["obj_hist_y"][-1])**2);

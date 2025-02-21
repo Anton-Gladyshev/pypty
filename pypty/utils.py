@@ -988,7 +988,6 @@ def get_compute_batch(compute_batch, load_one_by_one, hist_size, measured_data_s
 
 
 def update_weights_constraints(fast_axis_reg_weight_positions, hp_reg_weight_positions, hp_reg_weight_tilts, fast_axis_reg_weight_tilts, phase_norm_weight, abs_norm_weight, probe_reg_constraint_weight, window_weight, atv_weight, mixed_variance_weight,     updated_fast_axis_reg_weight_positions, updated_hp_reg_weight_positions, updated_hp_reg_weight_tilts, updated_fast_axis_reg_weight_tilts, updated_phase_norm_weight, updated_abs_norm_weight, updated_probe_reg_weight, updated_window_weight, updated_atv_weight, updated_mixed_variance_weight):
-
     if not(updated_fast_axis_reg_weight_positions is None):
         fast_axis_reg_weight_positions=updated_fast_axis_reg_weight_positions
     if not(updated_hp_reg_weight_positions  is None):
