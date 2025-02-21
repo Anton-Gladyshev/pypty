@@ -277,7 +277,11 @@ def run_ptychography(pypty_params):
         constratins_new=0
         for c in [current_restart_from_vacuum, current_window_weight, current_hp_reg_weight_tilts, current_hp_reg_coeff_tilts, current_hp_reg_weight_positions, current_hp_reg_coeff_positions, current_fast_axis_reg_weight_positions,current_fast_axis_reg_weight_tilts, current_apply_gaussian_filter_amplitude, current_apply_gaussian_filter, current_keep_probe_states_orthogonal, current_loss_weight, current_phase_norm_weight, current_abs_norm_weight, current_probe_reg_constraint_weight, current_do_charge_flip, current_atv_weight, current_beta_wedge, current_tune_only_probe_phase, current_mixed_variance_weight,current_mixed_variance_sigma, current_phase_only_obj, current_tune_only_probe_abs]:
             constratins_new+= c!=0
-        if constratins_new!=constratins_prev or this_reset_history_flag: reset_bfgs_history();
+        if constratins_new!=constratins_prev or this_reset_history_flag:
+            reset_bfgs_history();
+            if print_flag:
+                sys.stdout.write("\nResetting the history!")
+                sys.stdout.flush()
         constratins_prev=constratins_new
         try:
             full_sequence=sequence(epoch)
