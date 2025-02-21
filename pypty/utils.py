@@ -990,23 +990,33 @@ def get_compute_batch(compute_batch, load_one_by_one, hist_size, measured_data_s
 def update_weights_constraints(fast_axis_reg_weight_positions, hp_reg_weight_positions, hp_reg_weight_tilts, fast_axis_reg_weight_tilts, phase_norm_weight, abs_norm_weight, probe_reg_constraint_weight, window_weight, atv_weight, mixed_variance_weight,     updated_fast_axis_reg_weight_positions, updated_hp_reg_weight_positions, updated_hp_reg_weight_tilts, updated_fast_axis_reg_weight_tilts, updated_phase_norm_weight, updated_abs_norm_weight, updated_probe_reg_weight, updated_window_weight, updated_atv_weight, updated_mixed_variance_weight):
     if not(updated_fast_axis_reg_weight_positions is None):
         fast_axis_reg_weight_positions=updated_fast_axis_reg_weight_positions
+        sys.stdout.write("\nUpdating fast_axis_reg_weight_positions to %.3e"%updated_fast_axis_reg_weight_positions)
     if not(updated_hp_reg_weight_positions  is None):
         hp_reg_weight_positions=updated_hp_reg_weight_positions
+        sys.stdout.write("\nUpdating hp_reg_weight_positions to %.3e"%updated_hp_reg_weight_positions)
     if not(updated_hp_reg_weight_tilts  is None):
         hp_reg_weight_tilts=updated_hp_reg_weight_tilts
+        sys.stdout.write("\nUpdating hp_reg_weight_tilts to %.3e"%updated_hp_reg_weight_tilts)
     if not(updated_fast_axis_reg_weight_tilts  is None):
         fast_axis_reg_weight_tilts=updated_fast_axis_reg_weight_tilts
+        sys.stdout.write("\nUpdating fast_axis_reg_weight_tilts to %.3e"%updated_fast_axis_reg_weight_tilts)
     if not(updated_phase_norm_weight is None):
         phase_norm_weight=updated_phase_norm_weight
+        sys.stdout.write("\nUpdating phase_norm_weight to %.3e"%updated_phase_norm_weight)
     if not(updated_abs_norm_weight  is None):
         abs_norm_weight=updated_abs_norm_weight
+        sys.stdout.write("\nUpdating abs_norm_weight to %.3e"%updated_abs_norm_weight)
     if not(updated_probe_reg_weight  is None):
         probe_reg_constraint_weight=updated_probe_reg_weight
+        sys.stdout.write("\nUpdating probe_reg_constraint_weight to %.3e"%updated_probe_reg_weight)
     if not(updated_window_weight is None):
         window_weight=updated_window_weight
+        sys.stdout.write("\nUpdating window_weight to %.3e"%updated_window_weight)
     if not(updated_atv_weight  is None):
         atv_weight=updated_atv_weight
+        sys.stdout.write("\nUpdating atv_weight to %.3e"%updated_atv_weight)
     if not(updated_mixed_variance_weight  is None):
         mixed_variance_weight=updated_mixed_variance_weight
+        sys.stdout.write("\nUpdating mixed_variance_weight to %.3e"%updated_mixed_variance_weight)
     return fast_axis_reg_weight_positions, hp_reg_weight_positions, hp_reg_weight_tilts, fast_axis_reg_weight_tilts, phase_norm_weight, abs_norm_weight, probe_reg_constraint_weight, window_weight, atv_weight, mixed_variance_weight
 
