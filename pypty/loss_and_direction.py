@@ -14,7 +14,7 @@ from pypty.multislice import *
 
 half_master_propagator_phase_space, master_propagator_phase_space, q2, qx, qy, exclude_mask, x_real_grid_tilt, y_real_grid_tilt, shift_probe_mask_x, shift_probe_mask_y, exclude_mask_ishift, probe_runx, probe_runy, yx_real_grid_tilt, shift_probe_mask_yx, aberrations_polynomials=None, None,None, None,None, None,None, None, None, None, None, None,None,None,None,None
 def loss_and_direction(this_obj, full_probe, this_pos_array, this_pos_correction, this_tilt_array, this_tilts_correction, this_distances,  measured_array,  algorithm_type, this_wavelength, this_step_probe, this_step_obj, this_step_pos_correction, this_step_tilts, masks, pixel_size_x_A, pixel_size_y_A, recon_type, Cs, defocus_array, alpha_near_field, damping_cutoff_multislice, smooth_rolloff, propmethod, this_chopped_sequence, load_one_by_one, data_multiplier, data_pad, phase_plate_in_h5, this_loss_weight, data_bin, data_shift_vector, upsample_pattern, static_background, this_step_static_background, tilt_mode, aberration_marker, probe_marker, aberrations_array, compute_batch, phase_only_obj, beam_current, this_beam_current_step, this_step_aberrations_array, default_float, default_complex, xp, is_first_epoch,
-                       scan_size,fast_axis_reg_weight_positions, current_slow_axis_reg_weight_positions,current_slow_axis_reg_coeff_positions, current_slow_axis_reg_weight_tilts,current_slow_axis_reg_coeff_tilts, fast_axis_reg_weight_tilts, aperture_mask, probe_reg_weight, current_window_weight, current_window, phase_norm_weight, abs_norm_weight, atv_weight, atv_q, atv_p, mixed_variance_weight, mixed_variance_sigma, smart_memory, print_flag):
+                       scan_size,fast_axis_reg_weight_positions, current_hp_reg_weight_positions,current_hp_reg_coeff_positions, current_hp_reg_weight_tilts,current_hp_reg_coeff_tilts, fast_axis_reg_weight_tilts, aperture_mask, probe_reg_weight, current_window_weight, current_window, phase_norm_weight, abs_norm_weight, atv_weight, atv_q, atv_p, mixed_variance_weight, mixed_variance_sigma, smart_memory, print_flag):
     """
     This is an internal PyPty function for iterative Ptychography. It does both forward and backward propagations. Inputs are the parameters of the experiment and outputs are loss, SSE and the gradients of the loss with respect to refinable arrays. 
     """
@@ -462,26 +462,26 @@ def loss_and_direction(this_obj, full_probe, this_pos_array, this_pos_correction
     else:
         constraint_contributions.append(0)
         
-    if this_step_pos_correction and current_slow_axis_reg_weight_positions>0:
+    if this_step_pos_correction and current_hp_reg_weight_positions>0:
         something=this_pos_array+this_pos_correction
-        ind_loss, reg_grad = compute_slow_axis_constraint_on_grid(something, scan_size, current_slow_axis_reg_weight_positions, current_slow_axis_reg_coeff_positions)
+        ind_loss, reg_grad = compute_hp_constraint_on_grid(something, scan_size, current_hp_reg_weight_positions, current_hp_reg_coeff_positions)
         pos_grad+=reg_grad;
         loss+=ind_loss
         constraint_contributions.append(ind_loss)
         if print_flag==4:
-            sys.stdout.write("\nWith weight %.3e, Positions slow axis constaint is %2 %% of the main loss"%(current_slow_axis_reg_weight_positions, ind_loss*100/loss_print_copy));
+            sys.stdout.write("\nWith weight %.3e, Positions slow axis constaint is %2 %% of the main loss"%(current_hp_reg_weight_positions, ind_loss*100/loss_print_copy));
     else:
         constraint_contributions.append(0)
         
-    if this_step_tilts and current_slow_axis_reg_weight_tilts>0:
+    if this_step_tilts and current_hp_reg_weight_tilts>0:
         something=this_tilt_array
         for i_t_ind in range(0,6,2):
-            ind_loss, reg_grad=compute_slow_axis_constraint_on_grid(something[:,i_t_ind:i_t_ind+2], scan_size, current_slow_axis_reg_weight_tilts, current_slow_axis_reg_coeff_tilts)
+            ind_loss, reg_grad=compute_hp_constraint_on_grid(something[:,i_t_ind:i_t_ind+2], scan_size, current_hp_reg_weight_tilts, current_hp_reg_coeff_tilts)
             tilts_grad[:,i_t_ind:i_t_ind+2]+=reg_grad;
             loss+=ind_loss
         constraint_contributions.append(ind_loss)
         if print_flag==4:
-            sys.stdout.write("\nWith weight %.3e, Tilts slow axis constaint is %2 %% of the main loss"%(current_slow_axis_reg_weight_tilts, ind_loss*100/loss_print_copy));
+            sys.stdout.write("\nWith weight %.3e, Tilts slow axis constaint is %2 %% of the main loss"%(current_hp_reg_weight_tilts, ind_loss*100/loss_print_copy));
     else:
         constraint_contributions.append(0)
         
@@ -730,41 +730,21 @@ def compute_fast_axis_constraint_on_grid(something, scan_size, tv_reg_weight):
 
 
 
-def compute_slow_axis_constraint_on_grid(something, scan_size, tv_reg_weight, a_coeff):
+
+def compute_hp_constraint_on_grid(something, scan_size, reg_weight, a_coeff):
+    kr = cp.sum(cp.array(cp.meshgrid(fftfreq(scan_size[1]), fftfreq(scan_size[0]), indexing="xy"))**2, 0)
+    kr/=cp.max(kr)
+    weight=(1-cp.exp(-0.5*kr/a_coeff**2))*reg_weight
     something_scan_size = 1*something.reshape(scan_size[0], scan_size[1],something.shape[-1])
-    grad=cp.zeros_like(something_scan_size)
-    something_fast_average=cp.mean(something_scan_size, axis=1)
-    something_fast_average_p1=cp.roll(something_fast_average, 1, axis=0)
-    something_fast_average_m1=cp.roll(something_fast_average, -1, axis=0)
-    center_expected=(something_fast_average_p1+something_fast_average_m1)*0.5
-    r_max_term_inside=something_fast_average_m1-center_expected
-    r_actual_term_inside=something_fast_average-center_expected
-    r_max=a_coeff*cp.sum(r_max_term_inside**2, -1)**0.5
-    r_actual=cp.sum(r_actual_term_inside**2, -1)**0.5
-    reg_vector=r_actual-r_max
-    reg_vector[reg_vector<0]=0
-    reg_vector[0]=0
-    reg_vector[-1]=0
-    reg_vector_2=reg_vector**2
-    reg_term=tv_reg_weight*cp.sum(reg_vector_2)
-    dloss_dReg=2*tv_reg_weight*reg_vector
-    r_max[r_max==0]=1
-    r_actual[r_actual==0]=1
-    dLoss_dr_max_term_inside    =-1*(a_coeff**2)*dloss_dReg[:,None]*r_max_term_inside/r_max[:,None]
-    dLoss_dr_actual_term_inside =dloss_dReg[:,None]*r_actual_term_inside/r_actual[:,None]
-    dLoss_something_fast_average=dLoss_dr_actual_term_inside
-    dLoss_center_expeced=-1*dLoss_dr_max_term_inside-1*dLoss_dr_actual_term_inside
-    dLoss_dsomething_fast_average_m1=dLoss_dr_max_term_inside+ 0.5*dLoss_center_expeced
-    dLoss_dsomething_fast_average_p1=0.5*dLoss_center_expeced
-    dLoss_something_fast_average+=cp.roll(dLoss_dsomething_fast_average_p1, -1, axis=0)
-    dLoss_something_fast_average+=cp.roll(dLoss_dsomething_fast_average_m1, 1,  axis=0)
-    dLoss_something_fast_average/=scan_size[1]
-    grad+=dLoss_something_fast_average[:,None,:]
+    grad=fft2(something_scan_size, axes=(0,1))
+    reg_term=cp.sum((cp.abs(grad)**2) * weight[:,:,None])
+    grad=ifft2(grad*weight[:,:,None], axes=(0,1))
+    grad=2*cp.real(grad)*scan_size[0]*scan_size[1]
     grad=grad.reshape(something.shape)
     return reg_term, grad
-
-
-
+    
+    
+    
     
     
 def compute_full_l1_constraint(object, abs_norm_weight, phase_norm_weight, grad_mask, return_direction, smart_memory):

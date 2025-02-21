@@ -8,6 +8,8 @@ from skimage.restoration import unwrap_phase
 from pypty.utils import *
 from tqdm import tqdm
 import matplotlib
+
+
 def plot_modes(ttt):
     if len(ttt.shape)==4:
         for i in range(ttt.shape[-1]):
@@ -243,7 +245,6 @@ def complex_array_to_rgb(X, theme='dark', rmax=None):
     Y[..., 0] = np.angle(X) / (2 * np.pi) % 1
     if theme == 'light':
         Y[..., 1] = np.clip(np.abs(X) / absmax, 0, 1)
- #       Y[..., 2] = 1
     elif theme == 'dark':
         Y[..., 1] = 1
         Y[..., 2] = np.clip(np.abs(X) / absmax, 0, 1)
@@ -268,5 +269,4 @@ def plot_complex_modes(p, nm, sub):
         ax.imshow(complex_array_to_rgb(p[::-1,::-1,i], theme='dark', rmax=np.max(np.abs(p))))
         ax.axis("off")
         ax.text(15,0.9*p.shape[0], "%.1e %%"%(pint[i]), fontsize=15)
-        
     plt.show()

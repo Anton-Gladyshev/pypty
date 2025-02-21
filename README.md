@@ -247,12 +247,12 @@ As a general rule of thumb, we suggest configuring lambda functions so that once
 | `atv_weight`                     | `0`                          | `float`   or `pypty_lambda`          | Weight for **Adaptive Total Variation (ATV)** regularization on the transmission function. |
 | `atv_q`                          | `1`                          | `float`   or `pypty_lambda`          | ATV **q parameter** (controls the strength of smoothing). Recommended: `1`. |
 | `atv_p`                          | `2`                          | `float`  or `pypty_lambda`           | ATV **p parameter** (`1` = L1-like regularization, `2` = L2-like smoothing). Recommended: `2`. |
-| `fast_axis_reg_weight_positions` | `0`                          | `float` or `pypty_lambda`            | Regularization weight for **fast-axis scan positions**. |
-| `fast_axis_reg_weight_tilts`     | `0`                          | `float`  or `pypty_lambda`           | Regularization weight for **fast-axis tilts**. |
-| `slow_axis_reg_weight_positions` | `0`                          | `float`  or `pypty_lambda`           | Regularization weight for **slow-axis scan positions**. |
-| `slow_axis_reg_coeff_positions`  | `0`                          | `float`  or `pypty_lambda`           | Regularization coefficient for **slow-axis scan positions**. |
-| `slow_axis_reg_weight_tilts`     | `0`                          | `float`  or `pypty_lambda`           | Regularization weight for **slow-axis tilts**. |
-| `slow_axis_reg_coeff_tilts`      | `0`                          | `float`  or `pypty_lambda`           | Regularization coefficient for **slow-axis tilts**. |
+| `fast_axis_reg_weight_positions` | `0`                          | `float` or `pypty_lambda`            | Regularization weight for **fast-axis scan positions**. Reduces the acceleration along one line. |
+| `fast_axis_reg_weight_tilts`     | `0`                          | `float`  or `pypty_lambda`           | Regularization weight for **fast-axis tilts**. Reduces the acceleration along one line.  |
+| `hp_reg_weight_positions` | `0`                          | `float`  or `pypty_lambda`           | Regularization weight for removing high frequency components from **scan** grid. |
+| `hp_reg_coeff_positions`  | `0`                          | `float`  or `pypty_lambda`           | Sigma of 1-gaussian applied for removing high frequency components from **scan** grid.  |
+| `hp_reg_weight_tilts`     | `0`                          | `float`  or `pypty_lambda`           | Regularization weight for removing high frequency components from **tilts** grid. |
+| `hp_reg_coeff_tilts`      | `0`                          | `float`  or `pypty_lambda`           | Sigma of 1-gaussian applied for removing high frequency components from **tilts** grid.  |
 
 ---
 
