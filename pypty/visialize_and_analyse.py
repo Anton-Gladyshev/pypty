@@ -166,7 +166,7 @@ def outputlog_plots(loss_path, skip_first=0, plot_time=True):
     Returns:
         figs- list of plotted figures.
     """
-    dat=np.loadtxt(loss_path, skiprows=1+skip_first, delimiter=",")    
+    dat=np.loadtxt(loss_path, skiprows=1+skip_first, delimiter=",")
     if dat.shape[1]==12:
         fieldnames=["epoch", "time / s", "loss", "sse", "initial step", "matching step", "N linesearch iterations",
                 "dir. derivative", "new dir. derivative", "Constraints contribution", "Free GiB", "Total GiB"]
@@ -174,7 +174,7 @@ def outputlog_plots(loss_path, skip_first=0, plot_time=True):
         fieldnames=["epoch", "time / s", "loss", "sse", "initial step", "matching step", "N linesearch iterations",
                 "dir. derivative", "new dir. derivative", "F-axis postions reg.", "S-axis positons reg.", "S-axis tilts reg.", "F-axis tilts reg.", "l1 object reg.", "Q-space probe reg.", "R-space probe reg.", "TV object reg.", "V-object reg.", "Free GiB", "Total GiB"]
     epoch=dat[:,0]
-    time=dat [:, 1]
+    time=dat [:,1] / 3600
     def forward(x):
         return np.interp(x,epoch,time)
     def inverse(x):
@@ -187,7 +187,7 @@ def outputlog_plots(loss_path, skip_first=0, plot_time=True):
         ax.set_ylabel(fieldnames[datai], fontsize = 14)
         if plot_time:
             ax2 = ax.secondary_xaxis("top", functions=(forward,inverse)) # Create a dummy plot
-            ax2.set_xlabel("time / s", fontsize = 14)
+            ax2.set_xlabel("time / h", fontsize = 14)
             plt.setp(ax2.get_xticklabels()[0], visible=False)
         figs.append(fig)
         plt.show()

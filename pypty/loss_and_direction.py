@@ -447,13 +447,26 @@ def loss_and_direction(this_obj, full_probe, this_pos_array, this_pos_correction
    # print("\n", t_gpu)
     constraint_contributions=[]
     
-    if print_flag==4: loss_print_copy=1*loss;
+    loss_print_copy=1*loss;
     this_pos_array=this_pos_array[:,:,0]
     this_tilt_array=this_tilt_array[:,:,0,0]
     if this_step_probe and multiple_scenarios: probe_grad=cp.moveaxis(probe_grad, 0,3);
+    
     if this_step_pos_correction and fast_axis_reg_weight_positions>0:
         something=this_pos_array+this_pos_correction
+        if type(fast_axis_reg_weight_positions)==str:
+            fraction=float(fast_axis_reg_weight_positions)
+            fast_axis_reg_weight_positions=1
+            recompute=True
+        else:
+            recompute=False
         ind_loss, reg_grad=compute_fast_axis_constraint_on_grid(something, scan_size, fast_axis_reg_weight_positions)
+        if recompute:
+            fast_axis_reg_weight_positions=loss_print_copy*fraction/ind_loss
+            ind_loss*=fast_axis_reg_weight_positions
+            reg_grad*=fast_axis_reg_weight_positions
+        else:
+            fast_axis_reg_weight_positions=None
         pos_grad+=reg_grad
         loss+=ind_loss
         constraint_contributions.append(ind_loss)
@@ -464,7 +477,19 @@ def loss_and_direction(this_obj, full_probe, this_pos_array, this_pos_correction
         
     if this_step_pos_correction and current_hp_reg_weight_positions>0:
         something=this_pos_array+this_pos_correction
+        if type(current_hp_reg_weight_positions)==str:
+            fraction=float(current_hp_reg_weight_positions)
+            current_hp_reg_weight_positions=1
+            recompute=True
+        else:
+            recompute=False
         ind_loss, reg_grad = compute_hp_constraint_on_grid(something, scan_size, current_hp_reg_weight_positions, current_hp_reg_coeff_positions)
+        if recompute:
+            current_hp_reg_weight_positions=loss_print_copy*fraction/ind_loss
+            ind_loss*=current_hp_reg_weight_positions
+            reg_grad*=current_hp_reg_weight_positions
+        else:
+            current_hp_reg_weight_positions=None
         pos_grad+=reg_grad;
         loss+=ind_loss
         constraint_contributions.append(ind_loss)
@@ -475,20 +500,44 @@ def loss_and_direction(this_obj, full_probe, this_pos_array, this_pos_correction
         
     if this_step_tilts and current_hp_reg_weight_tilts>0:
         something=this_tilt_array
-        for i_t_ind in range(0,6,2):
-            ind_loss, reg_grad=compute_hp_constraint_on_grid(something[:,i_t_ind:i_t_ind+2], scan_size, current_hp_reg_weight_tilts, current_hp_reg_coeff_tilts)
-            tilts_grad[:,i_t_ind:i_t_ind+2]+=reg_grad;
-            loss+=ind_loss
+        if type(current_hp_reg_weight_tilts)==str:
+            fraction=float(current_hp_reg_weight_tilts)
+            current_hp_reg_weight_tilts=1
+            recompute=True
+        else:
+            recompute=False
+        ind_loss, reg_grad=compute_hp_constraint_on_grid(something, scan_size, current_hp_reg_weight_tilts, current_hp_reg_coeff_tilts)
+        if recompute:
+            current_hp_reg_weight_tilts=loss_print_copy*fraction/ind_loss
+            ind_loss*=current_hp_reg_weight_tilts
+            reg_grad*=current_hp_reg_weight_tilts
+        else:
+            current_hp_reg_weight_tilts=None
+        tilts_grad+=reg_grad;
+        loss+=ind_loss
         constraint_contributions.append(ind_loss)
         if print_flag==4:
             sys.stdout.write("\nWith weight %.3e, Tilts slow axis constaint is %2 %% of the main loss"%(current_hp_reg_weight_tilts, ind_loss*100/loss_print_copy));
     else:
         constraint_contributions.append(0)
-        
+
 
     if this_step_tilts and fast_axis_reg_weight_tilts>0:
         something=this_tilt_array
+        if type(fast_axis_reg_weight_tilts)==str:
+            fraction=float(fast_axis_reg_weight_tilts)
+            fast_axis_reg_weight_tilts=1
+            recompute=True
+        else:
+            recompute=False
         ind_loss, reg_grad=compute_fast_axis_constraint_on_grid(something, scan_size, fast_axis_reg_weight_tilts)
+        if recompute:
+            fast_axis_reg_weight_tilts=loss_print_copy*fraction/ind_loss
+            ind_loss*=fast_axis_reg_weight_tilts
+            reg_grad*=fast_axis_reg_weight_tilts
+        else:
+            fast_axis_reg_weight_tilts=None
+        
         tilts_grad+=reg_grad
         loss+=ind_loss
         constraint_contributions.append(ind_loss)
@@ -498,9 +547,22 @@ def loss_and_direction(this_obj, full_probe, this_pos_array, this_pos_correction
         constraint_contributions.append(0)
     
 
-    if (phase_norm_weight+abs_norm_weight)>0: # l_1 norm of the potentials
+    if phase_norm_weight>0: # l_1 norm of the potential
         grad_mask=generate_mask_for_grad_from_pos(this_obj.shape[1], this_obj.shape[0], this_pos_array, full_probe.shape[1],full_probe.shape[0], 0)
-        l1_reg_term, l1_object_grad=compute_full_l1_constraint(this_obj, abs_norm_weight, phase_norm_weight, grad_mask, True, smart_memory)
+        if type(phase_norm_weight)==str:
+            fraction=float(phase_norm_weight)
+            phase_norm_weight=1
+            recompute=True
+        else:
+            recompute=False
+        l1_reg_term, l1_object_grad=compute_full_l1_constraint(this_obj, 0, phase_norm_weight, grad_mask, True, smart_memory)
+        if recompute:
+            phase_norm_weight=loss_print_copy*fraction/l1_object_grad
+            l1_reg_term*=phase_norm_weight
+            l1_object_grad*=phase_norm_weight
+        else:
+            phase_norm_weight=None
+            
         loss+=l1_reg_term
         object_grad+=l1_object_grad
         constraint_contributions.append(l1_reg_term)
@@ -512,7 +574,19 @@ def loss_and_direction(this_obj, full_probe, this_pos_array, this_pos_correction
 
 
     if probe_reg_weight>0 and this_step_probe:
+        if type(probe_reg_weight)==str:
+            fraction=float(probe_reg_weight)
+            probe_reg_weight=1
+            recompute=True
+        else:
+            recompute=False
         probe_reg_term, reg_probe_grad = compute_probe_constraint(full_probe, aperture_mask, probe_reg_weight, True)
+        if recompute:
+            probe_reg_weight=loss_print_copy*fraction/probe_reg_term
+            probe_reg_term*=probe_reg_weight
+            reg_probe_grad*=probe_reg_weight
+        else:
+            probe_reg_weight=None
         loss+=probe_reg_term
         probe_grad+=reg_probe_grad
         constraint_contributions.append(probe_reg_term)
@@ -523,7 +597,20 @@ def loss_and_direction(this_obj, full_probe, this_pos_array, this_pos_correction
         constraint_contributions.append(0)
 
     if this_step_probe and current_window_weight>0:
+        if type(current_window_weight)==str:
+            fraction=float(current_window_weight)
+            current_window_weight=1
+            recompute=True
+        else:
+            recompute=False
         probe_reg_term, reg_probe_grad = compute_window_constraint(full_probe, current_window, current_window_weight)
+        if recompute:
+            current_window_weight=loss_print_copy*fraction/reg_probe_grad
+            probe_reg_term*=current_window_weight
+            reg_probe_grad*=current_window_weight
+        else:
+            current_window_weight=None
+        
         loss+=probe_reg_term
         probe_grad+=reg_probe_grad
         constraint_contributions.append(probe_reg_term)
@@ -535,7 +622,19 @@ def loss_and_direction(this_obj, full_probe, this_pos_array, this_pos_correction
 
 
     if atv_weight>0:
+        if type(atv_weight)==str:
+            fraction=float(atv_weight)
+            atv_weight=1
+            recompute=True
+        else:
+            recompute=False
         atv_reg_term, atv_object_grad = compute_atv_constraint(this_obj, atv_weight, atv_q, atv_p, pixel_size_x_A, pixel_size_y_A, None, True, smart_memory)
+        if recompute:
+            atv_weight=loss_print_copy*fraction/atv_reg_term
+            atv_reg_term*=atv_weight
+            atv_object_grad*=atv_weight
+        else:
+            atv_weight=None
         loss+=atv_reg_term
         object_grad+=atv_object_grad
         constraint_contributions.append(atv_reg_term)
@@ -547,7 +646,19 @@ def loss_and_direction(this_obj, full_probe, this_pos_array, this_pos_correction
         
 
     if mixed_variance_weight>0 and this_obj.shape[-1]>1:
+        if type(mixed_variance_weight)==str:
+            fraction=float(mixed_variance_weight)
+            mixed_variance_weight=1
+            recompute=True
+        else:
+            recompute=False
         mixed_variance_reg_term, mixed_variance_grad=compute_mixed_object_variance_constraint(this_obj, mixed_variance_weight, mixed_variance_sigma, True, smart_memory)
+        if recompute:
+            mixed_variance_weight=loss_print_copy*fraction/mixed_variance_reg_term
+            mixed_variance_grad*=mixed_variance_weight
+            mixed_variance_reg_term*=mixed_variance_weight
+        else:
+            mixed_variance_weight=None
         loss+=mixed_variance_reg_term
         object_grad+=mixed_variance_grad
         constraint_contributions.append(mixed_variance_reg_term)
@@ -556,6 +667,9 @@ def loss_and_direction(this_obj, full_probe, this_pos_array, this_pos_correction
             sys.stdout.write("\nWith weight %.3e, Mixed variance constaint is %2 %% of the main loss"%(mixed_variance_weight, mixed_variance_reg_term*100/loss_print_copy));
     else:
         constraint_contributions.append(0)
+        
+        
+        
     if print_flag==4:
         sys.stdout.flush()
     if loss!=loss:
@@ -572,7 +686,8 @@ def loss_and_direction(this_obj, full_probe, this_pos_array, this_pos_correction
         cp.get_default_pinned_memory_pool().free_all_blocks()
     except:
         pass
-    return loss, sse, object_grad,  probe_grad, pos_grad, tilts_grad, static_background_grad, aberrations_array_grad, beam_current_grad, constraint_contributions
+    return loss, sse, object_grad,  probe_grad, pos_grad, tilts_grad, static_background_grad, aberrations_array_grad, beam_current_grad, constraint_contributions, fast_axis_reg_weight_positions, current_hp_reg_weight_positions, current_hp_reg_weight_tilts, fast_axis_reg_weight_tilts, phase_norm_weight, abs_norm_weight, probe_reg_weight, current_window_weight, atv_weight, mixed_variance_weight
+
 
 
 

@@ -983,3 +983,31 @@ def get_compute_batch(compute_batch, load_one_by_one, hist_size, measured_data_s
         if total_mem_device_Gb<20:
             smart_memory=True
     return suggested_compute_batch, load_one_by_one, smart_memory
+
+
+
+
+def update_weights_constraints(fast_axis_reg_weight_positions, hp_reg_weight_positions, hp_reg_weight_tilts, fast_axis_reg_weight_tilts, phase_norm_weight, abs_norm_weight, probe_reg_constraint_weight, window_weight, atv_weight, mixed_variance_weight,     updated_fast_axis_reg_weight_positions, updated_hp_reg_weight_positions, updated_hp_reg_weight_tilts, updated_fast_axis_reg_weight_tilts, updated_phase_norm_weight, updated_abs_norm_weight, updated_probe_reg_weight, updated_window_weight, updated_atv_weight, updated_mixed_variance_weight):
+
+    if not(updated_fast_axis_reg_weight_positions is None):
+        fast_axis_reg_weight_positions=updated_fast_axis_reg_weight_positions
+    if not(updated_hp_reg_weight_positions  is None):
+        hp_reg_weight_positions=updated_hp_reg_weight_positions
+    if not(updated_hp_reg_weight_tilts  is None):
+        hp_reg_weight_tilts=updated_hp_reg_weight_tilts
+    if not(updated_fast_axis_reg_weight_tilts  is None):
+        fast_axis_reg_weight_tilts=updated_fast_axis_reg_weight_tilts
+    if not(updated_phase_norm_weight is None):
+        phase_norm_weight=updated_phase_norm_weight
+    if not(updated_abs_norm_weight  is None):
+        abs_norm_weight=updated_abs_norm_weight
+    if not(updated_probe_reg_weight  is None):
+        probe_reg_constraint_weight=updated_probe_reg_weight
+    if not(updated_window_weight is None):
+        window_weight=updated_window_weight
+    if not(updated_atv_weight  is None):
+        atv_weight=updated_atv_weight
+    if not(updated_mixed_variance_weight  is None):
+        mixed_variance_weight=updated_mixed_variance_weight
+    return fast_axis_reg_weight_positions, hp_reg_weight_positions, hp_reg_weight_tilts, fast_axis_reg_weight_tilts, phase_norm_weight, abs_norm_weight, probe_reg_constraint_weight, window_weight, atv_weight, mixed_variance_weight
+
