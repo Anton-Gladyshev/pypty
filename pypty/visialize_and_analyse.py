@@ -166,9 +166,7 @@ def outputlog_plots(loss_path, skip_first=0, plot_time=True):
     Returns:
         figs- list of plotted figures.
     """
-    dat=np.loadtxt(loss_path, skiprows=1+skip_first, delimiter=",")
-    print(dat.shape)
-    
+    dat=np.loadtxt(loss_path, skiprows=1+skip_first, delimiter=",")    
     if dat.shape[1]==12:
         fieldnames=["epoch", "time / s", "loss", "sse", "initial step", "matching step", "N linesearch iterations",
                 "dir. derivative", "new dir. derivative", "Constraints contribution", "Free GiB", "Total GiB"]
