@@ -446,7 +446,7 @@ def loss_and_direction(this_obj, full_probe, this_pos_array, this_pos_correction
    # t_gpu = cp.cuda.get_elapsed_time(start_gpu, end_gpu)
    # print("\n", t_gpu)
     constraint_contributions=[]
-    updated_current_hp_reg_weight_positions, updated_current_hp_reg_weight_tilts, updated_fast_axis_reg_weight_tilts, updated_phase_norm_weight, updated_abs_norm_weight, updated_probe_reg_weight, updated_current_window_weight, updated_atv_weight, updated_mixed_variance_weight= None, None, None, None, None, None, None, None, None, None
+    updated_current_hp_reg_weight_positions, updated_current_hp_reg_weight_tilts, updated_fast_axis_reg_weight_tilts, updated_phase_norm_weight, updated_abs_norm_weight, updated_probe_reg_weight, updated_current_window_weight, updated_atv_weight, updated_mixed_variance_weight= None, None, None, None, None, None, None, None, None
     loss_print_copy=1*loss;
     this_pos_array=this_pos_array[:,:,0]
     this_tilt_array=this_tilt_array[:,:,0,0]
