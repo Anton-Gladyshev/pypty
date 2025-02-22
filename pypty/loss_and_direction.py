@@ -486,11 +486,12 @@ def loss_and_direction(this_obj, full_probe, this_pos_array, this_pos_correction
             updated_current_hp_reg_weight_positions=loss_print_copy*fraction/ind_loss
             ind_loss*=updated_current_hp_reg_weight_positions
             reg_grad*=updated_current_hp_reg_weight_positions
+            current_hp_reg_weight_positions=updated_current_hp_reg_weight_positions
         pos_grad+=reg_grad;
         loss+=ind_loss
         constraint_contributions.append(ind_loss)
         if print_flag==4:
-            sys.stdout.write("\nWith weight %.3e, Positions slow axis constaint is %.2e %% of the main loss"%(current_hp_reg_weight_positions, ind_loss*100/loss_print_copy));
+            sys.stdout.write("\nWith weight %.3e, Positions high pass constaint is %.2e %% of the main loss"%(current_hp_reg_weight_positions, ind_loss*100/loss_print_copy));
     else:
         constraint_contributions.append(0)
     ########
@@ -511,7 +512,7 @@ def loss_and_direction(this_obj, full_probe, this_pos_array, this_pos_correction
         loss+=ind_loss
         constraint_contributions.append(ind_loss)
         if print_flag==4:
-            sys.stdout.write("\nWith weight %.3e, Tilts slow axis constaint is %.2e %% of the main loss"%(current_hp_reg_weight_tilts, ind_loss*100/loss_print_copy));
+            sys.stdout.write("\nWith weight %.3e, Tilts high pass constaint is %.2e %% of the main loss"%(current_hp_reg_weight_tilts, ind_loss*100/loss_print_copy));
     else:
         constraint_contributions.append(0)
     #######
