@@ -469,7 +469,7 @@ def loss_and_direction(this_obj, full_probe, this_pos_array, this_pos_correction
         loss+=ind_loss
         constraint_contributions.append(ind_loss)
         if print_flag==4:
-            sys.stdout.write("\nWith weight %.3e, Positions fast axis constaint is %2 %% of the main loss"%(fast_axis_reg_weight_positions, ind_loss*100/loss_print_copy));
+            sys.stdout.write("\nWith weight %.3e, Positions fast axis constaint is %.2f %% of the main loss"%(fast_axis_reg_weight_positions, ind_loss*100/loss_print_copy));
     else:
         constraint_contributions.append(0)
     #######
@@ -490,7 +490,7 @@ def loss_and_direction(this_obj, full_probe, this_pos_array, this_pos_correction
         loss+=ind_loss
         constraint_contributions.append(ind_loss)
         if print_flag==4:
-            sys.stdout.write("\nWith weight %.3e, Positions slow axis constaint is %2 %% of the main loss"%(current_hp_reg_weight_positions, ind_loss*100/loss_print_copy));
+            sys.stdout.write("\nWith weight %.3e, Positions slow axis constaint is %.2f %% of the main loss"%(current_hp_reg_weight_positions, ind_loss*100/loss_print_copy));
     else:
         constraint_contributions.append(0)
     ########
@@ -511,7 +511,7 @@ def loss_and_direction(this_obj, full_probe, this_pos_array, this_pos_correction
         loss+=ind_loss
         constraint_contributions.append(ind_loss)
         if print_flag==4:
-            sys.stdout.write("\nWith weight %.3e, Tilts slow axis constaint is %2 %% of the main loss"%(current_hp_reg_weight_tilts, ind_loss*100/loss_print_copy));
+            sys.stdout.write("\nWith weight %.3e, Tilts slow axis constaint is %.2f %% of the main loss"%(current_hp_reg_weight_tilts, ind_loss*100/loss_print_copy));
     else:
         constraint_contributions.append(0)
     #######
@@ -532,7 +532,7 @@ def loss_and_direction(this_obj, full_probe, this_pos_array, this_pos_correction
         loss+=ind_loss
         constraint_contributions.append(ind_loss)
         if print_flag==4:
-            sys.stdout.write("\nWith weight %.3e, Tilts fast axis constaint is %2 %% of the main loss"%(fast_axis_reg_weight_tilts, ind_loss*100/loss_print_copy));
+            sys.stdout.write("\nWith weight %.3e, Tilts fast axis constaint is %.2f %% of the main loss"%(fast_axis_reg_weight_tilts, ind_loss*100/loss_print_copy));
     else:
         constraint_contributions.append(0)
     #######
@@ -554,7 +554,7 @@ def loss_and_direction(this_obj, full_probe, this_pos_array, this_pos_correction
         constraint_contributions.append(l1_reg_term)
         del grad_mask,l1_reg_term,l1_object_grad # forget about it
         if print_flag==4:
-            sys.stdout.write("\nWith abs weight of %.3e and phase weight of %.3e, l1 constaint is %2 %% of the main loss"%(abs_norm_weight, phase_norm_weight, l1_reg_term*100/loss_print_copy));
+            sys.stdout.write("\nWith abs weight of %.3e and phase weight of %.3e, l1 constaint is %.2f %% of the main loss"%(abs_norm_weight, phase_norm_weight, l1_reg_term*100/loss_print_copy));
     else:
         constraint_contributions.append(0)
     ######
@@ -576,7 +576,7 @@ def loss_and_direction(this_obj, full_probe, this_pos_array, this_pos_correction
         constraint_contributions.append(probe_reg_term)
         del reg_probe_grad, probe_reg_term
         if print_flag==4:
-            sys.stdout.write("\nWith weight %.3e, Probe recprocal-space constaint is %2 %% of the main loss"%(probe_reg_weight, probe_reg_term*100/loss_print_copy));
+            sys.stdout.write("\nWith weight %.3e, Probe recprocal-space constaint is %.2f %% of the main loss"%(probe_reg_weight, probe_reg_term*100/loss_print_copy));
     else:
         constraint_contributions.append(0)
     ########
@@ -597,7 +597,7 @@ def loss_and_direction(this_obj, full_probe, this_pos_array, this_pos_correction
         constraint_contributions.append(probe_reg_term)
         del reg_probe_grad, probe_reg_term #forget about it
         if print_flag==4:
-            sys.stdout.write("\nWith weight %.3e, Probe real-space constaint is %2 %% of the main loss"%(current_window_weight, probe_reg_term*100/loss_print_copy));
+            sys.stdout.write("\nWith weight %.3e, Probe real-space constaint is %.2f %% of the main loss"%(current_window_weight, probe_reg_term*100/loss_print_copy));
     else:
         constraint_contributions.append(0)
     ####
@@ -618,7 +618,7 @@ def loss_and_direction(this_obj, full_probe, this_pos_array, this_pos_correction
         constraint_contributions.append(atv_reg_term)
         del atv_object_grad, atv_reg_term
         if print_flag==4:
-            sys.stdout.write("\nWith weight %.3e, ATV constaint is %2 %% of the main loss"%(atv_weight, atv_reg_term*100/loss_print_copy));
+            sys.stdout.write("\nWith weight %.3e, ATV constaint is %.2f %% of the main loss"%(atv_weight, atv_reg_term*100/loss_print_copy));
     else:
         constraint_contributions.append(0)
     #######
@@ -639,7 +639,7 @@ def loss_and_direction(this_obj, full_probe, this_pos_array, this_pos_correction
         constraint_contributions.append(mixed_variance_reg_term)
         del mixed_variance_reg_term, mixed_variance_grad # forget about it
         if print_flag==4:
-            sys.stdout.write("\nWith weight %.3e, Mixed variance constaint is %2 %% of the main loss"%(mixed_variance_weight, mixed_variance_reg_term*100/loss_print_copy));
+            sys.stdout.write("\nWith weight %.3e, Mixed variance constaint is %.2f %% of the main loss"%(mixed_variance_weight, mixed_variance_reg_term*100/loss_print_copy));
     else:
         constraint_contributions.append(0)
     ######
