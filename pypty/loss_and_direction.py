@@ -461,6 +461,8 @@ def loss_and_direction(this_obj, full_probe, this_pos_array, this_pos_correction
         else:
             recompute=False
         ind_loss, reg_grad=compute_fast_axis_constraint_on_grid(something, scan_size, fast_axis_reg_weight_positions)
+        if print_flag==4:
+            sys.stdout.write("\nWith weight %.3e, Positions fast axis constaint is %.2e %% of the main loss"%(fast_axis_reg_weight_positions, ind_loss*100/loss_print_copy));
         if recompute:
             updated_fast_axis_reg_weight_positions=loss_print_copy*fraction/ind_loss
             ind_loss*=updated_fast_axis_reg_weight_positions
@@ -468,8 +470,7 @@ def loss_and_direction(this_obj, full_probe, this_pos_array, this_pos_correction
         pos_grad+=reg_grad
         loss+=ind_loss
         constraint_contributions.append(ind_loss)
-        if print_flag==4:
-            sys.stdout.write("\nWith weight %.3e, Positions fast axis constaint is %.2e %% of the main loss"%(fast_axis_reg_weight_positions, ind_loss*100/loss_print_copy));
+        
     else:
         constraint_contributions.append(0)
     #######
@@ -482,6 +483,8 @@ def loss_and_direction(this_obj, full_probe, this_pos_array, this_pos_correction
         else:
             recompute=False
         ind_loss, reg_grad = compute_hp_constraint_on_grid(something, scan_size, current_hp_reg_weight_positions, current_hp_reg_coeff_positions)
+        if print_flag==4:
+            sys.stdout.write("\nWith weight %.3e, Positions high pass constaint is %.2e %% of the main loss"%(current_hp_reg_weight_positions, ind_loss*100/loss_print_copy));
         if recompute:
             updated_current_hp_reg_weight_positions=loss_print_copy*fraction/ind_loss
             ind_loss*=updated_current_hp_reg_weight_positions
@@ -490,8 +493,6 @@ def loss_and_direction(this_obj, full_probe, this_pos_array, this_pos_correction
         pos_grad+=reg_grad;
         loss+=ind_loss
         constraint_contributions.append(ind_loss)
-        if print_flag==4:
-            sys.stdout.write("\nWith weight %.3e, Positions high pass constaint is %.2e %% of the main loss"%(current_hp_reg_weight_positions, ind_loss*100/loss_print_copy));
     else:
         constraint_contributions.append(0)
     ########
@@ -504,6 +505,8 @@ def loss_and_direction(this_obj, full_probe, this_pos_array, this_pos_correction
         else:
             recompute=False
         ind_loss, reg_grad=compute_hp_constraint_on_grid(something, scan_size, current_hp_reg_weight_tilts, current_hp_reg_coeff_tilts)
+        if print_flag==4:
+            sys.stdout.write("\nWith weight %.3e, Tilts high pass constaint is %.2e %% of the main loss"%(current_hp_reg_weight_tilts, ind_loss*100/loss_print_copy));
         if recompute:
             updated_current_hp_reg_weight_tilts=loss_print_copy*fraction/ind_loss
             ind_loss*=updated_current_hp_reg_weight_tilts
@@ -511,8 +514,7 @@ def loss_and_direction(this_obj, full_probe, this_pos_array, this_pos_correction
         tilts_grad+=reg_grad;
         loss+=ind_loss
         constraint_contributions.append(ind_loss)
-        if print_flag==4:
-            sys.stdout.write("\nWith weight %.3e, Tilts high pass constaint is %.2e %% of the main loss"%(current_hp_reg_weight_tilts, ind_loss*100/loss_print_copy));
+
     else:
         constraint_contributions.append(0)
     #######
@@ -525,6 +527,8 @@ def loss_and_direction(this_obj, full_probe, this_pos_array, this_pos_correction
         else:
             recompute=False
         ind_loss, reg_grad=compute_fast_axis_constraint_on_grid(something, scan_size, fast_axis_reg_weight_tilts)
+        if print_flag==4:
+            sys.stdout.write("\nWith weight %.3e, Tilts fast axis constaint is %.2e %% of the main loss"%(fast_axis_reg_weight_tilts, ind_loss*100/loss_print_copy));
         if recompute:
             updated_fast_axis_reg_weight_tilts=loss_print_copy*fraction/ind_loss
             ind_loss*=updated_fast_axis_reg_weight_tilts
@@ -532,8 +536,7 @@ def loss_and_direction(this_obj, full_probe, this_pos_array, this_pos_correction
         tilts_grad+=reg_grad
         loss+=ind_loss
         constraint_contributions.append(ind_loss)
-        if print_flag==4:
-            sys.stdout.write("\nWith weight %.3e, Tilts fast axis constaint is %.2e %% of the main loss"%(fast_axis_reg_weight_tilts, ind_loss*100/loss_print_copy));
+      
     else:
         constraint_contributions.append(0)
     #######
@@ -546,6 +549,8 @@ def loss_and_direction(this_obj, full_probe, this_pos_array, this_pos_correction
         else:
             recompute=False
         l1_reg_term, l1_object_grad=compute_full_l1_constraint(this_obj, 0, phase_norm_weight, grad_mask, True, smart_memory)
+        if print_flag==4:
+            sys.stdout.write("\nWith abs weight of %.3e and phase weight of %.3e, l1 constaint is %.2e %% of the main loss"%(abs_norm_weight, phase_norm_weight, l1_reg_term*100/loss_print_copy));
         if recompute:
             updated_phase_norm_weight=loss_print_copy*fraction/l1_object_grad
             l1_reg_term*=updated_phase_norm_weight
@@ -554,12 +559,10 @@ def loss_and_direction(this_obj, full_probe, this_pos_array, this_pos_correction
         object_grad+=l1_object_grad
         constraint_contributions.append(l1_reg_term)
         del grad_mask,l1_reg_term,l1_object_grad # forget about it
-        if print_flag==4:
-            sys.stdout.write("\nWith abs weight of %.3e and phase weight of %.3e, l1 constaint is %.2e %% of the main loss"%(abs_norm_weight, phase_norm_weight, l1_reg_term*100/loss_print_copy));
+       
     else:
         constraint_contributions.append(0)
     ######
-
     if probe_reg_weight!=0 and this_step_probe:
         if type(probe_reg_weight)==str:
             fraction=float(probe_reg_weight)
@@ -568,6 +571,8 @@ def loss_and_direction(this_obj, full_probe, this_pos_array, this_pos_correction
         else:
             recompute=False
         probe_reg_term, reg_probe_grad = compute_probe_constraint(full_probe, aperture_mask, probe_reg_weight, True)
+        if print_flag==4:
+            sys.stdout.write("\nWith weight %.3e, Probe recprocal-space constaint is %.2e %% of the main loss"%(probe_reg_weight, probe_reg_term*100/loss_print_copy));
         if recompute:
             updated_probe_reg_weight=loss_print_copy*fraction/probe_reg_term
             probe_reg_term*=updated_probe_reg_weight
@@ -576,8 +581,6 @@ def loss_and_direction(this_obj, full_probe, this_pos_array, this_pos_correction
         probe_grad+=reg_probe_grad
         constraint_contributions.append(probe_reg_term)
         del reg_probe_grad, probe_reg_term
-        if print_flag==4:
-            sys.stdout.write("\nWith weight %.3e, Probe recprocal-space constaint is %.2e %% of the main loss"%(probe_reg_weight, probe_reg_term*100/loss_print_copy));
     else:
         constraint_contributions.append(0)
     ########
@@ -589,6 +592,8 @@ def loss_and_direction(this_obj, full_probe, this_pos_array, this_pos_correction
         else:
             recompute=False
         probe_reg_term, reg_probe_grad = compute_window_constraint(full_probe, current_window, current_window_weight)
+        if print_flag==4:
+            sys.stdout.write("\nWith weight %.3e, Probe real-space constaint is %.2e %% of the main loss"%(current_window_weight, probe_reg_term*100/loss_print_copy));
         if recompute:
             updated_current_window_weight=loss_print_copy*fraction/reg_probe_grad
             probe_reg_term*=updated_current_window_weight
@@ -597,8 +602,7 @@ def loss_and_direction(this_obj, full_probe, this_pos_array, this_pos_correction
         probe_grad+=reg_probe_grad
         constraint_contributions.append(probe_reg_term)
         del reg_probe_grad, probe_reg_term #forget about it
-        if print_flag==4:
-            sys.stdout.write("\nWith weight %.3e, Probe real-space constaint is %.2e %% of the main loss"%(current_window_weight, probe_reg_term*100/loss_print_copy));
+        
     else:
         constraint_contributions.append(0)
     ####
@@ -610,6 +614,8 @@ def loss_and_direction(this_obj, full_probe, this_pos_array, this_pos_correction
         else:
             recompute=False
         atv_reg_term, atv_object_grad = compute_atv_constraint(this_obj, atv_weight, atv_q, atv_p, pixel_size_x_A, pixel_size_y_A, None, True, smart_memory)
+        if print_flag==4:
+            sys.stdout.write("\nWith weight %.3e, ATV constaint is %.2e %% of the main loss"%(atv_weight, atv_reg_term*100/loss_print_copy));
         if recompute:
             updated_atv_weight=loss_print_copy*fraction/atv_reg_term
             atv_reg_term*=updated_atv_weight
@@ -618,8 +624,6 @@ def loss_and_direction(this_obj, full_probe, this_pos_array, this_pos_correction
         object_grad+=atv_object_grad
         constraint_contributions.append(atv_reg_term)
         del atv_object_grad, atv_reg_term
-        if print_flag==4:
-            sys.stdout.write("\nWith weight %.3e, ATV constaint is %.2e %% of the main loss"%(atv_weight, atv_reg_term*100/loss_print_copy));
     else:
         constraint_contributions.append(0)
     #######
@@ -631,6 +635,8 @@ def loss_and_direction(this_obj, full_probe, this_pos_array, this_pos_correction
         else:
             recompute=False
         mixed_variance_reg_term, mixed_variance_grad=compute_mixed_object_variance_constraint(this_obj, mixed_variance_weight, mixed_variance_sigma, True, smart_memory)
+        if print_flag==4:
+            sys.stdout.write("\nWith weight %.3e, Mixed variance constaint is %.2e %% of the main loss"%(mixed_variance_weight, mixed_variance_reg_term*100/loss_print_copy));
         if recompute:
             updated_mixed_variance_weight=loss_print_copy*fraction/mixed_variance_reg_term
             mixed_variance_grad*=updated_mixed_variance_weight
@@ -639,8 +645,6 @@ def loss_and_direction(this_obj, full_probe, this_pos_array, this_pos_correction
         object_grad+=mixed_variance_grad
         constraint_contributions.append(mixed_variance_reg_term)
         del mixed_variance_reg_term, mixed_variance_grad # forget about it
-        if print_flag==4:
-            sys.stdout.write("\nWith weight %.3e, Mixed variance constaint is %.2e %% of the main loss"%(mixed_variance_weight, mixed_variance_reg_term*100/loss_print_copy));
     else:
         constraint_contributions.append(0)
     ######
