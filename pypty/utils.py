@@ -410,7 +410,7 @@ def save_updated_arrays(output_folder, epoch,current_probe_step, current_probe_p
         with open(output_folder+"loss.csv", mode='a', newline='') as loss_list:
             if save_loss_log==2:
                 fieldnames=["epoch", "time / s", "loss", "sse", "initial step", "matching step", "N linesearch iterations",
-                "dir. derivative", "new dir. derivative", "F-axis postions reg.", "S-axis positons reg.", "S-axis tilts reg.", "F-axis tilts reg.", "l1 object reg.", "Q-space probe reg.", "R-space probe reg.", "TV object reg.", "V-object reg.", "Free GiB", "Total GiB"]
+                "dir. derivative", "new dir. derivative", "F-axis postions reg.", "HP positons reg.", "HP tilts reg.", "F-axis tilts reg.", "l1 object reg.", "Q-space probe reg.", "R-space probe reg.", "TV object reg.", "V-object reg.", "Free GiB", "Total GiB"]
             else:
                 fieldnames=["epoch", "time / s", "loss", "sse", "initial step", "matching step", "N linesearch iterations",
                 "dir. derivative", "new dir. derivative", "Constraints contribution", "Free GiB", "Total GiB"]
@@ -432,8 +432,8 @@ def save_updated_arrays(output_folder, epoch,current_probe_step, current_probe_p
                                 "dir. derivative": d_value,
                                 "new dir. derivative": new_d_value,
                                 "F-axis postions reg.": constraint_contributions[0],
-                                "S-axis positons reg.": constraint_contributions[1],
-                                "S-axis tilts reg.": constraint_contributions[2],
+                                "HP positons reg.": constraint_contributions[1],
+                                "HP tilts reg.": constraint_contributions[2],
                                 "F-axis tilts reg.": constraint_contributions[3],
                                 "l1 object reg.": constraint_contributions[4],
                                 "Q-space probe reg.": constraint_contributions[5],
@@ -722,7 +722,7 @@ def prepare_saving_stuff(output_folder, save_loss_log, epoch_prev):
         os.system("touch "+output_folder+"loss.csv")
         if save_loss_log==2:
             fieldnames=["epoch", "time / s", "loss", "sse", "initial step", "matching step", "N linesearch iterations",
-                "dir. derivative", "new dir. derivative", "F-axis postions reg.", "S-axis positons reg.", "S-axis tilts reg.", "F-axis tilts reg.", "l1 object reg.", "Q-space probe reg.", "R-space probe reg.", "TV object reg.", "V-object reg.", "Free GiB", "Total GiB"]
+                "dir. derivative", "new dir. derivative", "F-axis postions reg.", "HP positons reg.", "HP tilts reg.", "F-axis tilts reg.", "l1 object reg.", "Q-space probe reg.", "R-space probe reg.", "TV object reg.", "V-object reg.", "Free GiB", "Total GiB"]
         else:
             fieldnames=["epoch", "time / s", "loss", "sse", "initial step", "matching step", "N linesearch iterations",
                 "dir. derivative", "new dir. derivative", "Constraints contribution", "Free GiB", "Total GiB"]
