@@ -12,4 +12,4 @@ from pypty.multislice import *
 from pypty.tcbf import *
 from pypty.utils import *
 from pypty.signal_extraction import *
-from pypty.visialize_and_analyse import *
+from pypty.vaa import *

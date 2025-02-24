@@ -156,26 +156,23 @@ def get_offset(x_range, y_range, scan_step_A, detector_pixel_size_rezA, patterns
     offx=-np.min(positions[:,1])*scan_step_A
     return offy, offx
        
-def get_positions_pixel_size(x_range, y_range,scan_step_A, detector_pixel_size_rezA, patternshape, rot_angle_deg=0, flip_x=False,flip_y=False, print_flag=False):
+def get_positions_pixel_size(x_range, y_range,scan_step_A, detector_pixel_size_rezA, patternshape, rot_angle_deg=0, flip_x=False,flip_y=False, print_flag=False, tranform_axis_matrix=np.eye(2)):
     pixel_size=1/(detector_pixel_size_rezA*patternshape[-1])
     if print_flag:
         sys.stdout.write("\npixel size in A: %.3e"%pixel_size)
     positions=np.empty((x_range*y_range,2))
     i=0
-    for ind1 in range(0,y_range,1):
-        for ind2 in range(0, x_range,1):
-            positions[i,0]=ind1
-            positions[i,1]=ind2
-            i+=1
+    positions=np.array(np.meshgrid( np.arange(x_range)*((-1)**flip_x), np.arange(y_range)* ((-1)**flip_y), indexing="xy")).reshape(2,y_range*x_range)
+    positions=positions[::-1,:]
+    positions=tranform_axis_matrix@positions
+    positions=np.swapaxes(positions, 0,1)
+    
     if rot_angle_deg!=0:
         rot_ang=rot_angle_deg*np.pi/180
         positions_prime_x,positions_prime_y=positions[:,1] * np.cos(rot_ang) + positions[:,0] * np.sin(rot_ang), -1*positions[:,1] * np.sin(rot_ang) + positions[:,0] * np.cos(rot_ang)
         positions[:,0]=positions_prime_y
         positions[:,1]=positions_prime_x
-    if flip_x:
-        positions[:,1]*=-1
-    if flip_y:
-        positions[:,0]*=-1
+        
     positions[:,0]=positions[:,0]-np.min(positions[:,0])
     positions[:,1]=positions[:,1]-np.min(positions[:,1])
     positions*=scan_step_A/pixel_size
@@ -246,7 +243,7 @@ def append_exp_params(experimental_params, pypty_params=None):
         -scan_step_A - float, scan step (STEM pixel size) in Å.
         -fov_nm - float, FOV along the fast axis in nm.
         -special_postions_A - 2d numpy array, default None. If you acquiered a data on a special non-rectangular grid, please specify the positions in Å via this array for all measurements in a following form: [y_0,x_0],[y_1,x_1],....[y_n,x_n]]
-        
+        -tranform_axis_matrix- 2x2 matrix for postions transformation
         -PLRotation_deg - float, rotation angle between scan and detector axes. Default None. If None, a DPC measurement will be exectuted to get this angle. !!!!!!! Note that negative PLRotation_deg values rotate scan counter clockwise and diffraction space clockwise !!!!!!!!!!!
         -data_is_numpy_and_flip_ky - boolean Flag. Default is False. If no PyPty-style h5 data was created, this flag will flip the y-axis of diffraction patterns.
         
@@ -295,6 +292,7 @@ def append_exp_params(experimental_params, pypty_params=None):
     print_flag=experimental_params.get("print_flag", True)
     save_preprocessing_files=experimental_params.get("save_preprocessing_files", True)
     
+    tranform_axis_matrix=experimental_params.get("tranform_axis_matrix", np.eye(2))
     comx=None
     comy=None
     try:
@@ -407,7 +405,7 @@ def append_exp_params(experimental_params, pypty_params=None):
         rez_pixel_size_A=rez_pixel_size_mrad*1e-3/(upsample_pattern*wavelength)
     old_shape=mean_pattern.shape[1]
     if special_postions_A is None:
-        positions, old_pixel_size=get_positions_pixel_size(x_range, y_range, scan_step_A, detector_pixel_size_rezA=rez_pixel_size_A, patternshape=[mean_pattern.shape[0],mean_pattern.shape[1]], rot_angle_deg=-1*PLRotation_deg, flip_x=False,flip_y=False, print_flag=print_flag)
+        positions, old_pixel_size=get_positions_pixel_size(x_range, y_range, scan_step_A, detector_pixel_size_rezA=rez_pixel_size_A, patternshape=[mean_pattern.shape[0],mean_pattern.shape[1]], rot_angle_deg=-1*PLRotation_deg, flip_x=False,flip_y=False, print_flag=print_flag, tranform_axis_matrix=tranform_axis_matrix)
     else:
         old_pixel_size=1/(rez_pixel_size_A*old_shape)
         positions=special_postions_A/old_pixel_size
