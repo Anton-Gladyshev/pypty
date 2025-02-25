@@ -4,7 +4,10 @@ import matplotlib.pyplot as plt
 from scipy.optimize import minimize, least_squares
 from matplotlib.patches import Rectangle
 import matplotlib.patheffects as PathEffects
-from skimage.restoration import unwrap_phase
+try:
+    from skimage.restoration import unwrap_phase
+except:
+    pass
 from pypty.utils import *
 from tqdm import tqdm
 import matplotlib
