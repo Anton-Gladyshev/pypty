@@ -160,9 +160,8 @@ def get_positions_pixel_size(x_range, y_range,scan_step_A, detector_pixel_size_r
     pixel_size=1/(detector_pixel_size_rezA*patternshape[-1])
     if print_flag:
         sys.stdout.write("\npixel size in A: %.3e"%pixel_size)
-    positions=np.empty((x_range*y_range,2))
-    i=0
-    positions=np.array(np.meshgrid( np.arange(x_range)*((-1)**flip_x), np.arange(y_range)* ((-1)**flip_y), indexing="xy")).reshape(2,y_range*x_range)
+    positions=(np.array(np.meshgrid( np.arange(x_range)*((-1)**flip_x), np.arange(y_range)* ((-1)**flip_y), indexing="xy")).reshape(2,y_range*x_range)).astype(np.float64)
+    
     positions=positions[::-1,:]
     positions=tranform_axis_matrix@positions
     positions=np.swapaxes(positions, 0,1)
