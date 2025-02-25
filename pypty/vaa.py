@@ -147,6 +147,20 @@ def get_step_angle_scan_grid(positions, scan_size):
     print("std: ", np.std(difference), " px.")
     return step, angle
     
+    
+def get_affine_tranform(positions,  scan_size, px_size_A):
+    x_perfect, y_perfect=np.meshgrid(np.arange(scan_size[1]), np.arange(scan_size[0]))
+    x_perfect, y_perfect, off_perfect= x_perfect.flatten(), y_perfect.flatten(), np.ones(scan_size[1]*scan_size[0])
+    yxo_perf=np.swapaxes(np.array([y_perfect, x_perfect, off_perfect]), 0,1)
+    matrix=positions.T @ yxo_perf @ np.linalg.inv(yxo_perf.T @ yxo_perf)
+    matrix=np.array(matrix)
+    matrix*=px_size_A
+    deformation=matrix[:, :2]
+    print("Deformation matrix yy: %.2f, yx: %.2f , xy: %.2f, xx: %.2f"%(matrix[0,0], matrix[0,1],matrix[1,0], matrix[1,1]))
+    print("Shift y: %.2f A, x: %.2f A"%(matrix[0,2], matrix[1, 2]))
+    return deformation
+
+        
 def add_scalebar_ax(ax, x,y, width, height, x_t, y_t, px_size, unit):
     rect=Rectangle([x,y], width/px_size, height, color="white", alpha=0.9)
     text2=ax.text(x_t, y_t, str(width)+" "+unit, c="w", fontsize=20)
@@ -268,3 +282,8 @@ def plot_complex_modes(p, nm, sub):
         ax.axis("off")
         ax.text(15,0.9*p.shape[0], "%.1e %%"%(pint[i]), fontsize=15)
     plt.show()
+
+
+
+
+
