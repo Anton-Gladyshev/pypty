@@ -9,10 +9,13 @@ pypty/initialize.py
 pypty/iterative_ptychography.py
 pypty/loss_and_direction.py
 pypty/multislice.py
+pypty/signal_extraction.py
 pypty/tcbf.py
 pypty/utils.py
+pypty/vaa.py
 pypty.egg-info/PKG-INFO
 pypty.egg-info/SOURCES.txt
 pypty.egg-info/dependency_links.txt
 pypty.egg-info/not-zip-safe
+pypty.egg-info/requires.txt
 pypty.egg-info/top_level.txt

@@ -410,7 +410,7 @@ def save_updated_arrays(output_folder, epoch,current_probe_step, current_probe_p
         with open(output_folder+"loss.csv", mode='a', newline='') as loss_list:
             if save_loss_log==2:
                 fieldnames=["epoch", "time / s", "loss", "sse", "initial step", "matching step", "N linesearch iterations",
-                "dir. derivative", "new dir. derivative", "F-axis postions reg.", "HP positons reg.", "HP tilts reg.", "F-axis tilts reg.", "l1 object reg.", "Q-space probe reg.", "R-space probe reg.", "TV object reg.", "V-object reg.", "Free GiB", "Total GiB"]
+                "dir. derivative", "new dir. derivative", "F-axis postions reg.", "Deformation positons reg.", "Deformation tilts reg.", "F-axis tilts reg.", "l1 object reg.", "Q-space probe reg.", "R-space probe reg.", "TV object reg.", "V-object reg.", "Free GiB", "Total GiB"]
             else:
                 fieldnames=["epoch", "time / s", "loss", "sse", "initial step", "matching step", "N linesearch iterations",
                 "dir. derivative", "new dir. derivative", "Constraints contribution", "Free GiB", "Total GiB"]
@@ -432,8 +432,8 @@ def save_updated_arrays(output_folder, epoch,current_probe_step, current_probe_p
                                 "dir. derivative": d_value,
                                 "new dir. derivative": new_d_value,
                                 "F-axis postions reg.": constraint_contributions[0],
-                                "HP positons reg.": constraint_contributions[1],
-                                "HP tilts reg.": constraint_contributions[2],
+                                "Deformation positons reg.": constraint_contributions[1],
+                                "Deformation tilts reg.": constraint_contributions[2],
                                 "F-axis tilts reg.": constraint_contributions[3],
                                 "l1 object reg.": constraint_contributions[4],
                                 "Q-space probe reg.": constraint_contributions[5],
@@ -722,7 +722,7 @@ def prepare_saving_stuff(output_folder, save_loss_log, epoch_prev):
         os.system("touch "+output_folder+"loss.csv")
         if save_loss_log==2:
             fieldnames=["epoch", "time / s", "loss", "sse", "initial step", "matching step", "N linesearch iterations",
-                "dir. derivative", "new dir. derivative", "F-axis postions reg.", "HP positons reg.", "HP tilts reg.", "F-axis tilts reg.", "l1 object reg.", "Q-space probe reg.", "R-space probe reg.", "TV object reg.", "V-object reg.", "Free GiB", "Total GiB"]
+                "dir. derivative", "new dir. derivative", "F-axis postions reg.", "Deformation positons reg.", "Deformation tilts reg.", "F-axis tilts reg.", "l1 object reg.", "Q-space probe reg.", "R-space probe reg.", "TV object reg.", "V-object reg.", "Free GiB", "Total GiB"]
         else:
             fieldnames=["epoch", "time / s", "loss", "sse", "initial step", "matching step", "N linesearch iterations",
                 "dir. derivative", "new dir. derivative", "Constraints contribution", "Free GiB", "Total GiB"]
@@ -987,16 +987,16 @@ def get_compute_batch(compute_batch, load_one_by_one, hist_size, measured_data_s
 
 
 
-def update_weights_constraints(fast_axis_reg_weight_positions, hp_reg_weight_positions, hp_reg_weight_tilts, fast_axis_reg_weight_tilts, phase_norm_weight, abs_norm_weight, probe_reg_constraint_weight, window_weight, atv_weight, mixed_variance_weight,     updated_fast_axis_reg_weight_positions, updated_hp_reg_weight_positions, updated_hp_reg_weight_tilts, updated_fast_axis_reg_weight_tilts, updated_phase_norm_weight, updated_abs_norm_weight, updated_probe_reg_weight, updated_window_weight, updated_atv_weight, updated_mixed_variance_weight):
+def update_weights_constraints(fast_axis_reg_weight_positions, deformation_reg_weight_positions, deformation_reg_weight_tilts, fast_axis_reg_weight_tilts, phase_norm_weight, abs_norm_weight, probe_reg_constraint_weight, window_weight, atv_weight, mixed_variance_weight,     updated_fast_axis_reg_weight_positions, updated_deformation_reg_weight_positions, updated_deformation_reg_weight_tilts, updated_fast_axis_reg_weight_tilts, updated_phase_norm_weight, updated_abs_norm_weight, updated_probe_reg_weight, updated_window_weight, updated_atv_weight, updated_mixed_variance_weight):
     if not(updated_fast_axis_reg_weight_positions is None):
         fast_axis_reg_weight_positions=updated_fast_axis_reg_weight_positions
         sys.stdout.write("\nUpdating fast_axis_reg_weight_positions to %.3e"%updated_fast_axis_reg_weight_positions)
-    if not(updated_hp_reg_weight_positions  is None):
-        hp_reg_weight_positions=updated_hp_reg_weight_positions
-        sys.stdout.write("\nUpdating hp_reg_weight_positions to %.3e"%updated_hp_reg_weight_positions)
-    if not(updated_hp_reg_weight_tilts  is None):
-        hp_reg_weight_tilts=updated_hp_reg_weight_tilts
-        sys.stdout.write("\nUpdating hp_reg_weight_tilts to %.3e"%updated_hp_reg_weight_tilts)
+    if not(updated_deformation_reg_weight_positions  is None):
+        deformation_reg_weight_positions=updated_deformation_reg_weight_positions
+        sys.stdout.write("\nUpdating deformation_reg_weight_positions to %.3e"%updated_deformation_reg_weight_positions)
+    if not(updated_deformation_reg_weight_tilts  is None):
+        deformation_reg_weight_tilts=updated_deformation_reg_weight_tilts
+        sys.stdout.write("\nUpdating deformation_reg_weight_tilts to %.3e"%updated_deformation_reg_weight_tilts)
     if not(updated_fast_axis_reg_weight_tilts  is None):
         fast_axis_reg_weight_tilts=updated_fast_axis_reg_weight_tilts
         sys.stdout.write("\nUpdating fast_axis_reg_weight_tilts to %.3e"%updated_fast_axis_reg_weight_tilts)
@@ -1018,5 +1018,5 @@ def update_weights_constraints(fast_axis_reg_weight_positions, hp_reg_weight_pos
     if not(updated_mixed_variance_weight  is None):
         mixed_variance_weight=updated_mixed_variance_weight
         sys.stdout.write("\nUpdating mixed_variance_weight to %.3e"%updated_mixed_variance_weight)
-    return fast_axis_reg_weight_positions, hp_reg_weight_positions, hp_reg_weight_tilts, fast_axis_reg_weight_tilts, phase_norm_weight, abs_norm_weight, probe_reg_constraint_weight, window_weight, atv_weight, mixed_variance_weight
+    return fast_axis_reg_weight_positions, deformation_reg_weight_positions, deformation_reg_weight_tilts, fast_axis_reg_weight_tilts, phase_norm_weight, abs_norm_weight, probe_reg_constraint_weight, window_weight, atv_weight, mixed_variance_weight
 

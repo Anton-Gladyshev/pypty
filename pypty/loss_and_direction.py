@@ -14,7 +14,7 @@ from pypty.multislice import *
 
 half_master_propagator_phase_space, master_propagator_phase_space, q2, qx, qy, exclude_mask, x_real_grid_tilt, y_real_grid_tilt, shift_probe_mask_x, shift_probe_mask_y, exclude_mask_ishift, probe_runx, probe_runy, yx_real_grid_tilt, shift_probe_mask_yx, aberrations_polynomials=None, None,None, None,None, None,None, None, None, None, None, None,None,None,None,None
 def loss_and_direction(this_obj, full_probe, this_pos_array, this_pos_correction, this_tilt_array, this_tilts_correction, this_distances,  measured_array,  algorithm_type, this_wavelength, this_step_probe, this_step_obj, this_step_pos_correction, this_step_tilts, masks, pixel_size_x_A, pixel_size_y_A, recon_type, Cs, defocus_array, alpha_near_field, damping_cutoff_multislice, smooth_rolloff, propmethod, this_chopped_sequence, load_one_by_one, data_multiplier, data_pad, phase_plate_in_h5, this_loss_weight, data_bin, data_shift_vector, upsample_pattern, static_background, this_step_static_background, tilt_mode, aberration_marker, probe_marker, aberrations_array, compute_batch, phase_only_obj, beam_current, this_beam_current_step, this_step_aberrations_array, default_float, default_complex, xp, is_first_epoch,
-                       scan_size,fast_axis_reg_weight_positions, current_hp_reg_weight_positions,current_hp_reg_coeff_positions, current_hp_reg_weight_tilts,current_hp_reg_coeff_tilts, fast_axis_reg_weight_tilts, aperture_mask, probe_reg_weight, current_window_weight, current_window, phase_norm_weight, abs_norm_weight, atv_weight, atv_q, atv_p, mixed_variance_weight, mixed_variance_sigma, smart_memory, print_flag):
+                       scan_size,fast_axis_reg_weight_positions, current_deformation_reg_weight_positions, current_deformation_reg_weight_tilts, fast_axis_reg_weight_tilts, aperture_mask, probe_reg_weight, current_window_weight, current_window, phase_norm_weight, abs_norm_weight, atv_weight, atv_q, atv_p, mixed_variance_weight, mixed_variance_sigma, smart_memory, print_flag):
     """
     This is an internal PyPty function for iterative Ptychography. It does both forward and backward propagations. Inputs are the parameters of the experiment and outputs are loss, SSE and the gradients of the loss with respect to refinable arrays. 
     """
@@ -446,7 +446,7 @@ def loss_and_direction(this_obj, full_probe, this_pos_array, this_pos_correction
    # t_gpu = cp.cuda.get_elapsed_time(start_gpu, end_gpu)
    # print("\n", t_gpu)
     constraint_contributions=[]
-    updated_fast_axis_reg_weight_positions, updated_current_hp_reg_weight_positions, updated_current_hp_reg_weight_tilts, updated_fast_axis_reg_weight_tilts, updated_phase_norm_weight, updated_abs_norm_weight, updated_probe_reg_weight, updated_current_window_weight, updated_atv_weight, updated_mixed_variance_weight= None, None, None, None, None, None, None, None, None, None
+    updated_fast_axis_reg_weight_positions, updated_current_deformation_reg_weight_positions, updated_current_deformation_reg_weight_tilts, updated_fast_axis_reg_weight_tilts, updated_phase_norm_weight, updated_abs_norm_weight, updated_probe_reg_weight, updated_current_window_weight, updated_atv_weight, updated_mixed_variance_weight= None, None, None, None, None, None, None, None, None, None
     loss_print_copy=1*loss;
     this_pos_array=this_pos_array[:,:,0]
     this_tilt_array=this_tilt_array[:,:,0,0]
@@ -474,43 +474,43 @@ def loss_and_direction(this_obj, full_probe, this_pos_array, this_pos_correction
     else:
         constraint_contributions.append(0)
     #######
-    if this_step_pos_correction and current_hp_reg_weight_positions!=0:
+    if this_step_pos_correction and current_deformation_reg_weight_positions!=0:
         something=this_pos_array+this_pos_correction
-        if type(current_hp_reg_weight_positions)==str:
-            fraction=float(current_hp_reg_weight_positions)
-            current_hp_reg_weight_positions=1
+        if type(current_deformation_reg_weight_positions)==str:
+            fraction=float(current_deformation_reg_weight_positions)
+            current_deformation_reg_weight_positions=1
             recompute=True
         else:
             recompute=False
-        ind_loss, reg_grad = compute_hp_constraint_on_grid(something, scan_size, current_hp_reg_weight_positions, current_hp_reg_coeff_positions)
+        ind_loss, reg_grad = compute_deformation_constraint_on_grid(something, scan_size, current_deformation_reg_weight_positions)
         if print_flag==4:
-            sys.stdout.write("\nWith weight %.3e, Positions high pass constaint is %.2e %% of the main loss"%(current_hp_reg_weight_positions, ind_loss*100/loss_print_copy));
+            sys.stdout.write("\nWith weight %.3e, Positions deformation constaint is %.2e %% of the main loss"%(current_deformation_reg_weight_positions, ind_loss*100/loss_print_copy));
         if recompute:
-            updated_current_hp_reg_weight_positions=loss_print_copy*fraction/ind_loss
-            ind_loss*=updated_current_hp_reg_weight_positions
-            reg_grad*=updated_current_hp_reg_weight_positions
-            current_hp_reg_weight_positions=updated_current_hp_reg_weight_positions
+            updated_current_deformation_reg_weight_positions=loss_print_copy*fraction/ind_loss
+            ind_loss*=updated_current_deformation_reg_weight_positions
+            reg_grad*=updated_current_deformation_reg_weight_positions
+            current_deformation_reg_weight_positions=updated_current_deformation_reg_weight_positions
         pos_grad+=reg_grad;
         loss+=ind_loss
         constraint_contributions.append(ind_loss)
     else:
         constraint_contributions.append(0)
     ########
-    if this_step_tilts and current_hp_reg_weight_tilts!=0:
+    if this_step_tilts and current_deformation_reg_weight_tilts!=0:
         something=this_tilt_array
-        if type(current_hp_reg_weight_tilts)==str:
-            fraction=float(current_hp_reg_weight_tilts)
-            current_hp_reg_weight_tilts=1
+        if type(current_deformation_reg_weight_tilts)==str:
+            fraction=float(current_deformation_reg_weight_tilts)
+            current_deformation_reg_weight_tilts=1
             recompute=True
         else:
             recompute=False
-        ind_loss, reg_grad=compute_hp_constraint_on_grid(something, scan_size, current_hp_reg_weight_tilts, current_hp_reg_coeff_tilts)
+        ind_loss, reg_grad=compute_deformation_constraint_on_grid(something, scan_size, current_deformation_reg_weight_tilts)
         if print_flag==4:
-            sys.stdout.write("\nWith weight %.3e, Tilts high pass constaint is %.2e %% of the main loss"%(current_hp_reg_weight_tilts, ind_loss*100/loss_print_copy));
+            sys.stdout.write("\nWith weight %.3e, Tilts deformation constaint is %.2e %% of the main loss"%(current_deformation_reg_weight_tilts, ind_loss*100/loss_print_copy));
         if recompute:
-            updated_current_hp_reg_weight_tilts=loss_print_copy*fraction/ind_loss
-            ind_loss*=updated_current_hp_reg_weight_tilts
-            reg_grad*=updated_current_hp_reg_weight_tilts
+            updated_current_deformation_reg_weight_tilts=loss_print_copy*fraction/ind_loss
+            ind_loss*=updated_current_deformation_reg_weight_tilts
+            reg_grad*=updated_current_deformation_reg_weight_tilts
         tilts_grad+=reg_grad;
         loss+=ind_loss
         constraint_contributions.append(ind_loss)
@@ -664,7 +664,7 @@ def loss_and_direction(this_obj, full_probe, this_pos_array, this_pos_correction
         cp.get_default_pinned_memory_pool().free_all_blocks()
     except:
         pass
-    return loss, sse, object_grad,  probe_grad, pos_grad, tilts_grad, static_background_grad, aberrations_array_grad, beam_current_grad, constraint_contributions, updated_fast_axis_reg_weight_positions, updated_current_hp_reg_weight_positions, updated_current_hp_reg_weight_tilts, updated_fast_axis_reg_weight_tilts, updated_phase_norm_weight, updated_abs_norm_weight, updated_probe_reg_weight, updated_current_window_weight, updated_atv_weight, updated_mixed_variance_weight
+    return loss, sse, object_grad,  probe_grad, pos_grad, tilts_grad, static_background_grad, aberrations_array_grad, beam_current_grad, constraint_contributions, updated_fast_axis_reg_weight_positions, updated_current_deformation_reg_weight_positions, updated_current_deformation_reg_weight_tilts, updated_fast_axis_reg_weight_tilts, updated_phase_norm_weight, updated_abs_norm_weight, updated_probe_reg_weight, updated_current_window_weight, updated_atv_weight, updated_mixed_variance_weight
 
 
 
@@ -837,6 +837,27 @@ def compute_hp_constraint_on_grid(something, scan_size, reg_weight, a_coeff):
     grad=2*cp.real(grad)*scan_size[0]*scan_size[1]
     grad=grad.reshape(something.shape)
     return reg_term, grad
+    
+    
+def compute_deformation_constraint_on_grid(something, scan_size, reg_weight):
+    x_perfect, y_perfect = cp.meshgrid(cp.arange(scan_size[1]), cp.arange(scan_size[0]))
+    yxo_perf = cp.stack([y_perfect.flatten(), x_perfect.flatten(), cp.ones(y_perfect.size)], axis=1)
+    matrix_1=yxo_perf@(cp.linalg.inv(yxo_perf.T @ yxo_perf)).T
+    reg_term=0
+    grad_full=cp.zeros_like(something)
+    for subdumb in range(something.shape[1]//2):
+        something_chop=something[:,subdumb*2:2*(subdumb+1)]
+        matrix_2= yxo_perf.T @ something_chop
+        deformation_desired=matrix_1 @ matrix_2
+        
+        grad= something_chop-deformation_desired
+        reg_term+=cp.sum(grad**2)*reg_weight
+        grad*=2*reg_weight
+        dR_dDef=-1*grad
+        dR_dDef=yxo_perf @ (matrix_1.T @ dR_dDef)
+        grad_full[:,subdumb*2:2*(subdumb+1)]=grad+dR_dDef
+    return reg_term, grad_full
+
     
     
     

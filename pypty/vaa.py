@@ -172,7 +172,7 @@ def outputlog_plots(loss_path, skip_first=0, plot_time=True):
                 "dir. derivative", "new dir. derivative", "Constraints contribution", "Free GiB", "Total GiB"]
     else:
         fieldnames=["epoch", "time / s", "loss", "sse", "initial step", "matching step", "N linesearch iterations",
-                "dir. derivative", "new dir. derivative", "F-axis postions reg.", "S-axis positons reg.", "S-axis tilts reg.", "F-axis tilts reg.", "l1 object reg.", "Q-space probe reg.", "R-space probe reg.", "TV object reg.", "V-object reg.", "Free GiB", "Total GiB"]
+                "dir. derivative", "new dir. derivative", "F-axis postions reg.", "Deformation positons reg.", "Deformation tilts reg.", "F-axis tilts reg.", "l1 object reg.", "Q-space probe reg.", "R-space probe reg.", "TV object reg.", "V-object reg.", "Free GiB", "Total GiB"]
     epoch=dat[:,0]
     time=dat [:,1] / 3600
     def forward(x):
