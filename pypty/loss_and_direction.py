@@ -313,7 +313,7 @@ def loss_and_direction(this_obj, full_probe, this_pos_array, this_pos_correction
                     this_flat_mask=masks[ind_masks].flatten()
                     sort=this_flat_mask!=0
                     this_pixels, this_mask_pixels = flat_pattern[:,sort], this_flat_mask[sort]
-                    this_coeffs[:,ind_masks] = cp.sum(this_pixels*this_mask_pixels[None,:], axis=1, dtype=cp.float64).astype(default_float)
+                    this_coeffs[:,ind_masks] = cp.sum(this_pixels*this_mask_pixels[None,:], axis=1, dtype=default_float)#cp.float64).astype(default_float)
                 this_differences=this_coeffs - measured
                 tterm=cp.sum(this_differences**2, axis=1)
                 loss+=tterm
@@ -358,9 +358,9 @@ def loss_and_direction(this_obj, full_probe, this_pos_array, this_pos_correction
             if this_step_tilts:
                 grad_tilting_kernel = -2 * dLoss_dP_out * cp.conjugate(this_exit_wave_before_tilt)
                 if is_fully_coherent:
-                    dL_dtilt=cp.sum(cp.real(grad_tilting_kernel[:,None,:,:,0,0]*yx_real_grid_tilt[:,:,:,:,0]), (2,3), dtype=cp.float64).astype(default_float)
+                    dL_dtilt=cp.sum(cp.real(grad_tilting_kernel[:,None,:,:,0,0]*yx_real_grid_tilt[:,:,:,:,0]), (2,3), dtype=default_float)#cp.float64).astype(default_float)
                 else:
-                    dL_dtilt=cp.sum(cp.real(grad_tilting_kernel[:,None,:,:,:,:]*yx_real_grid_tilt[:,:,:,:,:,None]),(2,3,4,5), dtype=cp.float64).astype(default_float)
+                    dL_dtilt=cp.sum(cp.real(grad_tilting_kernel[:,None,:,:,:,:]*yx_real_grid_tilt[:,:,:,:,:,None]),(2,3,4,5), dtype=default_float)#cp.float64).astype(default_float)
                 if is_single_tilt:
                     dL_dtilt=cp.sum(dL_dtilt, 0)
                     tilts_grad[0,4:]+=dL_dtilt
@@ -387,9 +387,9 @@ def loss_and_direction(this_obj, full_probe, this_pos_array, this_pos_correction
                     shift_mask_grad=cp.conjugate(this_probe_fourier)*fourier_probe_grad
                     sh = -2/(this_probe_fourier.shape[1]*this_probe_fourier.shape[2]) ## -1 for conj, 2 for real-grad shape for ifft
                     if n_probe_modes==1:
-                        sh_grad=sh*cp.sum(cp.real(shift_probe_mask_yx[:,:,:,:]*shift_mask_grad[:,None,:,:,0]), (2,3), dtype=cp.float64).astype(default_float)
+                        sh_grad=sh*cp.sum(cp.real(shift_probe_mask_yx[:,:,:,:]*shift_mask_grad[:,None,:,:,0]), (2,3), dtype=default_float)#.astype(default_float)
                     else:
-                        sh_grad= sh*cp.sum(cp.real(shift_probe_mask_yx[:,:,:,:,None]*shift_mask_grad[:,None,:,:,:]), (2,3,4), dtype=cp.float64).astype(default_float)
+                        sh_grad= sh*cp.sum(cp.real(shift_probe_mask_yx[:,:,:,:,None]*shift_mask_grad[:,None,:,:,:]), (2,3,4), dtype=default_float)#.astype(default_float)
                     if is_single_pos:
                         sh_grad=cp.sum(sh_grad, 0)
                         pos_grad[posind,:]+=sh_grad
@@ -401,9 +401,9 @@ def loss_and_direction(this_obj, full_probe, this_pos_array, this_pos_correction
                     if this_step_tilts:
                         grad_tilting_kernel=-2 * interm_probe_grad * cp.conjugate(this_probe_before_tilt)
                         if n_probe_modes==1:
-                            dL_dtilt=cp.sum(cp.real(grad_tilting_kernel[:,None,:,:,0]*yx_real_grid_tilt[:,:,:,0]),(2,3),  dtype=cp.float64).astype(default_float)
+                            dL_dtilt=cp.sum(cp.real(grad_tilting_kernel[:,None,:,:,0]*yx_real_grid_tilt[:,:,:,0]),(2,3),  dtype=default_float)#cp.float64).astype(default_float)
                         else:
-                            dL_dtilt=cp.sum(cp.real(grad_tilting_kernel[:,None,:,:,:]*yx_real_grid_tilt),(2,3,4),  dtype=cp.float64).astype(default_float)
+                            dL_dtilt=cp.sum(cp.real(grad_tilting_kernel[:,None,:,:,:]*yx_real_grid_tilt),(2,3,4),  dtype=default_float)#cp.float64).astype(default_float)
                         if is_single_tilt:
                             dL_dtilt=cp.sum(dL_dtilt, 0)
                             tilts_grad[0,:2]+=dL_dtilt
@@ -416,7 +416,7 @@ def loss_and_direction(this_obj, full_probe, this_pos_array, this_pos_correction
                         interm_probe_grad=ifft2(fourier_probe_grad, axes=(1,2))
                         if this_step_aberrations_array:
                             sh = 2/(fourier_probe_grad.shape[1]*fourier_probe_grad.shape[2])
-                            defgr=sh*cp.sum(cp.real((fourier_probe_grad*cp.conjugate(this_fourier_probe_before_local_aberrations))[:,None, :,:,:]*cp.conjugate(aberrations_polynomials[None,:,:,:,None])), axis=(2,3,4), dtype=cp.float64).astype(default_float)
+                            defgr=sh*cp.sum(cp.real((fourier_probe_grad*cp.conjugate(this_fourier_probe_before_local_aberrations))[:,None, :,:,:]*cp.conjugate(aberrations_polynomials[None,:,:,:,None])), axis=(2,3,4), dtype=default_float)#cp.float64).astype(default_float)
                             scatteradd_abers(aberrations_array_grad, aberration_marker[tcs], defgr)
                             #for dumbindex, t in enumerate(tcs):
                              #   aberrations_array_grad[aberration_marker[t],:]+=defgr[dumbindex,:]
@@ -430,7 +430,7 @@ def loss_and_direction(this_obj, full_probe, this_pos_array, this_pos_correction
                                 if n_probe_modes==1:
                                     cp.conjugate(this_probe_before_fluctuations, out=this_probe_before_fluctuations)
                                     
-                                    beam_current_grad[tcs]=2*cp.sign(thisbc)*cp.sum(cp.real(interm_probe_grad[:,:,:,0]*this_probe_before_fluctuations[:,:,:,0]), (1,2), dtype=cp.float64).astype(default_float)
+                                    beam_current_grad[tcs]=2*cp.sign(thisbc)*cp.sum(cp.real(interm_probe_grad[:,:,:,0]*this_probe_before_fluctuations[:,:,:,0]), (1,2), dtype=default_float)#cp.float64).astype(default_float)
                                 else:
                                     beam_current_grad[tcs]=2*cp.sign(thisbc)*cp.sum(cp.real(interm_probe_grad*cp.conjugate(this_probe_before_fluctuations)), (1,2,3))
                             if this_step_probe:
