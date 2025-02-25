@@ -47,11 +47,11 @@ def run_ptychography(pypty_params):
     xp =  params.get('backend', cp) ## currently not used, but usefull for future:
     default_dtype=params.get('default_dtype', "double")
     if default_dtype=="double":
-        default_float, default_complex, default_int, default_int_cpu, default_float_cpu, default_complex_cpu=xp.float64, xp.complex128, xp.int64, np.int64, np.float64, np.complex128
+        default_float, default_complex, default_int, default_int_cpu, default_float_cpu, default_complex_cpu=xp.float64, xp.complex128, xp.int64, np.int32, np.float64, np.complex128
     if default_dtype=="single":
-        default_float, default_complex, default_int, default_int_cpu, default_float_cpu, default_complex_cpu=xp.float32, xp.complex64, xp.int32, np.int32, np.float32, np.complex64
+        default_float, default_complex, default_int, default_int_cpu, default_float_cpu, default_complex_cpu=xp.float32, xp.complex64, xp.int32, np.int16, np.float32, np.complex64
     if default_dtype=="half":
-        default_float, default_complex, default_int, default_int_cpu, default_float_cpu, default_complex_cpu=xp.float16, xp.complex64, xp.int16, np.int16, np.float16, np.complex64
+        default_float, default_complex, default_int, default_int_cpu, default_float_cpu, default_complex_cpu=xp.float16, xp.complex64, xp.int16, np.int8, np.float16, np.complex64
     ## Dataset
     data_path = params.get('data_path', "")
     masks = params.get('masks', None)
