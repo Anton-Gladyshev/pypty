@@ -141,7 +141,7 @@ def run_tcbf_alignment(params, binning_for_fit=[8],
         
         r=((x**2+y**2)**0.5<=pattern_blur_width)[None,:,:]
         dataset_h5=np.array(dataset_h5)
-        sncon(dataset_h5, r,output=dataset_h5, axes=(1,2))
+        sncon(dataset_h5, r,output=dataset_h5)
         #r=np.fft.fft2(r)
         #dataset_h5=np.fft.fft2(dataset_h5, axes=(1,2))
         #dataset_h5=dataset_h5*r[None,:,:]
