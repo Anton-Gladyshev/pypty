@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 from scipy.optimize import least_squares
 from scipy.interpolate import griddata, RectBivariateSpline
 from scipy.ndimage import rotate, binary_closing
+from scipy.ndimage import convolve as sncon
 from tqdm import tqdm
 try:
     import cupy as cp
@@ -23,6 +24,7 @@ def run_tcbf_alignment(params, binning_for_fit=[8],
                         cross_corr_type="phase", cancel_large_shifts=None,
                         pattern_blur_width=None,
                         scan_pad=None, aperture=None, subscan_region=None,
+                        testing_flag=0,
                         compensate_lowfreq_drift=False, append_lowfreq_shifts_to_params=True,
                         interpolate_scan_factor=1,
                         binning_cross_corr=1, phase_cross_corr_formula=False,
@@ -133,13 +135,21 @@ def run_tcbf_alignment(params, binning_for_fit=[8],
     if not(pattern_blur_width is None):
         dataset_h5=np.array(dataset_h5)
         x,y=np.arange(-dataset_h5.shape[2]//2,dataset_h5.shape[2]-dataset_h5.shape[2]//2, 1), np.arange(-dataset_h5.shape[1]//2,dataset_h5.shape[1]-dataset_h5.shape[1]//2, 1)
+       
+        x,y=np.arange(-pattern_blur_width,pattern_blur_width+1,1), np.arange(-pattern_blur_width,pattern_blur_width+1,1)
         x,y=np.meshgrid(x,y)
-        r=(x**2+y**2)**0.5<=pattern_blur_width
-        r=np.fft.fft2(r)
-        dataset_h5=np.fft.fft2(dataset_h5, axes=(1,2))
-        dataset_h5=dataset_h5*r[None,:,:]
-        dataset_h5=np.abs(np.fft.fftshift(np.fft.ifft2(dataset_h5, axes=(1,2))))
-     
+        
+        r=((x**2+y**2)**0.5<=pattern_blur_width)[None,:,:]
+        dataset_h5=np.array(dataset_h5)
+        sncon(dataset_h5, r,output=dataset_h5, axes=(1,2))
+        #r=np.fft.fft2(r)
+        #dataset_h5=np.fft.fft2(dataset_h5, axes=(1,2))
+        #dataset_h5=dataset_h5*r[None,:,:]
+        #dataset_h5=np.abs(np.fft.fftshift(np.fft.ifft2(dataset_h5, axes=(1,2))))
+        if testing_flag:
+            print(dataset_h5.shape)
+            plt.imshow(dataset_h5[0,:,:])
+            plt.show()
         
     ## if bf disc is wobbling, try to compensate it, also we can save this shifts for ptycho reconsturction coming after this alignment!
     if compensate_lowfreq_drift:
