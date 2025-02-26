@@ -23,7 +23,6 @@ def run_tcbf_alignment(params, binning_for_fit=[8],
                         cross_corr_type="phase", cancel_large_shifts=None,
                         pattern_blur_width=None,
                         scan_pad=None, aperture=None, subscan_region=None,
-                        testing_flag=0,
                         compensate_lowfreq_drift=False, append_lowfreq_shifts_to_params=True,
                         interpolate_scan_factor=1,
                         binning_cross_corr=1, phase_cross_corr_formula=False,
@@ -140,9 +139,7 @@ def run_tcbf_alignment(params, binning_for_fit=[8],
         dataset_h5=np.fft.fft2(dataset_h5, axes=(1,2))
         dataset_h5=dataset_h5*r[None,:,:]
         dataset_h5=np.abs(np.fft.fftshift(np.fft.ifft2(dataset_h5, axes=(1,2))))
-        if testing_flag:
-            plt.imshow(dataset_h5[0,:,:])
-            plt.show()
+     
         
     ## if bf disc is wobbling, try to compensate it, also we can save this shifts for ptycho reconsturction coming after this alignment!
     if compensate_lowfreq_drift:
