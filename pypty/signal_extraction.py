@@ -6,8 +6,6 @@ import matplotlib.pyplot as plt
 from scipy.ndimage import percentile_filter as cpu_percentile
 from scipy.interpolate import griddata
 
-
-
 def getvirtualhaadf(pypty_params, save=True):
     dataset_h5=pypty_params.get("data_path", "")
     scan_size=pypty_params.get("scan_size", None)
@@ -101,3 +99,42 @@ def compensate_pattern_drift(aperture, patterns):
             im2=np.roll(im2, (indy-shy//2, indx-shx//2), axis=(0,1))
             patterns[i,j]=im2
     return patterns
+
+
+
+
+
+
+
+def get_virtual_annular_detector(pypty_params, inner_rad=0, outer_rad=1, save=False, offset_x=0, offset_y=0):
+    save=pypty_params.get("save_preprocessing_files", save)
+    dataset_h5=pypty_params.get("data_path", "")
+    scan_size=pypty_params.get("scan_size", None)
+    plot=pypty_params.get("plot", False)
+    if dataset_h5[-3:]==".h5":
+        dataset_h5=h5py.File(dataset_h5, "r")
+        dataset_h5=dataset_h5["data"]
+    elif dataset_h5[-4:]==".npy":
+        dataset_h5=np.load(dataset_h5)
+        if len(dataset_h5.shape)==4:
+            scan_size=[dataset_h5.shape[0], dataset_h5.shape[1]]
+            dataset_h5=dataset_h5.reshape(dataset_h5.shape[0]* dataset_h5.shape[1], dataset_h5.shape[2],dataset_h5.shape[3])
+    x,y=np.linspace(-1,1, dataset_h5.shape[2]), np.linspace(-1,1, dataset_h5.shape[1])
+    x,y=np.meshgrid(x,y, indexing="xy")
+    r=((x-offset_x)**2+(y-offset_y)**2)**0.5
+    r=(r>=inner_rad)* (r<=outer_rad)
+    signal=np.sum(dataset_h5*r[None,:,:], (-1,-2)).reshape(scan_size)
+    if plot:
+        fig,axes=plt.subplots(1,2, figsize=(10,5))
+        ax=axes[0]
+        im=ax.imshow(signal, cmap="gray")
+        ax.set_title("Virtual Detector signal")
+        ax.axis("off")
+        ax=axes[1]
+        im=ax.imshow(r, cmap="gray")
+        ax.set_title("Virtual Detector")
+        ax.axis("off")
+        plt.show()
+    if save:
+        np.save(pypty_params["output_folder"]+"/virtual_signal_i_%.2f_o_%.2f.npy"%(inner_rad, outer_rad), signal)
+    return signal
