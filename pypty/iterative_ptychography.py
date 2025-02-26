@@ -649,7 +649,7 @@ def bfgs_update(algorithm_type, this_slice_distances, this_step_probe, this_step
         this_wolfe_1=wolfe_1(total_loss, new_total_loss, d_value, actual_step, wolfe_c1_constant)
         this_wolfe_2=wolfe_2(d_value, new_d_value, wolfe_c2_constant)
         if print_flag>=3:
-            sys.stdout.write("\nUpdate %d. This loss is %.3e. Loss change is %.3e. Dir-derivative is %.3e. New dir-derivative is %.3e, This step is %.3e."%(count, total_loss, total_loss-new_total_loss, d_value, new_d_value, actual_step))
+            sys.stdout.write("\nLinesearch iteration %d. This loss is %.3e. Loss change is %.3e. Dir-derivative is %.3e. New dir-derivative is %.3e, This step is %.3e."%(count, total_loss, total_loss-new_total_loss, d_value, new_d_value, actual_step))
             sys.stdout.flush()
         if this_wolfe_1 and this_wolfe_2:
             break
@@ -672,7 +672,7 @@ def bfgs_update(algorithm_type, this_slice_distances, this_step_probe, this_step
         reset_bfgs_history()
         return total_loss, this_sse, constraint_contributions, actual_step, count, d_value, new_d_value, updated_fast_axis_reg_weight_positions, updated_deformation_reg_weight_positions, updated_deformation_reg_weight_tilts, updated_fast_axis_reg_weight_tilts, updated_phase_norm_weight, updated_abs_norm_weight, updated_probe_reg_weight, updated_window_weight, updated_atv_weight, updated_mixed_variance_weight
     if print_flag>=2:
-        sys.stdout.write("\n-->Update done with %d steps! This loss is %.3e. Loss change is %.3e. Dir-derivative is %.3e. New dir-derivative is %.3e."%(count,total_loss, total_loss-new_total_loss, d_value, new_d_value))
+        sys.stdout.write("\n-->Update done with %d linesearch steps! This loss is %.3e. Loss change is %.3e. Dir-derivative is %.3e. New dir-derivative is %.3e."%(count,total_loss, total_loss-new_total_loss, d_value, new_d_value))
     history_bfgs["obj_hist_s"].append(actual_step*this_obj_update if update_obj else 0)
     history_bfgs["probe_hist_s"].append(actual_step*this_probe_update if update_probe else 0)
     history_bfgs["positions_hist_s"].append(actual_step*this_pos_update if update_pos_correction else 0)
