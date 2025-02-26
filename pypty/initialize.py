@@ -312,7 +312,7 @@ def append_exp_params(experimental_params, pypty_params=None):
         h5data=np.load(path_data_h5)
         if len(h5data.shape)==4:
             scan_size=[h5data.shape[0], h5data.shape[1]]
-            h5data=h5file.reshape(h5data.shape[0]* h5data.shape[1], h5data.shape[2],h5data.shape[3])
+            h5data=h5data.reshape(h5data.shape[0]* h5data.shape[1], h5data.shape[2],h5data.shape[3])
         if data_is_numpy_and_flip_ky:
             h5data=h5data[:,::-1, :]
     if scan_size is None:
@@ -791,7 +791,7 @@ def tiltbeamtodata(pypty_params, align_type="com"):
         h5data=np.load(data_path)
         if len(h5data.shape)==4:
             scan_size=[h5data.shape[0], h5data.shape[1]]
-            h5data=h5file.reshape(h5data.shape[0]* h5data.shape[1], h5data.shape[2],h5data.shape[3])
+            h5data=h5data.reshape(h5data.shape[0]* h5data.shape[1], h5data.shape[2],h5data.shape[3])
         if data_is_numpy_and_flip_ky:
             h5data=h5data[:,::-1, :]
     pacbed=pypty_params.get("mean_pattern", np.sum(h5data, 0))
