@@ -21,9 +21,9 @@ def run_tcbf_alignment(params, binning_for_fit=[8],
                         reference_type="bf",
                         refine_box_dim=10, upsample=3,
                         cross_corr_type="phase", cancel_large_shifts=None,
-                        
+                        pattern_blur_width=None,
                         scan_pad=None, aperture=None, subscan_region=None,
-    
+                        testing_flag=0,
                         compensate_lowfreq_drift=False, append_lowfreq_shifts_to_params=True,
                         interpolate_scan_factor=1,
                         binning_cross_corr=1, phase_cross_corr_formula=False,
@@ -78,6 +78,8 @@ def run_tcbf_alignment(params, binning_for_fit=[8],
     rez_pixel_size_A=pypty_params.get("rez_pixel_size_A", 1)
     data_pad=pypty_params.get("data_pad",0)
     upsample_pattern=pypty_params.get("upsample_pattern",1)
+    
+    
     smart_memory=pypty_params.get("smart_memory", True)
     save=pypty_params.get("save_preprocessing_files", save)
     try:
@@ -129,6 +131,19 @@ def run_tcbf_alignment(params, binning_for_fit=[8],
         if data_is_numpy_and_flip_ky:
             dataset_h5=dataset_h5[:,::-1, :]
    
+    if not(pattern_blur_width is None):
+        dataset_h5=np.array(dataset_h5)
+        x,y=np.arange(-dataset_h5.shape[1]//2,dataset_h5.shape[1]-dataset_h5.shape[1]//2, 1), np.arange(-dataset_h5.shape[0]//2,dataset_h5.shape[0]-dataset_h5.shape[0]//2, 1)
+        x,y=np.meshgrid(x,y)
+        r=(x**2+y**2)**0.5<=pattern_blur_width
+        r=np.fft.rfft2(r)
+        dataset_h5=np.fft.rfft2(dataset_h5, axes=(1,2))
+        dataset_h5=dataset_h5*r[None,:,:]
+        dataset_h5=np.abs(np.fft.ifft2(dataset_h5, axes=(1,2)))
+        if testing_flag:
+            plt.imshow(dataset_h5[0,:,:])
+            plt.show()
+        
     ## if bf disc is wobbling, try to compensate it, also we can save this shifts for ptycho reconsturction coming after this alignment!
     if compensate_lowfreq_drift:
         aperture_shifts_x=pypty_params.get("aperture_shifts_x", None)
