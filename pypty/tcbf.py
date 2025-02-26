@@ -136,10 +136,10 @@ def run_tcbf_alignment(params, binning_for_fit=[8],
         x,y=np.arange(-dataset_h5.shape[2]//2,dataset_h5.shape[2]-dataset_h5.shape[2]//2, 1), np.arange(-dataset_h5.shape[1]//2,dataset_h5.shape[1]-dataset_h5.shape[1]//2, 1)
         x,y=np.meshgrid(x,y)
         r=(x**2+y**2)**0.5<=pattern_blur_width
-        r=np.fft.rfft2(r)
-        dataset_h5=np.fft.rfft2(dataset_h5, axes=(1,2))
+        r=np.fft.fft2(r)
+        dataset_h5=np.fft.fft2(dataset_h5, axes=(1,2))
         dataset_h5=dataset_h5*r[None,:,:]
-        dataset_h5=np.abs(np.fft.ifft2(dataset_h5, axes=(1,2)))
+        dataset_h5=np.abs(np.fft.fftshift(np.fft.ifft2(dataset_h5, axes=(1,2))))
         if testing_flag:
             plt.imshow(dataset_h5[0,:,:])
             plt.show()
