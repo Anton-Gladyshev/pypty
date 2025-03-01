@@ -410,10 +410,10 @@ def save_updated_arrays(output_folder, epoch,current_probe_step, current_probe_p
         with open(output_folder+"loss.csv", mode='a', newline='') as loss_list:
             if save_loss_log==2:
                 fieldnames=["epoch", "time / s", "loss", "sse", "initial step", "matching step", "N linesearch iterations",
-                "dir. derivative", "new dir. derivative", "F-axis postions reg.", "Deformation positons reg.", "Deformation tilts reg.", "F-axis tilts reg.", "l1 object reg.", "Q-space probe reg.", "R-space probe reg.", "TV object reg.", "V-object reg.", "Free GiB", "Total GiB"]
+                "dir. derivative", "new dir. derivative", "F-axis postions reg.", "Deformation positons reg.", "Deformation tilts reg.", "F-axis tilts reg.", "l1 object reg.", "Q-space probe reg.", "R-space probe reg.", "TV object reg.", "V-object reg.", "Free GiB", "Total GiB", "Warnings"]
             else:
                 fieldnames=["epoch", "time / s", "loss", "sse", "initial step", "matching step", "N linesearch iterations",
-                "dir. derivative", "new dir. derivative", "Constraints contribution", "Free GiB", "Total GiB"]
+                "dir. derivative", "new dir. derivative", "Constraints contribution", "Free GiB", "Total GiB", "Warnings"]
             if xp!=np:
                 device = cp.cuda.Device(0)
                 total_mem_device=  device.mem_info[1] / (1024 **3)
@@ -441,7 +441,8 @@ def save_updated_arrays(output_folder, epoch,current_probe_step, current_probe_p
                                 "TV object reg.": constraint_contributions[7],
                                 "V-object reg.": constraint_contributions[8],
                                 "Free GiB":  free_mem_device,
-                                "Total GiB": total_mem_device
+                                "Total GiB": total_mem_device,
+                                "Warnings": warnings,
                                 })
             else:
                 for dumbi1 in range(9):
@@ -461,7 +462,8 @@ def save_updated_arrays(output_folder, epoch,current_probe_step, current_probe_p
                                 "new dir. derivative": new_d_value,
                                 "Constraints contribution": ssum_constr,
                                 "Free GiB": free_mem_device,
-                                "Total GiB":total_mem_device
+                                "Total GiB":total_mem_device,
+                                "Warnings": warnings,
                                 })
                         
     if save_flag:  ##last update in epoch
@@ -722,10 +724,10 @@ def prepare_saving_stuff(output_folder, save_loss_log, epoch_prev):
         os.system("touch "+output_folder+"loss.csv")
         if save_loss_log==2:
             fieldnames=["epoch", "time / s", "loss", "sse", "initial step", "matching step", "N linesearch iterations",
-                "dir. derivative", "new dir. derivative", "F-axis postions reg.", "Deformation positons reg.", "Deformation tilts reg.", "F-axis tilts reg.", "l1 object reg.", "Q-space probe reg.", "R-space probe reg.", "TV object reg.", "V-object reg.", "Free GiB", "Total GiB"]
+                "dir. derivative", "new dir. derivative", "F-axis postions reg.", "Deformation positons reg.", "Deformation tilts reg.", "F-axis tilts reg.", "l1 object reg.", "Q-space probe reg.", "R-space probe reg.", "TV object reg.", "V-object reg.", "Free GiB", "Total GiB", "Warnings"]
         else:
             fieldnames=["epoch", "time / s", "loss", "sse", "initial step", "matching step", "N linesearch iterations",
-                "dir. derivative", "new dir. derivative", "Constraints contribution", "Free GiB", "Total GiB"]
+                "dir. derivative", "new dir. derivative", "Constraints contribution", "Free GiB", "Total GiB", "Warnings"]
         with open(output_folder+"loss.csv", 'w+', newline='') as loss_list:
             write_loss=csv.DictWriter(loss_list,fieldnames=fieldnames)
             write_loss.writeheader()

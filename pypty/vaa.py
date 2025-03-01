@@ -186,10 +186,10 @@ def outputlog_plots(loss_path, skip_first=0, plot_time=True):
     dat=np.loadtxt(loss_path, skiprows=1+skip_first, delimiter=",")
     if dat.shape[1]==12:
         fieldnames=["epoch", "time / s", "loss", "sse", "initial step", "matching step", "N linesearch iterations",
-                "dir. derivative", "new dir. derivative", "Constraints contribution", "Free GiB", "Total GiB"]
+                "dir. derivative", "new dir. derivative", "Constraints contribution", "Free GiB", "Total GiB", "Warnings"]
     else:
         fieldnames=["epoch", "time / s", "loss", "sse", "initial step", "matching step", "N linesearch iterations",
-                "dir. derivative", "new dir. derivative", "F-axis postions reg.", "Deformation positons reg.", "Deformation tilts reg.", "F-axis tilts reg.", "l1 object reg.", "Q-space probe reg.", "R-space probe reg.", "TV object reg.", "V-object reg.", "Free GiB", "Total GiB"]
+                "dir. derivative", "new dir. derivative", "F-axis postions reg.", "Deformation positons reg.", "Deformation tilts reg.", "F-axis tilts reg.", "l1 object reg.", "Q-space probe reg.", "R-space probe reg.", "TV object reg.", "V-object reg.", "Free GiB", "Total GiB", "Warnings"]
     epoch=dat[:,0]
     time=dat [:,1] / 3600
     def forward(x):
@@ -197,7 +197,7 @@ def outputlog_plots(loss_path, skip_first=0, plot_time=True):
     def inverse(x):
         return np.interp(x,time,epoch)
     figs=[]
-    for datai in range(2, dat.shape[1], 1):
+    for datai in range(2, dat.shape[1]-1, 1):
         fig,ax = plt.subplots(figsize=(10,4), dpi=300)
         ax.plot(epoch, dat[:, datai], ".-",linewidth=2, alpha=0.7)#, label=tit[iii])
         ax.set_xlabel("Iteration", fontsize = 14)

@@ -536,7 +536,7 @@ def bfgs_update(algorithm_type, this_slice_distances, this_step_probe, this_step
         
     if d_value>=0: ### This should not happen if wolfe 2 is satisfied, but just in case!
         sys.stdout.write("\n\n\nWarning! Positive dir-derivative, using normal gradient-descent! Please notify Anton Gladyshev if this message appears!\n\n\n\n\n\n")
-        warnings+="\n\Positive dir-derivative, using normal gradient-descent! Please notify Anton Gladyshev if this message appears!"
+        warnings+="\n\Positive dir-derivative, using normal gradient-descent!"
         sys.stdout.flush()
         this_obj_update=-1*this_object_grad if update_obj else 0
         this_probe_update= -1*this_probe_grad if update_probe else 0
@@ -671,7 +671,7 @@ def bfgs_update(algorithm_type, this_slice_distances, this_step_probe, this_step
         ##############################################################################################################################
     if new_total_loss>=total_loss + actual_step*wolfe_c1_constant*d_value: ## checking Wolfe_1 again
         sys.stdout.write('\nWARNING! The sufficient loss descrese is not achieved, the update is regected, keeping the the same step! Resetting the history! Please terminate if this message appears during the next epoch!\n')
-        warnings+="\nWARNING! The sufficient loss descrese is not achieved, the update is regected, keeping the the same step! Resetting the history! Please terminate if this message appears during the next epoch!"
+        warnings+="\nSufficient loss descrese is not achieved, the update is regected"
         sys.stdout.flush()
         reset_bfgs_history()
         return total_loss, this_sse, constraint_contributions, actual_step, count, d_value, new_d_value, updated_fast_axis_reg_weight_positions, updated_deformation_reg_weight_positions, updated_deformation_reg_weight_tilts, updated_fast_axis_reg_weight_tilts, updated_phase_norm_weight, updated_abs_norm_weight, updated_probe_reg_weight, updated_window_weight, updated_atv_weight, updated_mixed_variance_weight, warnings
@@ -845,7 +845,7 @@ def bfgs_update(algorithm_type, this_slice_distances, this_step_probe, this_step
                 if print_flag:
                     sys.stdout.write("\nWARNING: Adding extra pixels to the object in order to correct the positons! Padding: left %d, right, %d, top %d, bottom %d pixels\n"%(pad_left, pad_right, pad_top, pad_bottom))
                 obj=xp.pad(obj, pad_width, mode="edge")
-                warnings+="\nAdding extra pixels to the object in order to correct the positons! Padding: left %d, right, %d, top %d, bottom %d pixels"
+                warnings+="\nAdding extra pixels to the object! left %d, right, %d, top %d, bottom %d pixels"%(pad_left, pad_right, pad_top, pad_bottom)
                 prev_grad=xp.pad(history_bfgs["obj_grad"], pad_width, mode="constant", constant_values=0)
                 history_bfgs["obj_grad"]=prev_grad
                 for itemind, item in enumerate(history_bfgs["obj_hist_s"]):
