@@ -285,6 +285,7 @@ def plot_complex_modes(p, nm, sub):
         ax.axis("off")
         ax.text(15,0.9*p.shape[0], "%.1e %%"%(pint[i]), fontsize=15)
     plt.show()
+    return fig
 
 
 

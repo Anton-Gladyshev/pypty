@@ -405,7 +405,7 @@ def padprobetodatanearfield(probe, measured_data_shape, data_pad, upsample_patte
 
 
 
-def save_updated_arrays(output_folder, epoch,current_probe_step, current_probe_pos_step, current_tilts_step,current_obj_step, obj, probe, tilts_correction, full_pos_correction, positions, tilts, static_background, current_aberrations_array_step, current_static_background_step,count, current_loss, current_sse, aberrations, beam_current, current_beam_current_step, save_flag, save_loss_log, constraint_contributions, actual_step, count_linesearch, d_value, new_d_value,current_update_step_bfgs, t0, xp):
+def save_updated_arrays(output_folder, epoch,current_probe_step, current_probe_pos_step, current_tilts_step,current_obj_step, obj, probe, tilts_correction, full_pos_correction, positions, tilts, static_background, current_aberrations_array_step, current_static_background_step,count, current_loss, current_sse, aberrations, beam_current, current_beam_current_step, save_flag, save_loss_log, constraint_contributions, actual_step, count_linesearch, d_value, new_d_value,current_update_step_bfgs, t0, xp, warnings):
     if save_loss_log:
         with open(output_folder+"loss.csv", mode='a', newline='') as loss_list:
             if save_loss_log==2:
