@@ -183,7 +183,10 @@ def outputlog_plots(loss_path, skip_first=0, plot_time=True):
     Returns:
         figs- list of plotted figures.
     """
-    dat=np.loadtxt(loss_path, skiprows=1+skip_first, delimiter=",")
+    try:
+        dat=np.loadtxt(loss_path, skiprows=1+skip_first, delimiter=",", usecols=range(12))
+    except:
+        dat=np.loadtxt(loss_path, skiprows=1+skip_first, delimiter=",", usecols=range(20))
     if dat.shape[1]==12:
         fieldnames=["epoch", "time / s", "loss", "sse", "initial step", "matching step", "N linesearch iterations",
                 "dir. derivative", "new dir. derivative", "Constraints contribution", "Free GiB", "Total GiB", "Warnings"]
@@ -197,7 +200,7 @@ def outputlog_plots(loss_path, skip_first=0, plot_time=True):
     def inverse(x):
         return np.interp(x,time,epoch)
     figs=[]
-    for datai in range(2, dat.shape[1]-2, 1):
+    for datai in range(2, dat.shape[1], 1):
         fig,ax = plt.subplots(figsize=(10,4), dpi=300)
         ax.plot(epoch, dat[:, datai], ".-",linewidth=2, alpha=0.7)#, label=tit[iii])
         ax.set_xlabel("Iteration", fontsize = 14)
