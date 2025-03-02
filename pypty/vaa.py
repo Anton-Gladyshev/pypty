@@ -197,7 +197,7 @@ def outputlog_plots(loss_path, skip_first=0, plot_time=True):
     def inverse(x):
         return np.interp(x,time,epoch)
     figs=[]
-    for datai in range(2, dat.shape[1]-1, 1):
+    for datai in range(2, dat.shape[1]-2, 1):
         fig,ax = plt.subplots(figsize=(10,4), dpi=300)
         ax.plot(epoch, dat[:, datai], ".-",linewidth=2, alpha=0.7)#, label=tit[iii])
         ax.set_xlabel("Iteration", fontsize = 14)
