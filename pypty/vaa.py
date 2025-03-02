@@ -11,7 +11,7 @@ except:
 from pypty.utils import *
 from tqdm import tqdm
 import matplotlib
-
+import csv
 
 def plot_modes(ttt):
     if len(ttt.shape)==4:
@@ -172,6 +172,7 @@ def add_scalebar_ax(ax, x,y, width, height, x_t, y_t, px_size, unit):
     rect.set_path_effects([PathEffects.withStroke(linewidth=2, foreground='black')])
 
 
+
 def outputlog_plots(loss_path, skip_first=0, plot_time=True):
     """
     Functon for plotting log file of PyPty.
@@ -183,10 +184,13 @@ def outputlog_plots(loss_path, skip_first=0, plot_time=True):
     Returns:
         figs- list of plotted figures.
     """
-    try:
-        dat=np.loadtxt(loss_path, skiprows=1+skip_first, delimiter=",", usecols=range(20))
-    except:
-        dat=np.loadtxt(loss_path, skiprows=1+skip_first, delimiter=",", usecols=range(11))
+    dat=[]
+    with open(loss_path, 'r') as file:
+        data = csv.reader(file, delimiter = ',')
+        for d in data:
+            dat.append(d)
+    dat=(np.array(dat)[1:, :-1]).astype(float)
+    
     if dat.shape[1]==12:
         fieldnames=["epoch", "time / s", "loss", "sse", "initial step", "matching step", "N linesearch iterations",
                 "dir. derivative", "new dir. derivative", "Constraints contribution", "Free GiB", "Total GiB", "Warnings"]
@@ -212,7 +216,6 @@ def outputlog_plots(loss_path, skip_first=0, plot_time=True):
         figs.append(fig)
         plt.show()
     return figs
-
 
 
 def radial_average(ff, r_bins, r_max, r_min, px_size_A, plot=True):
