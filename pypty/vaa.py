@@ -186,7 +186,7 @@ def outputlog_plots(loss_path, skip_first=0, plot_time=True):
     try:
         dat=np.loadtxt(loss_path, skiprows=1+skip_first, delimiter=",", usecols=range(20))
     except:
-        dat=np.loadtxt(loss_path, skiprows=1+skip_first, delimiter=",", usecols=range(12))
+        dat=np.loadtxt(loss_path, skiprows=1+skip_first, delimiter=",", usecols=range(11))
     if dat.shape[1]==12:
         fieldnames=["epoch", "time / s", "loss", "sse", "initial step", "matching step", "N linesearch iterations",
                 "dir. derivative", "new dir. derivative", "Constraints contribution", "Free GiB", "Total GiB", "Warnings"]
