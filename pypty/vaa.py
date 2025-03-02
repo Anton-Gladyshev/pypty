@@ -189,7 +189,7 @@ def outputlog_plots(loss_path, skip_first=0, plot_time=True):
         data = csv.reader(file, delimiter = ',')
         for d in data:
             dat.append(d)
-    dat=(np.array(dat)[1:, :-1]).astype(float)
+    dat=(np.array(dat)[1+skip_first:, :-1]).astype(float)
     
     if dat.shape[1]==12:
         fieldnames=["epoch", "time / s", "loss", "sse", "initial step", "matching step", "N linesearch iterations",
