@@ -569,6 +569,7 @@ def create_probe_from_nothing(probe, data_pad, mean_pattern, aperture_mask, tilt
                 x2, y2=np.meshgrid(np.linspace(0,1,upsample_pattern*mean_pattern.shape[1]), np.linspace(0,1,upsample_pattern*mean_pattern.shape[0]))
                 mean_pattern=np.abs(griddata(points, mean_pattern.flatten(), (x2, y2), method='cubic'))
             mean_pattern=np.pad(np.abs(mean_pattern),data_pad, mode="constant", constant_values=0)
+            print("\n\n\n", mean_pattern.shape)
             if print_flag!=0:
                 sys.stdout.write("\nThe probe was generated based on the mean pattern!")
                 sys.stdout.flush()
@@ -577,7 +578,6 @@ def create_probe_from_nothing(probe, data_pad, mean_pattern, aperture_mask, tilt
             else:
                 probe=np.expand_dims(np.fft.fftshift(np.fft.ifft2(np.fft.ifftshift(np.sqrt(mean_pattern)))),-1).astype(default_complex_cpu)
     if not("compressed" in algorithm) and (masks is None):
-        print("bump")
         if recon_type=="far_field":
             probe=padprobetodatafarfield(probe, measured_data_shape, data_pad, upsample_pattern)
         else:
@@ -587,7 +587,7 @@ def create_probe_from_nothing(probe, data_pad, mean_pattern, aperture_mask, tilt
         probe_counts_must = np.sum(dataset[:1000])/((dataset[:1000]).shape[0] * probe.shape[0] * probe.shape[1])
     else:
         probe_counts_must = np.sum(dataset[:1000])/((dataset[:1000]).shape[0])
-    print(probe.shape)
+    
     if len(probe.shape)==3:
         probe_counts=np.sum(np.abs(probe)**2)/probe.shape[2]
         rescale=np.sqrt(np.abs(probe_counts_must/probe_counts))
