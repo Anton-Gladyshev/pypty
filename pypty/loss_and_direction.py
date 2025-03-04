@@ -316,7 +316,7 @@ def loss_and_direction(this_obj, full_probe, this_pos_array, this_pos_correction
                     this_pixels, this_mask_pixels = flat_pattern[:,sort], this_flat_mask[sort]
                     this_coeffs[:,ind_masks] = cp.sum(this_pixels*this_mask_pixels[None,:], axis=1, dtype=default_float)#cp.float64).astype(default_float)
                 this_differences=this_coeffs - measured
-                tterm=cp.sum(this_differences**2, axis=1)
+                tterm=cp.sum(this_differences**2)
                 loss+=tterm
                 sse+=tterm
                 this_differences*=2
