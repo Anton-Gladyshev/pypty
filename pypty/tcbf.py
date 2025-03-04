@@ -933,7 +933,7 @@ def run_tcbf_compressed_alignment(params, num_iterations,
     kx_detector_full,ky_detector_full=np.meshgrid(np.arange(-skx2,skx-skx2, 1)*mrad_per_px*1e-3,np.arange(-sky2,sky-sky2, 1)*mrad_per_px*1e-3 , indexing="xy")
     kx_detector_full, ky_detector_full=np.cos(rot_rad)*kx_detector_full+np.sin(rot_rad)*ky_detector_full, -np.sin(rot_rad)*kx_detector_full+np.cos(rot_rad)*ky_detector_full
 
-  
+    
   
   
    
