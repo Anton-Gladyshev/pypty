@@ -569,7 +569,7 @@ def create_probe_from_nothing(probe, data_pad, mean_pattern, aperture_mask, tilt
                 x2, y2=np.meshgrid(np.linspace(0,1,upsample_pattern*mean_pattern.shape[1]), np.linspace(0,1,upsample_pattern*mean_pattern.shape[0]))
                 mean_pattern=np.abs(griddata(points, mean_pattern.flatten(), (x2, y2), method='cubic'))
             mean_pattern=np.pad(np.abs(mean_pattern),data_pad, mode="constant", constant_values=0)
-            print("\n\n\n", mean_pattern.shape)
+            
             if print_flag!=0:
                 sys.stdout.write("\nThe probe was generated based on the mean pattern!")
                 sys.stdout.flush()
