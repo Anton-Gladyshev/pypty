@@ -217,7 +217,7 @@ def run_ptychography(pypty_params):
             dataset=dataset.reshape(dataset.shape[0]*dataset.shape[1], dataset.shape[2], dataset.shape[3])
         if data_is_numpy_and_flip_ky:
             dataset=dataset[:,::-1,:]
-        dataset, data_shift_vector, data_bin, data_pad, data_multiplier = preprocess_dataset(dataset, False, algorithm_type, recon_type, data_shift_vector, data_bin, data_pad, upsample_pattern, data_multiplier, np, False)
+        dataset, data_shift_vector, data_bin, data_pad, data_multiplier = preprocess_dataset(dataset, False, algorithm, recon_type, data_shift_vector, data_bin, data_pad, upsample_pattern, data_multiplier, np, False)
     measured_data_shape=dataset.shape
     probe=create_probe_from_nothing(probe, data_pad, mean_pattern, aperture_mask, tilt_mode, tilts, dataset, estimate_aperture_based_on_binary, pixel_size_x_A, acc_voltage, data_multiplier, masks, data_shift_vector, data_bin, upsample_pattern, default_complex_cpu, print_flag, algorithm, measured_data_shape, obj.shape[-1], probe_marker, recon_type, defocus_array, Cs) ### create probe from nothing
     static_background=create_static_background_from_nothing(static_background, probe, damping_cutoff_multislice,data_pad,upsample_pattern,  default_float_cpu, recon_type) ## initializing static background
