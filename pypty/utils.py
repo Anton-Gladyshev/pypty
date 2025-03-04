@@ -576,7 +576,8 @@ def create_probe_from_nothing(probe, data_pad, mean_pattern, aperture_mask, tilt
                 probe=np.expand_dims(np.sqrt(mean_pattern),-1).astype(default_complex_cpu)
             else:
                 probe=np.expand_dims(np.fft.fftshift(np.fft.ifft2(np.fft.ifftshift(np.sqrt(mean_pattern)))),-1).astype(default_complex_cpu)
-    if not("compressed" in algorithm):
+    if not("compressed" in algorithm) and (masks is None):
+        print("bump")
         if recon_type=="far_field":
             probe=padprobetodatafarfield(probe, measured_data_shape, data_pad, upsample_pattern)
         else:
