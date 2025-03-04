@@ -207,7 +207,7 @@ def run_ptychography(pypty_params):
     ############################### done with params, starts other things ###################################
     ### get the data
     if not(masks is None):
-        masks, *_=preprocess_dataset(masks, False, "lsq_sqrt", recon_type, data_shift_vector, data_bin, data_pad, upsample_pattern, 1, np, False)
+        masks, *_=preprocess_dataset(masks, False, "lsq_sqrt", recon_type, data_shift_vector, data_bin, data_pad, upsample_pattern, 1, np, True)
         
     if data_path[-2:]=="h5":
         this_file=h5py.File(data_path, "r")
