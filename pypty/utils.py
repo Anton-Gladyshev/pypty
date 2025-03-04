@@ -515,6 +515,7 @@ def create_static_background_from_nothing(static_background, probe, damping_cuto
     return static_background
     
 def create_probe_from_nothing(probe, data_pad, mean_pattern, aperture_mask, tilt_mode, tilts, dataset, estimate_aperture_based_on_binary, pixel_size_x_A, acc_voltage, data_multiplier, masks, data_shift_vector, data_bin, upsample_pattern, default_complex_cpu, print_flag, algorithm, measured_data_shape, n_obj_modes, probe_marker, recon_type, defocus_array, Cs):
+    meanpat_was_None=False
     if type(probe)!=np.ndarray:
         if probe is None or probe=="aperture":
             if tilt_mode and not("compressed" in algorithm):
@@ -538,11 +539,12 @@ def create_probe_from_nothing(probe, data_pad, mean_pattern, aperture_mask, tilt
                 del sub_data, subkernel, stx,sty
             else:
                 if mean_pattern is None:
+                    meanpat_was_None=True
                     mean_pattern=np.mean(dataset[:1000], axis=0)*data_multiplier
                 else:
                     mean_pattern*=data_multiplier
             print("test", mean_pattern.shape)
-            if not(masks is None):
+            if not(masks is None) and meanpat_was_None:
                 mean_pattern=np.sum(masks*mean_pattern[:,None, None], axis=0)
                 if data_pad!=0:
                     mean_pattern=mean_pattern[data_pad:-data_pad, data_pad:-data_pad]
