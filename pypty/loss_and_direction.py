@@ -309,6 +309,7 @@ def loss_and_direction(this_obj, full_probe, this_pos_array, this_pos_correction
             if algorithm_type=='lsq_compressed':
                 this_coeffs=cp.empty((this_pattern.shape[0], masks_len), dtype=default_float)
                 flat_pattern=this_pattern.reshape(this_pattern.shape[0], this_pattern.shape[1]*this_pattern.shape[2])
+                print(this_pattern.shape, masks.shape)
                 for ind_masks in range(masks_len):
                     this_flat_mask=masks[ind_masks].flatten()
                     sort=this_flat_mask!=0
