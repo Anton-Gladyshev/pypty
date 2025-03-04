@@ -583,9 +583,9 @@ def create_probe_from_nothing(probe, data_pad, mean_pattern, aperture_mask, tilt
             probe=padprobetodatanearfield(probe, measured_data_shape, data_pad, upsample_pattern)
         
     if recon_type=="far_field":
-        probe_counts_must = np.sum(dataset[:1000], axis=(0,1,2))/((dataset[:1000]).shape[0] * probe.shape[0] * probe.shape[1])
+        probe_counts_must = np.sum(dataset[:1000])/((dataset[:1000]).shape[0] * probe.shape[0] * probe.shape[1])
     else:
-        probe_counts_must = np.sum(dataset[:1000], axis=(0,1,2))/((dataset[:1000]).shape[0])
+        probe_counts_must = np.sum(dataset[:1000])/((dataset[:1000]).shape[0])
     if len(probe.shape)==3:
         probe_counts=np.sum(np.abs(probe)**2)/probe.shape[2]
         rescale=np.sqrt(np.abs(probe_counts_must/probe_counts))
@@ -796,9 +796,9 @@ def print_recon_state(t0, algorithm, epoch,
         if current_hist_length==1:
             print_optimizer="conjugate gradient"
         if print_flag<2:
-            sys.stdout.write("\r---------> Time: %d:%d:%d. Epoch %i. Using %s error metric with %s optimzer. Loss: %.2e. SSE: %.2e. %s" % (hours, minutes, seconds,  epoch, algorithm, print_optimizer, current_loss, current_sse, string))
+            sys.stdout.write("\r---------> Time: %d:%2d:%2d. Epoch %i. Using %s error metric with %s optimzer. Loss: %.2e. SSE: %.2e. %s" % (hours, minutes, seconds,  epoch, algorithm, print_optimizer, current_loss, current_sse, string))
         else:
-            sys.stdout.write("\n---------> Time: %d:%d:%d. Epoch %i. Using %s error metric with %s optimzer. Loss: %.2e. SSE: %.2e. %s" % (hours, minutes, seconds,  epoch, algorithm, print_optimizer, current_loss, current_sse, string))
+            sys.stdout.write("\n---------> Time: %d:%2d:%2d. Epoch %i. Using %s error metric with %s optimzer. Loss: %.2e. SSE: %.2e. %s" % (hours, minutes, seconds,  epoch, algorithm, print_optimizer, current_loss, current_sse, string))
         sys.stdout.flush()
         
 def try_to_gpu(obj, probe, positions,full_pos_correction, tilts, tilts_correction, masks, defocus_array, slice_distances, aperture_mask, dataset, load_one_by_one, static_background, aberrations_array, beam_current, default_float, default_complex, default_int, xp):
