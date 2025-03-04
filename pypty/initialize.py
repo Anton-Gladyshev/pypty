@@ -452,7 +452,7 @@ def append_exp_params(experimental_params, pypty_params=None):
             pypty_params['probe']=None
         pypty_params['obj']=np.ones((1,1,num_slices,1), dtype=np.complex128)
     pypty_params["masks"]=masks
-    if not(masks is None): pypty_params["algorithm"]="lsq_compressed";
+   # if not(masks is None): pypty_params["algorithm"]="lsq_compressed";
     pypty_params["data_is_numpy_and_flip_ky"]=data_is_numpy_and_flip_ky
     pypty_params["save_preprocessing_files"]=save_preprocessing_files
     pypty_params["aberrations"]=aberrations

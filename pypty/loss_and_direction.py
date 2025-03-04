@@ -26,7 +26,7 @@ def loss_and_direction(this_obj, full_probe, this_pos_array, this_pos_correction
    # start_gpu = cp.cuda.Event()
    # end_gpu = cp.cuda.Event()
    # start_gpu.record()
-    if 'lsq_compressed'==algorithm_type:
+    if 'compressed' in algorithm_type:
         masks_len=masks.shape[0] #int
     pattern_number, loss, sse=len(this_chopped_sequence),0,0
     fourier_probe_grad=None
@@ -307,6 +307,14 @@ def loss_and_direction(this_obj, full_probe, this_pos_array, this_pos_correction
                 dLoss_dint=cp.ones_like(this_pattern)
                 dLoss_dint[nonzero_pixels]=this_pattern[nonzero_pixels]/measured[nonzero_pixels]-1
             if algorithm_type=='lsq_compressed':
+                this_coeffs = cp.sum(this_pattern[:,None,:,:]*masks[None,:,:,:], axis=(2,3))
+                this_differences=this_coeffs - measured
+                tterm=cp.sum(this_differences**2)
+                loss+=tterm
+                sse+=tterm
+                this_differences*=2
+                dLoss_dint=cp.sum(masks[None,:,:,:]*this_differences[:,:,None,None], axis=1)
+            if algorithm_type=='gauss_compressed':
                 this_coeffs = cp.sum(this_pattern[:,None,:,:]*masks[None,:,:,:], axis=(2,3))
                 this_differences=this_coeffs - measured
                 tterm=cp.sum(this_differences**2)
