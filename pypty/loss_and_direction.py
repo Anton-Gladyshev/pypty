@@ -319,11 +319,8 @@ def loss_and_direction(this_obj, full_probe, this_pos_array, this_pos_correction
                 tterm=cp.sum(this_differences**2, axis=1)
                 loss+=tterm
                 sse+=tterm
-                dLoss_dint=cp.zeros(this_pattern.shape, dtype=default_float)
-                print(this_differences.shape, masks.shape, dLoss_dint.shape)
-                for ind_loss_grad_comp in range(masks_len):
-                    dLoss_dint+=(masks[None, ind_loss_grad_comp]*(this_differences[:,ind_loss_grad_comp]))
-                dLoss_dint*=2
+                this_differences*=2
+                dLoss_dint=cp.sum(masks[None,:,:,:]*this_differences[:,:,None,None], axis=1)
         if not(is_fully_coherent):
             dLoss_dint/=(n_probe_modes*n_obj_modes)
         if this_step_static_background and static_background_is_there:
