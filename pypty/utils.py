@@ -586,6 +586,7 @@ def create_probe_from_nothing(probe, data_pad, mean_pattern, aperture_mask, tilt
         probe_counts_must = np.sum(dataset[:1000])/((dataset[:1000]).shape[0] * probe.shape[0] * probe.shape[1])
     else:
         probe_counts_must = np.sum(dataset[:1000])/((dataset[:1000]).shape[0])
+    print(probe.shape)
     if len(probe.shape)==3:
         probe_counts=np.sum(np.abs(probe)**2)/probe.shape[2]
         rescale=np.sqrt(np.abs(probe_counts_must/probe_counts))
