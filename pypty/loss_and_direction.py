@@ -316,13 +316,15 @@ def loss_and_direction(this_obj, full_probe, this_pos_array, this_pos_correction
                 dLoss_dint=cp.sum(masks[None,:,:,:]*this_differences[:,:,None,None], axis=1)
             if algorithm_type=='gauss_compressed':
                 this_coeffs = cp.sum(this_pattern[:,None,:,:]*masks[None,:,:,:], axis=(2,3))
-                sse+=cp.sum((this_coeffs-measured_sqrt)**2)
-                this_coeffs_sqrt=cp.sqrt(this_coeffs)
                 measured_sqrt=cp.sqrt(measured)
+                this_coeffs_sqrt=cp.sqrt(this_coeffs)
+                
+                sse+=cp.sum((this_coeffs-measured)**2)
                 dLoss_dint=this_coeffs_sqrt - measured_sqrt
-                loss+=cp.sum(tterm**2)
+                loss+=cp.sum(dLoss_dint**2)
                 this_coeffs_sqrt[this_coeffs_sqrt==0]=1
-                dLoss_dint/=this_pattern_sqrt
+                dLoss_dint/=this_coeffs_sqrt
+                
                 dLoss_dint=cp.sum(masks[None,:,:,:]*dLoss_dint[:,:,None,None], axis=1)
         if not(is_fully_coherent):
             dLoss_dint/=(n_probe_modes*n_obj_modes)
