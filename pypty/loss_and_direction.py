@@ -320,6 +320,7 @@ def loss_and_direction(this_obj, full_probe, this_pos_array, this_pos_correction
                 loss+=tterm
                 sse+=tterm
                 dLoss_dint=cp.zeros(this_pattern.shape, dtype=default_float)
+                print(this_differences.shape, masks.shape, dLoss_dint.shape)
                 for ind_loss_grad_comp in range(masks_len):
                     dLoss_dint+=(masks[None, ind_loss_grad_comp]*(this_differences[:,ind_loss_grad_comp]))
                 dLoss_dint*=2
