@@ -69,7 +69,6 @@ def fit_aberrations_to_wave(wave, px_size_A, acc_voltage, thresh=0,
     kx=np.fft.fftshift(np.fft.fftfreq(wave.shape[0]))
     kx,ky=np.meshgrid(kx,kx, indexing="xy")
     comx, comy=np.average(x, weights=np.abs(wave)**2), np.average(y, weights=np.abs(wave)**2)
-
     fourier_wave=np.fft.fftshift(np.fft.fft2(np.fft.ifftshift(wave)))
     mag=np.abs(fourier_wave)
     mag=mag>=thresh*np.max(mag)

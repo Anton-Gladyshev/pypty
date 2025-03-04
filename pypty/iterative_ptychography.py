@@ -213,7 +213,7 @@ def run_ptychography(pypty_params):
             dataset=np.array(dataset).astype(force_dataset_dtype)
     else:
         dataset=np.load(data_path).astype(force_dataset_dtype)
-        if len(dataset.shape==4):
+        if len(dataset.shape)==4:
             dataset=dataset.reshape(dataset.shape[0]*dataset.shape[1], dataset.shape[2], dataset.shape[3])
         if data_is_numpy_and_flip_ky:
             dataset=dataset[:,::-1,:]
