@@ -543,6 +543,9 @@ def create_probe_from_nothing(probe, data_pad, mean_pattern, aperture_mask, tilt
                     mean_pattern*=data_multiplier
             if not(masks is None):
                 mean_pattern=np.sum(masks*mean_pattern[:,None, None], axis=0)
+                if data_pad!=0:
+                    mean_pattern=mean_pattern[data_pad:-data_pad, data_pad:-data_pad]
+                print(mean_pattern.shape)
             # Shift, bin, pad, rescale!
             if data_shift_vector[0]!=0:
                 mean_pattern=np.roll(mean_pattern, data_shift_vector[0], axis=0)
