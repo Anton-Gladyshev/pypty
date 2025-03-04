@@ -290,7 +290,7 @@ def append_exp_params(experimental_params, pypty_params=None):
     plot=experimental_params.get("plot", True)
     print_flag=experimental_params.get("print_flag", True)
     save_preprocessing_files=experimental_params.get("save_preprocessing_files", True)
-    
+    erase_probe=experimental_params.get("erase_probe", False)
     transform_axis_matrix=experimental_params.get("transform_axis_matrix", np.eye(2))
     comx=None
     comy=None
@@ -448,7 +448,8 @@ def append_exp_params(experimental_params, pypty_params=None):
         pypty_params['aperture_mask']=aperture
         pypty_params['extra_probe_defocus']=defocus
         pypty_params['data_pad']=data_pad
-        pypty_params['probe']=None
+        if erase_probe:
+            pypty_params['probe']=None
         pypty_params['obj']=np.ones((1,1,num_slices,1), dtype=np.complex128)
     pypty_params["masks"]=masks
     if not(masks is None): pypty_params["algorithm"]="lsq_compressed";
