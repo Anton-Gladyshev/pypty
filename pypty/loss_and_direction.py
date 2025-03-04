@@ -307,14 +307,7 @@ def loss_and_direction(this_obj, full_probe, this_pos_array, this_pos_correction
                 dLoss_dint=cp.ones_like(this_pattern)
                 dLoss_dint[nonzero_pixels]=this_pattern[nonzero_pixels]/measured[nonzero_pixels]-1
             if algorithm_type=='lsq_compressed':
-                this_coeffs=cp.empty((this_pattern.shape[0], masks_len), dtype=default_float)
-                flat_pattern=this_pattern.reshape(this_pattern.shape[0], this_pattern.shape[1]*this_pattern.shape[2])
-                #print(this_pattern.shape, masks.shape)
-                for ind_masks in range(masks_len):
-                    this_flat_mask=masks[ind_masks].flatten()
-                    sort=this_flat_mask!=0
-                    this_pixels, this_mask_pixels = flat_pattern[:,sort], this_flat_mask[sort]
-                    this_coeffs[:,ind_masks] = cp.sum(this_pixels*this_mask_pixels[None,:], axis=1, dtype=default_float)#cp.float64).astype(default_float)
+                this_coeffs = cp.sum(this_pattern[:,None,:,:]*masks[None,:,:,:], axis=(2,3))
                 this_differences=this_coeffs - measured
                 tterm=cp.sum(this_differences**2)
                 loss+=tterm
