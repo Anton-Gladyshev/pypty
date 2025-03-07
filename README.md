@@ -9,12 +9,11 @@ The code is written by Anton Gladyshev (AG SEM, Physics Department, Humboldt-Uni
 
 # **_Installation_**
 ---
-# Setting Up the Python Environment and Installing PyPty
+## Setting Up the Python Environment and Installing PyPty
 
 To create a proper Python environment and install PyPty, you can use **conda**, **mamba**, or **micromamba**. With **conda**, use:
 
-<details>
-<summary>GPU Installation</summary>
+### GPU Installation
 
 ```bash
 git clone git@github.com:Anton-Gladyshev/pypty.git
@@ -24,10 +23,7 @@ conda activate pypty
 pip install .[gpu]
 ```
 
-</details>
-
-<details>
-<summary>CPU Installation</summary>
+### CPU Installation
 
 ```bash
 git clone git@github.com:Anton-Gladyshev/pypty.git
@@ -36,8 +32,6 @@ conda env create -f pypty_cpu.yml
 conda activate pypty
 pip install .
 ```
-
-</details>
 
 
 # **_Examples_**
