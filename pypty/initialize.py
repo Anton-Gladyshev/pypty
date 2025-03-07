@@ -287,7 +287,7 @@ def append_exp_params(experimental_params, pypty_params=None):
     total_thickness=experimental_params.get("total_thickness", 1)
     num_slices=experimental_params.get("num_slices", 1)
     
-    plot=experimental_params.get("plot", True)
+    plot=experimental_params.get("plot", False)
     print_flag=experimental_params.get("print_flag", True)
     save_preprocessing_files=experimental_params.get("save_preprocessing_files", True)
     erase_probe=experimental_params.get("erase_probe", False)
