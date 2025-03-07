@@ -28,8 +28,7 @@ def loss_and_direction(this_obj, full_probe, this_pos_array, this_pos_correction
    # start_gpu.record()
     if 'compressed' in algorithm_type:
         masks_len=masks.shape[0] #int
-    pattern_number, loss, sse=len(this_chopped_sequence),0,0
-    fourier_probe_grad=None
+    pattern_number, loss, sse, fourier_probe_grad=len(this_chopped_sequence),0,0, None
     ###prepare loss, sse and arrays for grads of object, probe, positions and tilts
     object_grad, probe_grad, pos_grad, tilts_grad = cp.zeros_like(this_obj), cp.zeros_like(full_probe), cp.zeros_like(this_pos_correction), cp.zeros_like(this_tilt_array) ### this runs very fast
     static_background_grad= cp.zeros_like(static_background) if type(static_background)==cp.ndarray else 0
@@ -279,13 +278,6 @@ def loss_and_direction(this_obj, full_probe, this_pos_array, this_pos_correction
             this_pattern_sqrt[this_pattern_sqrt==0]=1
             dLoss_dint/=this_pattern_sqrt
         else:
-            if algorithm_type=='custom_strange_loss':
-                mnonzero=(measured>0)
-                loss_full_pix=(this_pattern -2*(measured*this_pattern)**0.5 + measured)*mnonzero
-                loss+=cp.sum(loss_full_pix)
-                sse+=cp.sum(cp.abs(measured-this_pattern)**2)
-                this_pattern[this_pattern==0]=1e-10
-                dLoss_dint=(1-(measured/this_pattern)**0.5)*mnonzero
             if algorithm_type=='ml':
                 dLoss_dint=this_pattern-measured
                 sse+=cp.sum(dLoss_dint**2)
@@ -318,13 +310,19 @@ def loss_and_direction(this_obj, full_probe, this_pos_array, this_pos_correction
                 this_coeffs = cp.sum(this_pattern[:,None,:,:]*masks[None,:,:,:], axis=(2,3))
                 measured_sqrt=cp.sqrt(measured)
                 this_coeffs_sqrt=cp.sqrt(this_coeffs)
-                
                 sse+=cp.sum((this_coeffs-measured)**2)
                 dLoss_dint=this_coeffs_sqrt - measured_sqrt
                 loss+=cp.sum(dLoss_dint**2)
                 this_coeffs_sqrt[this_coeffs_sqrt==0]=1
                 dLoss_dint/=this_coeffs_sqrt
-                
+                dLoss_dint=cp.sum(masks[None,:,:,:]*dLoss_dint[:,:,None,None], axis=1)
+            if algorithm_type=='poisson_compressed':
+                this_coeffs = cp.sum(this_pattern[:,None,:,:]*masks[None,:,:,:], axis=(2,3))
+                dLoss_dint=this_coeffs-measured
+                sse+=cp.sum(dLoss_dint**2)
+                this_coeffs[this_coeffs==0]=1
+                loss+=cp.sum(this_coeffs - measured*cp.log(this_coeffs))
+                dLoss_dint=dLoss_dint/this_coeffs
                 dLoss_dint=cp.sum(masks[None,:,:,:]*dLoss_dint[:,:,None,None], axis=1)
         if not(is_fully_coherent):
             dLoss_dint/=(n_probe_modes*n_obj_modes)

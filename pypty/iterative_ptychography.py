@@ -202,8 +202,6 @@ def run_ptychography(pypty_params):
     beam_ctf=params.get('beam_ctf', None)
     mean_pattern=params.get('mean_pattern',None)
     
-    
-    
     ############################### done with params, starts other things ###################################
     ### get the data
     if not(masks is None):

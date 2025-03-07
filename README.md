@@ -1,4 +1,13 @@
-# Overview
+## Table of Contents
+- [Overview](#-overview)
+- [Installation](#-installation)
+- [Examples](#-examples)
+- [PyPty Parameters](#-pypty-parameters)
+- [Relevant Literature](#-relevant-literature)
+
+---
+
+# **_Overview_**
 
 PyPty is a **phase retrieval** code that can be applied to **near-field or far-field imaging** in **TEM/STEM**. It can be applied to do **iterative ptychography**, **direct ptychography** (Wigner distribution deconsvolution), **differential phase contrast**, **tilt-corrected bright field**, **focal series reconstructions** and **LARBED reconstructions**.
 
@@ -7,35 +16,47 @@ The code is written by Anton Gladyshev (AG SEM, Physics Department, Humboldt-Uni
 
 
 
+# **_Installation_**
+---
 # Setting Up the Python Environment and Installing PyPty
 
 To create a proper Python environment and install PyPty, you can use **conda**, **mamba**, or **micromamba**. With **conda**, use:
 
-To install PyPty on a GPU, please run following commands
+<details>
+<summary>GPU Installation</summary>
+
 ```bash
-$ git clone git@github.com:Anton-Gladyshev/pypty.git
-$ cd pypty
-$ conda env create -f pypty_gpu.yml
-$ conda activate pypty
-$ pip install .[gpu]
+git clone git@github.com:Anton-Gladyshev/pypty.git
+cd pypty
+conda env create -f pypty_gpu.yml
+conda activate pypty
+pip install .[gpu]
 ```
 
-Alternatively, to install PyPty in CPU-mode you can do following:
+</details>
+
+<details>
+<summary>CPU Installation</summary>
+
 ```bash
-$ git clone git@github.com:Anton-Gladyshev/pypty.git
-$ cd pypty
-$ conda env create -f pypty_cpu.yml
-$ conda activate pypty
-$ pip install .
+git clone git@github.com:Anton-Gladyshev/pypty.git
+cd pypty
+conda env create -f pypty_cpu.yml
+conda activate pypty
+pip install .
 ```
 
+</details>
 
-# Examples
+
+# **_Examples_**
+---
 
 The examples will be provided in the `examples` folder. To to configure a **completely custom preset**, please reffer to the next section.
  
  
-# PyPty Parameters for Creating Custom Presets
+# ⚙️ PyPty Parameters for Creating Custom Presets
+---
 
 All functions in PyPty work dictionary describing your preset. We tend to name it `pypty_params`.
 The main function of PyPty package providing an iterative ptychographic reconsturction is launched via `run_ptychography()` functon. It takes a single argument- `pypty_params`.
@@ -293,7 +314,7 @@ As a general rule of thumb, we suggest configuring lambda functions so that once
 ---
 
 
-# Relevant literature
+# Relevant Literature
 If you have any questions after reading this guide, the following papers, books and links might explain the working principle of the code:
 
 ## Multi-slice formalism and the NN-style approach
@@ -302,7 +323,7 @@ If you have any questions after reading this guide, the following papers, books 
 3) W. Van den Broek and C. Koch. Method for Retrieval of the Three-Dimensional Object Potential by Inversion of Dynamical Electron Scattering 
 
 ## Error metrics:
-### LSQ:	
+### LSQ:    
 4) M. Schloz et al. Overcoming information reduced data and experimentally uncertain parameters in ptychography with regularized optimization 
 5) M. Du et al. Adorym: a multi-platform generic X-ray image reconstruction framework based on automatic differentiation 
 
