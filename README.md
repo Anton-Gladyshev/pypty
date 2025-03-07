@@ -1,12 +1,3 @@
-## Table of Contents
-- [Overview](#-overview)
-- [Installation](#-installation)
-- [Examples](#-examples)
-- [PyPty Parameters](#-pypty-parameters)
-- [Relevant Literature](#-relevant-literature)
-
----
-
 # **_Overview_**
 
 PyPty is a **phase retrieval** code that can be applied to **near-field or far-field imaging** in **TEM/STEM**. It can be applied to do **iterative ptychography**, **direct ptychography** (Wigner distribution deconsvolution), **differential phase contrast**, **tilt-corrected bright field**, **focal series reconstructions** and **LARBED reconstructions**.
@@ -55,7 +46,7 @@ pip install .
 The examples will be provided in the `examples` folder. To to configure a **completely custom preset**, please reffer to the next section.
  
  
-# ⚙️ PyPty Parameters for Creating Custom Presets
+# PyPty Parameters for Creating Custom Presets
 ---
 
 All functions in PyPty work dictionary describing your preset. We tend to name it `pypty_params`.
