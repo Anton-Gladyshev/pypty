@@ -1,4 +1,5 @@
 import tkinter as tk
+from tkinter import ttk
 from tkinter import filedialog, messagebox
 import pickle
 import os
@@ -6,6 +7,7 @@ import types
 import inspect
 import numpy as np
 from pypty.initialize import append_exp_params
+
 
 def lambda_to_string(f):
     if isinstance(f, types.LambdaType):
@@ -56,36 +58,48 @@ def restore_placeholder(event, entry, text):
 class ParameterEditor:
     def __init__(self, root):
         self.root = root
-        self.root.title("Parameter Editor")
+        self.root.title("PyPty Preset Editor")
         self.root.geometry("1000x700")
+        
 
+        style = ttk.Style()
+        style.theme_use('clam')  # Modern theme
+        
         self.params = {}
         self.entries = {}
         self.undo_stack = []
         self.redo_stack = []
         self.exp_params={
+            "dataset": None,
             "data_path": None,
-            "masks": None,
             "path_json": "",
+            "rez_pixel_size_mrad": None,
+            "PLRotation_deg": None,
+            "flip_ky": False,
+        
             "output_folder": "" ,
             "acc_voltage": None,
             "scan_size": None,
             "scan_step_A": None,
             
-            "rez_pixel_size_mrad": None,
-            "transform_axis_matrix": np.eye(2),
-           "data_pad": None,
+        
+            "transform_axis_matrix": np.array([[1,0],[0,1]]),
+            "data_pad": None,
             
             "aberrations": np.zeros(8),
             "defocus": 0,
             
             "fov_nm": None,
-            "PLRotation_deg": None,
-            "data_is_numpy_and_flip_ky": False,
+         
+         
             "total_thickness": 1,
             "num_slices": 1,
             "print_flag": 3,
             "bright_threshold": 0.1,
+            "masks": None,
+            "special_postions_A": None,
+            "upsample_pattern": 1,
+            
             }
 
         button_frame = tk.Frame(root)
@@ -99,12 +113,16 @@ class ParameterEditor:
         self.save_button = tk.Button(button_frame, text="Export", command=self.save_parameters, state=tk.DISABLED)
         self.save_button.pack(side="left", padx=5)
         
-        self.refresh_button = tk.Button(button_frame, text="Save", command=self.update_params)
+        self.refresh_button = tk.Button(button_frame, text="Save Changes", command=self.update_params)
         self.refresh_button.pack(side="left", padx=5)
         
         
         
         self.append_button = tk.Button(button_frame, text="Append Experimental Parameters", command=self.append_exp_params_function)
+        self.append_button.pack(side="left", padx=5)
+        
+        
+        self.append_button = tk.Button(button_frame, text="Send to Server") #, command=self.send_to_server)
         self.append_button.pack(side="left", padx=5)
 
 
@@ -119,7 +137,7 @@ class ParameterEditor:
         self.new_key_entry.insert(0, placeholder)
         self.new_key_entry.config(fg="gray")
         self.new_key_entry.bind("<FocusIn>",  lambda e, entry=self.new_key_entry, text=placeholder: clear_placeholder(e, entry, text))
-        self.new_key_entry.bind("<FocusOut>", lambda e, entry=self.new_key_entry, text=placeholder: restore_placeholder(e, entry, text)) 
+        self.new_key_entry.bind("<FocusOut>", lambda e, entry=self.new_key_entry, text=placeholder: restore_placeholder(e, entry, text))
         
         # Value input
         self.new_value_entry = tk.Entry(entry_container, width=20)
@@ -128,7 +146,7 @@ class ParameterEditor:
         self.new_value_entry.insert(0, placeholder)
         self.new_value_entry.config(fg="gray")
         self.new_value_entry.bind("<FocusIn>",  lambda e, entry=self.new_value_entry, text=placeholder: clear_placeholder(e, entry, text))
-        self.new_value_entry.bind("<FocusOut>", lambda e, entry=self.new_value_entry, text=placeholder: restore_placeholder(e, entry, text)) 
+        self.new_value_entry.bind("<FocusOut>", lambda e, entry=self.new_value_entry, text=placeholder: restore_placeholder(e, entry, text))
           
         
         # Add button
@@ -163,7 +181,7 @@ class ParameterEditor:
         self.create_entries()
         
     
-
+       
     
     
     def _on_mousewheel(self, event):
@@ -195,9 +213,9 @@ class ParameterEditor:
         self.save_button.config(state=tk.NORMAL)
         
     def append_exp_params_function(self):
-        self.update_params(only_exp=False)
+        self.update_params()
         self.params = append_exp_params(self.exp_params, self.params)
-        self.create_entries()  
+        self.create_entries()
         self.save_button.config(state=tk.NORMAL)
 
     def create_entries(self):
@@ -207,12 +225,12 @@ class ParameterEditor:
         self.entries.clear()
 
         # 🛑 Add Headers
-        tk.Label(self.scrollable_frame, text="PyPty Preset", font=("Arial", 15, "bold"), fg="#000").grid(row=0, column=0, columnspan=2, padx=5, pady=5, sticky="w")
-        tk.Label(self.scrollable_frame, text="Experimental Parameters", font=("Arial", 15, "bold"), fg="#000").grid(row=0, column=4, columnspan=2, padx=5, pady=5, sticky="w")
+        tk.Label(self.scrollable_frame, text="PyPty Preset", width=40, font=("Arial", 15, "bold"), fg="#000").grid(row=0, column=0, columnspan=2, padx=5, pady=5, sticky="w")
+        tk.Label(self.scrollable_frame, text="Experimental Parameters", width=40, font=("Arial", 15, "bold"), fg="#000").grid(row=0, column=4, columnspan=2, padx=5, pady=5, sticky="w")
   
         row_idx = 1  # Start below the headers
         for key, value in self.params.items():
-            label = tk.Label(self.scrollable_frame, text=key, fg="#222", cursor="hand2", width=25, anchor="w")
+            label = tk.Label(self.scrollable_frame, text=key, fg="#222", cursor="hand2", width=20, anchor="w")
             label.grid(row=row_idx, column=0, padx=5, pady=2, sticky="w")
             label.bind("<Button-1>", lambda e, k=key, lbl=label: self.copy_to_clipboard(k, lbl))
 
@@ -221,10 +239,12 @@ class ParameterEditor:
             
             if isinstance(value, np.ndarray):
                 truncated_str = np.array2string(value, threshold=40)  # Truncate display
-                entry.insert(0, truncated_str)  
+                entry.insert(0, truncated_str)
                 entry.full_value = value  # Store full array internally
             else:
                 entry.insert(0, repr(value))
+            entry.bind("<Up>", lambda e, ent=entry: self.move_focus(ent, direction="up"))
+            entry.bind("<Down>", lambda e, ent=entry: self.move_focus(ent, direction="down"))
 
             
             self.entries[key] = entry
@@ -236,7 +256,7 @@ class ParameterEditor:
 
         
         canvas = tk.Canvas(self.scrollable_frame, width=2, height=500, bg="gray")  # Vertical line
-        canvas.grid(row=0, column=3, rowspan=100, sticky="ns", padx=10)  
+        canvas.grid(row=0, column=3, rowspan=100, sticky="ns", padx=10)
         # 🛑 Add Regular Parameters in the Left Column
         
         # 🛑 Add Experimental Parameters in the Right Column
@@ -244,18 +264,33 @@ class ParameterEditor:
         self.exp_entries = {}  # Store experimental entries separately
 
         for key, value in self.exp_params.items():
-            exp_label = tk.Label(self.scrollable_frame, text=key, fg="#444", width=25, anchor="w")
+            exp_label = tk.Label(self.scrollable_frame, text=key, fg="#444", width=20, anchor="w")
             exp_label.grid(row=row_idx, column=4, padx=5, pady=2, sticky="w")
             exp_label.bind("<Button-1>", lambda e, k=key, lbl=exp_label: self.copy_to_clipboard(k, lbl))
             exp_entry = tk.Entry(self.scrollable_frame, width=20)
             exp_entry.grid(row=row_idx, column=5, padx=5, pady=2, sticky="w")
-            repr_value=repr(value)
-            if repr_value[:5]=="array": repr_value="np."+repr_value
-            exp_entry.insert(0, repr_value)
+            if isinstance(value, np.ndarray):
+                truncated_str = np.array2string(value, threshold=40)  # Truncate display
+                exp_entry.insert(0, truncated_str)
+                exp_entry.full_value = value  # Store full array internally
+            else:
+                exp_entry.insert(0, repr(value))
+                
             self.exp_entries[key] = exp_entry  # Store experimental parameters separately
+            if key in ["data_path", "path_json"]:
+                browse_button = tk.Button(self.scrollable_frame, text="browse", command=lambda k=key: self.browse_file(k))
+                browse_button.grid(row=row_idx, column=6, padx=5, pady=2, sticky="w")
+            if key in ["masks", "dataset", "special_postions_A"]:  # Add new keys that should use np.load
+                load_button_2 = tk.Button(self.scrollable_frame, text="load", command=lambda k=key: self.load_file(k))
+                load_button_2.grid(row=row_idx, column=6, padx=5, pady=2, sticky="w")
+
+            
+            
+            exp_entry.bind("<Up>", lambda e, ent=exp_entry: self.move_focus(ent, direction="up"))
+            exp_entry.bind("<Down>", lambda e, ent=exp_entry: self.move_focus(ent, direction="down"))
 
             row_idx += 1
-
+        self.refresh_display()
   
     def copy_to_clipboard(self, key, label):
         """Copy key to clipboard and temporarily change label color."""
@@ -293,7 +328,7 @@ class ParameterEditor:
                 messagebox.showerror("Error", f"Failed to add parameter: {e}")
                 parsed_value = value  # Store as string if parsing fails
         else:
-            parsed_value = value  
+            parsed_value = value
         
      
         self.undo_stack.append(("add", key, parsed_value))
@@ -325,44 +360,110 @@ class ParameterEditor:
         action = self.undo_stack.pop()
         self.redo_stack.append(action)
 
-        if action[0] == "add":
-            del self.params[action[1]]
-        elif action[0] == "delete":
+        if action[0] == "add":  # Undo adding a key
+            if action[1] in self.params:
+                del self.params[action[1]]
+        elif action[0] == "delete":  # Undo deleting a key
             self.params[action[1]] = action[2]
+        elif action[0] == "save_state":  # Undo save (restore previous state)
+            self.params = action[1]  # Restore saved state
 
         self.create_entries()
         self.undo_button.config(state=tk.NORMAL if self.undo_stack else tk.DISABLED)
         self.redo_button.config(state=tk.NORMAL)
 
     def redo(self):
-        if self.redo_stack:
-            self.undo()
-            
-    def update_params(self, only_exp=False):
-        if not(only_exp):
-            for key, entry in self.entries.items():
-                value = entry.get().strip()
+        """Reapplies the last undone action (including save states)."""
+        if not self.redo_stack:
+            return
 
-                try:
-                    if hasattr(entry, "full_value"):  # If the full array exists, use it
-                        parsed_value = entry.full_value
-                    elif value.startswith("array(") or value.startswith("np.array("):
-                        parsed_value = np.array(eval(value.replace("array", "np.array"), {"np": np}))
-                    else:
-                        parsed_value = eval(value, { "np": np, "array": np.array, "ones": np.ones, "zeros": np.zeros, "load": np.load })
-                except Exception:
-                    parsed_value = value  # If parsing fails, store as a string
+        action = self.redo_stack.pop()
+        self.undo_stack.append(action)  # ✅ Store for undo if redo is undone
 
-                self.params[key] = parsed_value
-    
-        for key, entry in self.exp_entries.items():
-            value = entry.get().strip()
+        if action[0] == "add":
+            # Redo an addition (restore key)
+            self.params[action[1]] = action[2]
+
+        elif action[0] == "delete":
+            # Redo a deletion (remove key again)
+            if action[1] in self.params:
+                del self.params[action[1]]
+
+        elif action[0] == "modify":
+            # Redo a value modification (set new value)
+            self.params[action[1]] = action[3]  # Set to new value
+
+        elif action[0] == "save_state":
+            # 🛑 Fix: Redo should restore the latest saved state
+            self.params = action[2].copy()  # Restore latest saved version
+            self.exp_params = action[3].copy()  # Restore experimental parameters too
+
+        self.create_entries()
+        self.undo_button.config(state=tk.NORMAL if self.undo_stack else tk.DISABLED)
+        self.redo_button.config(state=tk.NORMAL if self.redo_stack else tk.DISABLED)
+
+    def update_params(self):
+        """Manually updates parameter values when 'Save' is pressed."""
+        # 🛑 Save the previous state for undo/redo (including full arrays)
+        old_state = {k: (v.full_value if hasattr(v, "full_value") else v) for k, v in self.params.items()}
+        old_exp_state = {k: (v.full_value if hasattr(v, "full_value") else v) for k, v in self.exp_params.items()}
+
+        for key, entry in self.entries.items():
+            new_value = entry.get().strip()
             try:
-                parsed_value = eval(value, { "np": np, "array": np.array, "ones": np.ones, "zeros": np.zeros, "load": np.load })
+                if hasattr(entry, "full_value"):
+                    parsed_value = entry.full_value  # Use full value if it exists
+                elif new_value.startswith("array(") or new_value.startswith("np.array("):
+                    parsed_value = np.array(eval(new_value.replace("array", "np.array"), {"np": np}))
+                else:
+                    parsed_value = eval(new_value, {"np": np, "array": np.array, "ones": np.ones, "zeros": np.zeros, "load": np.load})
             except Exception:
-                parsed_value = value  # If parsing fails, store as a string
-            self.exp_params[key] = parsed_value    
-        self.create_entries()  # Refresh UI
+                parsed_value = new_value  # Store as string if parsing fails
+
+            self.params[key] = parsed_value
+            
+        for key, exp_entry in self.exp_entries.items():
+            new_value = exp_entry.get().strip()
+            try:
+                if hasattr(exp_entry, "full_value"):
+                    parsed_value = exp_entry.full_value  # Use full value if it exists
+                elif new_value.startswith("array(") or new_value.startswith("np.array("):
+                    parsed_value = np.array(eval(new_value.replace("array", "np.array"), {"np": np}))
+                else:
+                    parsed_value = eval(new_value, {"np": np, "array": np.array, "ones": np.ones, "zeros": np.zeros, "load": np.load})
+            except Exception:
+                parsed_value = new_value  # Store as string if parsing fails
+
+            self.exp_params[key] = parsed_value
+        #for key, entry in self.exp_entries.items():
+         #   new_value = entry.get().strip()
+          #  try:
+           #     parsed_value = eval(new_value, {"np": np, "array": np.array, "ones": np.ones, "zeros": np.zeros, "load": np.load})
+            #except Exception:
+             #   parsed_value = new_value  # Store as string if parsing fails
+
+            self.exp_params[key] = parsed_value
+
+        # 🛑 Store the save action in the undo stack (before applying)
+        self.undo_stack.append(("save_state", old_state.copy(), self.params.copy(), self.exp_params.copy()))
+        self.redo_stack.clear()
+
+        self.create_entries()
+        self.undo_button.config(state=tk.NORMAL)
+        self.redo_button.config(state=tk.DISABLED)
+
+    def move_focus(self, current_entry, direction="down"):
+        """Moves the focus to the next or previous entry based on arrow key press."""
+        all_entries = list(self.entries.values()) + list(self.exp_entries.values())  # Merge both lists
+        if current_entry in all_entries:
+            idx = all_entries.index(current_entry)
+            if direction == "up" and idx > 0:
+                all_entries[idx - 1].focus_set()
+            elif direction == "down" and idx < len(all_entries) - 1:
+                all_entries[idx + 1].focus_set()
+
+
+    
     def save_parameters(self):
         """Saves the parameters to a .pkl file, ensuring correct data types."""
         file_path = filedialog.asksaveasfilename(defaultextension=".pkl", filetypes=[("Pickle Files", "*.pkl")])
@@ -389,7 +490,37 @@ class ParameterEditor:
 
         except Exception as e:
             messagebox.showerror("Error", f"Failed to save parameters: {e}")
+    def browse_file(self, key):
+        """Opens a file dialog and updates the corresponding entry field."""
+        file_path = filedialog.askopenfilename()
+        if file_path:  # Ensure a file was selected
+            self.exp_entries[key].delete(0, tk.END)  # Clear existing text
+            self.exp_entries[key].insert(0, file_path)  # Insert new file path
+            self.exp_params[key] = file_path  # Update stored parameters
 
+    def load_file(self, key):
+        """Opens a file dialog, loads a NumPy array, and updates the corresponding entry field."""
+        file_path = filedialog.askopenfilename(filetypes=[("NumPy Files", "*.npy")])  # Filter for .npy files
+        if file_path:  # Ensure a file was selected
+            try:
+                loaded_array = np.load(file_path)  # Load the NumPy array
+                self.exp_entries[key].delete(0, tk.END)  # Clear existing text
+                self.exp_entries[key].insert(0, "np.load(\"%s\")"%file_path)  # Display message in the entry
+            except Exception as e:
+                messagebox.showerror("Error", f"Failed to load NumPy array: {e}")
+
+
+            
+            
+    def refresh_display(self):
+        """Smoothly refreshes the UI by making a tiny scroll adjustment."""
+        self.root.update_idletasks()  # ✅ Ensures UI updates immediately
+
+        # 🛑 Tiny Scroll Trick: Moves up and down by 1 pixel
+        self.canvas.yview_scroll(1, "units")  # Scroll down 1 unit
+        self.canvas.yview_scroll(-1, "units")  # Scroll up 1 unit
+
+        self.canvas.update_idletasks()  # ✅ Forces UI redraw
 
 
 if __name__ == "__main__":
