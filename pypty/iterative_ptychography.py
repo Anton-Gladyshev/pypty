@@ -202,7 +202,7 @@ def run_ptychography(pypty_params):
     estimate_aperture_based_on_binary=params.get('estimate_aperture_based_on_binary', False)
     beam_ctf=params.get('beam_ctf', None)
     mean_pattern=params.get('mean_pattern',None)
-    
+    params["pypty_version"]="2.0"
     ############################### done with params, starts other things ###################################
     ### get the data
     if not(masks is None):

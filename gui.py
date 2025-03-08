@@ -9,6 +9,7 @@ import numpy as np
 from pypty.initialize import append_exp_params
 
 
+
 def lambda_to_string(f):
     if isinstance(f, types.LambdaType):
         string = inspect.getsourcelines(f)[0][0]
@@ -281,7 +282,7 @@ class ParameterEditor:
                 browse_button = tk.Button(self.scrollable_frame, text="browse", command=lambda k=key: self.browse_file(k))
                 browse_button.grid(row=row_idx, column=6, padx=5, pady=2, sticky="w")
             if key in ["masks", "dataset", "special_postions_A"]:  # Add new keys that should use np.load
-                load_button_2 = tk.Button(self.scrollable_frame, text="load", command=lambda k=key: self.load_file(k))
+                load_button_2 = tk.Button(self.scrollable_frame, text="browse", command=lambda k=key: self.load_file(k))
                 load_button_2.grid(row=row_idx, column=6, padx=5, pady=2, sticky="w")
 
             
