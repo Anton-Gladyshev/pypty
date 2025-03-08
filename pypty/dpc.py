@@ -60,23 +60,25 @@ def fft_based_dpc(pypty_params, hpass=0, lpass=0, save=False, comx=None, comy=No
             os.makedirs(pypty_params["output_folder"]+"dpc/", exist_ok=True)
         except:
             sys.stdout.write("output folder was not created!")
-    dataset_h5=pypty_params.get("data_path", "")
+        data_path=pypty_params.get("data_path", "")
     scan_size=pypty_params.get("scan_size", None)
     angle=pypty_params.get("PLRotation_deg", None)
     plot=pypty_params.get("plot", plot)
-    data_is_numpy_and_flip_ky=pypty_params.get("data_is_numpy_and_flip_ky", False)
+    flip_ky=pypty_params.get("flip_ky", False)
     comx=pypty_params.get("comx")
     comy=pypty_params.get("comy")
-    if dataset_h5[-3:]==".h5":
-        dataset_h5=h5py.File(dataset_h5, "r")
-        dataset_h5=dataset_h5["data"]
-    elif dataset_h5[-4:]==".npy":
-        dataset_h5=np.load(dataset_h5)
-        if len(dataset_h5.shape)==4:
-            scan_size=[dataset_h5.shape[0], dataset_h5.shape[1]]
-            dataset_h5=dataset_h5.reshape(dataset_h5.shape[0]* dataset_h5.shape[1], dataset_h5.shape[2],dataset_h5.shape[3])
-        if data_is_numpy_and_flip_ky:
-            dataset_h5=dataset_h5[:,::-1, :]
+    dataset_h5=pypty.params.get("dataset", None)
+    if dataset_h5 is None:
+        if data_path[-3:]==".h5":
+            dataset_h5=h5py.File(data_path, "r")
+            dataset_h5=dataset_h5["data"]
+        elif data_path[-4:]==".npy":
+            dataset_h5=np.load(data_path)
+    if len(dataset_h5.shape)==4:
+        scan_size=[dataset_h5.shape[0], dataset_h5.shape[1]]
+        dataset_h5=dataset_h5.reshape(dataset_h5.shape[0]* dataset_h5.shape[1], dataset_h5.shape[2],dataset_h5.shape[3])
+    if flip_ky:
+        dataset_h5=dataset_h5[:,::-1, :]
     if (comx is None) or (comy is None):
         comx=np.zeros(dataset_h5.shape[0])
         comy=np.zeros(dataset_h5.shape[0])
@@ -167,7 +169,7 @@ def iterative_dpc(pypty_params, num_iterations=100, beta=0.5, hpass=0, lpass=0, 
             os.makedirs(pypty_params["output_folder"]+"dpc/", exist_ok=True)
         except:
             sys.stdout.write("output folder was not created!")
-    dataset_h5=pypty_params.get("data_path", "")
+    data_path=pypty_params.get("data_path", "")
     scan_size=pypty_params.get("scan_size", None)
     angle=pypty_params.get("PLRotation_deg", 0)*np.pi/180
     rez_pixel_size_A=pypty_params.get("rez_pixel_size_A", 1)
@@ -175,17 +177,19 @@ def iterative_dpc(pypty_params, num_iterations=100, beta=0.5, hpass=0, lpass=0, 
     plot=pypty_params.get("plot", plot)
     print_flag=pypty_params.get("print_flag", print_flag)
     px_size=pypty_params.get("scan_step_A", px_size)
-    data_is_numpy_and_flip_ky=pypty_params.get("data_is_numpy_and_flip_ky", False)
-    if dataset_h5[-3:]==".h5":
-        dataset_h5=h5py.File(dataset_h5, "r")
-        dataset_h5=dataset_h5["data"]
-    elif dataset_h5[-4:]==".npy":
-        dataset_h5=np.load(dataset_h5)
-        if len(dataset_h5.shape)==4:
-            scan_size=[dataset_h5.shape[0], dataset_h5.shape[1]]
-            dataset_h5=dataset_h5.reshape(dataset_h5.shape[0]* dataset_h5.shape[1], dataset_h5.shape[2],dataset_h5.shape[3])
-        if data_is_numpy_and_flip_ky:
-            dataset_h5=dataset_h5[:,::-1, :]
+    flip_ky=pypty_params.get("flip_ky", False)
+    dataset_h5=pypty.params.get("dataset", None)
+    if dataset_h5 is None:
+        if data_path[-3:]==".h5":
+            dataset_h5=h5py.File(data_path, "r")
+            dataset_h5=dataset_h5["data"]
+        elif data_path[-4:]==".npy":
+            dataset_h5=np.load(data_path)
+    if len(dataset_h5.shape)==4:
+        scan_size=[dataset_h5.shape[0], dataset_h5.shape[1]]
+        dataset_h5=dataset_h5.reshape(dataset_h5.shape[0]* dataset_h5.shape[1], dataset_h5.shape[2],dataset_h5.shape[3])
+    if flip_ky:
+        dataset_h5=dataset_h5[:,::-1, :]
     if (COMx is None) or (COMy is None):
         COMx=pypty_params.get('comx', None)
         COMy=pypty_params.get('comy', None)

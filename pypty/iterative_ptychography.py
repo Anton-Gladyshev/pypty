@@ -54,11 +54,12 @@ def run_ptychography(pypty_params):
         default_float, default_complex, default_int, default_int_cpu, default_float_cpu, default_complex_cpu=xp.float16, xp.complex64, xp.int8, np.int8, np.float16, np.complex64
     ## Dataset
     data_path = params.get('data_path', "")
+    dataset = params.get('dataset', None)
     masks = params.get('masks', None)
     data_multiplier = default_float_cpu(params.get('data_multiplier', 1))
     data_pad = int(params.get('data_pad', 0))
     data_bin=int(params.get('data_bin', 1))
-    data_is_numpy_and_flip_ky=params.get('data_is_numpy_and_flip_ky', False)
+    flip_ky=params.get('flip_ky', False)
     
     data_shift_vector=params.get('data_shift_vector', [0,0])
     upsample_pattern=params.get('upsample_pattern',1)
@@ -206,21 +207,22 @@ def run_ptychography(pypty_params):
     ### get the data
     if not(masks is None):
         masks, *_=preprocess_dataset(masks, False, "lsq_sqrt", recon_type, data_shift_vector, data_bin, data_pad, upsample_pattern, 1, np, True)
-        
-    if data_path[-2:]=="h5":
-        this_file=h5py.File(data_path, "r")
-        dataset=this_file['data']
-        if preload_to_cpu:
-            dataset=np.array(dataset).astype(force_dataset_dtype)
+    if dataset is None:
+        if data_path[-2:]=="h5":
+            this_file=h5py.File(data_path, "r")
+            dataset=this_file['data']
+            if preload_to_cpu:
+                dataset=np.array(dataset).astype(force_dataset_dtype)
+        else:
+            dataset=np.load(data_path).astype(force_dataset_dtype)
+            if len(dataset.shape)==4:
+                dataset=dataset.reshape(dataset.shape[0]*dataset.shape[1], dataset.shape[2], dataset.shape[3])
+            if flip_ky:
+                dataset=dataset[:,::-1,:]
+            dataset, data_shift_vector, data_bin, data_pad, data_multiplier = preprocess_dataset(dataset, False, algorithm, recon_type, data_shift_vector, data_bin, data_pad, upsample_pattern, data_multiplier, np, False)
     else:
-        dataset=np.load(data_path).astype(force_dataset_dtype)
-        if len(dataset.shape)==4:
-            dataset=dataset.reshape(dataset.shape[0]*dataset.shape[1], dataset.shape[2], dataset.shape[3])
-        if data_is_numpy_and_flip_ky:
-            dataset=dataset[:,::-1,:]
-        dataset, data_shift_vector, data_bin, data_pad, data_multiplier = preprocess_dataset(dataset, False, algorithm, recon_type, data_shift_vector, data_bin, data_pad, upsample_pattern, data_multiplier, np, False)
-    
-    
+        dataset=np.array(dataset).astype(force_dataset_dtype)
+        
     measured_data_shape=dataset.shape
     probe=create_probe_from_nothing(probe, data_pad, mean_pattern, aperture_mask, tilt_mode, tilts, dataset, estimate_aperture_based_on_binary, pixel_size_x_A, acc_voltage, data_multiplier, masks, data_shift_vector, data_bin, upsample_pattern, default_complex_cpu, print_flag, algorithm, measured_data_shape, obj.shape[-1], probe_marker, recon_type, defocus_array, Cs) ### create probe from nothing
     static_background=create_static_background_from_nothing(static_background, probe, damping_cutoff_multislice,data_pad,upsample_pattern,  default_float_cpu, recon_type) ## initializing static background

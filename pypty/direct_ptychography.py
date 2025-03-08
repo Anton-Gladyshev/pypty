@@ -30,18 +30,20 @@ def wdd(pypty_params, eps_wiener=1e-3, thresh=None, save=0):
     except:
         pass
     data_path = pypty_params.get('data_path', "")
-    data_is_numpy_and_flip_ky=pypty_params.get("data_is_numpy_and_flip_ky", False)
+    data=pypty_params.get('dataset', None)
+    flip_ky=pypty_params.get("flip_ky", False)
     scan_size=np.copy(np.array(pypty_params.get('scan_size', [0,0])))
-    if data_path[-3:]==".h5":
-        data=h5py.File(data_path, "r")["data"]
-        data=np.asarray(data)
-    elif data_path[-4:]==".npy":
-        data=np.load(data_path)
-        if len(data.shape)==4:
-            scan_size=[data.shape[0], data.shape[1]]
-            data=data.reshape(data.shape[0]* data.shape[1], data.shape[2],data.shape[3])
-        if data_is_numpy_and_flip_ky:
-            data=data[:,::-1, :]
+    if data is None:
+        if data_path[-3:]==".h5":
+            data=h5py.File(data_path, "r")["data"]
+            data=np.asarray(data)
+        elif data_path[-4:]==".npy":
+            data=np.load(data_path)
+    if len(data.shape)==4:
+        scan_size=[data.shape[0], data.shape[1]]
+        data=data.reshape(data.shape[0]* data.shape[1], data.shape[2],data.shape[3])
+    if flip_ky:
+        data=data[:,::-1, :]
     data_pad = pypty_params.get('data_pad', 0)
     acc_voltage=pypty_params.get('acc_voltage', 60)
     probe=pypty_params.get('probe', None)

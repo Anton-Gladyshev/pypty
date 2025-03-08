@@ -244,7 +244,7 @@ def append_exp_params(experimental_params, pypty_params=None):
         -special_postions_A - 2d numpy array, default None. If you acquiered a data on a special non-rectangular grid, please specify the positions in Å via this array for all measurements in a following form: [y_0,x_0],[y_1,x_1],....[y_n,x_n]]
         -transform_axis_matrix- 2x2 matrix for postions transformation
         -PLRotation_deg - float, rotation angle between scan and detector axes. Default None. If None, a DPC measurement will be exectuted to get this angle. !!!!!!! Note that negative PLRotation_deg values rotate scan counter clockwise and diffraction space clockwise !!!!!!!!!!!
-        -data_is_numpy_and_flip_ky - boolean Flag. Default is False. If no PyPty-style h5 data was created, this flag will flip the y-axis of diffraction patterns.
+        -flip_ky - boolean Flag. Default is False. If no PyPty-style h5 data was created, this flag will flip the y-axis of diffraction patterns.
         
         -total_thickness - total thickness of a sample in Å. Has no effect if num_slices is 1 and propagation method (pypty_params entry) is multislice 
         -num_slices - integer, number of slices, default is 1.
@@ -282,7 +282,7 @@ def append_exp_params(experimental_params, pypty_params=None):
     special_postions_A=experimental_params.get("special_postions_A", None)
  
     PLRotation_deg=experimental_params.get("PLRotation_deg", None)
-    data_is_numpy_and_flip_ky=experimental_params.get("data_is_numpy_and_flip_ky", False)
+    flip_ky=experimental_params.get("flip_ky", False)
     
     total_thickness=experimental_params.get("total_thickness", 1)
     num_slices=experimental_params.get("num_slices", 1)
@@ -292,6 +292,8 @@ def append_exp_params(experimental_params, pypty_params=None):
     save_preprocessing_files=experimental_params.get("save_preprocessing_files", True)
     erase_probe=experimental_params.get("erase_probe", False)
     transform_axis_matrix=experimental_params.get("transform_axis_matrix", np.eye(2))
+    h5data=experimental_params.get("dataset", None)
+    
     comx=None
     comy=None
     try:
@@ -305,16 +307,25 @@ def append_exp_params(experimental_params, pypty_params=None):
     except:
         if print_flag:
             sys.stdout.write("\njson is not provided!")
-    if path_data_h5[-3:]==".h5":
-        h5file=h5py.File(path_data_h5, "r")
-        h5data=h5file["data"]
-    elif path_data_h5[-4:]==".npy":
-        h5data=np.load(path_data_h5)
-        if len(h5data.shape)==4:
-            scan_size=[h5data.shape[0], h5data.shape[1]]
-            h5data=h5data.reshape(h5data.shape[0]* h5data.shape[1], h5data.shape[2],h5data.shape[3])
-        if data_is_numpy_and_flip_ky:
-            h5data=h5data[:,::-1, :]
+    
+    if h5data is None:
+        if path_data_h5[-3:]==".h5":
+            h5file=h5py.File(path_data_h5, "r")
+            h5data=h5file["data"]
+        elif path_data_h5[-4:]==".npy":
+            h5data=np.load(path_data_h5)
+        data_to_params=False
+    else:
+        data_to_params=True
+        
+    if len(h5data.shape)==4:
+        scan_size=[h5data.shape[0], h5data.shape[1]]
+        h5data=h5data.reshape(h5data.shape[0]* h5data.shape[1], h5data.shape[2],h5data.shape[3])
+    if flip_ky:
+        h5data=h5data[:,::-1, :]
+        if data_to_params:
+            sys.stdout.write("\nWe will store a copy of dataset in parameters, setting flip_ky to False.")
+            flip_ky=False
     if scan_size is None:
         try:
             scan_size=jsondata['metadata']['scan']['scan_size'];
@@ -453,7 +464,7 @@ def append_exp_params(experimental_params, pypty_params=None):
         pypty_params['obj']=np.ones((1,1,num_slices,1), dtype=np.complex128)
     pypty_params["masks"]=masks
    # if not(masks is None): pypty_params["algorithm"]="lsq_compressed";
-    pypty_params["data_is_numpy_and_flip_ky"]=data_is_numpy_and_flip_ky
+    pypty_params["flip_ky"]=flip_ky
     pypty_params["save_preprocessing_files"]=save_preprocessing_files
     pypty_params["aberrations"]=aberrations
     pypty_params["mean_pattern"]=mean_pattern_as_it_is
@@ -471,6 +482,8 @@ def append_exp_params(experimental_params, pypty_params=None):
     pypty_params["print_flag"]=print_flag
     pypty_params["num_slices"] = num_slices
     pypty_params["total_thickness"] = total_thickness
+    if data_to_params:
+        pypty_params["dataset"]=np.array(h5data)
     try:
         h5file.close()
     except:
@@ -495,12 +508,14 @@ def get_ptycho_obj_from_scan(params, num_slices=None, array_phase=None,array_abs
         params- updated dictionary
     """
     data_path=params.get("data_path", "")
+    dataset=params.get("dataset", None)
     try:
-        if data_path[-2:]=="h5":
-            this_file=h5py.File(data_path, "r")
-            dataset=this_file['data']
-        else:
-            dataset=np.load(data_path, mmap_mode="r")
+        if dataset is None:
+            if data_path[-2:]=="h5":
+                this_file=h5py.File(data_path, "r")
+                dataset=this_file['data']
+            else:
+                dataset=np.load(data_path, mmap_mode="r")
         if len(dataset.shape)==2:
             masks=params.get("masks", None)
             psx,psy=masks.shape[-2], masks.shape[-1]
@@ -784,17 +799,19 @@ def tiltbeamtodata(pypty_params, align_type="com"):
     data_path=pypty_params["data_path"]
     data_pad=pypty_params.get("data_pad", 0)
     upsample_pattern=pypty_params["upsample_pattern"]
-    data_is_numpy_and_flip_ky=pypty_params.get("data_is_numpy_and_flip_ky", False)
-    if data_path[-3:]==".h5":
-        h5file=h5py.File(data_path, "r")
-        h5data=h5file["data"]
-    elif data_path[-4:]==".npy":
-        h5data=np.load(data_path)
-        if len(h5data.shape)==4:
-            scan_size=[h5data.shape[0], h5data.shape[1]]
-            h5data=h5data.reshape(h5data.shape[0]* h5data.shape[1], h5data.shape[2],h5data.shape[3])
-        if data_is_numpy_and_flip_ky:
-            h5data=h5data[:,::-1, :]
+    flip_ky=pypty_params.get("flip_ky", False)
+    h5data=pypty_params.get("dataset", None)
+    if h5data is None:
+        if data_path[-3:]==".h5":
+            h5file=h5py.File(data_path, "r")
+            h5data=h5file["data"]
+        elif data_path[-4:]==".npy":
+            h5data=np.load(data_path)
+    if len(h5data.shape)==4:
+        scan_size=[h5data.shape[0], h5data.shape[1]]
+        h5data=h5data.reshape(h5data.shape[0]* h5data.shape[1], h5data.shape[2],h5data.shape[3])
+    if flip_ky:
+        h5data=h5data[:,::-1, :]
     pacbed=pypty_params.get("mean_pattern", np.sum(h5data, 0))
     beam_fft=np.sum(np.abs(np.fft.fftshift(np.fft.fft2(probe, axes=(0,1)), axes=(0,1)))**2, -1)
     if data_pad!=0:
@@ -866,21 +883,23 @@ def get_approx_beam_tilt(pypty_params, power=3, make_binary=False, percentile_fi
     Outputs:
         pypty_params- updatedd dictionary
     """
-    dataset_h5=pypty_params.get("data_path", "")
+    data_path=pypty_params.get("data_path", "")
     pixel_size_x_A=pypty_params.get("pixel_size_x_A", 1)
     rez_pixel_size_A=pypty_params.get("rez_pixel_size_A", 1)
     acc_voltage=pypty_params.get("acc_voltage", 60)
     scan_size=pypty_params.get("scan_size", None)
-    data_is_numpy_and_flip_ky=pypty_params.get("data_is_numpy_and_flip_ky", False)
-    if dataset_h5[-3:]==".h5":
-        dataset_h5=h5py.File(dataset_h5,  "r")["data"]
-    elif dataset_h5[-4:]==".npy":
-        dataset_h5=np.load(dataset_h5)
-        if len(dataset_h5.shape)==4:
-            scan_size=[dataset_h5.shape[0],dataset_h5.shape[1]]
-            dataset_h5=dataset_h5.reshape(dataset_h5.shape[0]*dataset_h5.shape[1],dataset_h5.shape[2], dataset_h5.shape[3] )
-        if data_is_numpy_and_flip_ky:
-            dataset_h5=dataset_h5[:,::-1, :]
+    flip_ky=pypty_params.get("flip_ky", False)
+    dataset_h5=pypty_params.get("dataset", None)
+    if dataset_h5 is None:
+        if dataset_h5[-3:]==".h5":
+            dataset_h5=h5py.File(data_path,  "r")["data"]
+        elif dataset_h5[-4:]==".npy":
+            dataset_h5=np.load(data_path)
+    if len(dataset_h5.shape)==4:
+        scan_size=[dataset_h5.shape[0],dataset_h5.shape[1]]
+        dataset_h5=dataset_h5.reshape(dataset_h5.shape[0]*dataset_h5.shape[1],dataset_h5.shape[2], dataset_h5.shape[3] )
+    if flip_ky:
+        dataset_h5=dataset_h5[:,::-1, :]
     plot=pypty_params.get("plot", False)
     print_flag=pypty_params.get("print_flag", False)
     sequence=pypty_params.get("sequence", None)

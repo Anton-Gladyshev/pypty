@@ -64,7 +64,7 @@ def run_tcbf_alignment(params, binning_for_fit=[8],
     global cpu_mode
     pypty_params=params.copy()
     ## load parameters
-    dataset_h5=pypty_params.get("data_path", "")
+    data_path=pypty_params.get("data_path", "")
     acc_voltage=pypty_params.get("acc_voltage", 60)
     scan_size=np.copy(np.array(pypty_params.get("scan_size", None)))
     scan_step_A=pypty_params.get("scan_step_A", 1)
@@ -108,7 +108,7 @@ def run_tcbf_alignment(params, binning_for_fit=[8],
             aberrations[0]=-1*pypty_params.get("extra_probe_defocus", 0)
     plot=pypty_params.get("plot", False)
     print_flag=pypty_params.get("print_flag", False)
-    data_is_numpy_and_flip_ky=pypty_params.get("data_is_numpy_and_flip_ky", False)
+    flip_ky=pypty_params.get("flip_ky", False)
     num_abs=len(aberrations)
     possible_n, possible_m, possible_ab=convert_num_to_nmab(num_abs)
     aber_print, s=nmab_to_strings(possible_n, possible_m, possible_ab), ""
@@ -119,17 +119,19 @@ def run_tcbf_alignment(params, binning_for_fit=[8],
         sys.stdout.flush()
     angle_offset=-1*rot_deg*3.141592654/180
     rot_rad=0
+    dataset_h5=pypty.params.get("dataset", None)
     
-    if dataset_h5[-3:]==".h5":
-        f=h5py.File(dataset_h5, "r")
-        dataset_h5=f["data"]
-    elif dataset_h5[-4:]==".npy":
-        dataset_h5=np.load(dataset_h5)
-        if len(dataset_h5.shape)==4:
-            scan_size=[dataset_h5.shape[0], dataset_h5.shape[1]]
-            dataset_h5=dataset_h5.reshape(dataset_h5.shape[0]* dataset_h5.shape[1], dataset_h5.shape[2],dataset_h5.shape[3])
-        if data_is_numpy_and_flip_ky:
-            dataset_h5=dataset_h5[:,::-1, :]
+    if dataset_h5 is None:
+        if data_path[-3:]==".h5":
+            dataset_h5=h5py.File(data_path, "r")
+            dataset_h5=dataset_h5["data"]
+        elif data_path[-4:]==".npy":
+            dataset_h5=np.load(data_path)
+    if len(dataset_h5.shape)==4:
+        scan_size=[dataset_h5.shape[0], dataset_h5.shape[1]]
+        dataset_h5=dataset_h5.reshape(dataset_h5.shape[0]* dataset_h5.shape[1], dataset_h5.shape[2],dataset_h5.shape[3])
+    if flip_ky:
+        dataset_h5=dataset_h5[:,::-1, :]
    
     if not(pattern_blur_width is None):
         dataset_h5=np.array(dataset_h5)
@@ -653,7 +655,7 @@ def upsampled_tcbf(pypty_params, upsample=5, pad=10,
     rez_pixel_size_A= pypty_params.get("rez_pixel_size_A", 1)
     upsample_pattern= pypty_params.get("upsample_pattern", 1)
     save=pypty_params.get("save_preprocessing_files", save)
-    data_is_numpy_and_flip_ky=pypty_params.get("data_is_numpy_and_flip_ky", False)
+    flip_ky=pypty_params.get("flip_ky", False)
     xp=cp  #pypty_params.get("backend", cp)
     if data_pad!=0:
         aperture=aperture[data_pad:-data_pad,data_pad:-data_pad]
@@ -661,16 +663,18 @@ def upsampled_tcbf(pypty_params, upsample=5, pad=10,
         aperture=downsample_something(aperture, upsample_pattern, np)
         rez_pixel_size_A*=upsample_pattern
     scan_size= np.copy(pypty_params.get("scan_size", None))
-    if data_path[-3:]==".h5":
-        f=h5py.File(data_path, "r")
-        patterns=f["data"]
-    elif data_path[-4:]==".npy":
-        patterns=np.load(data_path)
-        if len(patterns.shape)==4:
-            scan_size=[patterns.shape[0], patterns.shape[1]]
-            patterns=patterns.reshape(patterns.shape[0]* patterns.shape[1], patterns.shape[2],patterns.shape[3])
-        if data_is_numpy_and_flip_ky:
-            patterns=patterns[:,::-1, :]
+    patterns=pypty_params.get("dataset", None)
+    if patterns is None:
+        if data_path[-3:]==".h5":
+            f=h5py.File(data_path, "r")
+            patterns=f["data"]
+        elif data_path[-4:]==".npy":
+            patterns=np.load(data_path)
+    if len(patterns.shape)==4:
+        scan_size=[patterns.shape[0], patterns.shape[1]]
+        patterns=patterns.reshape(patterns.shape[0]* patterns.shape[1], patterns.shape[2],patterns.shape[3])
+    if flip_ky:
+        patterns=patterns[:,::-1, :]
     comx= pypty_params.get("aperture_shifts_x", pypty_params.get("comx", None)) # pypty_params.get("comx", None)
     comy=pypty_params.get("aperture_shifts_y", pypty_params.get("comy", None)) #pypty_params.get("comy", None)
     print_flag=pypty_params.get("print_flag", 1)
@@ -847,7 +851,7 @@ def run_tcbf_compressed_alignment(params, num_iterations,
     """
     pypty_params=params.copy()
     ## load parameters
-    dataset_h5=pypty_params.get("data_path", "")
+    data_path=pypty_params.get("data_path", "")
     masks = pypty_params.get("masks", "")
     acc_voltage=pypty_params.get("acc_voltage", 60)
     scan_size=np.copy(np.array(pypty_params.get("scan_size", None)))
@@ -884,7 +888,7 @@ def run_tcbf_compressed_alignment(params, num_iterations,
             aberrations[0]=-1*pypty_params.get("extra_probe_defocus", 0)
     plot=pypty_params.get("plot", False)
     print_flag=pypty_params.get("print_flag", False)
-    data_is_numpy_and_flip_ky=pypty_params.get("data_is_numpy_and_flip_ky", False)
+    flip_ky=pypty_params.get("flip_ky", False)
     num_abs=len(aberrations)
     possible_n, possible_m, possible_ab=convert_num_to_nmab(num_abs)
     aber_print, s=nmab_to_strings(possible_n, possible_m, possible_ab), ""
@@ -903,16 +907,19 @@ def run_tcbf_compressed_alignment(params, num_iterations,
     angle_offset=-1*rot_deg*3.141592654/180
     rot_rad=0
     
-    if dataset_h5[-3:]==".h5":
-        f=h5py.File(dataset_h5, "r")
-        dataset_h5=f["data"]
-    elif dataset_h5[-4:]==".npy":
-        dataset_h5=np.load(dataset_h5)
-        if len(dataset_h5.shape)==4:
-            scan_size=[dataset_h5.shape[0], dataset_h5.shape[1]]
-            dataset_h5=dataset_h5.reshape(dataset_h5.shape[0]* dataset_h5.shape[1], dataset_h5.shape[2],dataset_h5.shape[3])
-        if data_is_numpy_and_flip_ky:
-            dataset_h5=dataset_h5[:,::-1, :]
+    dataset_h5=pypty.params.get("dataset", None)
+    
+    if dataset_h5 is None:
+        if data_path[-3:]==".h5":
+            dataset_h5=h5py.File(data_path, "r")
+            dataset_h5=dataset_h5["data"]
+        elif data_path[-4:]==".npy":
+            dataset_h5=np.load(data_path)
+    if len(dataset_h5.shape)==4:
+        scan_size=[dataset_h5.shape[0], dataset_h5.shape[1]]
+        dataset_h5=dataset_h5.reshape(dataset_h5.shape[0]* dataset_h5.shape[1], dataset_h5.shape[2],dataset_h5.shape[3])
+    if flip_ky:
+        dataset_h5=dataset_h5[:,::-1, :]
    
     binned_data_bright_field=cp.asarray(dataset_h5)
     if scan_pad is None:
