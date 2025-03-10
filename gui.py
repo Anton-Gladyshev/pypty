@@ -9,7 +9,6 @@ import numpy as np
 from pypty.initialize import append_exp_params
 
 
-
 def lambda_to_string(f):
     if isinstance(f, types.LambdaType):
         string = inspect.getsourcelines(f)[0][0]
