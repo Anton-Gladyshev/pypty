@@ -18,7 +18,7 @@ import csv
 
 import h5py
 import pickle
-
+import datetime
 
 
 def plot_modes(ttt):
@@ -303,11 +303,6 @@ def plot_complex_modes(p, nm, sub):
 
 
 
-import os
-import numpy as np
-import h5py
-import pickle
-import datetime
 
 def convert_to_nxs(folder_path, output_file):
     co_path = os.path.join(folder_path, "co.npy")
@@ -337,6 +332,15 @@ def convert_to_nxs(folder_path, output_file):
     probe_shape = cp.shape
     is_probe_4d = len(probe_shape) == 4
 
+    # Flip y-axis and reorder axes for object (modes, z, y, x)
+    co = co[::-1, :, :, :].transpose(3, 2, 0, 1)
+
+    # Flip y-axis and reorder axes for probe (modes, scenarios?, y, x)
+    if is_probe_4d:
+        cp = cp[::-1, :, :, :].transpose(2, 3, 0, 1)
+    else:
+        cp = cp[::-1, :, :].transpose(2, 0, 1)
+
     with h5py.File(output_file, "w") as f:
         entry = f.create_group("entry")
         entry.attrs["NX_class"] = "NXentry"
@@ -346,15 +350,15 @@ def convert_to_nxs(folder_path, output_file):
         obj_grp = entry.create_group("object")
         obj_grp.attrs["NX_class"] = "NXdata"
         obj_grp.create_dataset("data", data=co)
-        obj_grp.attrs["axes"] = ["y", "x", "z", "modes"]
-        obj_grp.create_dataset("y", data=np.arange(co.shape[0],-1,-1) * pixel_size_y)
-        obj_grp["y"].attrs["units"] = "angstrom"
-        obj_grp.create_dataset("x", data=np.arange(co.shape[1]) * pixel_size_x)
-        obj_grp["x"].attrs["units"] = "angstrom"
-        obj_grp.create_dataset("z", data=np.arange(co.shape[2]) * slice_spacing)
-        obj_grp["z"].attrs["units"] = "angstrom"
-        obj_grp.create_dataset("modes", data=np.arange(co.shape[3]))
+        obj_grp.attrs["axes"] = ["modes", "z", "y", "x"]
+        obj_grp.create_dataset("modes", data=np.arange(co.shape[0]))
         obj_grp["modes"].attrs["units"] = "mode index"
+        obj_grp.create_dataset("z", data=np.arange(co.shape[1]) * slice_spacing)
+        obj_grp["z"].attrs["units"] = "angstrom"
+        obj_grp.create_dataset("y", data=np.arange(co.shape[2]) * pixel_size_y)
+        obj_grp["y"].attrs["units"] = "angstrom"
+        obj_grp.create_dataset("x", data=np.arange(co.shape[3]) * pixel_size_x)
+        obj_grp["x"].attrs["units"] = "angstrom"
 
         # Instrument
         instr_grp = entry.create_group("instrument")
@@ -364,17 +368,19 @@ def convert_to_nxs(folder_path, output_file):
         probe_grp = instr_grp.create_group("probe")
         probe_grp.attrs["NX_class"] = "NXbeam"
         probe_grp.create_dataset("data", data=cp)
-        probe_axes = ["y", "x", "modes"] + (["scenarios"] if is_probe_4d else [])
+        probe_axes = ["modes"] + (["scenarios"] if is_probe_4d else []) + ["y", "x"]
         probe_grp.attrs["axes"] = probe_axes
-        probe_grp.create_dataset("y", data=np.arange(probe_shape[0]-1,-1,-1) * pixel_size_y)
-        probe_grp["y"].attrs["units"] = "angstrom"
-        probe_grp.create_dataset("x", data=np.arange(probe_shape[1]) * pixel_size_x)
-        probe_grp["x"].attrs["units"] = "angstrom"
-        probe_grp.create_dataset("modes", data=np.arange(probe_shape[2]))
+        probe_grp.create_dataset("modes", data=np.arange(cp.shape[0]))
         probe_grp["modes"].attrs["units"] = "mode index"
+        offset = 1
         if is_probe_4d:
-            probe_grp.create_dataset("scenarios", data=np.arange(probe_shape[3]))
+            probe_grp.create_dataset("scenarios", data=np.arange(cp.shape[1]))
             probe_grp["scenarios"].attrs["units"] = "scenario index"
+            offset += 1
+        probe_grp.create_dataset("y", data=np.arange(cp.shape[offset]) * pixel_size_y)
+        probe_grp["y"].attrs["units"] = "angstrom"
+        probe_grp.create_dataset("x", data=np.arange(cp.shape[offset + 1]) * pixel_size_x)
+        probe_grp["x"].attrs["units"] = "angstrom"
 
         # Scan positions
         scan_grp = entry["instrument"].create_group("scan")
@@ -394,4 +400,5 @@ def convert_to_nxs(folder_path, output_file):
                 recon_grp.create_dataset(key, data=value)
             else:
                 recon_grp.attrs[key] = str(value)
+
     print(f"NeXus file saved as: {output_file}")
