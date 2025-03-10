@@ -303,6 +303,11 @@ def plot_complex_modes(p, nm, sub):
 
 
 
+import os
+import numpy as np
+import h5py
+import pickle
+import datetime
 
 def convert_to_nxs(folder_path, output_file):
     co_path = os.path.join(folder_path, "co.npy")
@@ -317,12 +322,14 @@ def convert_to_nxs(folder_path, output_file):
     cp = np.load(cp_path)
     cg = np.load(cg_path)
 
+    creation_time = datetime.datetime.fromtimestamp(os.path.getmtime(co_path)).isoformat()
+
     with open(pkl_path, "rb") as f:
         metadata = pickle.load(f)
 
     pixel_size_y = metadata["pixel_size_y_A"]
     pixel_size_x = metadata["pixel_size_x_A"]
-    slice_spacing = metadata.get("slice_distances", 1)
+    slice_spacing = metadata.get("slice_distances", [1])[0]
 
     cg[:, 0] *= pixel_size_y
     cg[:, 1] *= pixel_size_x
@@ -333,43 +340,58 @@ def convert_to_nxs(folder_path, output_file):
     with h5py.File(output_file, "w") as f:
         entry = f.create_group("entry")
         entry.attrs["NX_class"] = "NXentry"
-        entry.attrs["default"] = "data"
+        entry.attrs["default"] = "object"
 
-        data_grp = entry.create_group("data")
-        data_grp.attrs["NX_class"] = "NXdata"
-        data_grp.create_dataset("object", data=co)
-        data_grp.create_dataset("probe", data=cp)
-        data_grp.create_dataset("scan_positions", data=cg)
+        # Object data
+        obj_grp = entry.create_group("object")
+        obj_grp.attrs["NX_class"] = "NXdata"
+        obj_grp.create_dataset("data", data=co)
+        obj_grp.attrs["axes"] = ["y", "x", "z", "modes"]
+        obj_grp.create_dataset("y", data=np.arange(co.shape[0],-1,-1) * pixel_size_y)
+        obj_grp["y"].attrs["units"] = "angstrom"
+        obj_grp.create_dataset("x", data=np.arange(co.shape[1]) * pixel_size_x)
+        obj_grp["x"].attrs["units"] = "angstrom"
+        obj_grp.create_dataset("z", data=np.arange(co.shape[2]) * slice_spacing)
+        obj_grp["z"].attrs["units"] = "angstrom"
+        obj_grp.create_dataset("modes", data=np.arange(co.shape[3]))
+        obj_grp["modes"].attrs["units"] = "mode index"
 
-        # Axes for object
-        data_grp.attrs["axes"] = ["y", "x", "z", "modes"]
-        data_grp.create_dataset("y", data=np.arange(co.shape[0]) * pixel_size_y)
-        data_grp["y"].attrs["units"] = "angstrom"
-        data_grp.create_dataset("x", data=np.arange(co.shape[1]) * pixel_size_x)
-        data_grp["x"].attrs["units"] = "angstrom"
-        data_grp.create_dataset("z", data=np.arange(co.shape[2]) * slice_spacing)
-        data_grp["z"].attrs["units"] = "angstrom"
-        data_grp.create_dataset("modes", data=np.arange(co.shape[3]))
-        data_grp["modes"].attrs["units"] = "mode index"
+        # Instrument
+        instr_grp = entry.create_group("instrument")
+        instr_grp.attrs["NX_class"] = "NXinstrument"
 
-        # Axes for probe
-        probe_axes = ["y", "x", "modes"]
+        # Probe data
+        probe_grp = instr_grp.create_group("probe")
+        probe_grp.attrs["NX_class"] = "NXbeam"
+        probe_grp.create_dataset("data", data=cp)
+        probe_axes = ["y", "x", "modes"] + (["scenarios"] if is_probe_4d else [])
+        probe_grp.attrs["axes"] = probe_axes
+        probe_grp.create_dataset("y", data=np.arange(probe_shape[0]-1,-1,-1) * pixel_size_y)
+        probe_grp["y"].attrs["units"] = "angstrom"
+        probe_grp.create_dataset("x", data=np.arange(probe_shape[1]) * pixel_size_x)
+        probe_grp["x"].attrs["units"] = "angstrom"
+        probe_grp.create_dataset("modes", data=np.arange(probe_shape[2]))
+        probe_grp["modes"].attrs["units"] = "mode index"
         if is_probe_4d:
-            probe_axes.append("scenarios")
-            data_grp.create_dataset("scenarios", data=np.arange(probe_shape[3]))
-            data_grp["scenarios"].attrs["units"] = "scenario index"
-        data_grp.attrs["probe_axes"] = probe_axes
+            probe_grp.create_dataset("scenarios", data=np.arange(probe_shape[3]))
+            probe_grp["scenarios"].attrs["units"] = "scenario index"
 
-        # Scan positions axes
-        data_grp.attrs["scan_axes"] = ["positions", "axes"]
+        # Scan positions
+        scan_grp = entry["instrument"].create_group("scan")
+        scan_grp.attrs["NX_class"] = "NXpositioner"
+        scan_grp.create_dataset("positions", data=cg)
+        scan_grp["positions"].attrs["units"] = "angstrom"
+        scan_grp.attrs["axes"] = ["positions", "coordinates"]
 
+        # Reconstruction parameters
         recon_grp = entry.create_group("reconstruction")
         recon_grp.attrs["NX_class"] = "NXprocess"
+        recon_grp.create_dataset("software", data="PyPty")
+        recon_grp.create_dataset("version", data="v2.0")
+        recon_grp.create_dataset("date", data=creation_time)
         for key, value in metadata.items():
             if isinstance(value, (int, float, str, np.ndarray)):
                 recon_grp.create_dataset(key, data=value)
             else:
                 recon_grp.attrs[key] = str(value)
-
     print(f"NeXus file saved as: {output_file}")
-
