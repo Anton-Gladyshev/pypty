@@ -1,5 +1,7 @@
 import numpy as np
 import sys
+import os
+
 import matplotlib.pyplot as plt
 from scipy.optimize import minimize, least_squares
 from matplotlib.patches import Rectangle
@@ -12,6 +14,12 @@ from pypty.utils import *
 from tqdm import tqdm
 import matplotlib
 import csv
+
+
+import h5py
+import pickle
+
+
 
 def plot_modes(ttt):
     if len(ttt.shape)==4:
@@ -295,4 +303,73 @@ def plot_complex_modes(p, nm, sub):
 
 
 
+
+def convert_to_nxs(folder_path, output_file):
+    co_path = os.path.join(folder_path, "co.npy")
+    cp_path = os.path.join(folder_path, "cp.npy")
+    cg_path = os.path.join(folder_path, "cg.npy")
+    pkl_path = os.path.join(folder_path, "params.pkl")
+
+    if not all(os.path.exists(p) for p in [co_path, cp_path, cg_path, pkl_path]):
+        raise FileNotFoundError("Missing required files.")
+
+    co = np.load(co_path)
+    cp = np.load(cp_path)
+    cg = np.load(cg_path)
+
+    with open(pkl_path, "rb") as f:
+        metadata = pickle.load(f)
+
+    pixel_size_y = metadata["pixel_size_y_A"]
+    pixel_size_x = metadata["pixel_size_x_A"]
+    slice_spacing = metadata.get("slice_distances", 1)
+
+    cg[:, 0] *= pixel_size_y
+    cg[:, 1] *= pixel_size_x
+
+    probe_shape = cp.shape
+    is_probe_4d = len(probe_shape) == 4
+
+    with h5py.File(output_file, "w") as f:
+        entry = f.create_group("entry")
+        entry.attrs["NX_class"] = "NXentry"
+        entry.attrs["default"] = "data"
+
+        data_grp = entry.create_group("data")
+        data_grp.attrs["NX_class"] = "NXdata"
+        data_grp.create_dataset("object", data=co)
+        data_grp.create_dataset("probe", data=cp)
+        data_grp.create_dataset("scan_positions", data=cg)
+
+        # Axes for object
+        data_grp.attrs["axes"] = ["y", "x", "z", "modes"]
+        data_grp.create_dataset("y", data=np.arange(co.shape[0]) * pixel_size_y)
+        data_grp["y"].attrs["units"] = "angstrom"
+        data_grp.create_dataset("x", data=np.arange(co.shape[1]) * pixel_size_x)
+        data_grp["x"].attrs["units"] = "angstrom"
+        data_grp.create_dataset("z", data=np.arange(co.shape[2]) * slice_spacing)
+        data_grp["z"].attrs["units"] = "angstrom"
+        data_grp.create_dataset("modes", data=np.arange(co.shape[3]))
+        data_grp["modes"].attrs["units"] = "mode index"
+
+        # Axes for probe
+        probe_axes = ["y", "x", "modes"]
+        if is_probe_4d:
+            probe_axes.append("scenarios")
+            data_grp.create_dataset("scenarios", data=np.arange(probe_shape[3]))
+            data_grp["scenarios"].attrs["units"] = "scenario index"
+        data_grp.attrs["probe_axes"] = probe_axes
+
+        # Scan positions axes
+        data_grp.attrs["scan_axes"] = ["positions", "axes"]
+
+        recon_grp = entry.create_group("reconstruction")
+        recon_grp.attrs["NX_class"] = "NXprocess"
+        for key, value in metadata.items():
+            if isinstance(value, (int, float, str, np.ndarray)):
+                recon_grp.create_dataset(key, data=value)
+            else:
+                recon_grp.attrs[key] = str(value)
+
+    print(f"NeXus file saved as: {output_file}")
 

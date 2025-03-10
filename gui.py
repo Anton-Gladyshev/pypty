@@ -21,7 +21,6 @@ def lambda_to_string(f):
     else:
         return f
 
-
 def load_params(path):
     with open(path, 'rb') as handle:
         params = pickle.load(handle)
