@@ -394,9 +394,17 @@ def convert_to_nxs(folder_path, output_file):
         recon_grp.create_dataset("version", data="v2.0")
         recon_grp.create_dataset("date", data=creation_time)
 
-        # Reconstruction parameters subgroup
+        # Reconstruction parameters
+        recon_grp = entry.create_group("reconstruction")
+        recon_grp.attrs["NX_class"] = "NXprocess"
+        recon_grp.create_dataset("software", data="PyPty")
+        recon_grp.create_dataset("version", data="v2.0")
+        recon_grp.create_dataset("date", data=creation_time)
+
+        # Explicitly save parameters to subgroup 'parameters'
         params_grp = recon_grp.create_group("parameters")
         params_grp.attrs["NX_class"] = "NXcollection"
+
         for key, value in metadata.items():
             if isinstance(value, (int, float, str, np.ndarray)):
                 params_grp.create_dataset(key, data=value)
