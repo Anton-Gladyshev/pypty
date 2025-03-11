@@ -400,8 +400,6 @@ def convert_to_nxs(folder_path, output_file):
 
         
         for key, value in metadata.items():
-            if isinstance(value, (int, float, str, np.ndarray)):
-                params_grp.create_dataset(key, data=value)
-            else:
-                params_grp.attrs[key] = str(value)
+            params_grp.create_dataset(key, data=value)
+           
     print(f"NeXus file saved as: {output_file}")
