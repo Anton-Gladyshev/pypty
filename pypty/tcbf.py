@@ -907,7 +907,7 @@ def run_tcbf_compressed_alignment(params, num_iterations,
     angle_offset=-1*rot_deg*3.141592654/180
     rot_rad=0
     
-    dataset_h5=pypty.params.get("dataset", None)
+    dataset_h5=params.get("dataset", None)
     
     if dataset_h5 is None:
         if data_path[-3:]==".h5":
