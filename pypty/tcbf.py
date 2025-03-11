@@ -119,7 +119,7 @@ def run_tcbf_alignment(params, binning_for_fit=[8],
         sys.stdout.flush()
     angle_offset=-1*rot_deg*3.141592654/180
     rot_rad=0
-    dataset_h5=params.get("dataset", None)
+    dataset_h5=pypty_params.get("dataset", None)
     
     if dataset_h5 is None:
         if data_path[-3:]==".h5":
