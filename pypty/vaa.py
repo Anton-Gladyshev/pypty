@@ -302,8 +302,6 @@ def plot_complex_modes(p, nm, sub):
 
 
 
-
-
 def convert_to_nxs(folder_path, output_file):
     co_path = os.path.join(folder_path, "co.npy")
     cp_path = os.path.join(folder_path, "cp.npy")
@@ -395,10 +393,14 @@ def convert_to_nxs(folder_path, output_file):
         recon_grp.create_dataset("software", data="PyPty")
         recon_grp.create_dataset("version", data="v2.0")
         recon_grp.create_dataset("date", data=creation_time)
+
+        # Reconstruction parameters subgroup
+        params_grp = recon_grp.create_group("parameters")
+        params_grp.attrs["NX_class"] = "NXcollection"
         for key, value in metadata.items():
             if isinstance(value, (int, float, str, np.ndarray)):
-                recon_grp.create_dataset(key, data=value)
+                params_grp.create_dataset(key, data=value)
             else:
-                recon_grp.attrs[key] = str(value)
+                params_grp.attrs[key] = str(value)
 
     print(f"NeXus file saved as: {output_file}")
