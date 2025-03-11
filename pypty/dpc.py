@@ -65,21 +65,24 @@ def fft_based_dpc(pypty_params, hpass=0, lpass=0, save=False, comx=None, comy=No
     angle=pypty_params.get("PLRotation_deg", None)
     plot=pypty_params.get("plot", plot)
     flip_ky=pypty_params.get("flip_ky", False)
-    comx=pypty_params.get("comx")
-    comy=pypty_params.get("comy")
+    if comx is None:
+        comx=pypty_params.get("comx", None)
+    if comy is None:
+        comy=pypty_params.get("comy", None)
     dataset_h5=pypty_params.get("dataset", None)
-    if dataset_h5 is None:
-        if data_path[-3:]==".h5":
-            dataset_h5=h5py.File(data_path, "r")
-            dataset_h5=dataset_h5["data"]
-        elif data_path[-4:]==".npy":
-            dataset_h5=np.load(data_path)
-    if len(dataset_h5.shape)==4:
-        scan_size=[dataset_h5.shape[0], dataset_h5.shape[1]]
-        dataset_h5=dataset_h5.reshape(dataset_h5.shape[0]* dataset_h5.shape[1], dataset_h5.shape[2],dataset_h5.shape[3])
-    if flip_ky:
-        dataset_h5=dataset_h5[:,::-1, :]
+    
     if (comx is None) or (comy is None):
+        if dataset_h5 is None:
+            if data_path[-3:]==".h5":
+                dataset_h5=h5py.File(data_path, "r")
+                dataset_h5=dataset_h5["data"]
+            elif data_path[-4:]==".npy":
+                dataset_h5=np.load(data_path)
+        if len(dataset_h5.shape)==4:
+            scan_size=[dataset_h5.shape[0], dataset_h5.shape[1]]
+            dataset_h5=dataset_h5.reshape(dataset_h5.shape[0]* dataset_h5.shape[1], dataset_h5.shape[2],dataset_h5.shape[3])
+        if flip_ky:
+            dataset_h5=dataset_h5[:,::-1, :]
         comx=np.zeros(dataset_h5.shape[0])
         comy=np.zeros(dataset_h5.shape[0])
         x=np.arange(dataset_h5.shape[2])
