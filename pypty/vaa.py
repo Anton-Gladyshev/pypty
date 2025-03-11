@@ -398,6 +398,10 @@ def convert_to_nxs(folder_path, output_file):
         params_grp = recon_grp.create_group("parameters")
         params_grp.attrs["NX_class"] = "NXcollection"
 
+        
         for key, value in metadata.items():
-            params_grp.create_dataset(key, data=value)
+            if isinstance(value, (int, float, str, np.ndarray)):
+                params_grp.create_dataset(key, data=value)
+            else:
+                params_grp.attrs[key] = str(value)
     print(f"NeXus file saved as: {output_file}")
