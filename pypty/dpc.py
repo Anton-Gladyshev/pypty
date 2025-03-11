@@ -67,7 +67,7 @@ def fft_based_dpc(pypty_params, hpass=0, lpass=0, save=False, comx=None, comy=No
     flip_ky=pypty_params.get("flip_ky", False)
     comx=pypty_params.get("comx")
     comy=pypty_params.get("comy")
-    dataset_h5=pypty.params.get("dataset", None)
+    dataset_h5=params.get("dataset", None)
     if dataset_h5 is None:
         if data_path[-3:]==".h5":
             dataset_h5=h5py.File(data_path, "r")
@@ -178,7 +178,7 @@ def iterative_dpc(pypty_params, num_iterations=100, beta=0.5, hpass=0, lpass=0, 
     print_flag=pypty_params.get("print_flag", print_flag)
     px_size=pypty_params.get("scan_step_A", px_size)
     flip_ky=pypty_params.get("flip_ky", False)
-    dataset_h5=pypty.params.get("dataset", None)
+    dataset_h5=params.get("dataset", None)
     if dataset_h5 is None:
         if data_path[-3:]==".h5":
             dataset_h5=h5py.File(data_path, "r")
