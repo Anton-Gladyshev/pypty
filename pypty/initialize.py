@@ -362,7 +362,7 @@ def append_exp_params(experimental_params, pypty_params=None):
     # PLRotation_deg
     wavelength=12.4/np.sqrt(acc_voltage*(acc_voltage+2*511))
     y_range,x_range=scan_size
-    if PLRotation_deg is None:
+    if PLRotation_deg is None or PLRotation_deg=='auto':
         x,y=np.arange(h5data.shape[-1]), np.arange(h5data.shape[-2])
         x,y=np.meshgrid(x-np.mean(x), y-np.mean(y), indexing="xy")
         ssum=np.empty(scan_size)
