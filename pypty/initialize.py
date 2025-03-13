@@ -281,7 +281,7 @@ def append_exp_params(experimental_params, pypty_params=None):
     fov_nm=experimental_params.get("fov_nm", None)
     special_postions_A=experimental_params.get("special_postions_A", None)
  
-    PLRotation_deg=experimental_params.get("PLRotation_deg", None)
+    PLRotation_deg=experimental_params.get("PLRotation_deg", "auto")
     flip_ky=experimental_params.get("flip_ky", False)
     
     total_thickness=experimental_params.get("total_thickness", 1)
@@ -294,6 +294,8 @@ def append_exp_params(experimental_params, pypty_params=None):
     transform_axis_matrix=experimental_params.get("transform_axis_matrix", np.eye(2))
     h5data=experimental_params.get("dataset", None)
     
+    if PLRotation_deg=="auto":
+        PLRotation_deg=None
     comx=None
     comy=None
     try:
