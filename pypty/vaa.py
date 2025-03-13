@@ -307,19 +307,14 @@ def convert_to_nxs(folder_path, output_file):
     cp_path = os.path.join(folder_path, "cp.npy")
     cg_path = os.path.join(folder_path, "cg.npy")
     pkl_path = os.path.join(folder_path, "params.pkl")
-
     if not all(os.path.exists(p) for p in [co_path, cp_path, cg_path, pkl_path]):
         raise FileNotFoundError("Missing required files.")
-
     co = np.load(co_path)
     cp = np.load(cp_path)
     cg = np.load(cg_path)
-
     creation_time = datetime.datetime.fromtimestamp(os.path.getmtime(co_path)).isoformat()
-
     with open(pkl_path, "rb") as f:
         metadata = pickle.load(f)
-
     pixel_size_y = metadata["pixel_size_y_A"]
     pixel_size_x = metadata["pixel_size_x_A"]
     slice_spacing = metadata.get("slice_distances", [1])[0]
@@ -329,8 +324,7 @@ def convert_to_nxs(folder_path, output_file):
 
     probe_shape = cp.shape
     is_probe_4d = len(probe_shape) == 4
-
-    # Flip y-axis and reorder axes for object (modes, z, y, x)
+    
     co = co[::-1, :, :, :].transpose(3, 2, 0, 1)
 
     # Flip y-axis and reorder axes for probe (modes, scenarios?, y, x)
@@ -393,5 +387,12 @@ def convert_to_nxs(folder_path, output_file):
         recon_grp.create_dataset("software", data="PyPty")
         recon_grp.create_dataset("version", data="v2.0")
         recon_grp.create_dataset("date", data=creation_time)
-                  
+        recon_grp.create_dataset("folder",  data=metadata.get("output_folder", ""))
+        recon_grp.create_dataset("dataset", data=metadata.get("data_path", "").split("/")[-1])
+        p_grp=recon_grp.create_group("reconstruction parameters")
+        p_grp.attrs["NX_class"] = "NXcollection"
+        p_grp.create_dataset("software", data="PyPty")
+        for key, value in metadata.items():
+            if value is None: value="None";
+            p_grp.create_dataset(key, data=value)
     print(f"NeXus file saved as: {output_file}")
