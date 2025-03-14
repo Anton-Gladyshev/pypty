@@ -39,12 +39,30 @@ pip install .
 
 The examples will be provided in the `examples` folder. To to configure a **completely custom preset**, please reffer to the next section.
  
- 
-# PyPty Parameters for Creating Custom Presets
+# **_Structure of the code_**
+---
+
+PyPty consists of multiple modules each targeting a particular step in pre- or post-processing of the data.
+|------------------------------------------|--------------------------------------------------------------------------------|
+| Module                                   | Description / Usage                                                            |
+|     `pypty.initialize`                   |    creation of parameters, callibration of the data                            |
+|     `pypty.iterative_ptychography`       |   iterative gradient-based ptychography / generic iterative phase retrival     |
+|     `pypty.dpc`                          |               Phase-retrival via differential phase contrast                   |
+|     `pypty.direct_ptychography`          |    Direction (non-iterative) ptychographic reconstruction (WDD)                |
+|     `pypty.fft`                          |     Wrapper for fft-fucntions                                                  |
+|     `pypty.loss_and_direction`           |      Sub-module for  iterative gradient-based ptychography                     |
+|     `pypty.multislice`                   |            Sub-module for  iterative gradient-based ptychography               |
+|     `pypty.signal_extraction`            |     Extraction of information from  4D-STEM data.                              |
+|     `pypty.tcbf`                         |    Direct reconstruction from 4D-STEM data via tilt-corrected bright field     |
+|     `pypty.utils`                        |    Collection of utility functions                                             |
+|     `pypty.vaa`                          |    Set of tools for visualization and analysis of restructions.                |
+
+
+# **_PyPty Parameters for Creating Custom Presets_**
 ---
 
 All functions in PyPty work dictionary describing your preset. We tend to name it `pypty_params`.
-The main function of PyPty package providing an iterative ptychographic reconsturction is launched via `run_ptychography()` functon. It takes a single argument- `pypty_params`.
+The main function of PyPty package providing an iterative ptychographic reconsturction is launched via `run_ptychography()` functon from `pypty.iterative_ptychography` module. It takes a single argument- `pypty_params`.
 
 For an easy preset configuration, please refer to the `pypty.initialize` module. It allows easy creation of all arrays. However, for a non-trivial experiment please follow this guide to create your own dictionary and fill in the requiered entries.
 
@@ -52,7 +70,7 @@ For an easy preset configuration, please refer to the `pypty.initialize` module.
 Before starting this guide, one important usage case must be discussed.
 PyPty is an iterative algorithm and, as you will see, it requires a number of input parameters. Some of these parameters can be specified in an iteration-dependent fashion using a lambda function. This function should take a single input argument and return the desired value for a given epoch.
 
-For example, if you want to apply smart_memory parameter every 10 epochs, you can set `smart_memory` in `pypty_params` dictionary as:
+For example, if you want to apply `smart_memory` parameter every 10 epochs, you can set `smart_memory` in `pypty_params` dictionary as:
 
 ```python
 smart_memory: lambda x: x % 10 == 0;
@@ -68,7 +86,7 @@ We do not recommend applying constraints every n epochs, as PyPty’s BFGS algor
 As a general rule of thumb, we suggest configuring lambda functions so that once an optimization parameter is activated, it maintains a consistent value throughout execution.
 
 
-## Full list of paramerers for run_ptychography()
+## Full list of paramerers for pypty.iterative_ptychography.run_ptychography()
 
 ---
 
@@ -300,6 +318,22 @@ As a general rule of thumb, we suggest configuring lambda functions so that once
 
 ---
 
+# Initialization functions availible for configuring custom presets
+
+## pypty.intialize Module
+### create_pypty_data()
+
+to be updated
+
+---
+
+# Direct reconstruction routines available in PyPty
+
+## pypty.dpc Module
+The `pypty.dpc` module provides functions for differential phase contrast (DPC) reconstructions. More details will be added soon.
+
+
+---
 
 # Relevant Literature
 If you have any questions after reading this guide, the following papers, books and links might explain the working principle of the code:
