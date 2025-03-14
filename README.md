@@ -364,7 +364,7 @@ The `append_exp_params()` function is used to **calibrate an existing PyPty pres
 The `experimental_params` dictionary should contain the following keys:
 **Essential Data Paths**
 | Key                  | Type    | Description |
-
+|---------------------------|--------------------|---------|-------------|
 | `data_path`         | `str`   | Path to a **3D PyPty `.h5` dataset** (`[N_measurements, ky, kx]`) or a **4D-STEM `.npy` dataset**. |
 | `masks`            | `ndarray` or `None` | If the data is compressed, provide the virtual detectors (`[N_masks, ky, kx]`). |
 | `output_folder`    | `str`   | Directory where results will be stored. |
