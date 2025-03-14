@@ -362,6 +362,7 @@ The `append_exp_params()` function is used to **calibrate an existing PyPty pres
 ---
 #### **Expected Keys in `experimental_params`**
 The `experimental_params` dictionary should contain the following keys:
+
 **Essential Data Paths**
 | Key                  | Type    | Description |
 |----------------------|---------|-------------|
@@ -389,6 +390,7 @@ The `experimental_params` dictionary should contain the following keys:
 | `special_positions_A` | `ndarray` (optional) | If data was acquired on a non-rectangular grid, specify positions as `[y_0, x_0], ..., [y_n, x_n]` (in **Å**). |
 | `transform_axis_matrix` | `ndarray (2×2)` | Transformation matrix for position correction. |
 | `PLRotation_deg`    | `float` or `"auto"` | Rotation angle between scan and detector axes. If `"auto"`, an iDPC measurement estimates this angle. |
+
 **Reconstruction Settings**
 | Key                  | Type    | Description |
 |----------------------|---------|-------------|
@@ -399,6 +401,7 @@ The `experimental_params` dictionary should contain the following keys:
 | `flip_ky`          | `bool`  | Flip the y-axis of diffraction patterns. |
 | `defocus`          | `float` | Extra probe defocus (besides aberrations). |
 | `aberrations`      | `list` or `ndarray` | Beam aberrations (stored in Krivanek notation). |
+
 **Output & Debugging**
 | Key                  | Type    | Description |
 |----------------------|---------|-------------|
