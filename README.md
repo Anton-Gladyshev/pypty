@@ -369,7 +369,9 @@ The `experimental_params` dictionary should contain the following keys:
 | `masks`            | `ndarray` or `None` | If the data is compressed, provide the virtual detectors (`[N_masks, ky, kx]`). |
 | `output_folder`    | `str`   | Directory where results will be stored. |
 | `path_json`        | `str`   | Path to a Nion-style `.json` file with metadata (optional). |
+
 **Electron Beam Properties**
+| Key                  | Type    | Description |
 |----------------------|---------|-------------|
 | `acc_voltage`       | `float` | Accelerating voltage (in **kV**). |
 | `rez_pixel_size_A`  | `float` | Reciprocal pixel size (in **Å⁻¹**). |
@@ -377,7 +379,9 @@ The `experimental_params` dictionary should contain the following keys:
 | `conv_semiangle_mrad` | `float` | Beam convergence semi-angle (in **mrad**). |
 | `aperture`         | `ndarray` (optional) | Binary **2D mask** representing the aperture. |
 | `bright_threshold`  | `float` | Threshold for estimating an aperture. Everything above `threshold * max(PACBED)` is considered bright field. |
+
 **Scan and Positioning**
+| Key                  | Type    | Description |
 |----------------------|---------|-------------|
 | `scan_size`         | `tuple(int, int)` | Number of scan points along **slow (y)** and **fast (x)** axes. |
 | `scan_step_A`       | `float` | Scan step (STEM pixel size) in **Å**. |
@@ -386,6 +390,7 @@ The `experimental_params` dictionary should contain the following keys:
 | `transform_axis_matrix` | `ndarray (2×2)` | Transformation matrix for position correction. |
 | `PLRotation_deg`    | `float` or `"auto"` | Rotation angle between scan and detector axes. If `"auto"`, an iDPC measurement estimates this angle. |
 **Reconstruction Settings**
+| Key                  | Type    | Description |
 |----------------------|---------|-------------|
 | `num_slices`        | `int`   | Number of slices used for multislice propagation (default: `1`). |
 | `total_thickness`   | `float` | Total thickness of the sample (in **Å**). |
@@ -395,6 +400,7 @@ The `experimental_params` dictionary should contain the following keys:
 | `defocus`          | `float` | Extra probe defocus (besides aberrations). |
 | `aberrations`      | `list` or `ndarray` | Beam aberrations (stored in Krivanek notation). |
 **Output & Debugging**
+| Key                  | Type    | Description |
 |----------------------|---------|-------------|
 | `plot`             | `bool`  | If `True`, generates plots of key experimental parameters. |
 | `print_flag`       | `int`   | Controls verbosity (`0` = silent, `1` = summary, `2+` = detailed logs). |
