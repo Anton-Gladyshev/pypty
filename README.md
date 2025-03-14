@@ -43,20 +43,19 @@ The examples will be provided in the `examples` folder. To to configure a **comp
 ---
 
 PyPty consists of multiple modules each targeting a particular step in pre- or post-processing of the data.
-|------------------------------------------|--------------------------------------------------------------------------------|
-| Module                                   | Description / Usage                                                            |
-|     `pypty.initialize`                   |    creation of parameters, callibration of the data                            |
-|     `pypty.iterative_ptychography`       |   iterative gradient-based ptychography / generic iterative phase retrival     |
-|     `pypty.dpc`                          |               Phase-retrival via differential phase contrast                   |
-|     `pypty.direct_ptychography`          |    Direction (non-iterative) ptychographic reconstruction (WDD)                |
-|     `pypty.fft`                          |     Wrapper for fft-fucntions                                                  |
-|     `pypty.loss_and_direction`           |      Sub-module for  iterative gradient-based ptychography                     |
-|     `pypty.multislice`                   |            Sub-module for  iterative gradient-based ptychography               |
-|     `pypty.signal_extraction`            |     Extraction of information from  4D-STEM data.                              |
-|     `pypty.tcbf`                         |    Direct reconstruction from 4D-STEM data via tilt-corrected bright field     |
-|     `pypty.utils`                        |    Collection of utility functions                                             |
-|     `pypty.vaa`                          |    Set of tools for visualization and analysis of restructions.                |
-
+| Module                                | Description / Usage                                                |
+|----------------------------------------|--------------------------------------------------------------------|
+| `pypty.initialize`                    | Creation of parameters, calibration of the data                   |
+| `pypty.iterative_ptychography`        | Iterative gradient-based ptychography for phase retrieval         |
+| `pypty.dpc`                           | Phase retrieval via differential phase contrast                   |
+| `pypty.direct_ptychography`           | Direct (non-iterative) ptychographic reconstruction (WDD)         |
+| `pypty.fft`                           | Wrapper for FFT functions                                         |
+| `pypty.loss_and_direction`            | Sub-module for iterative gradient-based ptychography              |
+| `pypty.multislice`                    | Sub-module for iterative gradient-based ptychography              |
+| `pypty.signal_extraction`             | Extraction of information from 4D-STEM data                       |
+| `pypty.tcbf`                          | Direct reconstruction from 4D-STEM data via tilt-corrected bright field |
+| `pypty.utils`                         | Collection of utility functions                                   |
+| `pypty.vaa`                           | Set of tools for visualization and analysis of reconstructions    |
 
 # **_PyPty Parameters for Creating Custom Presets_**
 ---
