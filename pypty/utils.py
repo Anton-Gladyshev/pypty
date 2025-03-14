@@ -413,12 +413,12 @@ def save_updated_arrays(output_folder, epoch,current_probe_step, current_probe_p
             else:
                 fieldnames=["epoch", "time / s", "loss", "sse", "initial step", "matching step", "N linesearch iterations",
                 "dir. derivative", "new dir. derivative", "Constraints contribution", "Free GiB", "Total GiB", "Warnings"]
-            if xp!=np:
+            if xp==np:
+                total_allocated,total_reserved, total_mem_device=0,0,0
+            else:
                 device = cp.cuda.Device(0)
                 total_mem_device=  device.mem_info[1] / (1024 **3)
                 free_mem_device=   device.mem_info[0] / (1024 **3)
-            else:
-                total_allocated,total_reserved, total_mem_device=0,0,0
             write_loss=csv.DictWriter(loss_list,fieldnames=fieldnames)
             if save_loss_log==2:
                 write_loss.writerow({"epoch": epoch,
