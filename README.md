@@ -364,13 +364,13 @@ The `append_exp_params()` function is used to **calibrate an existing PyPty pres
 The `experimental_params` dictionary should contain the following keys:
 **Essential Data Paths**
 | Key                  | Type    | Description |
-|----------------------|---------|-------------|
+|   |   | |
 | `data_path`         | `str`   | Path to a **3D PyPty `.h5` dataset** (`[N_measurements, ky, kx]`) or a **4D-STEM `.npy` dataset**. |
 | `masks`            | `ndarray` or `None` | If the data is compressed, provide the virtual detectors (`[N_masks, ky, kx]`). |
 | `output_folder`    | `str`   | Directory where results will be stored. |
 | `path_json`        | `str`   | Path to a Nion-style `.json` file with metadata (optional). |
 **Electron Beam Properties**
-|----------------------|---------|-------------|
+|   |   | |
 | `acc_voltage`       | `float` | Accelerating voltage (in **kV**). |
 | `rez_pixel_size_A`  | `float` | Reciprocal pixel size (in **Å⁻¹**). |
 | `rez_pixel_size_mrad` | `float` | Reciprocal pixel size (in **mrad**). |
@@ -378,7 +378,7 @@ The `experimental_params` dictionary should contain the following keys:
 | `aperture`         | `ndarray` (optional) | Binary **2D mask** representing the aperture. |
 | `bright_threshold`  | `float` | Threshold for estimating an aperture. Everything above `threshold * max(PACBED)` is considered bright field. |
 **Scan and Positioning**
-|----------------------|---------|-------------|
+|   |   | |
 | `scan_size`         | `tuple(int, int)` | Number of scan points along **slow (y)** and **fast (x)** axes. |
 | `scan_step_A`       | `float` | Scan step (STEM pixel size) in **Å**. |
 | `fov_nm`           | `float` | Field of view (**FOV**) along the **fast axis** in **nm**. |
@@ -386,7 +386,7 @@ The `experimental_params` dictionary should contain the following keys:
 | `transform_axis_matrix` | `ndarray (2×2)` | Transformation matrix for position correction. |
 | `PLRotation_deg`    | `float` or `"auto"` | Rotation angle between scan and detector axes. If `"auto"`, an iDPC measurement estimates this angle. |
 **Reconstruction Settings**
-|----------------------|---------|-------------|
+|   |   | |
 | `num_slices`        | `int`   | Number of slices used for multislice propagation (default: `1`). |
 | `total_thickness`   | `float` | Total thickness of the sample (in **Å**). |
 | `data_pad`         | `int` or `None` | Reciprocal space padding. Default: `1/4` of pattern width. |
@@ -395,7 +395,7 @@ The `experimental_params` dictionary should contain the following keys:
 | `defocus`          | `float` | Extra probe defocus (besides aberrations). |
 | `aberrations`      | `list` or `ndarray` | Beam aberrations (stored in Krivanek notation). |
 **Output & Debugging**
-|----------------------|---------|-------------|
+|   |   | |
 | `plot`             | `bool`  | If `True`, generates plots of key experimental parameters. |
 | `print_flag`       | `int`   | Controls verbosity (`0` = silent, `1` = summary, `2+` = detailed logs). |
 | `save_preprocessing_files` | `bool` | If `True`, saves intermediate preprocessing files. |
