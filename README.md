@@ -420,7 +420,8 @@ experimental_params = {
     "PLRotation_deg": "auto",
     "output_folder": "results/"
 }
-pypty_params = pypty.initialize.append_exp_params(experimental_params)
+pypty_params = None # or your custom preset
+pypty_params = pypty.initialize.append_exp_params(experimental_params, pypty_params)
 ```
 ---
 
