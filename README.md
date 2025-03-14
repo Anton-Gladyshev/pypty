@@ -423,12 +423,6 @@ experimental_params = {
 pypty_params = None # or your custom preset
 pypty_params = pypty.initialize.append_exp_params(experimental_params, pypty_params)
 ```
----
-
-# Direct reconstruction routines available in PyPty
-
-## pypty.dpc Module
-The `pypty.dpc` module provides functions for differential phase contrast (DPC) reconstructions. More details will be added soon.
 
 
 ---
@@ -475,7 +469,7 @@ If you have any questions after reading this guide, the following papers, books 
 
 ## BFGS algotithm
 17) C. G. Broyden (1970). The convergence of a class of double-rank minimization algorithms
-18) Fletcher, R. (1970). A New Approach to Variable Metric Algorithms
+18) R. Fletcher   (1970). A New Approach to Variable Metric Algorithms
 19) D. Goldfarb (1970). A Family of Variable Metric Updates Derived by Variational Means
 20) D. F. Shanno (1970). Conditioning of quasi-Newton methods for function minimization
 
