@@ -149,7 +149,7 @@ def run_ptychography(pypty_params):
     probe_marker =  params.get('probe_marker', None)
     
     ## Memory usage
-    memory_satiration= params.get('memory_satiration', 0.7)
+    memory_saturation= params.get('memory_saturation', 0.7)
     load_one_by_one= params.get('load_one_by_one', True)
     smart_memory = params.get('smart_memory', True)
     remove_fft_cache = params.get('remove_fft_cache', False)
@@ -251,7 +251,7 @@ def run_ptychography(pypty_params):
             history_size=hist_length(0)
         except:
             history_size=hist_length
-        compute_batch, load_one_by_one, smart_memory = get_compute_batch(compute_batch, load_one_by_one, history_size, measured_data_shape, memory_satiration, smart_memory, data_pad, obj.shape, probe.shape, default_dtype, propmethod, print_flag)
+        compute_batch, load_one_by_one, smart_memory = get_compute_batch(compute_batch, load_one_by_one, history_size, measured_data_shape, memory_saturation, smart_memory, data_pad, obj.shape, probe.shape, default_dtype, propmethod, print_flag)
         
     try:
         first_smart_memory=smart_memory(0)

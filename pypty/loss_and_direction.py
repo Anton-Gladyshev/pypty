@@ -753,8 +753,9 @@ def compute_fast_axis_constraint_on_grid(something, scan_size, tv_reg_weight):
 
 def compute_slow_axis_constraint_on_grid(something, scan_size, tv_reg_weight):
     something_scan_size = something.reshape(scan_size[0], scan_size[1],something.shape[-1])
-    something_scan_size_fast_avg=cp.sum(something, axis=1)
-    grad_fast_avg=cp.zeros_like(something_scan_size)
+    something_scan_size_fast_avg=cp.sum(something_scan_size, axis=1)
+    
+    grad_fast_avg=cp.zeros_like(something_scan_size_fast_avg)
     
     something_y_roll_p1=cp.roll(something_scan_size_fast_avg,  1, axis=0)
     something_y_roll_m1=cp.roll(something_scan_size_fast_avg, -1, axis=0)
@@ -767,8 +768,8 @@ def compute_slow_axis_constraint_on_grid(something, scan_size, tv_reg_weight):
     grad_fast_avg+=cp.roll(laplace,   1, axis=0)
     grad_fast_avg+=cp.roll(laplace,  -1, axis=0)
     grad_fast_avg=cp.repeat(grad_fast_avg[:,None,:], scan_size[1], axis=1)
-    grad=grad.reshape(something.shape)
-    return reg_term, grad
+    grad_fast_avg=grad_fast_avg.reshape(something.shape)
+    return reg_term, grad_fast_avg
 
 
     
