@@ -16,11 +16,6 @@ import matplotlib
 import csv
 
 
-import h5py
-import pickle
-import datetime
-
-
 def plot_modes(ttt):
     if len(ttt.shape)==4:
         for i in range(ttt.shape[-1]):

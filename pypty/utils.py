@@ -17,6 +17,9 @@ except:
     
 from pypty.fft import *
 
+import h5py
+import datetime
+
  
 def fourier_clean_3d(array, cutoff=0.66, mask=None, rolloff=0, default_float=cp.float32, xp=cp):
     if not(cutoff is None) or not(mask is None):
@@ -1003,7 +1006,6 @@ def get_compute_batch(compute_batch, load_one_by_one, hist_size, measured_data_s
 def load_nexus_params(path_nexus):
     f=h5py.File(path_nexus, "r")
     path_inside='entry/reconstruction/reconstruction parameters'
-    f[path_inside].keys()
     pypty_params={}
     for k in f[path_inside].keys():
         value=f[path_inside+"/"+k][()]
