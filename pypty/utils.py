@@ -17,6 +17,9 @@ except:
     
 from pypty.fft import *
 
+import h5py
+import datetime
+
  
 def fourier_clean_3d(array, cutoff=0.66, mask=None, rolloff=0, default_float=cp.float32, xp=cp):
     if not(cutoff is None) or not(mask is None):
@@ -409,16 +412,16 @@ def save_updated_arrays(output_folder, epoch,current_probe_step, current_probe_p
         with open(output_folder+"loss.csv", mode='a', newline='') as loss_list:
             if save_loss_log==2:
                 fieldnames=["epoch", "time / s", "loss", "sse", "initial step", "matching step", "N linesearch iterations",
-                "dir. derivative", "new dir. derivative", "F-axis postions reg.", "Deformation positons reg.", "Deformation tilts reg.", "F-axis tilts reg.", "l1 object reg.", "Q-space probe reg.", "R-space probe reg.", "TV object reg.", "V-object reg.", "Free GiB", "Total GiB", "Warnings"]
+                "dir. derivative", "new dir. derivative", "F-axis postions reg.", "Deformation positons reg.", "Deformation tilts reg.", "F-axis tilts reg.", "l1 object reg.", "Q-space probe reg.", "R-space probe reg.", "TV object reg.", "V-object reg.", "S-axis postions reg", "S-axis tilts reg", "Free GiB", "Total GiB", "Warnings"]
             else:
                 fieldnames=["epoch", "time / s", "loss", "sse", "initial step", "matching step", "N linesearch iterations",
                 "dir. derivative", "new dir. derivative", "Constraints contribution", "Free GiB", "Total GiB", "Warnings"]
-            if xp!=np:
+            if xp==np:
+                total_allocated,total_reserved, total_mem_device, free_mem_device=0,0,0,0
+            else:
                 device = cp.cuda.Device(0)
                 total_mem_device=  device.mem_info[1] / (1024 **3)
                 free_mem_device=   device.mem_info[0] / (1024 **3)
-            else:
-                total_allocated,total_reserved, total_mem_device=0,0,0
             write_loss=csv.DictWriter(loss_list,fieldnames=fieldnames)
             if save_loss_log==2:
                 write_loss.writerow({"epoch": epoch,
@@ -439,12 +442,14 @@ def save_updated_arrays(output_folder, epoch,current_probe_step, current_probe_p
                                 "R-space probe reg.": constraint_contributions[6],
                                 "TV object reg.": constraint_contributions[7],
                                 "V-object reg.": constraint_contributions[8],
+                                "S-axis postions reg": constraint_contributions[9],
+                                "S-axis tilts reg": constraint_contributions[10],
                                 "Free GiB":  free_mem_device,
                                 "Total GiB": total_mem_device,
                                 "Warnings": warnings,
                                 })
             else:
-                for dumbi1 in range(9):
+                for dumbi1 in range(11):
                     try:
                         constraint_contributions[dumbi1]=constraint_contributions[dumbi1].get()
                     except:
@@ -731,7 +736,7 @@ def prepare_saving_stuff(output_folder, save_loss_log, epoch_prev):
         os.system("touch "+output_folder+"loss.csv")
         if save_loss_log==2:
             fieldnames=["epoch", "time / s", "loss", "sse", "initial step", "matching step", "N linesearch iterations",
-                "dir. derivative", "new dir. derivative", "F-axis postions reg.", "Deformation positons reg.", "Deformation tilts reg.", "F-axis tilts reg.", "l1 object reg.", "Q-space probe reg.", "R-space probe reg.", "TV object reg.", "V-object reg.", "Free GiB", "Total GiB", "Warnings"]
+                "dir. derivative", "new dir. derivative", "F-axis postions reg.", "Deformation positons reg.", "Deformation tilts reg.", "F-axis tilts reg.", "l1 object reg.", "Q-space probe reg.", "R-space probe reg.", "TV object reg.", "V-object reg.", "S-axis postions reg", "S-axis tilts reg", "Free GiB", "Total GiB", "Warnings"]
         else:
             fieldnames=["epoch", "time / s", "loss", "sse", "initial step", "matching step", "N linesearch iterations",
                 "dir. derivative", "new dir. derivative", "Constraints contribution", "Free GiB", "Total GiB", "Warnings"]
@@ -952,9 +957,12 @@ def get_cupy_memory_usage():
         print(f"Variable: {var_name}\nMemory: {mem_usage_gb:.4f} GB\nShape: {shape}\nDtype: {dtype}\n")
 
 
-def get_compute_batch(compute_batch, load_one_by_one, hist_size, measured_data_shape, memory_satiration, smart_memory, data_pad, obj_shape, probe_shape,  dtype, propmethod, print_flag):
-    device = cp.cuda.Device(0)
-    total_mem_device_Gb=  device.mem_info[1] / (1024 **3)
+def get_compute_batch(compute_batch, load_one_by_one, hist_size, measured_data_shape, memory_saturation, smart_memory, data_pad, obj_shape, probe_shape,  dtype, propmethod, print_flag):
+    if xp==np:
+        total_mem_device_Gb=0.2
+    else:
+        device = cp.cuda.Device(0)
+        total_mem_device_Gb=  device.mem_info[1] / (1024 **3)
     if propmethod=="multislice":
         waves_shape=2
         inter_wave_multi=2
@@ -976,15 +984,15 @@ def get_compute_batch(compute_batch, load_one_by_one, hist_size, measured_data_s
     update_memory= n_bytes*((6+2*hist_size) * np.prod(obj_shape) + (6+2*hist_size)*probexyms +  17*probexym + 9*n_meas*(3+1*hist_size)+ (3+1*hist_size)*probexy)/(1024 ** 3)
     per_compute_batch_memory= probexym * obj_shape[2]*obj_shape[3]*waves_shape + 3*probexy + 17 + 7*probexym*obj_shape[3] + probexym*13  + inter_wave_multi* probexym*obj_shape[3]
     per_compute_batch_memory*=n_bytes/(1024 ** 3)
-    suggested_compute_batch=int(np.floor((total_mem_device_Gb*memory_satiration -update_memory - load_one_by_one_memory)/per_compute_batch_memory))
+    suggested_compute_batch=int(np.floor((total_mem_device_Gb*memory_saturation -update_memory - load_one_by_one_memory)/per_compute_batch_memory))
     if suggested_compute_batch<=5 and not(load_one_by_one):
-        suggested_compute_batch=int(np.floor((total_mem_device_Gb*memory_satiration -update_memory)/per_compute_batch_memory))
+        suggested_compute_batch=int(np.floor((total_mem_device_Gb*memory_saturation -update_memory)/per_compute_batch_memory))
         if suggested_compute_batch==0:
             suggested_compute_batch=1
         if print_flag:
-            sys.stdout.write("\nWe do not suggest to keep the dataset in the memory and manually set load_one_by_one to True. Optimal compute batch is %d. Predicted memory usage: %.2f GiB"%(suggested_compute_batch, total_mem_device_Gb*memory_satiration))
+            sys.stdout.write("\nWe do not suggest to keep the dataset in the memory and manually set load_one_by_one to True. Optimal compute batch is %d. Predicted memory usage: %.2f GiB"%(suggested_compute_batch, total_mem_device_Gb*memory_saturation))
     elif print_flag:
-        sys.stdout.write("\nWe suggest to use compute batch of %d. Predicted memory usage: %.2f GiB"%(suggested_compute_batch, total_mem_device_Gb*memory_satiration))
+        sys.stdout.write("\nWe suggest to use compute batch of %d. Predicted memory usage: %.2f GiB"%(suggested_compute_batch, total_mem_device_Gb*memory_saturation))
     sys.stdout.flush()
     try:
         test=smart_memory(0)
@@ -995,47 +1003,9 @@ def get_compute_batch(compute_batch, load_one_by_one, hist_size, measured_data_s
 
 
 
-
-def update_weights_constraints(fast_axis_reg_weight_positions, deformation_reg_weight_positions, deformation_reg_weight_tilts, fast_axis_reg_weight_tilts, phase_norm_weight, abs_norm_weight, probe_reg_constraint_weight, window_weight, atv_weight, mixed_variance_weight,     updated_fast_axis_reg_weight_positions, updated_deformation_reg_weight_positions, updated_deformation_reg_weight_tilts, updated_fast_axis_reg_weight_tilts, updated_phase_norm_weight, updated_abs_norm_weight, updated_probe_reg_weight, updated_window_weight, updated_atv_weight, updated_mixed_variance_weight):
-    if not(updated_fast_axis_reg_weight_positions is None):
-        fast_axis_reg_weight_positions=updated_fast_axis_reg_weight_positions
-        sys.stdout.write("\nUpdating fast_axis_reg_weight_positions to %.3e"%updated_fast_axis_reg_weight_positions)
-    if not(updated_deformation_reg_weight_positions  is None):
-        deformation_reg_weight_positions=updated_deformation_reg_weight_positions
-        sys.stdout.write("\nUpdating deformation_reg_weight_positions to %.3e"%updated_deformation_reg_weight_positions)
-    if not(updated_deformation_reg_weight_tilts  is None):
-        deformation_reg_weight_tilts=updated_deformation_reg_weight_tilts
-        sys.stdout.write("\nUpdating deformation_reg_weight_tilts to %.3e"%updated_deformation_reg_weight_tilts)
-    if not(updated_fast_axis_reg_weight_tilts  is None):
-        fast_axis_reg_weight_tilts=updated_fast_axis_reg_weight_tilts
-        sys.stdout.write("\nUpdating fast_axis_reg_weight_tilts to %.3e"%updated_fast_axis_reg_weight_tilts)
-    if not(updated_phase_norm_weight is None):
-        phase_norm_weight=updated_phase_norm_weight
-        sys.stdout.write("\nUpdating phase_norm_weight to %.3e"%updated_phase_norm_weight)
-    if not(updated_abs_norm_weight  is None):
-        abs_norm_weight=updated_abs_norm_weight
-        sys.stdout.write("\nUpdating abs_norm_weight to %.3e"%updated_abs_norm_weight)
-    if not(updated_probe_reg_weight  is None):
-        probe_reg_constraint_weight=updated_probe_reg_weight
-        sys.stdout.write("\nUpdating probe_reg_constraint_weight to %.3e"%updated_probe_reg_weight)
-    if not(updated_window_weight is None):
-        window_weight=updated_window_weight
-        sys.stdout.write("\nUpdating window_weight to %.3e"%updated_window_weight)
-    if not(updated_atv_weight  is None):
-        atv_weight=updated_atv_weight
-        sys.stdout.write("\nUpdating atv_weight to %.3e"%updated_atv_weight)
-    if not(updated_mixed_variance_weight  is None):
-        mixed_variance_weight=updated_mixed_variance_weight
-        sys.stdout.write("\nUpdating mixed_variance_weight to %.3e"%updated_mixed_variance_weight)
-    return fast_axis_reg_weight_positions, deformation_reg_weight_positions, deformation_reg_weight_tilts, fast_axis_reg_weight_tilts, phase_norm_weight, abs_norm_weight, probe_reg_constraint_weight, window_weight, atv_weight, mixed_variance_weight
-
-
-
-
 def load_nexus_params(path_nexus):
     f=h5py.File(path_nexus, "r")
     path_inside='entry/reconstruction/reconstruction parameters'
-    f[path_inside].keys()
     pypty_params={}
     for k in f[path_inside].keys():
         value=f[path_inside+"/"+k][()]

@@ -252,7 +252,7 @@ As a general rule of thumb, we suggest configuring lambda functions so that once
 | `force_dataset_dtype`    | `default_float_cpu`| `numpy.dtype`      | Forces the dataset to be stored in a specified **data type**. Can help reduce memory usage at the cost of precision. |
 | `preload_to_cpu`         | `False`            | `bool`             | If `True`, **preloads data to CPU** before transferring it to GPU, improving transfer speeds for `.h5` datasets. |
 | `force_pad`              | `False`            | `bool`             | If `True`, pads data **at the start** of reconstruction (uses more memory but speeds up computation). If `False`, padding is applied **on the fly** to save memory. |
-| `memory_satiration` | `0.7` | `float` | If compute batch is set to `"auto"`, this ratio will be used to estimate a compute batch that would requiere "memory_satiration" of the avalible GPU memory. If `compute_batch` is integer, `memory_satiration` is ignored. |
+| `memory_saturation` | `0.7` | `float` | If compute batch is set to `"auto"`, this ratio will be used to estimate a compute batch that would requiere `memory_saturation` of the avalible GPU memory. If `compute_batch` is integer, `memory_saturation` is ignored. |
 
 ---
 
@@ -272,7 +272,9 @@ As a general rule of thumb, we suggest configuring lambda functions so that once
 | `atv_q`                          | `1`                          | `float`   or `pypty_lambda`          | ATV **q parameter** (controls the strength of smoothing). Recommended: `1`. |
 | `atv_p`                          | `2`                          | `float`  or `pypty_lambda`           | ATV **p parameter** (`1` = L1-like regularization, `2` = L2-like smoothing). Recommended: `2`. |
 | `fast_axis_reg_weight_positions` | `0`                          | `float` or `pypty_lambda`            | Regularization weight for **fast-axis scan positions**. Reduces the acceleration along one line. |
+| `slow_axis_reg_weight_positions` | `0`                          | `float` or `pypty_lambda`            | Regularization weight for **slow-axis scan positions**. Reduces the acceleration along one column. |
 | `fast_axis_reg_weight_tilts`     | `0`                          | `float`  or `pypty_lambda`           | Regularization weight for **fast-axis tilts**. Reduces the acceleration along one line.  |
+| `slow_axis_reg_weight_tilts`     | `0`                          | `float`  or `pypty_lambda`           | Regularization weight for **slow-axis tilts**. Reduces the acceleration along one column.  |
 | `deformation_reg_weight_positions` | `0`                          | `float`  or `pypty_lambda`           | Regularization weight for enfourcing a regular (but deformed) **scan** grid. |
 | `deformation_reg_weight_tilts`     | `0`                          | `float`  or `pypty_lambda`           | Regularization weight for enfourcing a regular (but deformed) **tilts** grid.  |
 
