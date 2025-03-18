@@ -958,7 +958,7 @@ def get_cupy_memory_usage():
 
 
 def get_compute_batch(compute_batch, load_one_by_one, hist_size, measured_data_shape, memory_saturation, smart_memory, data_pad, obj_shape, probe_shape,  dtype, propmethod, print_flag):
-    if xp==np:
+    if cp==np:
         total_mem_device_Gb=0.2
     else:
         device = cp.cuda.Device(0)
