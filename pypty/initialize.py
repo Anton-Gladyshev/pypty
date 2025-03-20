@@ -263,6 +263,8 @@ def append_exp_params(experimental_params, pypty_params=None):
     masks=experimental_params.get("masks", None)
     output_folder=experimental_params.get("output_folder", "")
     path_json=experimental_params.get("path_json", "")
+    chemical_formula=experimental_params.get("chemical_formula", None)
+    
     
     acc_voltage=experimental_params.get("acc_voltage", None)
     rez_pixel_size_A=experimental_params.get("rez_pixel_size_A", None)
@@ -484,6 +486,7 @@ def append_exp_params(experimental_params, pypty_params=None):
     pypty_params["print_flag"]=print_flag
     pypty_params["num_slices"] = num_slices
     pypty_params["total_thickness"] = total_thickness
+    pypty_params["chemical_formula"]=chemical_formula
     if pypty_params.get("epoch_max", None) is None:
         pypty_params["epoch_max"]=200;
     if data_to_params:

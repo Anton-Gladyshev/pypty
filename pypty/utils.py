@@ -1045,7 +1045,7 @@ def convert_to_nxs(folder_path, output_file):
     pixel_size_y = metadata["pixel_size_y_A"]
     pixel_size_x = metadata["pixel_size_x_A"]
     slice_spacing = metadata.get("slice_distances", [1])[0]
-
+    chemical_formula = metadata.get("chemical_formula", None)
     cg[:, 0] *= pixel_size_y
     cg[:, 1] *= pixel_size_x
 
@@ -1064,8 +1064,16 @@ def convert_to_nxs(folder_path, output_file):
         entry = f.create_group("entry")
         entry.attrs["NX_class"] = "NXentry"
         entry.attrs["default"] = "object"
-
+        
+        
+        if not(chemical_formula is None):
+            sample = entry.create_group("sample")
+            sample.attrs["NX_class"] = "NXsample"
+            sample.create_dataset("chemical_formula", data=chemical_formula)
+       
+            
         # Object data
+        
         obj_grp = entry.create_group("object")
         obj_grp.attrs["NX_class"] = "NXdata"
         obj_grp.create_dataset("data", data=co)
