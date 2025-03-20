@@ -263,7 +263,7 @@ def append_exp_params(experimental_params, pypty_params=None):
     masks=experimental_params.get("masks", None)
     output_folder=experimental_params.get("output_folder", "")
     path_json=experimental_params.get("path_json", "")
-    chemical_formula=experimental_params.get("chemical_formula", None)
+    chemical_formula=experimental_params.get("chemical_formula", "")
     
     
     acc_voltage=experimental_params.get("acc_voltage", None)
