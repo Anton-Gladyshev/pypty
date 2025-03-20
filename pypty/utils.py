@@ -881,7 +881,7 @@ def convert_to_string(dicti2, strip_dataset_from_params=True):
             continue
         if isinstance(value, types.LambdaType):
             string_params[key] = lambda_to_string(value)
-       else:
+        else:
             string_params[key] = value
     return string_params
     
