@@ -874,15 +874,16 @@ def lambda_to_string(f):
     else:
         return f
         
-def convert_to_string(dicti2):
+def convert_to_string(dicti2, strip_dataset_from_params=True):
+    string_params={}
     for key, value in dicti2.items():
+        if strip_dataset_from_params and key=="dataset":
+            continue
         if isinstance(value, types.LambdaType):
-            dicti2[key] = lambda_to_string(value)
-        elif isinstance(value, list):
-            dicti2[key] = [lambda_to_string(item) for item in value]
-        elif isinstance(value, dict):
-            dicti2[key] = {key2: lambda_to_string(item) for key2, item in value.items()}
-    return dicti2
+            string_params[key] = lambda_to_string(value)
+       else:
+            string_params[key] = value
+    return string_params
     
 def string_to_lambda(lambda_string):
     try:
@@ -895,11 +896,8 @@ def load_params(path):
         params = pickle.load(handle)
     return params
     
-def string_params_to_usefull_params(params, strip_dataset_from_params=True):
-    string_params={}
+def string_params_to_usefull_params(params):
     for key in params.keys():
-        if strip_dataset_from_params and key=="dataset":
-            continue
         item=params[key]
         if type(item)==str and 'lambda' in item:
             item=string_to_lambda(item)
@@ -907,8 +905,8 @@ def string_params_to_usefull_params(params, strip_dataset_from_params=True):
             if len(item)==2:
                 for i in range(2):
                     item[i]=string_to_lambda(item[i])
-        string_params[key]=item
-    return string_params
+        params[key]=item
+    return params
 
 def save_params(params_path, params, strip_dataset_from_params):
     if params_path[-4:]==".pkl":
@@ -916,7 +914,7 @@ def save_params(params_path, params, strip_dataset_from_params):
             os.remove(params_path)
         except:
             pass
-    params_pkl=convert_to_string(params, strip_dataset_from_params)   
+    params_pkl=convert_to_string(params, strip_dataset_from_params)
     with open(params_path, 'wb') as file:
         pickle.dump(params_pkl, file)
     del params_pkl
