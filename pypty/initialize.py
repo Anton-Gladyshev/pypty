@@ -484,6 +484,8 @@ def append_exp_params(experimental_params, pypty_params=None):
     pypty_params["print_flag"]=print_flag
     pypty_params["num_slices"] = num_slices
     pypty_params["total_thickness"] = total_thickness
+    if pypty_params.get("epoch_max", None) is None:
+        pypty_params["epoch_max"]=200;
     if data_to_params:
         pypty_params["dataset"]=np.array(h5data)
     try:
