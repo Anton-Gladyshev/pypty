@@ -895,8 +895,11 @@ def load_params(path):
         params = pickle.load(handle)
     return params
     
-def string_params_to_usefull_params(params):
+def string_params_to_usefull_params(params, strip_dataset_from_params=True):
+    string_params={}
     for key in params.keys():
+        if strip_dataset_from_params and key=="dataset":
+            continue
         item=params[key]
         if type(item)==str and 'lambda' in item:
             item=string_to_lambda(item)
@@ -904,8 +907,8 @@ def string_params_to_usefull_params(params):
             if len(item)==2:
                 for i in range(2):
                     item[i]=string_to_lambda(item[i])
-        params[key]=item
-    return params
+        string_params[key]=item
+    return string_params
 
 def save_params(params_path, params, strip_dataset_from_params):
     if params_path[-4:]==".pkl":
@@ -913,12 +916,7 @@ def save_params(params_path, params, strip_dataset_from_params):
             os.remove(params_path)
         except:
             pass
-    params_pkl=convert_to_string(params)
-    if strip_dataset_from_params:
-        try:
-            del params_pkl["dataset"]
-        except:
-            pass
+    params_pkl=convert_to_string(params, strip_dataset_from_params)   
     with open(params_path, 'wb') as file:
         pickle.dump(params_pkl, file)
     del params_pkl
