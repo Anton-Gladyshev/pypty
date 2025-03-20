@@ -1008,13 +1008,22 @@ def load_nexus_params(path_nexus):
     path_inside='entry/reconstruction/reconstruction parameters'
     pypty_params={}
     for k in f[path_inside].keys():
-        value=f[path_inside+"/"+k][()]
-        if isinstance(value, bytes):
-            value = value.decode('utf-8')
-            if value=="None":
-                value=None
-        pypty_params[k]=value
+        if k != "dataset":
+            value=f[path_inside+"/"+k][()]
+            if isinstance(value, bytes):
+                value = value.decode('utf-8')
+                if value=="None":
+                    value=None
+            pypty_params[k]=value
     return pypty_params
+
+def delete_dataset_from_params(params_path):
+    with open(params_path,'rb') as file:
+        data = pickle.load(file)
+    if 'dataset' in data:
+        del data['dataset']
+    with open(params_path,'wb') as file:
+        pickle.dump(data,file)
 
 
 
