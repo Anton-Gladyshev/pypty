@@ -67,12 +67,14 @@ def run_ptychography(pypty_params):
     use_full_FOV = params.get(' ', True)
     ## Saving and printing
     output_folder = params.get('output_folder', "")
+    strip_dataset_from_params= params.get('strip_dataset_from_params', True)
     save_loss_log = params.get('save_loss_log', 1)
     epoch_prev = int(params.get('epoch_prev', 0))
+    
 
     prepare_saving_stuff(output_folder, save_loss_log, epoch_prev)
     if output_folder[-1]!="/": output_folder+="/";
-    save_params(output_folder+"params.pkl", params) ### save the params
+    save_params(output_folder+"params.pkl", params, strip_dataset_from_params) ### save the params
     print_pypty_header(data_path, output_folder, save_loss_log)
     params=string_params_to_usefull_params(params) ### here we want to convert some possible strings that may look like 'lambda x: x>1' into real functions
     save_checkpoints_every_epoch = params.get('save_checkpoints_every_epoch', False)

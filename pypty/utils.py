@@ -907,13 +907,18 @@ def string_params_to_usefull_params(params):
         params[key]=item
     return params
 
-def save_params(params_path, params):
+def save_params(params_path, params, strip_dataset_from_params):
     if params_path[-4:]==".pkl":
         try:
             os.remove(params_path)
         except:
             pass
     params_pkl=convert_to_string(params)
+    if strip_dataset_from_params:
+        try:
+            del params_pkl["dataset"]
+        except:
+            pass
     with open(params_path, 'wb') as file:
         pickle.dump(params_pkl, file)
     del params_pkl
