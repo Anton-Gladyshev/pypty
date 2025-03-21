@@ -24,9 +24,6 @@ theme:
     - content.code.annotate  # code annotations, e.g., line highlighting
     - content.tabs.link  # linkable tabs
 
-extra_css:
-  - stylesheets/custom.css  # custom CSS if you want even more control
-
 nav:
   - Home: index.md
   - Guide for creating custom presets: reference/pypty/custom_presets.md
