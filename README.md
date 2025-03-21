@@ -8,7 +8,7 @@ The code is written by Anton Gladyshev (AG SEM, Physics Department, Humboldt-Uni
 
 
 # **_Installation_**
----
+
 ## Setting Up the Python Environment and Installing PyPty
 
 To create a proper Python environment and install PyPty, you can use **conda**, **mamba**, or **micromamba**. With **conda**, use:
@@ -35,14 +35,12 @@ pip install .
 
 
 # **_Examples_**
----
 
 The examples will be provided in the `examples` folder. To to configure a **completely custom preset**, please reffer to the next section.
  
 
 
 # **_Documentation_**
----
 
 Documentation can be accesses localy via 
 
