@@ -96,3 +96,4 @@ If you have any questions after reading this guide, the following papers, books 
 
 ## Complex derivatives 
 21) W. Wirtinger (1927). Zur formalen theorie der funktionen von mehr komplexen veränderlichen. 
+
