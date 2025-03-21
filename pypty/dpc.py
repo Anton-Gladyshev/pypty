@@ -8,29 +8,68 @@ from scipy.optimize import minimize
 
 def get_curl(angle, dpcx, dpcy):
     """
-    Objective function for minimization. This particular function was copied from a DPC plugin written by Jordan Hachtel.
+    Compute the standard deviation of the curl of a rotated DPC vector field. This is the objective function for minimization. This particular function was copied from a DPC plugin written by Jordan Hachtel.
+
+    Parameters
+    ----------
+    angle : float
+        Rotation angle in radians.
+    dpcx : ndarray
+        X-component of the DPC signal.
+    dpcy : ndarray
+        Y-component of the DPC signal.
+
+    Returns
+    -------
+    float
+        Standard deviation of the curl after rotation.
     """
+    
     rotx, roty = dpcx * np.cos(angle) - dpcy * np.sin(angle), dpcx * np.sin(angle) + dpcy * np.cos(angle)
     gXY, gXX = np.gradient(rotx); gYY, gYX = np.gradient(roty)
     curl=np.std(gXY - gYX)
     return curl
+    
 def get_curl_derivative(angle, dpcx, dpcy):
     """
-    Get derivate of an objective with respect to angle
+    Compute the derivative of the curl-based objective function with respect to rotation angle.
+
+    Parameters
+    ----------
+    angle : float
+        Rotation angle in radians.
+    dpcx : ndarray
+        X-component of the DPC signal.
+    dpcy : ndarray
+        Y-component of the DPC signal.
+
+    Returns
+    -------
+    float
+        Derivative of the curl-based objective function.
     """
+    
     rotx, roty = dpcx * np.cos(angle) - dpcy * np.sin(angle), dpcx * np.sin(angle) + dpcy * np.cos(angle)
     gXY, gXX = np.gradient(rotx); gYY, gYX = np.gradient(roty)
     std_derivative = 1 / np.sqrt(len(gXY) - 1)
     curl_derivative = np.sum((gXX + gYY) * (-dpcx * np.sin(angle) - dpcy * np.cos(angle)))
     return std_derivative * curl_derivative
+    
 def GetPLRotation(dpcx, dpcy):
     """
-    Curl minimization via scipy Powell method - find the angle! 
-    Inputs
-        COMx, 
-        COMy (NxM arrays), 
-    Outputs:
-        angle in rad. (float) 
+    Estimate rotation angle that minimizes the curl of the DPC signal.
+
+    Parameters
+    ----------
+    dpcx : ndarray
+        X-component of the DPC signal (2D array).
+    dpcy : ndarray
+        Y-component of the DPC signal (2D array).
+
+    Returns
+    -------
+    float
+        Optimal rotation angle in radians.
     """
     sys.stdout.write("\nStarting the DPC rotation angle calculation!")
     sys.stdout.flush()
@@ -41,17 +80,29 @@ def GetPLRotation(dpcx, dpcy):
 def fft_based_dpc(pypty_params, hpass=0, lpass=0, save=False, comx=None, comy=None, plot=False):
     """
     FFT-based DPC phase reconstruction. If you setted up the pypty_params properly, you would only need to specify the hpass and lpass values, both are non-negative floats.
-    Inputs:
-        pypty_params - dictionary with callibrated pypty params
-        hpass- float, high pass value (default 0)
-        lpass- float, low pass value (default 0)
-        save- default False, ignored if you provided save_preprocessing_files in pypty_params
-        comx- defalt None, 2D map, units are reciprocal pixels. Ignored if you have it in pypty_params.
-        comy- defalt None, 2D map, units are reciprocal pixels. Ignored if you have it in pypty_params.
-        plot - default False, ignored if you provided plot in pypty_params
-    Outputs:
-        pot- 2D phase reconstructions
-        pypty_params- updated PyPty params with callibrated rotation angle
+    Parameters
+    ----------
+    pypty_params : dict
+        PyPty parameter dictionary with dataset and calibration settings.
+    hpass : float, optional
+        High-pass filtering coefficient (default is 0).
+    lpass : float, optional
+        Low-pass filtering coefficient (default is 0).
+    save : bool, optional
+        Whether to save the reconstructed phase (default is False).
+    comx : ndarray or None, optional
+        Precomputed center-of-mass x-component.
+    comy : ndarray or None, optional
+        Precomputed center-of-mass y-component.
+    plot : bool, optional
+        If True, display the phase reconstruction.
+
+    Returns
+    -------
+    pot : ndarray
+        Reconstructed 2D phase image.
+    pypty_params : dict
+        Updated parameter dictionary with computed COM and rotation angle.
     """
     save=pypty_params.get("save_preprocessing_files", save)
     if save:
@@ -140,29 +191,44 @@ def iterative_dpc(pypty_params, num_iterations=100, beta=0.5, hpass=0, lpass=0, 
                 select=None, plot=True, use_backtracking=True, pad_width=5):
     """
     Iterative DPC phase reconstruction. If you setted up the pypty_params properly, you would only need to specify the hpass and lpass values, both are non-negative floats.
-    Inputs:
-        pypty_params - dictionary with callibrated pypty params
-        
-        num_iterations - int, default 100. Number of iterations to perform 
-        beta, float strictly between 0 and 1. Default is 0.5. Step reduction parameter for backtracking linesearch
-        
-        hpass- float, high pass value (default 0)
-        lpass- float, low pass value (default 0)
-        
-        step_size- float, default 0.1. Update step.
-        
-        
-        COMx- defalt None, 2D map, units are reciprocal pixels. Ignored if you have it in pypty_params.
-        COMy- defalt None, 2D map, units are reciprocal pixels. Ignored if you have it in pypty_params.
-        px_size- pixel size of COM maps (scan step in A)
-        print_flag- bolean flag, default is False, Ignored if you provided print_flag in PyPty parameters.
-        save- bolean flag, default False, ignored if you provided save_preprocessing_files in pypty_params
-        select- 2D mask to select only specified regions. Default None   
-        plot - default False, ignored if you provided plot in pypty_params
-        use_backtracking- bolean flag. Default True.
-        pad_width- integer (Default 5). Padding of the phase that avoids artifacts of periodic boundary conditions.
-    Outputs:
-        pot- 2D phase reconstructions
+    
+    Parameters
+    ----------
+    pypty_params : dict
+        PyPty parameter dictionary.
+    num_iterations : int, optional
+        Number of gradient descent iterations (default is 100).
+    beta : float, optional
+        Step reduction factor for backtracking (default is 0.5).
+    hpass : float, optional
+        High-pass filtering coefficient (default is 0).
+    lpass : float, optional
+        Low-pass filtering coefficient (default is 0).
+    step_size : float, optional
+        Initial gradient descent step size (default is 0.1).
+    COMx : ndarray or None
+        X-component of COM map.
+    COMy : ndarray or None
+        Y-component of COM map.
+    px_size : float or None
+        Scan step size in Ångströms.
+    print_flag : bool, optional
+        Whether to print progress information (default is False).
+    save : bool, optional
+        Whether to save the result to disk (default is False).
+    select : ndarray or None
+        Optional binary mask to constrain reconstruction.
+    plot : bool, optional
+        If True, plot the reconstruction result.
+    use_backtracking : bool, optional
+        Whether to use backtracking line search (default is True).
+    pad_width : int, optional
+        Padding width to suppress FFT boundary artifacts (default is 5).
+
+    Returns
+    -------
+    padded_phase : ndarray
+        Reconstructed 2D phase image.
     """
 
     save=pypty_params.get("save_preprocessing_files", save)
@@ -284,27 +350,39 @@ def iterative_dpc(pypty_params, num_iterations=100, beta=0.5, hpass=0, lpass=0, 
 
 def iterative_poisson_solver(laplace, num_iterations=100, beta=0.5, hpass=0, lpass=0, select=None,px_size=1,print_flag=False,  step_size=0.1,  use_backtracking=True, pad_width=1, xp=np):
     """
-    Iterative solver for Poisson equation. 
-        laplace- 2D map, laplacian of the phase to be retrieved.
+    Iterative solver for Poisson equation given a Laplacian map.
 
-        num_iterations - int, default 100. Number of iterations to perform 
-        beta, float strictly between 0 and 1. Default is 0.5. Step reduction parameter for backtracking linesearch
-        
-        hpass- float, high pass value (default 0)
-        lpass- float, low pass value (default 0)
-        
-        select- 2D mask to select only specified regions. Default None   
+    Parameters
+    ----------
+    laplace : ndarray
+        Input 2D array representing the Laplacian of the desired phase.
+    num_iterations : int, optional
+        Number of iterations (default is 100).
+    beta : float, optional
+        Step size reduction factor (default is 0.5).
+    hpass : float, optional
+        High-pass filtering parameter (default is 0).
+    lpass : float, optional
+        Low-pass filtering parameter (default is 0).
+    select : ndarray or None, optional
+        Optional binary mask to restrict updates.
+    px_size : float, optional
+        Pixel size in Ångströms (default is 1).
+    print_flag : bool, optional
+        If True, print convergence status (default is False).
+    step_size : float, optional
+        Initial gradient descent step size (default is 0.1).
+    use_backtracking : bool, optional
+        Whether to use backtracking line search (default is True).
+    pad_width : int, optional
+        Number of pixels to pad around the solution (default is 1).
+    xp : module, optional
+        Backend array library (NumPy or CuPy, default is NumPy).
 
-        px_size- pixel size of laplacian
-        print_flag- bolean flag, default False
-
-        step_size- float, default 0.1. Update step.
-        use_backtracking- bolean flag. Default True.
-        pad_width- integer (Default 5). Padding of the phase that avoids artifacts of periodic boundary conditions.
-        
-        xp- backend module, i.e. cp (cupy) or np (numpy). Default is np.
-    Outputs:
-        pot- 2D phase reconstructions
+    Returns
+    -------
+    ndarray
+        Reconstructed 2D phase from the input Laplacian.
     """
     if print_flag:
         sys.stdout.write("\n******************************************************************************\n*************************** Solving Poisson Equation *************************\n******************************************************************************\n")
@@ -375,3 +453,4 @@ def iterative_poisson_solver(laplace, num_iterations=100, beta=0.5, hpass=0, lpa
     if xp!=np:
         padded_phase=padded_phase.get()
     return padded_phase[:Ny, :Nx]
+

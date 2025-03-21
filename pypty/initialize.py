@@ -11,29 +11,46 @@ from pypty.dpc import *
 
 def create_pypty_data(data, path_output, swap_axes=False,flip_ky=False,flip_kx=False, flip_y=False,flip_x=False,comcalc_len=1000, comx=None, comy=None, bin=1, crop_left=None, crop_right=None, crop_top=None, crop_bottom=None, normalize=False, cutoff_ratio=None, pad_k=0, data_dtype=np.float32, rescale=1, exist_ok=True):
     """
-    Create a PyPty-style .h5 data.
-        data - path to a dataset to be transformed (either .h5 or .npy array) or ndarray containing a 4D-STEM dataset.
-        path_output - path where pypty-dataset will be stored
-        
-        swap_axes - boolean flag (default False) - swaps the last two coordianates
-        flip_ky - boolean flag (default False) - flips the second last axis
-        flip_kx - boolean flag (default False) - flips the  last axis
-        flip_y  - boolean flag (default False) - flips the first axis
-        flip_x  - boolean flag (default False) - flips the second axis
-        comcalc_len - integer (default 1000), number of measurements to estimate the center 
-        comx - integer or None (default None), x-center of the measuremts (if None it will be computed)
-        comy - integer or None (default None), y-center of the measuremts (if None it will be computed)
-        bin - integer (default 1), binning value applied to the last two axes.
-        crop_left - integer (default None / 0) - left cropping of the patterns.
-        crop_right - integer (default None / 0) - right cropping of the patterns.
-        crop_top - integer (default None / 0) - top cropping of the patterns.
-        crop_bottom - integer (default None / 0) - bottom cropping of the patterns.
-        normalize - boolean flag (default False). If True, patterns will be rescaled so that on average the sum over a pattern is 1
-        cutoff_ratio - float, default None. If not None, the values that are futher than cutoff_ratio x width/2 will be zeroed. 
-        pad_k- integer (default 0), padding of the last two axes
-        data_dtype- dtyle of the output file, default is np.float32, 
-        rescale- float, default 1. If not 1, patterns will be divided by this number
-        exist_ok- boolean flag (default True). Do not overwrite the file if it already exists.
+    Create a PyPty-style `.h5` dataset from 4D-STEM data.
+
+    Parameters
+    ----------
+    data : str or ndarray
+        Path to `.h5` or `.npy` data file or a 4D numpy array [scan_y, scan_x, ky, kx].
+    path_output : str
+        Output file path for the PyPty `.h5` dataset.
+    swap_axes : bool, optional
+        Swap the last two axes (kx, ky). Default is False.
+    flip_ky, flip_kx, flip_y, flip_x : bool, optional
+        Flip the data along specific axes. Default is False.
+    comcalc_len : int, optional
+        Number of patterns to use to estimate center-of-mass. Default is 1000.
+    comx, comy : int or None, optional
+        Predefined center-of-mass. If None, it will be computed.
+    bin : int, optional
+        Spatial binning factor on the diffraction patterns. Default is 1.
+    crop_left, crop_right, crop_top, crop_bottom : int or None, optional
+        Crop edges of patterns. Defaults are None.
+    normalize : bool, optional
+        Normalize pattern sums to 1. Default is False.
+    cutoff_ratio : float or None, optional
+        Mask out pixels farther than `cutoff_ratio × max_radius`. Default is None.
+    pad_k : int, optional
+        Padding to apply to diffraction patterns. Default is 0.
+    data_dtype : dtype, optional
+        Output data type. Default is np.float32.
+    rescale : float, optional
+        Scale factor for intensity. Default is 1.
+    exist_ok : bool, optional
+        If True, skip writing if file exists. Default is True.
+
+    Returns
+    -------
+    None
+
+    Notes
+    -----
+    Saves a `.h5` file containing processed 4D-STEM data with standardized formatting for PyPty.
     """
     sys.stdout.write("\n******************************************************************************\n************************ Creating an .h5 File ********************************\n******************************************************************************\n")
     sys.stdout.flush()
@@ -127,17 +144,25 @@ def create_pypty_data(data, path_output, swap_axes=False,flip_ky=False,flip_kx=F
     
 def get_offset(x_range, y_range, scan_step_A, detector_pixel_size_rezA, patternshape, rot_angle_deg=0):
     """
-    get_offset, i.e. number of pixels from the top and left of the reconstruction grid and the first point of the scan grid. In PyPty framework, scan grid is usually rotated to compensate the misalignment between scan- and detector- axes. Also, a reconstruction grid is larger than the scanned FOV, this is done to accomodate the extent of the probe. 
-    Inputs
-        x_range- number of points on the fast axis
-        y_range- number of points on the slow axis
-        scan_step_A- STEM pixel size (in Angstrom)
-        detector_pixel_size_rezA- pixel size in a detector plane (A^-1)
-        patternshape- shape of the diffraction patterns.
-        rot_angle_deg- angle between scan and detector axers
-    Outputs
-        offy- offset in y direction (reconstruction pixels)
-        offx- offset in x direction (reconstruction pixels)
+    Compute pixel offsets between scan grid and reconstruction grid. In PyPty framework, scan grid is usually rotated to compensate the misalignment between scan- and detector- axes. Also, a reconstruction grid is larger than the scanned FOV, this is done to accomodate the extent of the probe. 
+
+    Parameters
+    ----------
+    x_range, y_range : int
+        Scan dimensions.
+    scan_step_A : float
+        STEM scan step size in Å.
+    detector_pixel_size_rezA : float
+        Reciprocal space pixel size in Å⁻¹.
+    patternshape : tuple
+        Shape of diffraction patterns.
+    rot_angle_deg : float, optional
+        Rotation between scan and detector axes (degrees).
+
+    Returns
+    -------
+    offy, offx : float
+        Offset values (in reconstruction pixels).
     """
     pixel_size=1/(detector_pixel_size_rezA*patternshape[-1])
     positions=np.empty((x_range*y_range,2))
@@ -157,6 +182,35 @@ def get_offset(x_range, y_range, scan_step_A, detector_pixel_size_rezA, patterns
     return offy, offx
        
 def get_positions_pixel_size(x_range, y_range,scan_step_A, detector_pixel_size_rezA, patternshape, rot_angle_deg=0, flip_x=False,flip_y=False, print_flag=False, transform_axis_matrix=np.eye(2)):
+    """
+    Generate scan positions in reconstruction pixel units.
+
+    Parameters
+    ----------
+    x_range, y_range : int
+        Scan grid size.
+    scan_step_A : float
+        STEM scan step size (Å).
+    detector_pixel_size_rezA : float
+        Pixel size in reciprocal space (Å⁻¹).
+    patternshape : tuple
+        Shape of the diffraction pattern.
+    rot_angle_deg : float, optional
+        Scan-detector rotation angle in degrees. Default is 0.
+    flip_x, flip_y : bool, optional
+        Flip scan axes. Default is False.
+    print_flag : bool, optional
+        Print pixel size. Default is False.
+    transform_axis_matrix : array_like
+        Optional 2x2 matrix to apply to positions.
+
+    Returns
+    -------
+    positions : ndarray
+        Scan positions in reconstruction pixels.
+    pixel_size : float
+        Size of one reconstruction pixel in Å.
+    """
     pixel_size=1/(detector_pixel_size_rezA*patternshape[-1])
     if print_flag:
         sys.stdout.write("\npixel size in A: %.3e"%pixel_size)
@@ -180,16 +234,28 @@ def get_positions_pixel_size(x_range, y_range,scan_step_A, detector_pixel_size_r
 
 def get_grid_for_upsampled_image(pypty_params, image,image_pixel_size, left_zero_of_scan_grid=0, top_zero_of_scan_grid=0):
     """
+    Map coordinates of an upsampled image onto the reconstruction grid.
+    
     This function calculates where pixel of an arbitary image (e.g. upsampled tcBF image) will land on a grid corresponding to a ptychographic reconstruction.
-    Inputs:
-        -pypty_params- dictionary with callibrated pypty parameters
-        -image, the image (2D numpy array) for which the computation should be done
-        -image_pixel_size, pixel size of the image (in Å)
-        -left_zero_of_scan_grid- integer. 
-        -top_zero_of_scan_grid- integer.
-        Both left_zero_of_scan_grid and top_zero_of_scan_grid incicate after how many image pixels does the actual scan grid. For example, if your image extens beyond the actual scan grid, this two values are positive. If the image is created from a subscan, these two values should de negative.
-    Outputs:
-        -sc - flattened meshgrid [[y,x],..[]] with coordinates of image pixels on a reconsturction basis
+
+
+    Parameters
+    ----------
+    pypty_params : dict
+        Dictionary of PyPty reconstruction parameters.
+    image : ndarray
+        2D image (e.g., upsampled tcBF) to map.
+    image_pixel_size : float
+        Pixel size of the image in Å.
+    left_zero_of_scan_grid : int, optional
+        Pixel offset on left side of image relative to scan grid. Default is 0.
+    top_zero_of_scan_grid : int, optional
+        Pixel offset on top side of image relative to scan grid. Default is 0.
+
+    Returns
+    -------
+    sc : ndarray
+        Array of pixel coordinates [[y, x], ...] in reconstruction grid units.
     """
 
     scx, scy=np.meshgrid((np.arange(0, image.shape[1],1)-left_zero_of_scan_grid)*image_pixel_size,
@@ -211,13 +277,22 @@ def get_grid_for_upsampled_image(pypty_params, image,image_pixel_size, left_zero
     
 def append_exp_params(experimental_params, pypty_params=None):
     """
-    Callibrate an extisting PyPty preset to new data. 
+    Attach experimental parameters to a PyPty preset dictionary and callibrate an extisting PyPty preset to new data. 
+
+    Parameters
+    ----------
+    experimental_params : dict
+        Dictionary containing experimental metadata and setup for PyPty reconstruction.
+    pypty_params : dict or str or None, optional
+        Existing PyPty preset to update, a filepath to a preset, or None to create a new one.
+
+    Returns
+    -------
+    dict
+        Updated PyPty parameter dictionary.
     
-    Inputs:
-        -experimental_params - dictionary
-        -pypty_params - dictionary / sting-path to an existing preset / None
-    Output:
-        -pypty_params - dictionary
+    Notes
+    -------
     experimental_params should contain following entries:
         -data_path - path to a PyPty-style 3d .h5 file [N_measurements, ky,kx] or .npy Nion-style 4d-stem dataset (or 3d .npy dataset)
         -masks - 3d numpy array or None. if data is compressed provide the virtual detectors (masks) shape should be [N_masks,ky,kx]
@@ -501,19 +576,32 @@ def append_exp_params(experimental_params, pypty_params=None):
     
 def get_ptycho_obj_from_scan(params, num_slices=None, array_phase=None,array_abs=None, scale_phase=1, scale_abs=1,  scan_array_A=None, fill_value_type=None):
     """
-    Create an intial guess for the object based on another arrays via interpolation. You can use output of dpc, wdd of tcBF reconstructions to generate it.
-    Inputs:
-        params- dictionary with callibrated pypty parameters.
-        num_slices- integer, number of slices. Dominates over the entry "num_slices" in pypty parameters. Can be also specified as "auto". Then the number of slices will be computed such that the phase shift in each slice does not exceed 0.75*pi
-        array_phase- 2D array for the phase (Default none, meaning 0 phase shift)
-        array_abs- 2D array for the amplitude (Default none, meaning no absorption or gain)
-        scale_phase- float, default 1 (rescale for the phase array)
-        scale_abs- float, default 1 (rescale for the abs array)
-        
-        scan_array_A- default None. Array indicating the pixels of the array_phase and array_abs on the reconstruction grid. Not requiered if array_phase and array_abs are sampled on the scan grid. 
-        fill_value_type- Default is None. Indicates what to fill on the edges of the arrays and beyond. None  fills 0s for phase and 1s for amplitude. Other options are "edge" and "median".
-    Outputs:
-        params- updated dictionary
+    Construct an initial object guess using interpolated phase and amplitude maps. You can use output of dpc, wdd of tcBF reconstructions to generate it.
+
+
+    Parameters
+    ----------
+    params : dict
+        PyPty parameter dictionary.
+    num_slices : int or str, optional
+        Number of slices or "auto" to estimate from max phase shift.
+    array_phase : ndarray, optional
+        2D phase map to interpolate.
+    array_abs : ndarray, optional
+        2D amplitude map to interpolate.
+    scale_phase : float, optional
+        Scale factor for phase.
+    scale_abs : float, optional
+        Scale factor for amplitude.
+    scan_array_A : ndarray or None, optional
+        Spatial reference grid for the input maps (in Å).
+    fill_value_type : str or None, optional
+        Padding strategy outside scanned region: None, "edge", or "median".
+
+    Returns
+    -------
+    dict
+        Updated PyPty parameter dictionary with object guess.
     """
     data_path=params.get("data_path", "")
     dataset=params.get("dataset", None)
@@ -612,13 +700,21 @@ def get_ptycho_obj_from_scan(params, num_slices=None, array_phase=None,array_abs
 
 def create_aberrations_chunks(pypty_params,chop_size, n_abs):
     """
-    Creates chunks, i.e. multiple subscans with independent beam aberrations. Usefull for large fields of view where the beam is varyying. If applied, the iterative reconstruction will have the same beam in each subscan, but apply a different CTF in each of these regions.
-    Inputs:
-        pypty_params- dictionary with callibrated pypty parameters.
-        chop_size- size of each subscan (width in scan points)
-        n_abs- number of aberrations in each chop.
-    Outputs:
-        pypty_params- updatedd dictionary
+    Create chunks, i.e. multiple subscans with independent beam aberrations. Usefull for large fields of view where the beam is varyying. If applied, the iterative reconstruction will have the same beam in each subscan, but apply a different CTF in each of these regions.
+
+    Parameters
+    ----------
+    pypty_params : dict
+        PyPty parameter dictionary.
+    chop_size : int
+        Size of each subscan region (in scan points).
+    n_abs : int
+        Number of aberration coefficients per region.
+
+    Returns
+    -------
+    dict
+        Updated parameter dictionary with aberration array and marker.
     """
     scan_size=pypty_params.get("scan_size", None)
     sh0,sh1=scan_size
@@ -636,11 +732,18 @@ def create_aberrations_chunks(pypty_params,chop_size, n_abs):
 def create_probe_marker_chunks(pypty_params,chop_size):
     """
     Creates chunks, i.e. multiple subscans with independent beam aberrations. Usefull for large fields of view where the beam is varyying. If applied, the iterative reconstruction will have the a differenet beam in each of these subscans.
-    Inputs:
-        pypty_params- dictionary with callibrated pypty parameters.
-        chop_size- size of each subscan (width in scan points)
-    Outputs:
-        pypty_params- updatedd dictionary
+    
+    Parameters
+    ----------
+    pypty_params : dict
+        PyPty parameter dictionary.
+    chop_size : int
+        Size of each subscan region (in scan points).
+
+    Returns
+    -------
+    dict
+        Updated dictionary with probe marker.
     """
     scan_size=pypty_params.get("scan_size", None)
     sh0,sh1=scan_size
@@ -661,16 +764,27 @@ def create_probe_marker_chunks(pypty_params,chop_size):
     
 def create_sub_sequence(pypty_params, left, top, width, height, sub):
     """
-    Creates subsequence for a quick reconstruction in a small ROI. 
-    Inputs:
-        pypty_params- dictionary with callibrated pypty parameters.
-        left- integer (left edge in scan points)
-        top- integer (top edge in scan points)
-        width- integer, (width in scan points)
-        height- integer (height in scan points)
-        sub- integer. If larer than 1, only every sub's measurement along fast- and slow- axes will end up in a sequence
-    Outputs:
-        pypty_params- updatedd dictionary
+    Define a measurement subsequence for local reconstructions.
+
+    Parameters
+    ----------
+    pypty_params : dict
+        PyPty parameter dictionary.
+    left : int
+        Leftmost scan coordinate.
+    top : int
+        Top scan coordinate.
+    width : int
+        Width of subregion (in scan points).
+    height : int
+        Height of subregion (in scan points).
+    sub : int
+        Sampling factor (take every Nth point).
+
+    Returns
+    -------
+    dict
+        Updated parameter dictionary with `sequence` key.
     """
     seq=[]
     scan_size=pypty_params["scan_size"]
@@ -689,14 +803,23 @@ def create_sub_sequence(pypty_params, left, top, width, height, sub):
     
 def create_sequence_from_points(pypty_params, yf,xf, width_roi=20):
     """
-    Creates subsequence for a quick reconstruction in a small ROI. This function is useful if you have only a few interesting features in a scan and want to perform a reconsturction around them.
-    Inputs:
-        pypty_params- dictionary with callibrated pypty parameters.
-        yf- list of integers containing y-coordinates of features (in scan points)
-        yf- list of integers containing x-coordinates of features (in scan points)
-        width_roi- integer, (width in scan points)
-    Outputs:
-        pypty_params- updatedd dictionary
+    Create scan subsequence around specified feature points.
+
+    Parameters
+    ----------
+    pypty_params : dict
+        PyPty parameter dictionary.
+    yf : list of int
+        Y-coordinates of feature points (in scan points).
+    xf : list of int
+        X-coordinates of feature points.
+    width_roi : int, optional
+        Width of the reconstruction window around each point.
+
+    Returns
+    -------
+    list
+        List of scan indices to reconstruct.
     """
     scan_size=pypty_params["scan_size"]
     seq=[]
@@ -715,12 +838,19 @@ def create_sequence_from_points(pypty_params, yf,xf, width_roi=20):
 
 def rotate_scan_grid(pypty_params, angle_deg):
     """
-    This function rotates the scan grid.
-    Inputs:
-        pypty_params- dictionary with callibrated pypty parameters.
-        angle_deg- angle of rotation is degrees.
-    Outputs:
-        pypty_params- updatedd dictionary
+    Apply a rigid rotation to the scan grid.
+
+    Parameters
+    ----------
+    pypty_params : dict
+        PyPty parameter dictionary.
+    angle_deg : float
+        Rotation angle in degrees.
+
+    Returns
+    -------
+    dict
+        Updated dictionary with rotated positions and angle.
     """
     old_pl_rot   = pypty_params["PLRotation_deg"]
     new_pl_rot   = old_pl_rot + angle_deg
@@ -738,6 +868,19 @@ def rotate_scan_grid(pypty_params, angle_deg):
     
 
 def conjugate_beam(pypty_params):
+    """
+    Apply beam conjugation (flip defocus and aberrations).
+
+    Parameters
+    ----------
+    pypty_params : dict
+        PyPty parameter dictionary.
+
+    Returns
+    -------
+    dict
+        Updated dictionary with conjugated probe and CTF.
+    """
     aberrations=pypty_params.get("aberrations", None)
     if not(aberrations is None):
         pypty_params["aberrations"]=-1*aberrations
@@ -753,12 +896,19 @@ def conjugate_beam(pypty_params):
     
 def get_focussed_probe_from_vacscan(pypty_params, mean_pattern):
     """
-    This function creates a focussed probe from a vacuum measurement.
-    Inputs:
-        pypty_params- dictionary with callibrated pypty parameters.
-        mean_pattern- 2D diffraction pattern acquiered in vacuum.
-    Outputs:
-        pypty_params- updatedd dictionary
+    Reconstruct a focused probe from a vacuum PACBED pattern.
+
+    Parameters
+    ----------
+    pypty_params : dict
+        PyPty parameter dictionary.
+    mean_pattern : ndarray
+        Measured PACBED from vacuum.
+
+    Returns
+    -------
+    dict
+        Updated dictionary with a probe estimate.
     """
     upsample_pattern= pypty_params.get("upsample_pattern", 1)
     data_pad=pypty_params.get("data_pad", 0)
@@ -774,12 +924,19 @@ def get_focussed_probe_from_vacscan(pypty_params, mean_pattern):
 
 def append_aperture_to_params(pypty_params, mean_pattern):
     """
-    Append a measured aperture (vacuum measurement). This function will apply padding an upsampling to the aprture.
-    Inputs:
-        pypty_params- dictionary with callibrated pypty parameters.
-        mean_pattern- apperture to be appended
-    returns:
-        pypty_params- updated dictionary
+    Append a measured aperture to the reconstruction parameters.
+
+    Parameters
+    ----------
+    pypty_params : dict
+        PyPty parameter dictionary.
+    mean_pattern : ndarray
+        Aperture image to be rescaled and added.
+
+    Returns
+    -------
+    dict
+        Updated dictionary with aperture.
     """
     upsample_pattern= pypty_params.get("upsample_pattern", 1)
     data_pad=pypty_params.get("data_pad", 0)
@@ -796,12 +953,19 @@ def append_aperture_to_params(pypty_params, mean_pattern):
 
 def tiltbeamtodata(pypty_params, align_type="com"):
     """
-    This function alines the momentum space of the beam with the diffraction patterns in a dataset.
-    Inputs:
-        pypty_params- dictionary with callibrated pypty parameters.
-        align_type- string, defualt is "com", meaning center of mass. Other option is phase cross-correlation, which is activated by any value other than "com".
-    Outputs:
-        pypty_params- updatedd dictionary
+    Align the probe momentum to the center of the measured PACBED pattern.
+
+    Parameters
+    ----------
+    pypty_params : dict
+        PyPty parameter dictionary.
+    align_type : str, optional
+        Type of alignment ("com" or "cross_corr").
+
+    Returns
+    -------
+    dict
+        Updated dictionary with shifted probe.
     """
     probe=pypty_params["probe"]
     data_path=pypty_params["data_path"]
@@ -881,15 +1045,25 @@ def tiltbeamtodata(pypty_params, align_type="com"):
 
 def get_approx_beam_tilt(pypty_params, power=3, make_binary=False, percentile_filter_value=None,percentile_filter_size=10):
     """
-    This function estimates the drift (scan-postion dependent tilt of the diffraction pattern). 
-    Inputs:
-        pypty_params- dictionary with callibrated pypty parameters.
-        power- power of the polynominal fit, Possible values are: integers, np.inf or "inf"
-        make_binary- boolean flag, default is False. If float larger than 0, the patterns will be made binary based on a treshold mean_value*make_binary
-        percentile_filter_value- default is None, if not None a percentile filter with a given value will be applied to the resulting tilt maps to make them smooth.
-        percentile_filter_size- intereger, default 10. Size of the percentile filter.
-    Outputs:
-        pypty_params- updatedd dictionary
+    Estimate scan-position-dependent beam tilt from PACBED. 
+    
+    Parameters
+    ----------
+    pypty_params : dict
+        PyPty parameter dictionary.
+    power : int or str
+        Degree of polynomial fitting.
+    make_binary : bool or float
+        If True or float > 0, binarize patterns.
+    percentile_filter_value : float or None
+        Value for optional percentile filtering.
+    percentile_filter_size : int
+        Filter size if filtering is enabled.
+
+    Returns
+    -------
+    dict
+        Updated dictionary with estimated tilts.
     """
     data_path=pypty_params.get("data_path", "")
     pixel_size_x_A=pypty_params.get("pixel_size_x_A", 1)
@@ -1009,4 +1183,5 @@ def get_approx_beam_tilt(pypty_params, power=3, make_binary=False, percentile_fi
     pypty_params["tilt_mode"]=1
     pypty_params["tilts"]=tilts
     return pypty_params
+
 

@@ -13,15 +13,32 @@ from pypty.utils import *
 
 def wdd(pypty_params, eps_wiener=1e-3, thresh=None, save=0):
     """
-    This function performs Wigner distribution deconvolution.
-    Inputs:
-        pypty_params - dictionary with callibrated parametes
-        eps_wiener- float, default 1e-3: epsilon parameter for wiener filter
-        thresh- float, default None. Controlls an alternative way for deconvolution. If it is provided, then eps_wiener is ignored and denominator values below this threshold are set to 1 while the corresponding norminator values are set to 0.
-        save- default False, ignored if you provided save_preprocessing_files in pypty_params
-    Outputs:
-        o - 2d complex Object
-        probe - 2d complex beam
+    Perform Wigner Distribution Deconvolution.
+
+    This function applies Wigner Distribution Deconvolution to the provided data, allowing for enhanced reconstruction of complex objects and probes.
+
+    Parameters
+    ----------
+    pypty_params : dict
+        Dictionary containing calibrated parameters, including paths and settings for data processing.
+    eps_wiener : float, optional
+        Epsilon parameter for the Wiener filter (default is 1e-3).
+    thresh : float, optional
+        Threshold for an alternative deconvolution approach. If provided, `eps_wiener` is ignored, and denominator values below this threshold are set to 1 while the corresponding numerator values are set to 0.
+    save : int, optional
+        Flag indicating whether to save the output files (default is 0, which means False). Ignored if `save_preprocessing_files` is provided in `pypty_params`.
+
+    Returns
+    -------
+    o : 2D complex ndarray
+        The deconvolved complex object.
+    probe : 2D complex ndarray
+        The reconstructed complex beam.
+
+    Notes
+    -----
+    - The function handles both GPU (via CuPy) and CPU (via NumPy) computations based on the availability of the CuPy library.
+    - The `pypty_params` dictionary must be prepaired via initilize module
     """
     try:
         cp.fft.config.clear_plan_cache()
@@ -211,4 +228,3 @@ def wdd(pypty_params, eps_wiener=1e-3, thresh=None, save=0):
         np.save(pypty_params["output_folder"]+"wdd/object.npy", o2)
         np.save(pypty_params["output_folder"]+"wdd/probe.npy", probe2)
     return o2, probe2
-

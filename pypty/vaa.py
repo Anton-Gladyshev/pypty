@@ -17,6 +17,13 @@ import csv
 
 
 def plot_modes(ttt):
+    """Plot the modes of a tensor.
+
+    Parameters
+    ----------
+    ttt : numpy.ndarray
+        A 3D or 4D array containing the modes to be plotted.
+    """
     if len(ttt.shape)==4:
         for i in range(ttt.shape[-1]):
             for j in range(ttt.shape[-2]):
@@ -66,6 +73,24 @@ def plot_modes(ttt):
 def fit_aberrations_to_wave(wave, px_size_A, acc_voltage, thresh=0,
                             aberrations_guess=[0,0,0,0,0,0,0,0,0,0,0,0],
                             plot=True, ftol=1e-20, xtol=1e-20, loss="linear", max_mrad=np.inf):
+    """Calculate model positions based on step size and angle.
+
+    Parameters
+    ----------
+    step_size : float
+        The step size for the model.
+    angle_rad : float
+        The angle in radians.
+    x : numpy.ndarray
+        The x coordinates.
+    y : numpy.ndarray
+        The y coordinates.
+
+    Returns
+    -------
+    tuple
+        The model x and y coordinates.
+    """
     wave=wave.copy()
     x=np.arange(wave.shape[0])-wave.shape[0]//2
     x,y=np.meshgrid(x,x)
@@ -124,16 +149,68 @@ def fit_aberrations_to_wave(wave, px_size_A, acc_voltage, thresh=0,
     
     
 def mesh_model_positions(step_size, angle_rad, x, y):
+    """Calculate model positions based on step size and angle.
+
+    Parameters
+    ----------
+    step_size : float
+        The step size for the model.
+    angle_rad : float
+        The angle in radians.
+    x : numpy.ndarray
+        The x coordinates.
+    y : numpy.ndarray
+        The y coordinates.
+
+    Returns
+    -------
+    tuple
+        The model x and y coordinates.
+    """
     x_model = step_size * np.cos(angle_rad) * x - step_size * np.sin(angle_rad) * y
     y_model = step_size * np.sin(angle_rad) * x + step_size * np.cos(angle_rad) * y
     return x_model, y_model
     
 def mesh_objective_positions(ini_guess, x, y, mesh_x, mesh_y):
+    """Objective function for mesh optimization.
+
+    Parameters
+    ----------
+    ini_guess : list
+        Initial guess for the optimization.
+    x : numpy.ndarray
+        The x coordinates.
+    y : numpy.ndarray
+        The y coordinates.
+    mesh_x : numpy.ndarray
+        The mesh x coordinates.
+    mesh_y : numpy.ndarray
+        The mesh y coordinates.
+
+    Returns
+    -------
+    float
+        The sum of squared differences.
+    """
     step, angle=ini_guess
     x_model, y_model = mesh_model_positions(step, angle, x, y)
     return np.sum((x_model - mesh_x)**2 + (y_model - mesh_y)**2)
 
 def get_step_angle_scan_grid(positions, scan_size):
+    """Determine the step size and angle for a scan grid.
+
+    Parameters
+    ----------
+    positions : numpy.ndarray
+        The measured positions.
+    scan_size : tuple
+        The size of the scan grid.
+
+    Returns
+    -------
+    tuple
+        The step size and angle in degrees.
+    """
     pos=positions.copy()
     posy, posx=pos[:,0], pos[:,1]
     x, y=np.meshgrid(np.arange(scan_size[1]),np.arange(scan_size[0]))
@@ -154,6 +231,22 @@ def get_step_angle_scan_grid(positions, scan_size):
     
     
 def get_affine_tranform(positions,  scan_size, px_size_A):
+    """Calculate the affine transformation matrix from positions.
+
+    Parameters
+    ----------
+    positions : numpy.ndarray
+        The measured positions.
+    scan_size : tuple
+        The size of the scan grid.
+    px_size_A : float
+        Pixel size in angstroms.
+
+    Returns
+    -------
+    numpy.ndarray
+        The deformation matrix.
+    """
     x_perfect, y_perfect=np.meshgrid(np.arange(scan_size[1]), np.arange(scan_size[0]))
     x_perfect, y_perfect, off_perfect= x_perfect.flatten(), y_perfect.flatten(), np.ones(scan_size[1]*scan_size[0])
     yxo_perf=np.swapaxes(np.array([y_perfect, x_perfect, off_perfect]), 0,1)
@@ -167,6 +260,29 @@ def get_affine_tranform(positions,  scan_size, px_size_A):
 
         
 def add_scalebar_ax(ax, x,y, width, height, x_t, y_t, px_size, unit):
+    """Add a scale bar to a given axis.
+
+    Parameters
+    ----------
+    ax : matplotlib.axes.Axes
+        The axes to which the scale bar will be added.
+    x : float
+        The x-coordinate of the bottom left corner of the scale bar.
+    y : float
+        The y-coordinate of the bottom left corner of the scale bar.
+    width : float
+        The width of the scale bar in pixels.
+    height : float
+        The height of the scale bar in pixels.
+    x_t : float
+        The x-coordinate for the text label.
+    y_t : float
+        The y-coordinate for the text label.
+    px_size : float
+        The pixel size in the same units as the width and height.
+    unit : str
+        The unit of measurement for the scale bar.
+    """
     rect=Rectangle([x,y], width/px_size, height, color="white", alpha=0.9)
     text2=ax.text(x_t, y_t, str(width)+" "+unit, c="w", fontsize=20)
     text2.set_path_effects([PathEffects.withStroke(linewidth=2, foreground='black')])
@@ -176,15 +292,21 @@ def add_scalebar_ax(ax, x,y, width, height, x_t, y_t, px_size, unit):
 
 
 def outputlog_plots(loss_path, skip_first=0, plot_time=True):
-    """
-    Functon for plotting log file of PyPty.
-    
-    Inputs:
-            loss_path- pass to PyPty-csv file
-        skip_first- how many first iterations to skip (default 0)
-        plot_time- boolean Flag. If True, second x-axis showing time in seconds will be added on top of the plot.
-    Returns:
-        figs- list of plotted figures.
+    """Plot log file data from PyPty.
+
+    Parameters
+    ----------
+    loss_path : str
+        Path to the PyPty CSV file.
+    skip_first : int, optional
+        Number of initial iterations to skip (default is 0).
+    plot_time : bool, optional
+        If True, a second x-axis showing time in seconds will be added on top of the plot.
+
+    Returns
+    -------
+    list
+        List of plotted figures.
     """
     dat=[]
     with open(loss_path, 'r') as file:
@@ -221,6 +343,28 @@ def outputlog_plots(loss_path, skip_first=0, plot_time=True):
 
 
 def radial_average(ff, r_bins, r_max, r_min, px_size_A, plot=True):
+    """Calculate the radial average of a 2D array.
+
+    Parameters
+    ----------
+    ff : numpy.ndarray
+        The input 2D array.
+    r_bins : float
+        The bin size for the radial average.
+    r_max : float
+        The maximum radius for averaging.
+    r_min : float
+        The minimum radius for averaging.
+    px_size_A : float
+        Pixel size in angstroms.
+    plot : bool, optional
+        If True, the radial average will be plotted (default is True).
+
+    Returns
+    -------
+    matplotlib.figure.Figure
+        The figure containing the plot if `plot` is True.
+    """
     x_grid,y_grid=np.fft.fftshift(np.fft.fftfreq(ff.shape[1])), np.fft.fftshift(np.fft.fftfreq(ff.shape[0]))
     x_grid,y_grid=np.meshgrid(x_grid, y_grid, indexing="xy")
     mult=np.min([ff.shape[0], ff.shape[1]])
@@ -244,6 +388,20 @@ def radial_average(ff, r_bins, r_max, r_min, px_size_A, plot=True):
 
 
 def complex_pca(data, n_components):
+    """Perform PCA on complex data.
+
+    Parameters
+    ----------
+    data : numpy.ndarray
+        The input data array of shape (N_y, N_x, N_obs).
+    n_components : int
+        The number of principal components to retain.
+
+    Returns
+    -------
+    numpy.ndarray
+        The reduced data array of shape (N_y, N_x, n_components).
+    """
     N_y, N_x, N_obs = data.shape
     reshaped_data = data.reshape(-1, N_obs)
     mean = np.mean(reshaped_data, axis=0)
@@ -260,9 +418,22 @@ def complex_pca(data, n_components):
 
 
 def complex_array_to_rgb(X, theme='dark', rmax=None):
-    '''Takes an array of complex number and converts it to an array of [r, g, b],
-    where phase gives hue and saturaton/value are given by the absolute value.
-    Especially for use with imshow for complex plots.'''
+    """Convert a complex array to RGB format.
+
+    Parameters
+    ----------
+    X : numpy.ndarray
+        The input array of complex numbers.
+    theme : str, optional
+        The color theme, either 'dark' or 'light' (default is 'dark').
+    rmax : float, optional
+        Maximum absolute value for normalization (default is None).
+
+    Returns
+    -------
+    numpy.ndarray
+        The RGB representation of the input array.
+    """
     absmax = rmax or np.abs(X).max()
     Y = np.zeros(X.shape + (3,), dtype='float')
     Y[..., 0] = np.angle(X) / (2 * np.pi) % 1
@@ -276,6 +447,22 @@ def complex_array_to_rgb(X, theme='dark', rmax=None):
 
 
 def plot_complex_modes(p, nm, sub):
+    """Plot complex modes in RGB format.
+
+    Parameters
+    ----------
+    p : numpy.ndarray
+        The input array of complex modes.
+    nm : int
+        The number of modes to plot.
+    sub : int
+        The number of rows for the subplot layout.
+
+    Returns
+    -------
+    matplotlib.figure.Figure
+        The figure containing the plotted complex modes.
+    """
     sub=1
     p2=np.abs(p)**2
     pint=np.sum(np.abs(p)**2, (0,1))
@@ -294,4 +481,5 @@ def plot_complex_modes(p, nm, sub):
         ax.text(15,0.9*p.shape[0], "%.1e %%"%(pint[i]), fontsize=15)
     plt.show()
     return fig
+
 
