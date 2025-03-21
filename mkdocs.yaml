@@ -28,7 +28,7 @@ extra_css:
   - stylesheets/custom.css  # custom CSS if you want even more control
 
 nav:
-  - Overview & Installation: reference/index.md
+  - Home: index.md
   - Guide for creating custom presets: reference/pypty/custom_presets.md
   - Guide for using provided initialization routines: reference/pypty/ini_custom.md
   - API Reference:
