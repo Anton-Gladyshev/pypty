@@ -2278,7 +2278,7 @@ def convert_to_nxs(folder_path, output_file):
     if not all(os.path.exists(p) for p in [co_path, cp_path, cg_path, pkl_path]):
         raise FileNotFoundError("Missing required files.")
     co = np.load(co_path)
-    cp = np.load(cp_path)
+    cpr = np.load(cp_path)
     cg = np.load(cg_path)
     creation_time = datetime.datetime.fromtimestamp(os.path.getmtime(co_path)).isoformat()
     with open(pkl_path, "rb") as f:
@@ -2293,21 +2293,21 @@ def convert_to_nxs(folder_path, output_file):
     cg[:, 0] *= pixel_size_y
     cg[:, 1] *= pixel_size_x
 
-    probe_shape = cp.shape
+    probe_shape = cpr.shape
     is_probe_4d = len(probe_shape) == 4
     
     co = co[::-1, :, :, :].transpose(3, 2, 0, 1)
 
     # Flip y-axis and reorder axes for probe (modes, scenarios?, y, x)
     if is_probe_4d:
-        cp = cp[::-1, :, :, :].transpose(2, 3, 0, 1)
+        cpr = cpr[::-1, :, :, :].transpose(2, 3, 0, 1)
     else:
-        cp = cp[::-1, :, :].transpose(2, 0, 1)
+        cpr = cpr[::-1, :, :].transpose(2, 0, 1)
 
     with h5py.File(output_file, "w") as f:
         entry = f.create_group("entry")
         entry.attrs["NX_class"] = "NXentry"
-        entry.attrs["default"] = "object"
+        entry.attrs["default"] = "object" # open object by default
         
         sample = entry.create_group("sample")
         sample.attrs["NX_class"] = "NXsample"
@@ -2335,19 +2335,19 @@ def convert_to_nxs(folder_path, output_file):
         # Probe data
         probe_grp = instr_grp.create_group("probe")
         probe_grp.attrs["NX_class"] = "NXbeam"
-        probe_grp.create_dataset("data", data=cp)
+        probe_grp.create_dataset("data", data=cpr)
         probe_axes = ["modes"] + (["scenarios"] if is_probe_4d else []) + ["y", "x"]
         probe_grp.attrs["axes"] = probe_axes
-        probe_grp.create_dataset("modes", data=np.arange(cp.shape[0]))
+        probe_grp.create_dataset("modes", data=np.arange(cpr.shape[0]))
         probe_grp["modes"].attrs["units"] = "mode index"
         offset = 1
         if is_probe_4d:
-            probe_grp.create_dataset("scenarios", data=np.arange(cp.shape[1]))
+            probe_grp.create_dataset("scenarios", data=np.arange(cpr.shape[1]))
             probe_grp["scenarios"].attrs["units"] = "scenario index"
             offset += 1
-        probe_grp.create_dataset("y", data=np.arange(cp.shape[offset]) * pixel_size_y)
+        probe_grp.create_dataset("y", data=np.arange(cpr.shape[offset]) * pixel_size_y)
         probe_grp["y"].attrs["units"] = "angstrom"
-        probe_grp.create_dataset("x", data=np.arange(cp.shape[offset + 1]) * pixel_size_x)
+        probe_grp.create_dataset("x", data=np.arange(cpr.shape[offset + 1]) * pixel_size_x)
         probe_grp["x"].attrs["units"] = "angstrom"
 
         # Scan positions
