@@ -1431,11 +1431,14 @@ def apply_probe_modulation(probe, extra_probe_defocus, acc_voltage, pixel_size_x
                 p_final[:,:,inddef]=apply_defocus_probe(probe[:,:,:1], defocus, acc_voltage, pixel_size_x_A, pixel_size_y_A, default_complex, default_float, xp)[:,:,0]
             probe=p_final
         else:
+            probe2=cp.zeros((probe.shape[0], probe.shape[1], len(defocus_spread_modes, probe.shape[3])), dtype=default_complex)
             for i_sc in range(0, probe.shape[3]):
                 p_final=cp.zeros((probe.shape[0], probe.shape[1], len(defocus_spread_modes)), dtype=default_complex)
                 for inddef,defocus in enumerate(defocus_spread_modes):
                     p_final[:,:,inddef]=apply_defocus_probe(probe[:,:,:1, i_sc], defocus, acc_voltage, pixel_size_x_A, pixel_size_y_A, default_complex, default_float, xp)[:,:,0]
-                probe[:,:,:, i_sc]=p_final
+                probe2[:,:,:, i_sc]=p_final
+            probe=probe2*1
+            del probe2, p_final
     if not(n_hermite_probe_modes is None):
         n_herm_y, n_herm_x=n_hermite_probe_modes
         if print_flag:
