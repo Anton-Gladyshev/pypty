@@ -707,7 +707,7 @@ def bfgs_update(algorithm_type, this_slice_distances, this_step_probe, this_step
             if not(this_wolfe_2) and this_wolfe_1:
                 actual_step*=optimism # boosting the step!
             if not(this_wolfe_2 or this_wolfe_1):
-                actual_step=type(actual_step)(np.random.uniform(0.5,2)) ## pick a random step and try again
+                actual_step=type(actual_step)(np.random.uniform(1e-10,1)) ## pick a random step and try again
             if not(max_count is None):
                 if count>max_count:
                     break
