@@ -103,7 +103,7 @@ def loss_and_direction(this_obj, full_probe, this_pos_array, this_pos_correction
         num_abs=aberrations_array.shape[1]
         if aberrations_polynomials is None:
             aberrations_polynomials=-1j*get_ctf_matrix(this_wavelength*qx[0], this_wavelength*qy[0], num_abs, this_wavelength).astype(default_complex)
-        local_aberrations_phase_plates=cp.exp(cp.sum(aberrations_polynomials[None,:,:,:]*aberrations_array[:,:,None,None], 1))
+        local_aberrations_phase_plates=cp.exp(cp.sum(aberrations_polynomials[None,:,:,:]*aberrations_array[:,:,None,None], 1))*exclude_mask_ishift
         morph_incomming_beam=True
     else:
         morph_incomming_beam=False
