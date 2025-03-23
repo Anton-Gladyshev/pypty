@@ -102,7 +102,7 @@ def loss_and_direction(this_obj, full_probe, this_pos_array, this_pos_correction
     if not(aberration_marker is None):
         num_abs=aberrations_array.shape[1]
         if aberrations_polynomials is None:
-            aberrations_polynomials=(-1j*get_ctf_matrix(qx[0]*this_wavelength, qy[0]*this_wavelength, num_abs, this_wavelength)).astype(default_complex)
+            aberrations_polynomials=-1j*get_ctf_matrix(this_wavelength*qx[0], this_wavelength*qy[0], num_abs, this_wavelength).astype(default_complex)
         local_aberrations_phase_plates=cp.exp(cp.sum(aberrations_polynomials[None,:,:,:]*aberrations_array[:,:,None,None], 1))
         morph_incomming_beam=True
     else:
@@ -452,7 +452,7 @@ def loss_and_direction(this_obj, full_probe, this_pos_array, this_pos_correction
                         interm_probe_grad=ifft2(fourier_probe_grad, axes=(1,2))
                         if this_step_aberrations_array:
                             sh = 2/(fourier_probe_grad.shape[1]*fourier_probe_grad.shape[2])
-                            defgr=sh*cp.sum(cp.real((fourier_probe_grad*cp.conjugate(this_fourier_probe_before_local_aberrations))[:,None, :,:,:]*cp.conjugate(aberrations_polynomials[None,:,:,:,None])), axis=(2,3,4), dtype=default_float)#cp.float64).astype(default_float)
+                            defgr=sh*cp.sum(cp.real((fourier_probe_grad*cp.conjugate(this_fourier_probe_before_local_aberrations))[:,None, :,:,:]*cp.conjugate(aberrations_polynomials[None,:,:,:,None])), axis=(2,3,4), dtype=default_float)
                             scatteradd_abers(aberrations_array_grad, aberration_marker[tcs], defgr)
                             #for dumbindex, t in enumerate(tcs):
                              #   aberrations_array_grad[aberration_marker[t],:]+=defgr[dumbindex,:]
