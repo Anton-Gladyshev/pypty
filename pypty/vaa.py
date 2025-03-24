@@ -463,7 +463,6 @@ def plot_complex_modes(p, nm, sub):
     matplotlib.figure.Figure
         The figure containing the plotted complex modes.
     """
-    sub=1
     p2=np.abs(p)**2
     pint=np.sum(np.abs(p)**2, (0,1))
     pint=100*pint/np.sum(pint)

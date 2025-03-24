@@ -452,7 +452,7 @@ def loss_and_direction(this_obj, full_probe, this_pos_array, this_pos_correction
                         interm_probe_grad=ifft2(fourier_probe_grad, axes=(1,2))
                         if this_step_aberrations_array:
                             sh = 2/(fourier_probe_grad.shape[1]*fourier_probe_grad.shape[2])
-                            defgr=sh*cp.sum(cp.real((fourier_probe_grad*cp.conjugate(this_fourier_probe_before_local_aberrations))[:,None, :,:,:]*cp.conjugate(aberrations_polynomials[None,:,:,:,None])), axis=(2,3,4), dtype=default_float)
+                            defgr=sh*cp.sum(cp.real((fourier_probe_grad*cp.conjugate(this_fourier_probe_before_local_aberrations))[:,None, :,:,:] * cp.conjugate(aberrations_polynomials[None,:,:,:,None])), axis=(2,3,4), dtype=default_float)
                             scatteradd_abers(aberrations_array_grad, aberration_marker[tcs], defgr)
                             #for dumbindex, t in enumerate(tcs):
                              #   aberrations_array_grad[aberration_marker[t],:]+=defgr[dumbindex,:]
