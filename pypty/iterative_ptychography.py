@@ -8,9 +8,9 @@ import pickle
 import types
 import copy
 import inspect
-from pypty.fft import *
-from pypty.utils import *
-from pypty.loss_and_direction import *
+from pypty import fft as pyptyfft
+from pypty import utils as pyptyutils
+from pypty import loss_and_direction as pyptyloss_and_direction
 try:
     import cupyx.scipy.ndimage as ndi
     import cupy as cp
@@ -49,7 +49,7 @@ def run_ptychography(pypty_params):
     except:
         pass
     if type(pypty_params)==str:
-        params=load_params(pypty_params)
+        params=pyptyutils.load_params(pypty_params)
     else:
         params=pypty_params.copy()
     xp =  params.get('backend', cp) ## currently not used, but usefull for future:
@@ -80,11 +80,11 @@ def run_ptychography(pypty_params):
     epoch_prev = int(params.get('epoch_prev', 0))
     
 
-    prepare_saving_stuff(output_folder, save_loss_log, epoch_prev)
+    pyptyutils.prepare_saving_stuff(output_folder, save_loss_log, epoch_prev)
     if output_folder[-1]!="/": output_folder+="/";
-    save_params(output_folder+"params.pkl", params, strip_dataset_from_params) ### save the params
-    print_pypty_header(data_path, output_folder, save_loss_log)
-    params=string_params_to_usefull_params(params) ### here we want to convert some possible strings that may look like 'lambda x: x>1' into real functions
+    pyptyutils.save_params(output_folder+"params.pkl", params, strip_dataset_from_params) ### save the params
+    pyptyutils.print_pypty_header(data_path, output_folder, save_loss_log)
+    params=pyptyutils.string_params_to_usefull_params(params) ### here we want to convert some possible strings that may look like 'lambda x: x>1' into real functions
     save_checkpoints_every_epoch = params.get('save_checkpoints_every_epoch', False)
     save_inter_checkpoints = params.get('save_inter_checkpoints', True)
     print_flag = params.get('print_flag', 3)
@@ -220,7 +220,7 @@ def run_ptychography(pypty_params):
     ############################### done with params, starts other things ###################################
     ### get the data
     if not(masks is None):
-        masks, *_=preprocess_dataset(masks, False, "lsq_sqrt", recon_type, data_shift_vector, data_bin, data_pad, upsample_pattern, 1, np, True)
+        masks, *_=pyptyutils.preprocess_dataset(masks, False, "lsq_sqrt", recon_type, data_shift_vector, data_bin, data_pad, upsample_pattern, 1, np, True)
     if dataset is None:
         if data_path[-2:]=="h5":
             this_file=h5py.File(data_path, "r")
@@ -233,16 +233,16 @@ def run_ptychography(pypty_params):
                 dataset=dataset.reshape(dataset.shape[0]*dataset.shape[1], dataset.shape[2], dataset.shape[3])
             if flip_ky:
                 dataset=dataset[:,::-1,:]
-            dataset, data_shift_vector, data_bin, data_pad, data_multiplier = preprocess_dataset(dataset, False, algorithm, recon_type, data_shift_vector, data_bin, data_pad, upsample_pattern, data_multiplier, np, False)
+            dataset, data_shift_vector, data_bin, data_pad, data_multiplier = pyptyutils.preprocess_dataset(dataset, False, algorithm, recon_type, data_shift_vector, data_bin, data_pad, upsample_pattern, data_multiplier, np, False)
     else:
         dataset=np.array(dataset).astype(force_dataset_dtype)
         
     measured_data_shape=dataset.shape
-    probe=create_probe_from_nothing(probe, data_pad, mean_pattern, aperture_mask, tilt_mode, tilts, dataset, estimate_aperture_based_on_binary, pixel_size_x_A, acc_voltage, data_multiplier, masks, data_shift_vector, data_bin, upsample_pattern, default_complex_cpu, print_flag, algorithm, measured_data_shape, obj.shape[-1], probe_marker, recon_type, defocus_array, Cs) ### create probe from nothing
-    static_background=create_static_background_from_nothing(static_background, probe, damping_cutoff_multislice,data_pad,upsample_pattern,  default_float_cpu, recon_type) ## initializing static background
-    obj, positions, t, sequence, wavelength, positions_correction, tilts_correction, aperture_mask = prepare_main_loop_params(algorithm,probe, obj,positions,tilts, measured_data_shape, acc_voltage, allow_subPixel_shift, sequence, use_full_FOV, print_flag, default_float_cpu, default_complex_cpu, default_int_cpu, probe_constraint_mask, aperture_mask, extra_space_on_side_px)  # now the we will initilize the object in this function (create from nothing if needed and pad an existing one if needed)
+    probe=pyptyutils.create_probe_from_nothing(probe, data_pad, mean_pattern, aperture_mask, tilt_mode, tilts, dataset, estimate_aperture_based_on_binary, pixel_size_x_A, acc_voltage, data_multiplier, masks, data_shift_vector, data_bin, upsample_pattern, default_complex_cpu, print_flag, algorithm, measured_data_shape, obj.shape[-1], probe_marker, recon_type, defocus_array, Cs) ### create probe from nothing
+    static_background=pyptyutils.create_static_background_from_nothing(static_background, probe, damping_cutoff_multislice,data_pad,upsample_pattern,  default_float_cpu, recon_type) ## initializing static background
+    obj, positions, t, sequence, wavelength, positions_correction, tilts_correction, aperture_mask = pyptyutils.prepare_main_loop_params(algorithm,probe, obj,positions,tilts, measured_data_shape, acc_voltage, allow_subPixel_shift, sequence, use_full_FOV, print_flag, default_float_cpu, default_complex_cpu, default_int_cpu, probe_constraint_mask, aperture_mask, extra_space_on_side_px)  # now the we will initilize the object in this function (create from nothing if needed and pad an existing one if needed)
     try:
-        obj, probe, positions,positions_correction, tilts, tilts_correction, masks, defocus_array, slice_distances, aperture_mask, dataset, static_background, aberrations_array, beam_current=try_to_gpu(obj, probe, positions,positions_correction, tilts, tilts_correction, masks, defocus_array, slice_distances, aperture_mask, dataset, load_one_by_one, static_background, aberrations_array, beam_current, default_float, default_complex, default_int, xp) ##Convert numpy arrays to cupy arrays
+        obj, probe, positions,positions_correction, tilts, tilts_correction, masks, defocus_array, slice_distances, aperture_mask, dataset, static_background, aberrations_array, beam_current=pyptyutils.try_to_gpu(obj, probe, positions,positions_correction, tilts, tilts_correction, masks, defocus_array, slice_distances, aperture_mask, dataset, load_one_by_one, static_background, aberrations_array, beam_current, default_float, default_complex, default_int, xp) ##Convert numpy arrays to cupy arrays
     except:
         try:
             pool.free_all_blocks()
@@ -253,15 +253,15 @@ def run_ptychography(pypty_params):
         smart_memory=True
         sys.stdout.write("\nWARNING: load one by one was forced to be True (not enough memory)!")
         sys.stdout.flush()
-        obj, probe, positions,positions_correction, tilts, tilts_correction, masks, defocus_array, slice_distances, aperture_mask, dataset, static_background, aberrations_array, beam_current=try_to_gpu(obj, probe, positions,positions_correction, tilts, tilts_correction, masks, defocus_array, slice_distances, aperture_mask, dataset, load_one_by_one, static_background, aberrations_array, beam_current, default_float, default_complex, default_int, xp) ##Convert numpy arrays to cupy arrays
-    probe=apply_probe_modulation(probe, extra_probe_defocus, acc_voltage, pixel_size_x_A, pixel_size_y_A, aberrations, print_flag, beam_ctf, n_hermite_probe_modes, defocus_spread_modes, probe_marker, default_complex, default_float, xp) #Here we will apply aberrations to an existing beam and create multiple modes
-    probe=fourier_clean(probe, cutoff=damping_cutoff_multislice, rolloff=smooth_rolloff, default_float=default_float, xp=xp) # clean the beam and object just to be on a safe side
+        obj, probe, positions,positions_correction, tilts, tilts_correction, masks, defocus_array, slice_distances, aperture_mask, dataset, static_background, aberrations_array, beam_current=pyptyutils.try_to_gpu(obj, probe, positions,positions_correction, tilts, tilts_correction, masks, defocus_array, slice_distances, aperture_mask, dataset, load_one_by_one, static_background, aberrations_array, beam_current, default_float, default_complex, default_int, xp) ##Convert numpy arrays to cupy arrays
+    probe=pyptyutils.apply_probe_modulation(probe, extra_probe_defocus, acc_voltage, pixel_size_x_A, pixel_size_y_A, aberrations, print_flag, beam_ctf, n_hermite_probe_modes, defocus_spread_modes, probe_marker, default_complex, default_float, xp) #Here we will apply aberrations to an existing beam and create multiple modes
+    probe=pyptyutils.fourier_clean(probe, cutoff=damping_cutoff_multislice, rolloff=smooth_rolloff, default_float=default_float, xp=xp) # clean the beam and object just to be on a safe side
     if compute_batch=="auto":
         try:
             history_size=hist_length(0)
         except:
             history_size=hist_length
-        compute_batch, load_one_by_one, smart_memory = get_compute_batch(compute_batch, load_one_by_one, history_size, measured_data_shape, memory_saturation, smart_memory, data_pad, obj.shape, probe.shape, default_dtype, propmethod, print_flag)
+        compute_batch, load_one_by_one, smart_memory = pyptyutils.get_compute_batch(compute_batch, load_one_by_one, history_size, measured_data_shape, memory_saturation, smart_memory, data_pad, obj.shape, probe.shape, default_dtype, propmethod, print_flag)
         
     try:
         first_smart_memory=smart_memory(0)
@@ -271,9 +271,9 @@ def run_ptychography(pypty_params):
     if first_smart_memory:
         for i in range(obj.shape[2]):
             for j in range(obj.shape[3]):
-                obj[:,:,i,j]=fourier_clean(obj[:,:,i,j], cutoff=damping_cutoff_multislice, rolloff=smooth_rolloff, default_float=default_float, xp=xp)
+                obj[:,:,i,j]=pyptyutils.fourier_clean(obj[:,:,i,j], cutoff=damping_cutoff_multislice, rolloff=smooth_rolloff, default_float=default_float, xp=xp)
     else:
-        obj = fourier_clean(obj, cutoff=damping_cutoff_multislice, rolloff=smooth_rolloff, default_float=default_float, xp=xp)
+        obj = pyptyutils.fourier_clean(obj, cutoff=damping_cutoff_multislice, rolloff=smooth_rolloff, default_float=default_float, xp=xp)
     try:
         if remove_fft_cache:
             cp.fft.config.clear_plan_cache()
@@ -281,8 +281,8 @@ def run_ptychography(pypty_params):
         pinned_pool.free_all_blocks()
     except:
         pass
-    save_current_checkpoint_obj_probe(output_folder, obj, probe, tilts_correction, positions_correction,positions, tilts, static_background, 1,1,1,0,0, 0, aberrations_array,beam_current, 0, xp)
-    dataset, data_shift_vector, data_bin, data_pad, data_multiplier = preprocess_dataset(dataset, load_one_by_one, algorithm, recon_type, data_shift_vector, data_bin, data_pad, upsample_pattern, data_multiplier, xp, force_pad)
+    pyptyutils.save_current_checkpoint_obj_probe(output_folder, obj, probe, tilts_correction, positions_correction,positions, tilts, static_background, 1,1,1,0,0, 0, aberrations_array,beam_current, 0, xp)
+    dataset, data_shift_vector, data_bin, data_pad, data_multiplier = pyptyutils.preprocess_dataset(dataset, load_one_by_one, algorithm, recon_type, data_shift_vector, data_bin, data_pad, upsample_pattern, data_multiplier, xp, force_pad)
     #######----------------------------------------------------------------------------------------------------------------------------------
     #######------------------------------------------ HERE is the begin of the actual ptychography ------------------------------------------
     #######----------------------------------------------------------------------------------------------------------------------------------
@@ -291,7 +291,7 @@ def run_ptychography(pypty_params):
     constratins_prev, prev_steps_sum=0,0
     if not(reset_positions is None): initial_postions, initial_postions_correction=1*positions, 1*positions_correction
     for epoch in range(epoch_prev,epoch_max,1):
-        current_reset_positions, current_restart_from_vacuum, this_reset_history_flag, this_smart_memory, current_wolfe_c1_constant,current_wolfe_c2_constant, current_window_weight, current_hist_length, current_deformation_reg_weight_tilts, current_deformation_reg_weight_positions, current_slow_axis_reg_weight_positions, current_slow_axis_reg_weight_tilts, current_fast_axis_reg_weight_positions,current_fast_axis_reg_weight_tilts, current_update_step_bfgs, current_apply_gaussian_filter_amplitude, current_apply_gaussian_filter, current_keep_probe_states_orthogonal, current_loss_weight, current_phase_norm_weight, current_abs_norm_weight, current_probe_reg_constraint_weight, current_do_charge_flip, current_atv_weight, current_beta_wedge, current_tune_only_probe_phase, current_mixed_variance_weight,current_mixed_variance_sigma, current_phase_only_obj, current_tune_only_probe_abs, current_dynamically_resize_yx_object, current_beam_current_step, current_probe_step, current_obj_step, current_probe_pos_step, current_tilts_step, current_static_background_step, current_aberrations_array_step =               get_value_for_epoch([reset_positions, restart_from_vacuum, reset_history_flag, smart_memory, wolfe_c1_constant,wolfe_c2_constant, window_weight, hist_length, deformation_reg_weight_tilts, deformation_reg_weight_positions, slow_axis_reg_weight_positions, slow_axis_reg_weight_tilts, fast_axis_reg_weight_positions,fast_axis_reg_weight_tilts, update_step_bfgs, apply_gaussian_filter_amplitude, apply_gaussian_filter, keep_probe_states_orthogonal, loss_weight, phase_norm_weight, abs_norm_weight, probe_reg_constraint_weight, do_charge_flip, atv_weight, beta_wedge, tune_only_probe_phase, mixed_variance_weight,mixed_variance_sigma, phase_only_obj, tune_only_probe_abs, dynamically_resize_yx_object, update_beam_current, update_probe, update_obj, update_probe_pos, update_tilts, update_static_background, update_aberrations_array], epoch, default_float_cpu) ## here we get the values of constraints for this epoch
+        current_reset_positions, current_restart_from_vacuum, this_reset_history_flag, this_smart_memory, current_wolfe_c1_constant,current_wolfe_c2_constant, current_window_weight, current_hist_length, current_deformation_reg_weight_tilts, current_deformation_reg_weight_positions, current_slow_axis_reg_weight_positions, current_slow_axis_reg_weight_tilts, current_fast_axis_reg_weight_positions,current_fast_axis_reg_weight_tilts, current_update_step_bfgs, current_apply_gaussian_filter_amplitude, current_apply_gaussian_filter, current_keep_probe_states_orthogonal, current_loss_weight, current_phase_norm_weight, current_abs_norm_weight, current_probe_reg_constraint_weight, current_do_charge_flip, current_atv_weight, current_beta_wedge, current_tune_only_probe_phase, current_mixed_variance_weight,current_mixed_variance_sigma, current_phase_only_obj, current_tune_only_probe_abs, current_dynamically_resize_yx_object, current_beam_current_step, current_probe_step, current_obj_step, current_probe_pos_step, current_tilts_step, current_static_background_step, current_aberrations_array_step =               pyptyutils.get_value_for_epoch([reset_positions, restart_from_vacuum, reset_history_flag, smart_memory, wolfe_c1_constant,wolfe_c2_constant, window_weight, hist_length, deformation_reg_weight_tilts, deformation_reg_weight_positions, slow_axis_reg_weight_positions, slow_axis_reg_weight_tilts, fast_axis_reg_weight_positions,fast_axis_reg_weight_tilts, update_step_bfgs, apply_gaussian_filter_amplitude, apply_gaussian_filter, keep_probe_states_orthogonal, loss_weight, phase_norm_weight, abs_norm_weight, probe_reg_constraint_weight, do_charge_flip, atv_weight, beta_wedge, tune_only_probe_phase, mixed_variance_weight,mixed_variance_sigma, phase_only_obj, tune_only_probe_abs, dynamically_resize_yx_object, update_beam_current, update_probe, update_obj, update_probe_pos, update_tilts, update_static_background, update_aberrations_array], epoch, default_float_cpu) ## here we get the values of constraints for this epoch
         warnings=""
         if current_loss_weight=="mean": current_loss_weight=1/measured_data_shape[0];
         if current_loss_weight=="mean_full": current_loss_weight=1/np.prod(measured_data_shape);
@@ -322,20 +322,20 @@ def run_ptychography(pypty_params):
         if save_checkpoints_every_epoch: save_flag= epoch%save_checkpoints_every_epoch==0;
         if current_window_weight>0:
             if len(window)==2:
-                this_window=get_window(probe.shape[0], window[0], window[1])
+                this_window=pyptyutils.get_window(probe.shape[0], window[0], window[1])
             else:
                 this_window=xp.asarray(window)
         else:
             this_window=None
-        if current_beam_current_step: beam_current=try_to_initialize_beam_current(beam_current,measured_data_shape, default_float, xp);
+        if current_beam_current_step: beam_current=pyptyutils.try_to_initialize_beam_current(beam_current,measured_data_shape, default_float, xp);
         full_sequence=np.sort(np.array(full_sequence))
         current_loss, current_sse, constraint_contributions, actual_step, count_linesearch, d_value, new_d_value, warnings =  bfgs_update(algorithm, slice_distances, current_probe_step, current_obj_step, current_probe_pos_step,current_tilts_step, dataset, wavelength, masks, pixel_size_x_A, pixel_size_y_A, current_phase_norm_weight, current_abs_norm_weight, min_step, current_probe_reg_constraint_weight,aperture_mask, recon_type, defocus_array, Cs, alpha_near_field, damping_cutoff_multislice, smooth_rolloff, update_extra_cut,  current_keep_probe_states_orthogonal, current_do_charge_flip,cf_delta_phase, cf_delta_abs, cf_beta_phase, cf_beta_abs, current_phase_only_obj, current_beta_wedge, current_wolfe_c1_constant, current_wolfe_c2_constant, current_atv_weight, atv_q, atv_p, current_tune_only_probe_phase, propmethod, full_sequence, load_one_by_one, data_multiplier,data_pad, phase_plate_in_h5, print_flag, current_loss_weight, max_count, reduce_factor, optimism, current_mixed_variance_weight, current_mixed_variance_sigma, data_bin, data_shift_vector, this_smart_memory, default_float, default_complex, default_int, upsample_pattern, current_static_background_step, tilt_mode, fancy_sigma, current_tune_only_probe_abs, aberration_marker, current_aberrations_array_step, probe_marker, compute_batch, this_window, current_window_weight, current_dynamically_resize_yx_object, lazy_clean, current_apply_gaussian_filter, current_apply_gaussian_filter_amplitude, current_beam_current_step, xp, remove_fft_cache, is_first_epoch, current_hist_length, current_update_step_bfgs, current_fast_axis_reg_weight_positions, current_fast_axis_reg_weight_tilts, current_slow_axis_reg_weight_positions, current_slow_axis_reg_weight_tilts, scan_size, current_deformation_reg_weight_positions, current_deformation_reg_weight_tilts, warnings) ## update
         is_first_epoch=False
-        print_recon_state(t0, algorithm, epoch, current_loss, current_sse, current_obj_step, current_probe_step,current_probe_pos_step,current_tilts_step, current_static_background_step, current_aberrations_array_step, current_beam_current_step, current_hist_length, print_flag)
+        pyptyutils.print_recon_state(t0, algorithm, epoch, current_loss, current_sse, current_obj_step, current_probe_step,current_probe_pos_step,current_tilts_step, current_static_background_step, current_aberrations_array_step, current_beam_current_step, current_hist_length, print_flag)
         if save_inter_checkpoints!=0:
-            if epoch%save_inter_checkpoints==0: save_current_checkpoint_obj_probe(output_folder, obj, probe, tilts_correction, positions_correction,positions, tilts, static_background, current_probe_step, current_obj_step, current_probe_pos_step, current_tilts_step, current_static_background_step, current_aberrations_array_step, aberrations_array, beam_current, current_beam_current_step, xp);
-        save_updated_arrays(output_folder, epoch,current_probe_step, current_probe_pos_step, current_tilts_step,current_obj_step, obj, probe, tilts_correction, positions_correction, positions, tilts,static_background, current_aberrations_array_step, current_static_background_step, count, current_loss, current_sse, aberrations_array, beam_current, current_beam_current_step, save_flag, save_loss_log, constraint_contributions, actual_step, count_linesearch, d_value, new_d_value,current_update_step_bfgs,t0, xp, warnings) # <-------------- save the results --------------
-    save_current_checkpoint_obj_probe(output_folder, obj, probe, tilts_correction, positions_correction,positions, tilts, static_background, 1,1,1,0,0,0, aberrations_array, beam_current, 0, xp)
+            if epoch%save_inter_checkpoints==0: pyptyutils.save_current_checkpoint_obj_probe(output_folder, obj, probe, tilts_correction, positions_correction,positions, tilts, static_background, current_probe_step, current_obj_step, current_probe_pos_step, current_tilts_step, current_static_background_step, current_aberrations_array_step, aberrations_array, beam_current, current_beam_current_step, xp);
+        pyptyutils.save_updated_arrays(output_folder, epoch,current_probe_step, current_probe_pos_step, current_tilts_step,current_obj_step, obj, probe, tilts_correction, positions_correction, positions, tilts,static_background, current_aberrations_array_step, current_static_background_step, count, current_loss, current_sse, aberrations_array, beam_current, current_beam_current_step, save_flag, save_loss_log, constraint_contributions, actual_step, count_linesearch, d_value, new_d_value,current_update_step_bfgs,t0, xp, warnings) # <-------------- save the results --------------
+    pyptyutils.save_current_checkpoint_obj_probe(output_folder, obj, probe, tilts_correction, positions_correction,positions, tilts, static_background, 1,1,1,0,0,0, aberrations_array, beam_current, 0, xp)
     obj, probe, positions, positions_correction, tilts, tilts_correction,static_background, aberrations_array,  beam_current=None, None, None, None, None,None, None, None, None
     try:
         cp.fft.config.clear_plan_cache()
@@ -395,17 +395,17 @@ def bfgs_update(algorithm_type, this_slice_distances, this_step_probe, this_step
     if probe_reg_weight==xp.inf:
         probe_reg_weight=0
         if type(aperture_mask)==xp.ndarray:
-            probe=fourier_clean(probe, mask=aperture_mask, default_float=default_float)
+            probe=pyptyutils.fourier_clean(probe, mask=aperture_mask, default_float=default_float)
         else:
-            probe=fourier_clean(probe, cutoff=aperture_mask, default_float=default_float)
+            probe=pyptyutils.fourier_clean(probe, cutoff=aperture_mask, default_float=default_float)
     if update_probe:
         if is_mixed_state and keep_probe_states_orthogonal:
-            probe=make_states_orthogonal(probe)
-        probe = fourier_clean(probe, cutoff=damping_cutoff_multislice, rolloff=smooth_rolloff, default_float=default_float)
+            probe=pyptyloss_and_direction.make_states_orthogonal(probe)
+        probe = pyptyutils.fourier_clean(probe, cutoff=damping_cutoff_multislice, rolloff=smooth_rolloff, default_float=default_float)
     
     if update_obj:
         if do_charge_flip:
-            obj=charge_flip(obj, cf_delta_phase, cf_delta_abs, cf_beta_phase, cf_beta_abs, fancy_sigma);
+            obj=pyptyloss_and_direction.charge_flip(obj, cf_delta_phase, cf_delta_abs, cf_beta_phase, cf_beta_abs, fancy_sigma);
             reset_bfgs_history()
             empty_hist=True
         if not lazy_clean:
@@ -413,9 +413,9 @@ def bfgs_update(algorithm_type, this_slice_distances, this_step_probe, this_step
                 for i in range(obj.shape[2]):
                     for j in range(obj.shape[3]):
                         what=obj[:,:,i,j]
-                        obj[:,:,i,j]=fourier_clean(what, cutoff=damping_cutoff_multislice-update_extra_cut, rolloff=smooth_rolloff, default_float=default_float)
+                        obj[:,:,i,j]=pyptyutils.fourier_clean(what, cutoff=damping_cutoff_multislice-update_extra_cut, rolloff=smooth_rolloff, default_float=default_float)
             else:
-                obj=fourier_clean(obj,   cutoff=damping_cutoff_multislice-update_extra_cut, rolloff=smooth_rolloff, default_float=default_float)
+                obj=pyptyutils.fourier_clean(obj,   cutoff=damping_cutoff_multislice-update_extra_cut, rolloff=smooth_rolloff, default_float=default_float)
     if smart_memory:
         try:
             if remove_fft_cache:
@@ -427,7 +427,7 @@ def bfgs_update(algorithm_type, this_slice_distances, this_step_probe, this_step
             
             
     if empty_hist:
-        total_loss, this_sse, this_object_grad, this_probe_grad, this_pos_grad, this_tilts_grad, static_background_grad, this_grad_aberrations_array, this_beam_current_grad, constraint_contributions = loss_and_direction(obj, probe, positions, positions_correction, tilts, tilts_correction, this_slice_distances,  measured_array,  algorithm_type, this_wavelength, update_probe, update_obj, update_pos_correction, update_tilts, masks, pixel_size_x_A, pixel_size_y_A, recon_type, Cs, defocus_array, alpha_near_field, damping_cutoff_multislice, smooth_rolloff_loss, propmethod, this_chopped_sequence, load_one_by_one, data_multiplier, data_pad, phase_plate_in_h5, this_loss_weight, data_bin, data_shift_vector, upsample_pattern, static_background, update_static_background, tilt_mode, aberration_marker, probe_marker, aberrations_array, compute_batch, phase_only_obj, beam_current, update_beam_current, update_aberrations_array, default_float, default_complex, xp, is_first_epoch, scan_size,fast_axis_reg_weight_positions, slow_axis_reg_weight_positions, slow_axis_reg_weight_tilts, current_deformation_reg_weight_positions, current_deformation_reg_weight_tilts, fast_axis_reg_weight_tilts, aperture_mask, probe_reg_weight, current_window_weight, current_window, phase_norm_weight, abs_norm_weight, atv_weight, atv_q, atv_p, mixed_variance_weight, mixed_variance_sigma, smart_memory, print_flag) #get the loss and derivatives
+        total_loss, this_sse, this_object_grad, this_probe_grad, this_pos_grad, this_tilts_grad, static_background_grad, this_grad_aberrations_array, this_beam_current_grad, constraint_contributions = pyptyloss_and_direction.loss_and_direction(obj, probe, positions, positions_correction, tilts, tilts_correction, this_slice_distances,  measured_array,  algorithm_type, this_wavelength, update_probe, update_obj, update_pos_correction, update_tilts, masks, pixel_size_x_A, pixel_size_y_A, recon_type, Cs, defocus_array, alpha_near_field, damping_cutoff_multislice, smooth_rolloff_loss, propmethod, this_chopped_sequence, load_one_by_one, data_multiplier, data_pad, phase_plate_in_h5, this_loss_weight, data_bin, data_shift_vector, upsample_pattern, static_background, update_static_background, tilt_mode, aberration_marker, probe_marker, aberrations_array, compute_batch, phase_only_obj, beam_current, update_beam_current, update_aberrations_array, default_float, default_complex, xp, is_first_epoch, scan_size,fast_axis_reg_weight_positions, slow_axis_reg_weight_positions, slow_axis_reg_weight_tilts, current_deformation_reg_weight_positions, current_deformation_reg_weight_tilts, fast_axis_reg_weight_tilts, aperture_mask, probe_reg_weight, current_window_weight, current_window, phase_norm_weight, abs_norm_weight, atv_weight, atv_q, atv_p, mixed_variance_weight, mixed_variance_sigma, smart_memory, print_flag) #get the loss and derivatives
         if smart_memory:
             try:
                 if remove_fft_cache:
@@ -441,22 +441,22 @@ def bfgs_update(algorithm_type, this_slice_distances, this_step_probe, this_step
                 for i in range(obj.shape[2]):
                     for j in range(obj.shape[3]):
                         what=this_object_grad[:,:,i,j]
-                        this_object_grad[:,:,i,j]=fourier_clean(what, cutoff=damping_cutoff_multislice-update_extra_cut, rolloff=smooth_rolloff, default_float=default_float)
+                        this_object_grad[:,:,i,j]=pyptyutils.fourier_clean(what, cutoff=damping_cutoff_multislice-update_extra_cut, rolloff=smooth_rolloff, default_float=default_float)
             else:
-                this_object_grad=fourier_clean(this_object_grad,   cutoff=damping_cutoff_multislice-update_extra_cut, rolloff=smooth_rolloff, default_float=default_float)
+                this_object_grad=pyptyutils.fourier_clean(this_object_grad,   cutoff=damping_cutoff_multislice-update_extra_cut, rolloff=smooth_rolloff, default_float=default_float)
         if phase_only_obj:
-            this_object_grad=complex_grad_to_phase_grad(this_object_grad, obj)
+            this_object_grad=pyptyutils.complex_grad_to_phase_grad(this_object_grad, obj)
         if tune_only_probe_abs:
-            this_probe_grad_fourier=ifft2(this_probe_grad)*this_probe_grad.shape[0]*this_probe_grad.shape[1]
-            this_probe_fourier=fft2(probe)
+            this_probe_grad_fourier=pyptyfft.ifft2(this_probe_grad)*this_probe_grad.shape[0]*this_probe_grad.shape[1]
+            this_probe_fourier=pyptyfft.fft2(probe)
             probe_fourier_mag,probe_fourier_phase=xp.sqrt(xp.abs(this_probe_fourier)), xp.angle(this_probe_fourier)
-            this_probe_grad=complex_grad_to_mag_grad(this_probe_grad_fourier, probe_fourier_mag,probe_fourier_phase)
+            this_probe_grad=pyptyutils.complex_grad_to_mag_grad(this_probe_grad_fourier, probe_fourier_mag,probe_fourier_phase)
             tune_only_probe_phase=False
         if tune_only_probe_phase:
-            this_probe_grad_fourier=ifft2_ishift(this_probe_grad) * this_probe_grad.shape[0] * this_probe_grad.shape[1]
-            this_probe_fourier=shift_fft2(probe)
+            this_probe_grad_fourier=pyptyfft.ifft2_ishift(this_probe_grad) * this_probe_grad.shape[0] * this_probe_grad.shape[1]
+            this_probe_fourier=pyptyfft.shift_fft2(probe)
             probe_fourier_abs, probe_fourier_phase = xp.abs(this_probe_fourier), xp.angle(this_probe_fourier)
-            this_probe_grad=complex_grad_to_phase_grad(this_probe_grad_fourier, this_probe_fourier)
+            this_probe_grad=pyptyutils.complex_grad_to_phase_grad(this_probe_grad_fourier, this_probe_fourier)
         this_obj_update=-1*this_object_grad if update_obj else 0
         d_val_obj=(2-phase_only_obj)*cp.sum(cp.abs(this_obj_update)**2)
         if d_val_obj==0:
@@ -566,9 +566,9 @@ def bfgs_update(algorithm_type, this_slice_distances, this_step_probe, this_step
                 for i in range(obj.shape[2]):
                     for j in range(obj.shape[3]):
                         what=this_obj_update[:,:,i,j]
-                        this_obj_update[:,:,i,j]=fourier_clean(what, cutoff=damping_cutoff_multislice-update_extra_cut, rolloff=smooth_rolloff, default_float=default_float)
+                        this_obj_update[:,:,i,j]=pyptyutils.fourier_clean(what, cutoff=damping_cutoff_multislice-update_extra_cut, rolloff=smooth_rolloff, default_float=default_float)
             else:
-                this_obj_update=fourier_clean(this_obj_update,   cutoff=damping_cutoff_multislice-update_extra_cut, rolloff=smooth_rolloff, default_float=default_float)
+                this_obj_update=pyptyutils.fourier_clean(this_obj_update,   cutoff=damping_cutoff_multislice-update_extra_cut, rolloff=smooth_rolloff, default_float=default_float)
         #### END of BFGS update construction
     d_value=0
     if update_obj: d_value+=(2-phase_only_obj)*cp.sum(cp.real(cp.conjugate(this_obj_update)*this_object_grad));
@@ -631,23 +631,23 @@ def bfgs_update(algorithm_type, this_slice_distances, this_step_probe, this_step
                         for i in range(obj.shape[2]):
                             for j in range(obj.shape[3]):
                                 what=new_obj[:,:,i,j]
-                                new_obj[:,:,i,j]=fourier_clean(what, cutoff=damping_cutoff_multislice-update_extra_cut, rolloff=smooth_rolloff, default_float=default_float)
+                                new_obj[:,:,i,j]=pyptyutils.fourier_clean(what, cutoff=damping_cutoff_multislice-update_extra_cut, rolloff=smooth_rolloff, default_float=default_float)
                     else:
-                        new_obj=fourier_clean(new_obj,   cutoff=damping_cutoff_multislice-update_extra_cut, rolloff=smooth_rolloff, default_float=default_float)
+                        new_obj=pyptyutils.fourier_clean(new_obj,   cutoff=damping_cutoff_multislice-update_extra_cut, rolloff=smooth_rolloff, default_float=default_float)
             else:
                 new_obj=obj+actual_step*this_obj_update
         else:
             new_obj=obj
         if update_probe:
             if tune_only_probe_phase:
-                probe_fourier=shift_fft2(probe)
+                probe_fourier=pyptyfft.shift_fft2(probe)
                 probe_fourier_abs, probe_fourier_angle=xp.abs(probe_fourier), xp.angle(probe_fourier)
-                new_probe=ifft2_ishift(probe_fourier_abs * xp.exp(1j*(probe_fourier_angle + actual_step*this_probe_update)))
+                new_probe=pyptyfft.ifft2_ishift(probe_fourier_abs * xp.exp(1j*(probe_fourier_angle + actual_step*this_probe_update)))
             else:
                 if tune_only_probe_abs:
-                    probe_fourier=shift_fft2(probe)
+                    probe_fourier=pyptyfft.shift_fft2(probe)
                     probe_fourier_abs, probe_fourier_angle = xp.abs(probe_fourier), xp.angle(probe_fourier)
-                    new_probe=ifft2_ishift((probe_fourier_abs+ actual_step*this_probe_update) * xp.exp(1j*(probe_fourier_angle)))
+                    new_probe=pyptyfft.ifft2_ishift((probe_fourier_abs+ actual_step*this_probe_update) * xp.exp(1j*(probe_fourier_angle)))
                 else:
                     new_probe=probe + actual_step*this_probe_update
         else:
@@ -657,7 +657,7 @@ def bfgs_update(algorithm_type, this_slice_distances, this_step_probe, this_step
         new_static_background=static_background+actual_step*this_static_background_update if update_static_background else static_background
         new_aberrations_array=aberrations_array+actual_step*this_aberrations_array_update if update_aberrations_array else aberrations_array
         new_beam_current=beam_current+actual_step*this_beam_current_update if update_beam_current else beam_current
-        new_total_loss, new_sse, new_object_grad, new_probe_grad, new_pos_grad, new_tilts_grad, new_static_background_grad, new_grad_aberrations_array, new_beam_current_grad, new_constraint_contributions = loss_and_direction(new_obj, new_probe, positions, new_positions_correction, tilts, new_tilts_correction, this_slice_distances,  measured_array,  algorithm_type, this_wavelength, update_probe, update_obj, update_pos_correction, update_tilts, masks, pixel_size_x_A, pixel_size_y_A, recon_type, Cs, defocus_array, alpha_near_field, damping_cutoff_multislice, smooth_rolloff_loss, propmethod, this_chopped_sequence, load_one_by_one, data_multiplier, data_pad, phase_plate_in_h5, this_loss_weight, data_bin, data_shift_vector, upsample_pattern, new_static_background, update_static_background, tilt_mode, aberration_marker, probe_marker, new_aberrations_array, compute_batch, phase_only_obj, new_beam_current, update_beam_current, update_aberrations_array, default_float, default_complex, xp, is_first_epoch, scan_size,fast_axis_reg_weight_positions,slow_axis_reg_weight_positions, slow_axis_reg_weight_tilts, current_deformation_reg_weight_positions, current_deformation_reg_weight_tilts, fast_axis_reg_weight_tilts, aperture_mask, probe_reg_weight, current_window_weight, current_window, phase_norm_weight, abs_norm_weight, atv_weight, atv_q, atv_p, mixed_variance_weight, mixed_variance_sigma, smart_memory, print_flag)
+        new_total_loss, new_sse, new_object_grad, new_probe_grad, new_pos_grad, new_tilts_grad, new_static_background_grad, new_grad_aberrations_array, new_beam_current_grad, new_constraint_contributions = pyptyloss_and_direction.loss_and_direction(new_obj, new_probe, positions, new_positions_correction, tilts, new_tilts_correction, this_slice_distances,  measured_array,  algorithm_type, this_wavelength, update_probe, update_obj, update_pos_correction, update_tilts, masks, pixel_size_x_A, pixel_size_y_A, recon_type, Cs, defocus_array, alpha_near_field, damping_cutoff_multislice, smooth_rolloff_loss, propmethod, this_chopped_sequence, load_one_by_one, data_multiplier, data_pad, phase_plate_in_h5, this_loss_weight, data_bin, data_shift_vector, upsample_pattern, new_static_background, update_static_background, tilt_mode, aberration_marker, probe_marker, new_aberrations_array, compute_batch, phase_only_obj, new_beam_current, update_beam_current, update_aberrations_array, default_float, default_complex, xp, is_first_epoch, scan_size,fast_axis_reg_weight_positions,slow_axis_reg_weight_positions, slow_axis_reg_weight_tilts, current_deformation_reg_weight_positions, current_deformation_reg_weight_tilts, fast_axis_reg_weight_tilts, aperture_mask, probe_reg_weight, current_window_weight, current_window, phase_norm_weight, abs_norm_weight, atv_weight, atv_q, atv_p, mixed_variance_weight, mixed_variance_sigma, smart_memory, print_flag)
         if smart_memory:
             try:
                 if remove_fft_cache:
@@ -671,21 +671,21 @@ def bfgs_update(algorithm_type, this_slice_distances, this_step_probe, this_step
                 for i in range(new_obj.shape[2]):
                     for j in range(new_obj.shape[3]):
                         what=new_object_grad[:,:,i,j]
-                        new_object_grad[:,:,i,j]=fourier_clean(what, cutoff=damping_cutoff_multislice-update_extra_cut, rolloff=smooth_rolloff, default_float=default_float)
+                        new_object_grad[:,:,i,j]=pyptyutils.fourier_clean(what, cutoff=damping_cutoff_multislice-update_extra_cut, rolloff=smooth_rolloff, default_float=default_float)
             else:
-                new_object_grad=fourier_clean(new_object_grad,   cutoff=damping_cutoff_multislice-update_extra_cut, rolloff=smooth_rolloff, default_float=default_float)
+                new_object_grad=pyptyutils.fourier_clean(new_object_grad,   cutoff=damping_cutoff_multislice-update_extra_cut, rolloff=smooth_rolloff, default_float=default_float)
         if phase_only_obj:
-            new_object_grad=complex_grad_to_phase_grad(new_object_grad, new_obj)
+            new_object_grad=pyptyutils.complex_grad_to_phase_grad(new_object_grad, new_obj)
         if tune_only_probe_abs:
-            this_probe_grad_fourier=ifft2(new_probe_grad)*new_probe_grad.shape[0]*new_probe_grad.shape[1]
-            new_probe_fourier=fft2(new_probe)
+            this_probe_grad_fourier=pyptyfft.ifft2(new_probe_grad)*new_probe_grad.shape[0]*new_probe_grad.shape[1]
+            new_probe_fourier=pyptyfft.fft2(new_probe)
             probe_fourier_mag,probe_fourier_phase=xp.sqrt(xp.abs(new_probe_fourier)), xp.angle(new_probe_fourier)
-            new_probe_grad=complex_grad_to_mag_grad(new_probe_fourier, probe_fourier_mag,probe_fourier_phase)
+            new_probe_grad=pyptyutils.complex_grad_to_mag_grad(new_probe_fourier, probe_fourier_mag,probe_fourier_phase)
         if tune_only_probe_phase:
-            new_probe_grad_fourier=ifft2_ishift(new_probe_grad) * new_probe_grad.shape[0] * new_probe_grad.shape[1]
-            new_probe_fourier=shift_fft2(new_probe)
+            new_probe_grad_fourier=pyptyfft.ifft2_ishift(new_probe_grad) * new_probe_grad.shape[0] * new_probe_grad.shape[1]
+            new_probe_fourier=pyptyfft.shift_fft2(new_probe)
             probe_fourier_abs, probe_fourier_phase = xp.abs(new_probe_fourier), xp.angle(new_probe_fourier)
-            new_probe_grad=complex_grad_to_phase_grad(new_probe_grad_fourier, new_probe_fourier)
+            new_probe_grad=pyptyutils.complex_grad_to_phase_grad(new_probe_grad_fourier, new_probe_fourier)
         new_d_value=0
         if update_obj: new_d_value+=(2-phase_only_obj)*cp.sum(cp.real(cp.conjugate(this_obj_update)*new_object_grad));
         if update_probe: new_d_value+=(2-tune_only_probe_phase)*cp.sum(cp.real(cp.conjugate(this_probe_update)*new_probe_grad));
@@ -694,8 +694,8 @@ def bfgs_update(algorithm_type, this_slice_distances, this_step_probe, this_step
         if update_static_background: new_d_value+=cp.sum(this_static_background_update*new_static_background_grad);
         if update_aberrations_array: new_d_value+=cp.sum(this_aberrations_array_update*new_grad_aberrations_array);
         if update_beam_current: new_d_value+=cp.sum(this_beam_current_update*new_beam_current_grad);
-        this_wolfe_1=wolfe_1(total_loss, new_total_loss, d_value, actual_step, wolfe_c1_constant)
-        this_wolfe_2=wolfe_2(d_value, new_d_value, wolfe_c2_constant)
+        this_wolfe_1=pyptyutils.wolfe_1(total_loss, new_total_loss, d_value, actual_step, wolfe_c1_constant)
+        this_wolfe_2=pyptyutils.wolfe_2(d_value, new_d_value, wolfe_c2_constant)
         if print_flag>=3:
             sys.stdout.write("\nLinesearch iteration %d. This loss is %.3e. Loss change is %.3e. Dir-derivative is %.3e. New dir-derivative is %.3e, This step is %.3e."%(count, total_loss, total_loss-new_total_loss, d_value, new_d_value, actual_step))
             sys.stdout.flush()

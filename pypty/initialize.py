@@ -5,8 +5,8 @@ import h5py
 import json
 import matplotlib.pyplot as plt
 from scipy.interpolate import CloughTocher2DInterpolator
-from pypty.utils import *
-from pypty.dpc import *
+from pypty import utils as pyptyutils
+from pypty import dpc as pyptydpc
 
 
 def create_pypty_data(data, path_output, swap_axes=False,flip_ky=False,flip_kx=False, flip_y=False,flip_x=False,comcalc_len=1000, comx=None, comy=None, bin=1, crop_left=None, crop_right=None, crop_top=None, crop_bottom=None, normalize=False, cutoff_ratio=None, pad_k=0, data_dtype=np.float32, rescale=1, exist_ok=True):
@@ -332,7 +332,7 @@ def append_exp_params(experimental_params, pypty_params=None):
     sys.stdout.write("\n******************************************************************************\n******** Attaching the experimental parameters to your PyPty preset. *********\n******************************************************************************\n")
     sys.stdout.flush()
     if type(pypty_params)==str:
-        pypty_params=load_params(pypty_params)
+        pypty_params=pyptyutils.load_params(pypty_params)
     
     path_data_h5=experimental_params.get("data_path", "")
     masks=experimental_params.get("masks", None)
@@ -456,7 +456,7 @@ def append_exp_params(experimental_params, pypty_params=None):
             comy=comy/ssum.astype(np.float32)
             comx-=np.mean(comx)
             comy-=np.mean(comy)
-        PLRotation=GetPLRotation(comx,comy)
+        PLRotation=pyptydpc.GetPLRotation(comx,comy)
         PLRotation_deg=PLRotation*180/np.pi ## we need a negative angle for the scan grid rotation
         if print_flag:
             sys.stdout.write("\niDPC rotation angle is %.2f deg. (Rotation of the reciprocal space with respect to real space.)"%PLRotation_deg)
@@ -989,7 +989,7 @@ def tiltbeamtodata(pypty_params, align_type="com"):
     if data_pad!=0:
         beam_fft=beam_fft[data_pad:-data_pad,data_pad:-data_pad]
     if upsample_pattern!=1:
-        beam_fft=downsample_something(beam_fft, upsample_pattern, np)
+        beam_fft=pyptyutils.downsample_something(beam_fft, upsample_pattern, np)
     if align_type=="com":
         x=np.arange(pacbed.shape[0])
         x=x-np.mean(x)

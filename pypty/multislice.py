@@ -3,8 +3,8 @@ try:
     import cupy as cp
 except:
     import numpy as cp
-from pypty.fft import *
-from pypty.utils import *
+from pypty import fft as pyptyfft
+from pypty import utils as pyptyutils
 
 def better_multislice(full_probe, this_obj_chopped, num_slices, n_obj_modes, n_probe_modes, this_distances, this_wavelength, q2, qx, qy, exclude_mask, is_single_dist, this_tan_x,this_tan_y, damping_cutoff_multislice, smooth_rolloff, master_propagator_phase_space,  half_master_propagator_phase_space, mask_clean, waves_multislice, wave, default_float, default_complex):
     """
@@ -65,7 +65,7 @@ def better_multislice(full_probe, this_obj_chopped, num_slices, n_obj_modes, n_p
     for ind_multislice in range(0,num_slices,1):
         transmission_func=this_obj_chopped[:, :,:, ind_multislice:ind_multislice+1, :]
         half_transmission_func=transmission_func**0.5
-        half_transmission_func=fourier_clean_3d(half_transmission_func, cutoff=damping_cutoff_multislice, rolloff=smooth_rolloff, default_float=default_float, xp=cp)
+        half_transmission_func=pyptyutils.fourier_clean_3d(half_transmission_func, cutoff=damping_cutoff_multislice, rolloff=smooth_rolloff, default_float=default_float, xp=cp)
         if master_propagator_phase_space is None:
             half_propagator_phase_space=cp.exp(-1.570796326794j*this_distances[ind_multislice]*(this_wavelength*q2+2*(qx*this_tan_x+qy*this_tan_y)))*mask_clean
             half_propagator_phase_space=cp.expand_dims(half_propagator_phase_space,(-1,-2))
@@ -73,28 +73,28 @@ def better_multislice(full_probe, this_obj_chopped, num_slices, n_obj_modes, n_p
         else:
             half_propagator_phase_space=half_master_propagator_phase_space
             propagator_phase_space=master_propagator_phase_space
-        fourier_wave=fft2(wave,        axes=(1,2)) # Fourier
+        fourier_wave=pyptyfft.fft2(wave,        axes=(1,2)) # Fourier
         
         help_psi_11=wave*half_transmission_func
-        help_psi_11=fft2(help_psi_11, axes=(1,2)) ## Fourier
-        help_psi_12=ifft2(help_psi_11*half_propagator_phase_space, axes=(1,2)) ## Real
+        help_psi_11=pyptyfft.fft2(help_psi_11, axes=(1,2)) ## Fourier
+        help_psi_12=pyptyfft.ifft2(help_psi_11*half_propagator_phase_space, axes=(1,2)) ## Real
         help_psi_13=help_psi_12*half_transmission_func
-        help_psi_13=fft2(help_psi_13, axes=(1,2)) ## Fourier
-        help_psi_14=ifft2(help_psi_13*half_propagator_phase_space, axes=(1,2)) ## Real
+        help_psi_13=pyptyfft.fft2(help_psi_13, axes=(1,2)) ## Fourier
+        help_psi_14=pyptyfft.ifft2(help_psi_13*half_propagator_phase_space, axes=(1,2)) ## Real
         
-        help_psi_21=ifft2(fourier_wave*half_propagator_phase_space, axes=(1,2)) ## Real
+        help_psi_21=pyptyfft.ifft2(fourier_wave*half_propagator_phase_space, axes=(1,2)) ## Real
         help_psi_22=help_psi_21*half_transmission_func
-        help_psi_22=fft2(help_psi_22, axes=(1,2)) # Forier
-        help_psi_23=ifft2(help_psi_22*half_propagator_phase_space, axes=(1,2)) ## Real
+        help_psi_22=pyptyfft.fft2(help_psi_22, axes=(1,2)) # Forier
+        help_psi_23=pyptyfft.ifft2(help_psi_22*half_propagator_phase_space, axes=(1,2)) ## Real
         help_psi_24=help_psi_23*half_transmission_func # Real
-        help_psi_24=fourier_clean_3d(help_psi_24, cutoff=damping_cutoff_multislice, rolloff=smooth_rolloff, default_float=default_float, xp=cp)
+        help_psi_24=pyptyutils.fourier_clean_3d(help_psi_24, cutoff=damping_cutoff_multislice, rolloff=smooth_rolloff, default_float=default_float, xp=cp)
         
-        help_psi_31=ifft2(fourier_wave * propagator_phase_space, axes=(1,2)) # Real
+        help_psi_31=pyptyfft.ifft2(fourier_wave * propagator_phase_space, axes=(1,2)) # Real
         help_psi_32=help_psi_31 * transmission_func # Real
-        help_psi_32=fourier_clean_3d(help_psi_32, cutoff=damping_cutoff_multislice, rolloff=smooth_rolloff, default_float=default_float, xp=cp) # Real
+        help_psi_32=pyptyutils.fourier_clean_3d(help_psi_32, cutoff=damping_cutoff_multislice, rolloff=smooth_rolloff, default_float=default_float, xp=cp) # Real
         help_psi_41=wave * transmission_func
-        help_psi_41=fft2(help_psi_41, axes=(1,2)) ## Fourier
-        help_psi_42=ifft2(help_psi_41*propagator_phase_space, axes=(1,2)) ## Real
+        help_psi_41=pyptyfft.fft2(help_psi_41, axes=(1,2)) ## Fourier
+        help_psi_42=pyptyfft.ifft2(help_psi_41*propagator_phase_space, axes=(1,2)) ## Real
         
         waves_multislice[:,:,:,ind_multislice, :,:,0]=help_psi_11 ### Fourier
         waves_multislice[:,:,:,ind_multislice, :,:,1]=help_psi_12 ## Real
@@ -187,7 +187,7 @@ def better_multislice_grads(dLoss_dP_out, waves_multislice, this_obj_chopped, ob
     for i_update in range(num_slices-1,-1,-1):
         if not(is_single_dist):
             prop_distance=this_distances[i_update]
-            half_propagator_phase_space=cp.exp(1.570796326794j*this_distances[ind_multislice]*(this_wavelength*q2+2*(qx*this_tan_x+qy*this_tan_y)))*ifftshift(exclude_mask)
+            half_propagator_phase_space=cp.exp(1.570796326794j*this_distances[ind_multislice]*(this_wavelength*q2+2*(qx*this_tan_x+qy*this_tan_y)))*pyptyfft.ifftshift(exclude_mask)
             propagator_phase_space=propagator_phase_space**2 # actually a full propagator over one slice
         ### get the derivatives of the four sub-exitwaves
         dLoss_dpsi_14=dLoss_dP_out*(2/3)
@@ -197,7 +197,7 @@ def better_multislice_grads(dLoss_dP_out, waves_multislice, this_obj_chopped, ob
         ## get the  object and half of the object (conjugated)
         transmission_func=cp.conjugate(this_obj_chopped[:,:,:, i_update:i_update+1, :])
         half_transmission_func=transmission_func**0.5
-        half_transmission_func=fourier_clean_3d(half_transmission_func, cutoff=damping_cutoff_multislice, rolloff=smooth_rolloff, default_float=default_float, xp=cp)
+        half_transmission_func=pyptyutils.fourier_clean_3d(half_transmission_func, cutoff=damping_cutoff_multislice, rolloff=smooth_rolloff, default_float=default_float, xp=cp)
         #unpack the waves needed for the gradinets
         help_psi_11         = waves_multislice[:,:,:, i_update, :,:,0] ### Fourier , conjugated
         help_psi_12         = waves_multislice[:,:,:, i_update, :,:,1] ### Real    , conjugated
@@ -210,26 +210,26 @@ def better_multislice_grads(dLoss_dP_out, waves_multislice, this_obj_chopped, ob
         input_wave0         = waves_multislice[:,:,:, i_update, :,:,8] ### Real    , conjugated
         psi_input_fourier   = waves_multislice[:,:,:, i_update, :,:,9] ### Fourier    , conjugated
         # LETS GO   !!!
-        dLoss_dpsi_14_fourier=fft2(dLoss_dpsi_14, axes=(1,2))
-        dLoss_dpsi_13=ifft2(dLoss_dpsi_14_fourier*half_propagator_phase_space, axes=(1,2)) ### <<< fourir cleaned 2/3 cutoff
+        dLoss_dpsi_14_fourier=pyptyfft.fft2(dLoss_dpsi_14, axes=(1,2))
+        dLoss_dpsi_13=pyptyfft.ifft2(dLoss_dpsi_14_fourier*half_propagator_phase_space, axes=(1,2)) ### <<< fourir cleaned 2/3 cutoff
         dLoss_dpsi_12=dLoss_dpsi_13*half_transmission_func ###<<< aliasling!
-        dLoss_dpsi_12_fourier=fft2(dLoss_dpsi_12, axes=(1,2))*backshifted_exclude
-        dLoss_dpsi_11=ifft2(dLoss_dpsi_12_fourier*half_propagator_phase_space, axes=(1,2)) ###<< 2/3 cutoff
+        dLoss_dpsi_12_fourier=pyptyfft.fft2(dLoss_dpsi_12, axes=(1,2))*backshifted_exclude
+        dLoss_dpsi_11=pyptyfft.ifft2(dLoss_dpsi_12_fourier*half_propagator_phase_space, axes=(1,2)) ###<< 2/3 cutoff
         dLoss_dpsi_23=dLoss_dpsi_24*half_transmission_func
-        dLoss_dpsi_23_fourier=fft2(dLoss_dpsi_23, axes=(1,2))*backshifted_exclude
-        dLoss_dpsi_22=ifft2(dLoss_dpsi_23_fourier*half_propagator_phase_space, axes=(1,2)) ##2/3 cutoff
+        dLoss_dpsi_23_fourier=pyptyfft.fft2(dLoss_dpsi_23, axes=(1,2))*backshifted_exclude
+        dLoss_dpsi_22=pyptyfft.ifft2(dLoss_dpsi_23_fourier*half_propagator_phase_space, axes=(1,2)) ##2/3 cutoff
         dLoss_dpsi_21=dLoss_dpsi_22*half_transmission_func
-        dLoss_dpsi_21_fourier=fft2(dLoss_dpsi_21, axes=(1,2))*backshifted_exclude
+        dLoss_dpsi_21_fourier=pyptyfft.fft2(dLoss_dpsi_21, axes=(1,2))*backshifted_exclude
         dLoss_dpsi_31=dLoss_dpsi_32*transmission_func
-        dLoss_dpsi_31_fourier=fft2(dLoss_dpsi_31, axes=(1,2))*backshifted_exclude
-        dLoss_dpsi_42_fourier=fft2(dLoss_dpsi_42, axes=(1,2))*backshifted_exclude
-        dLoss_dpsi_41=ifft2(dLoss_dpsi_42_fourier*propagator_phase_space, axes=(1,2))
-        dLoss_dP_out=ifft2((fft2(dLoss_dpsi_41 * transmission_func + dLoss_dpsi_11 * half_transmission_func, axes=(1,2))+ dLoss_dpsi_21_fourier*half_propagator_phase_space + dLoss_dpsi_31_fourier * propagator_phase_space)*backshifted_exclude, axes=(1,2)) ### << actually a gradient with respect to an input wave of this slice!
+        dLoss_dpsi_31_fourier=pyptyfft.fft2(dLoss_dpsi_31, axes=(1,2))*backshifted_exclude
+        dLoss_dpsi_42_fourier=pyptyfft.fft2(dLoss_dpsi_42, axes=(1,2))*backshifted_exclude
+        dLoss_dpsi_41=pyptyfft.ifft2(dLoss_dpsi_42_fourier*propagator_phase_space, axes=(1,2))
+        dLoss_dP_out=pyptyfft.ifft2((pyptyfft.fft2(dLoss_dpsi_41 * transmission_func + dLoss_dpsi_11 * half_transmission_func, axes=(1,2))+ dLoss_dpsi_21_fourier*half_propagator_phase_space + dLoss_dpsi_31_fourier * propagator_phase_space)*backshifted_exclude, axes=(1,2)) ### << actually a gradient with respect to an input wave of this slice!
         #dLoss_dP_out=ifft2((fft2(dLoss_dpsi_41 * transmission_func, axes=(0,1))+ dLoss_dpsi_31_fourier * propagator_phase_space)*backshifted_exclude, axes=(0,1))
         dLoss_dObject=dLoss_dpsi_13*help_psi_12 + dLoss_dpsi_11*input_wave0 + dLoss_dpsi_24*help_psi_23 + dLoss_dpsi_22*help_psi_21 # << object half
         dLoss_dObject=(dLoss_dObject*0.5)/half_transmission_func
         dLoss_dObject=cp.sum(dLoss_dObject+dLoss_dpsi_32*help_psi_31+dLoss_dpsi_41*input_wave0, -2) #  i<<full object, summing over the probe modes!!!
-        dLoss_dObject=fourier_clean_3d(dLoss_dObject, cutoff=damping_cutoff_multislice, rolloff=smooth_rolloff, default_float=default_float, xp=cp)
+        dLoss_dObject=pyptyutils.fourier_clean_3d(dLoss_dObject, cutoff=damping_cutoff_multislice, rolloff=smooth_rolloff, default_float=default_float, xp=cp)
         scatteradd(object_grad[:,:,i_update, :], masked_pixels_y, masked_pixels_x, dLoss_dObject)
         if this_step_tilts>0 and (tilt_mode==0 or tilt_mode==3 or tilt_mode==4):
             sh=help_psi_11.shape[1]*help_psi_11.shape[2]
@@ -304,8 +304,8 @@ def yoshida_multislice(full_probe, this_obj_chopped, num_slices, n_obj_modes, n_
         transmission_func_1=this_obj_chopped[:, :,:, ind_multislice:ind_multislice+1, :]
         transmission_func_2=transmission_func_1**(0.5-sigma_yoshida/2)
         transmission_func_1=transmission_func_1**(sigma_yoshida/2)
-        transmission_func_1=fourier_clean_3d(transmission_func_1, cutoff=damping_cutoff_multislice, rolloff=smooth_rolloff, default_float=default_float, xp=cp)
-        transmission_func_2=fourier_clean_3d(transmission_func_2, cutoff=damping_cutoff_multislice, rolloff=smooth_rolloff, default_float=default_float, xp=cp)
+        transmission_func_1=pyptyutils.fourier_clean_3d(transmission_func_1, cutoff=damping_cutoff_multislice, rolloff=smooth_rolloff, default_float=default_float, xp=cp)
+        transmission_func_2=pyptyutils.fourier_clean_3d(transmission_func_2, cutoff=damping_cutoff_multislice, rolloff=smooth_rolloff, default_float=default_float, xp=cp)
         if master_propagator_phase_space is None:
             propagator_phase_space_1=cp.expand_dims(cp.exp(-3.141592653j*sigma_yoshida*this_distances[ind_multislice]*(this_wavelength*q2+2*(qx*this_tan_x+qy*this_tan_y)))*mask_clean,(-1,-2))
             propagator_phase_space_2=cp.expand_dims(cp.exp(-3.141592653j*(1-2*sigma_yoshida)*this_distances[ind_multislice]*(this_wavelength*q2+2*(qx*this_tan_x+qy*this_tan_y)))*mask_clean,(-1,-2))
@@ -314,22 +314,22 @@ def yoshida_multislice(full_probe, this_obj_chopped, num_slices, n_obj_modes, n_
             propagator_phase_space_2=master_propagator_phase_space
         waves_multislice[:, :,:,ind_multislice, :,:,0]=wave # psi_0 (input), cutoff
         wave=wave*transmission_func_1 #psi1 x2 cutoff
-        wave=fft2(wave,        axes=(1,2)) ##psi1_fft x2 cutoff
+        wave=pyptyfft.fft2(wave,        axes=(1,2)) ##psi1_fft x2 cutoff
         waves_multislice[:, :,:,ind_multislice, :,:,1]=wave #x2 cutoff
-        wave=ifft2(wave * propagator_phase_space_1, axes=(1,2)) #psi2, cutoff
+        wave=pyptyfft.ifft2(wave * propagator_phase_space_1, axes=(1,2)) #psi2, cutoff
         waves_multislice[:, :,:,ind_multislice, :,:,2]=wave #cutoff
         wave=wave*transmission_func_2 #psi3 # x2 cutoff
-        wave=fft2(wave,        axes=(1,2)) ##psi3_fft # x2 cutoff
+        wave=pyptyfft.fft2(wave,        axes=(1,2)) ##psi3_fft # x2 cutoff
         waves_multislice[:, :,:,ind_multislice, :,:,3]=wave # psi3_fft x2 cutoff
-        wave=ifft2(wave * propagator_phase_space_2, axes=(1,2)) #psi4 # cutoff
+        wave=pyptyfft.ifft2(wave * propagator_phase_space_2, axes=(1,2)) #psi4 # cutoff
         waves_multislice[:, :,:,ind_multislice, :,:,4]=wave # cutoff
         wave=wave*transmission_func_2 #psi5 # x2 cutoff
-        wave=fft2(wave,        axes=(1,2)) ##psi5_fft # x2 cutoff
+        wave=pyptyfft.fft2(wave,        axes=(1,2)) ##psi5_fft # x2 cutoff
         waves_multislice[:, :,:,ind_multislice, :,:,5]=wave #  psi5_fft x2 cutoff
-        wave=ifft2(wave * propagator_phase_space_1, axes=(1,2)) #psi6 # cutoff
+        wave=pyptyfft.ifft2(wave * propagator_phase_space_1, axes=(1,2)) #psi6 # cutoff
         waves_multislice[:, :,:,ind_multislice, :,:,6]=wave # psi6, cutoff
         wave=wave*transmission_func_1  # exit wave, aka next input wave # x2 cutoff
-        wave=fourier_clean_3d(wave, cutoff=damping_cutoff_multislice, rolloff=smooth_rolloff, default_float=default_float, xp=cp)# cutoff
+        wave=pyptyutils.fourier_clean_3d(wave, cutoff=damping_cutoff_multislice, rolloff=smooth_rolloff, default_float=default_float, xp=cp)# cutoff
     cp.conjugate(waves_multislice, out=waves_multislice)
     return waves_multislice, wave
     
@@ -419,10 +419,10 @@ def yoshida_multislice_grads(dLoss_dP_out, waves_multislice, this_obj_chopped, o
         transmission_func_1=transmission_func_0**(sigma_yoshida/2)
         transmission_func_3=transmission_func_0**(0.5*sigma_yoshida-1)
         transmission_func_4=transmission_func_0**(0.5+0.5*sigma_yoshida)
-        transmission_func_1=fourier_clean_3d(transmission_func_1, cutoff=damping_cutoff_multislice, rolloff=smooth_rolloff, default_float=default_float, xp=cp)
-        transmission_func_2=fourier_clean_3d(transmission_func_2, cutoff=damping_cutoff_multislice, rolloff=smooth_rolloff, default_float=default_float, xp=cp)
-        transmission_func_3=fourier_clean_3d(transmission_func_3, cutoff=damping_cutoff_multislice, rolloff=smooth_rolloff, default_float=default_float, xp=cp)
-        transmission_func_4=fourier_clean_3d(transmission_func_4, cutoff=damping_cutoff_multislice, rolloff=smooth_rolloff, default_float=default_float, xp=cp)
+        transmission_func_1=pyptyutils.fourier_clean_3d(transmission_func_1, cutoff=damping_cutoff_multislice, rolloff=smooth_rolloff, default_float=default_float, xp=cp)
+        transmission_func_2=pyptyutils.fourier_clean_3d(transmission_func_2, cutoff=damping_cutoff_multislice, rolloff=smooth_rolloff, default_float=default_float, xp=cp)
+        transmission_func_3=pyptyutils.fourier_clean_3d(transmission_func_3, cutoff=damping_cutoff_multislice, rolloff=smooth_rolloff, default_float=default_float, xp=cp)
+        transmission_func_4=pyptyutils.fourier_clean_3d(transmission_func_4, cutoff=damping_cutoff_multislice, rolloff=smooth_rolloff, default_float=default_float, xp=cp)
         ## unpack the waves!
         psi0=waves_multislice[:,:,:,i_update, :,:,0] #  all waves are already conjugated!!!     cutoff
         psi1=waves_multislice[:,:,:,i_update, :,:,1] ##  its fft                             x2 cutoff
@@ -434,24 +434,24 @@ def yoshida_multislice_grads(dLoss_dP_out, waves_multislice, this_obj_chopped, o
         # LETS GO   !!!
         dLoss_dpsi6=dLoss_dP_out*transmission_func_1            #x2 cutoff
         dLoss_dOs=dLoss_dP_out*psi6                             #x2 cutoff
-        dLoss_dpsi6_fourier=fft2(dLoss_dpsi6, axes=(1,2))      # x2 cutoff
-        dLoss_dpsi5=ifft2(dLoss_dpsi6_fourier*propagator_phase_space_1, axes=(1,2)) #cutoff
+        dLoss_dpsi6_fourier=pyptyfft.fft2(dLoss_dpsi6, axes=(1,2))      # x2 cutoff
+        dLoss_dpsi5=pyptyfft.ifft2(dLoss_dpsi6_fourier*propagator_phase_space_1, axes=(1,2)) #cutoff
         dLoss_dpsi4=dLoss_dpsi5*transmission_func_2              # x2 cutoff
         dLoss_dO2s=dLoss_dpsi5*psi4                             # x2 cutoff
-        dLoss_dpsi4_fourier=fft2(dLoss_dpsi4, axes=(1,2))       # x2 cutoff
-        dLoss_dpsi3=ifft2(dLoss_dpsi4_fourier*propagator_phase_space_2, axes=(1,2))   ## cutoff
+        dLoss_dpsi4_fourier=pyptyfft.fft2(dLoss_dpsi4, axes=(1,2))       # x2 cutoff
+        dLoss_dpsi3=pyptyfft.ifft2(dLoss_dpsi4_fourier*propagator_phase_space_2, axes=(1,2))   ## cutoff
         dLoss_dpsi2=dLoss_dpsi3*transmission_func_2                      # x2 cutoff
         dLoss_dO2s+=dLoss_dpsi3*psi2                                    # x2 cutoff
-        dLoss_dpsi2_fourier=fft2(dLoss_dpsi2, axes=(1,2))              # x2 cutoff
-        dLoss_dpsi1=ifft2(dLoss_dpsi2_fourier*propagator_phase_space_1, axes=(1,2))   # cutoff
+        dLoss_dpsi2_fourier=pyptyfft.fft2(dLoss_dpsi2, axes=(1,2))              # x2 cutoff
+        dLoss_dpsi1=pyptyfft.ifft2(dLoss_dpsi2_fourier*propagator_phase_space_1, axes=(1,2))   # cutoff
         dLoss_dOs+=dLoss_dpsi1*psi0                                     # x2 cutoff
         dLoss_dP_out=dLoss_dpsi1*transmission_func_1                   # x2 cutoff
-        dLoss_dP_out=fourier_clean_3d(dLoss_dP_out, cutoff=damping_cutoff_multislice, rolloff=smooth_rolloff, default_float=default_float, xp=cp)  ## cutoff
-        dLoss_dOs=fourier_clean_3d(dLoss_dOs, cutoff=damping_cutoff_multislice, rolloff=smooth_rolloff, default_float=default_float, xp=cp)  ## cutoff
-        dLoss_dO2s=fourier_clean_3d(dLoss_dO2s, cutoff=damping_cutoff_multislice, rolloff=smooth_rolloff, default_float=default_float, xp=cp) ## cutoff
+        dLoss_dP_out=pyptyutils.fourier_clean_3d(dLoss_dP_out, cutoff=damping_cutoff_multislice, rolloff=smooth_rolloff, default_float=default_float, xp=cp)  ## cutoff
+        dLoss_dOs=pyptyutils.fourier_clean_3d(dLoss_dOs, cutoff=damping_cutoff_multislice, rolloff=smooth_rolloff, default_float=default_float, xp=cp)  ## cutoff
+        dLoss_dO2s=pyptyutils.fourier_clean_3d(dLoss_dO2s, cutoff=damping_cutoff_multislice, rolloff=smooth_rolloff, default_float=default_float, xp=cp) ## cutoff
         dLoss_dOs=(0.5*sigma_yoshida)*dLoss_dOs*transmission_func_3+(0.5-0.5*sigma_yoshida)*dLoss_dO2s*transmission_func_4
         dLoss_dObject=cp.sum(dLoss_dOs,-2)
-        dLoss_dObject=fourier_clean_3d(dLoss_dObject, cutoff=damping_cutoff_multislice, rolloff=smooth_rolloff, default_float=default_float, xp=cp)
+        dLoss_dObject=pyptyutils.fourier_clean_3d(dLoss_dObject, cutoff=damping_cutoff_multislice, rolloff=smooth_rolloff, default_float=default_float, xp=cp)
         scatteradd(object_grad[:,:,i_update, :], masked_pixels_y, masked_pixels_x, dLoss_dObject)
         if this_step_tilts>0 and (tilt_mode==0 or tilt_mode==3 or tilt_mode==4):
             sh=psi0.shape[2]*psi0.shape[1]
@@ -526,10 +526,10 @@ def multislice(full_probe, this_obj_chopped, num_slices, n_obj_modes, n_probe_mo
                 propagator_phase_space=master_propagator_phase_space
             else:
                 propagator_phase_space=cp.expand_dims((cp.exp(-3.141592654j*this_distances[ind_multislice]*(this_wavelength*q2+2*(qx*this_tan_x+qy*this_tan_y)))*mask_clean),(-1,-2))
-            wave=fft2(wave, axes=(1,2), overwrite_x=True)
+            wave=pyptyfft.fft2(wave, axes=(1,2), overwrite_x=True)
             waves_multislice[:, :,:,ind_multislice, :, :, 1]=wave ### FFT of \psi^{out}_{ind\ multislice}, x2 cutoff, but it is needed only for tilts grads,  we will set the x1 cutoff later!
             wave*=propagator_phase_space
-            wave=ifft2(wave, axes=(1,2), overwrite_x=True) # x1 cutoff
+            wave=pyptyfft.ifft2(wave, axes=(1,2), overwrite_x=True) # x1 cutoff
     cp.conjugate(waves_multislice, out=waves_multislice)
     return waves_multislice, wave
 
@@ -620,22 +620,22 @@ def multislice_grads(dLoss_dP_out, waves_multislice, this_obj_chopped, object_gr
                 prop_distance=this_distances[i_update-1]
                 propagator_phase_space=cp.exp(3.141592654j*prop_distance*(this_wavelength*q2+2*(qx*this_tan_x+qy*this_tan_y)))*mask_clean ### also the same as a conjugate of forward propagator P*(d)=P(-d)
                 propagator_phase_space=cp.expand_dims(propagator_phase_space,(-1,-2)) ## expanding
-            dLoss_dP_out=fft2(dLoss_dP_out, axes=(1,2), overwrite_x=True) ## x2 cutoff
+            dLoss_dP_out=pyptyfft.fft2(dLoss_dP_out, axes=(1,2), overwrite_x=True) ## x2 cutoff
             dLoss_dP_out*=propagator_phase_space ### reuse it for tilts update!!!!
             if this_step_tilts>0 and (tilt_mode==0 or tilt_mode==3 or tilt_mode==4):
                 sh=-12.566370614359172*prop_distance/(waves_multislice.shape[1]*waves_multislice.shape[2])
                 dLoss_dPropagator=cp.sum(waves_multislice[:, :,:,i_update-1,:,:,1]*dLoss_dP_out, (3,4))
                 tilts_grad[tiltind,3]+=sh*cp.sum(cp.imag(dLoss_dPropagator*qx), (1,2))
                 tilts_grad[tiltind,2]+=sh*cp.sum(cp.imag(dLoss_dPropagator*qy), (1,2))
-            dLoss_dP_out=ifft2(dLoss_dP_out, axes=(1,2), overwrite_x=True) #  x1 cutoff
+            dLoss_dP_out=pyptyfft.ifft2(dLoss_dP_out, axes=(1,2), overwrite_x=True) #  x1 cutoff
     if this_step_obj>0:
         if waves_multislice.shape[-3]==1:
             this_grad=waves_multislice[:,:,:,:,0,:,0] #just  one probe mode, x2 cutoff
         else:
             this_grad=cp.sum(waves_multislice[:,:,:,:,:,:,0], -2) #sum over all probe modes, x2 cutoff
-        this_grad=fft2(this_grad, (1,2), overwrite_x=True)
+        this_grad=pyptyfft.fft2(this_grad, (1,2), overwrite_x=True)
         this_grad*=mask_clean[:,:,:,None,None]
-        this_grad=ifft2(this_grad, (1,2), overwrite_x=True)
+        this_grad=pyptyfft.ifft2(this_grad, (1,2), overwrite_x=True)
         scatteradd(object_grad, masked_pixels_y, masked_pixels_x, this_grad)
     if helper_flag_4:
         if waves_multislice.shape[-2]==1:

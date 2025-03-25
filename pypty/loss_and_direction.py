@@ -7,9 +7,9 @@ try:
 except:
     import numpy as cp
 
-from pypty.fft import *
-from pypty.utils import *
-from pypty.multislice import *
+from pypty import fft as pyptyfft
+from pypty import utils as pyptyutils
+from pypty import multislice as pyptymultislice
 
 
 
@@ -214,15 +214,15 @@ def loss_and_direction(this_obj, full_probe, this_pos_array, this_pos_correction
         probe_runx,probe_runy=cp.meshgrid(cp.arange(this_ps, dtype=int),cp.arange(this_ps, dtype=int), indexing="xy")
         probe_runx,probe_runy=probe_runx[None,:,:],probe_runy[None,:,:]
     if exclude_mask is None:
-        q2, qx, qy, exclude_mask, exclude_mask_ishift = create_spatial_frequencies(pixel_size_x_A, pixel_size_y_A, this_ps, damping_cutoff_multislice, smooth_rolloff, default_float)     # create some arrays with spatial frequencies. Many of them are actually idential (or almost idential, so i will later clean this mess). In any case, the code is currently optimized to create them only once (when configured properly)
+        q2, qx, qy, exclude_mask, exclude_mask_ishift = pyptyutils.create_spatial_frequencies(pixel_size_x_A, pixel_size_y_A, this_ps, damping_cutoff_multislice, smooth_rolloff, default_float)     # create some arrays with spatial frequencies. Many of them are actually idential (or almost idential, so i will later clean this mess). In any case, the code is currently optimized to create them only once (when configured properly)
         qx,qy,q2, exclude_mask, exclude_mask_ishift=qx[None,:,:],qy[None,:,:],q2[None,:,:], exclude_mask[None,:,:], exclude_mask_ishift[None,:,:]
     if tilt_mode and (x_real_grid_tilt is None): ## if anything but zero
-        x_real_grid_tilt, y_real_grid_tilt=cp.meshgrid(fftshift(fftfreq(full_probe.shape[1])), fftshift(fftfreq(full_probe.shape[0])), indexing="xy")
+        x_real_grid_tilt, y_real_grid_tilt=cp.meshgrid(pyptyfft.fftshift(pyptyfft.fftfreq(full_probe.shape[1])), pyptyfft.fftshift(pyptyfft.fftfreq(full_probe.shape[0])), indexing="xy")
         x_real_grid_tilt=((x_real_grid_tilt*6.2831855j*full_probe.shape[1]*pixel_size_x_A/this_wavelength)[None,:,:,None]).astype(default_complex)
         y_real_grid_tilt=((y_real_grid_tilt*6.2831855j*full_probe.shape[0]*pixel_size_y_A/this_wavelength)[None,:,:,None]).astype(default_complex)
         yx_real_grid_tilt=cp.stack((y_real_grid_tilt, x_real_grid_tilt), axis=1) # (1, 2, y, x, 1)
     if shift_probe_mask_yx is None:
-        shift_probe_mask_x, shift_probe_mask_y=cp.meshgrid(fftfreq(full_probe.shape[1]), fftfreq(full_probe.shape[0]), indexing="xy")
+        shift_probe_mask_x, shift_probe_mask_y=cp.meshgrid(pyptyfft.fftfreq(full_probe.shape[1]), pyptyfft.fftfreq(full_probe.shape[0]), indexing="xy")
         shift_probe_mask_x, shift_probe_mask_y=(-6.2831855j*shift_probe_mask_x[None,:,:]).astype(default_complex), (-6.2831855j*shift_probe_mask_y[None,:,:]).astype(default_complex)
         shift_probe_mask_x=shift_probe_mask_x*exclude_mask_ishift
         shift_probe_mask_y=shift_probe_mask_y*exclude_mask_ishift
@@ -236,7 +236,7 @@ def loss_and_direction(this_obj, full_probe, this_pos_array, this_pos_correction
     if not(aberration_marker is None):
         num_abs=aberrations_array.shape[1]
         if aberrations_polynomials is None:
-            aberrations_polynomials=-1j*get_ctf_matrix(this_wavelength*qx[0], this_wavelength*qy[0], num_abs, this_wavelength).astype(default_complex)
+            aberrations_polynomials=-1j*pyptyutils.get_ctf_matrix(this_wavelength*qx[0], this_wavelength*qy[0], num_abs, this_wavelength).astype(default_complex)
         local_aberrations_phase_plates=cp.exp(cp.sum(aberrations_polynomials[None,:,:,:]*aberrations_array[:,:,None,None], 1))*exclude_mask_ishift
         morph_incomming_beam=True
     else:
@@ -311,10 +311,10 @@ def loss_and_direction(this_obj, full_probe, this_pos_array, this_pos_correction
                 else:
                     pinned_measured[:]=measured_chop
                     measured=cp.array(pinned_measured)
-                measured, *_ = preprocess_dataset(measured, False, algorithm_type, recon_type, data_shift_vector, data_bin, data_pad, upsample_pattern, data_multiplier, xp, True) ### preprocess
+                measured, *_ = pyptyutils.preprocess_dataset(measured, False, algorithm_type, recon_type, data_shift_vector, data_bin, data_pad, upsample_pattern, data_multiplier, xp, True) ### preprocess
         else:
             measured=measured_array[tcs]
-            measured, *_ = preprocess_dataset(measured, False, algorithm_type, recon_type, data_shift_vector, data_bin, data_pad, upsample_pattern, data_multiplier, xp, True)
+            measured, *_ = pyptyutils.preprocess_dataset(measured, False, algorithm_type, recon_type, data_shift_vector, data_bin, data_pad, upsample_pattern, data_multiplier, xp, True)
         if recon_type=="near_field":
             if is_single_defocus:
                 defocind=0
@@ -341,9 +341,9 @@ def loss_and_direction(this_obj, full_probe, this_pos_array, this_pos_correction
         masked_pixels_y=this_y+probe_runy
         masked_pixels_x=this_x+probe_runx
         this_obj_chopped=this_obj[masked_pixels_y, masked_pixels_x ,:,:] ## chop some vectorized transmission functions
-        this_obj_chopped=fft2(this_obj_chopped, axes=(1,2), overwrite_x=True)
+        this_obj_chopped=pyptyfft.fft2(this_obj_chopped, axes=(1,2), overwrite_x=True)
         this_obj_chopped*=exclude_mask_ishift[:,:,:,None,None] ## set the cutoff
-        this_obj_chopped=ifft2(this_obj_chopped, axes=(1,2), overwrite_x=True)
+        this_obj_chopped=pyptyfft.ifft2(this_obj_chopped, axes=(1,2), overwrite_x=True)
         this_probe_fourier=None
         if multiple_scenarios:
             this_probe=full_probe[probe_marker[tcs], :,:,:]
@@ -360,13 +360,13 @@ def loss_and_direction(this_obj, full_probe, this_pos_array, this_pos_correction
             else:
                 indexphase_plate=tcs
             this_phase_plate=cp.asarray(phase_plate_data[indexphase_plate])
-            this_probe_fourier=fft2(this_probe, axes=(1,2))*this_phase_plate[:,:,:,None]
-            this_probe=ifft2(this_probe_fourier,  axes=(1,2))
+            this_probe_fourier=pyptyfft.fft2(this_probe, axes=(1,2))*this_phase_plate[:,:,:,None]
+            this_probe=pyptyfft.ifft2(this_probe_fourier,  axes=(1,2))
         if morph_incomming_beam:
             local_aberrations_phase_plate=local_aberrations_phase_plates[aberration_marker[tcs]]
-            if this_probe_fourier is None: this_probe_fourier=fft2(this_probe, axes=(1,2));
+            if this_probe_fourier is None: this_probe_fourier=pyptyfft.fft2(this_probe, axes=(1,2));
             this_fourier_probe_before_local_aberrations=this_probe_fourier*1
-            this_probe=ifft2(this_fourier_probe_before_local_aberrations*local_aberrations_phase_plate[:,:,:,None], axes=(1,2))
+            this_probe=pyptyfft.ifft2(this_fourier_probe_before_local_aberrations*local_aberrations_phase_plate[:,:,:,None], axes=(1,2))
         if tilt_mode==2 or tilt_mode==4: #before
             tilting_mask_real_space_before=cp.exp(x_real_grid_tilt*this_tan_x_before+y_real_grid_tilt*this_tan_y_before)
             this_probe_before_tilt=this_probe[:]
@@ -374,9 +374,9 @@ def loss_and_direction(this_obj, full_probe, this_pos_array, this_pos_correction
         else:
             tilting_mask_real_space_before=None
         if probe_shift_flag:
-            if this_probe_fourier is None: this_probe_fourier=fft2(this_probe, axes=(1,2));
+            if this_probe_fourier is None: this_probe_fourier=pyptyfft.fft2(this_probe, axes=(1,2));
             shift_probe_mask=cp.exp(shift_probe_mask_x*this_pos_corr[:,1:2,None]+shift_probe_mask_y*this_pos_corr[:,0:1,None])*exclude_mask_ishift
-            this_probe=ifft2(this_probe_fourier*shift_probe_mask[:,:,:,None], axes=(1,2))
+            this_probe=pyptyfft.ifft2(this_probe_fourier*shift_probe_mask[:,:,:,None], axes=(1,2))
         if this_probe.shape[0]==1 and lltcs>1:
             this_probe=xp.repeat(this_probe, lltcs, axis=0)
         ## FORWARD PROPAGATION
@@ -386,39 +386,39 @@ def loss_and_direction(this_obj, full_probe, this_pos_array, this_pos_correction
                 master_propagator_phase_space=cp.expand_dims(master_propagator_phase_space,(-1,-2))
             else:
                 master_propagator_phase_space,half_master_propagator_phase_space=None,None
-            waves_multislice, this_exit_wave=multislice(this_probe, this_obj_chopped, num_slices, n_obj_modes, n_probe_modes, this_distances, this_wavelength, q2, qx, qy, exclude_mask, is_single_dist, this_tan_x_inside,this_tan_y_inside, damping_cutoff_multislice, smooth_rolloff, master_propagator_phase_space,  None, exclude_mask_ishift, waves_multislice, this_exit_wave, default_float, default_complex)
+            waves_multislice, this_exit_wave=pyptymultislice.multislice(this_probe, this_obj_chopped, num_slices, n_obj_modes, n_probe_modes, this_distances, this_wavelength, q2, qx, qy, exclude_mask, is_single_dist, this_tan_x_inside,this_tan_y_inside, damping_cutoff_multislice, smooth_rolloff, master_propagator_phase_space,  None, exclude_mask_ishift, waves_multislice, this_exit_wave, default_float, default_complex)
         else:
             if propmethod=="better_multislice":
                 if is_single_dist and not(individual_propagator_flag):
                     half_master_propagator_phase_space=cp.exp(-3.141592654j*0.5*this_distances[0]*(this_wavelength*q2+2*(qx*this_tan_x_inside+qy*this_tan_y_inside)))*exclude_mask_ishift
                     half_master_propagator_phase_space=cp.expand_dims(half_master_propagator_phase_space,(-1,-2))
                     master_propagator_phase_space=half_master_propagator_phase_space**2
-                waves_multislice, this_exit_wave=better_multislice(this_probe, this_obj_chopped, num_slices, n_obj_modes, n_probe_modes, this_distances, this_wavelength, q2, qx, qy, exclude_mask, is_single_dist, this_tan_x_inside,this_tan_y_inside, damping_cutoff_multislice, smooth_rolloff, master_propagator_phase_space,  half_master_propagator_phase_space, exclude_mask_ishift, waves_multislice,this_exit_wave, default_float, default_complex)
+                waves_multislice, this_exit_wave=pyptymultislice.better_multislice(this_probe, this_obj_chopped, num_slices, n_obj_modes, n_probe_modes, this_distances, this_wavelength, q2, qx, qy, exclude_mask, is_single_dist, this_tan_x_inside,this_tan_y_inside, damping_cutoff_multislice, smooth_rolloff, master_propagator_phase_space,  half_master_propagator_phase_space, exclude_mask_ishift, waves_multislice,this_exit_wave, default_float, default_complex)
             elif propmethod=="yoshida":
                 if is_single_dist and not(individual_propagator_flag):
                     sigma_yoshida=(2+2**(-1/3)+2**(1/3))/3
                     half_master_propagator_phase_space=cp.expand_dims(cp.exp(-3.141592654j*(sigma_yoshida)*this_distances[0]*(this_wavelength*q2+2*(qx*this_tan_x_inside+qy*this_tan_y_inside)))*exclude_mask_ishift,(-1,-2))
                     master_propagator_phase_space=cp.expand_dims(cp.exp(-3.141592654j*(1-2*sigma_yoshida)*this_distances[0]*(this_wavelength*q2+2*(qx*this_tan_x_inside+qy*this_tan_y_inside)))*exclude_mask_ishift,(-1,-2))
-                waves_multislice, this_exit_wave=yoshida_multislice(this_probe, this_obj_chopped, num_slices, n_obj_modes, n_probe_modes, this_distances, this_wavelength, q2, qx, qy, exclude_mask, is_single_dist, this_tan_x_inside,this_tan_y_inside, damping_cutoff_multislice, smooth_rolloff, master_propagator_phase_space,  half_master_propagator_phase_space, exclude_mask_ishift, waves_multislice,this_exit_wave, default_float, default_complex)
+                waves_multislice, this_exit_wave=pyptymultislice.yoshida_multislice(this_probe, this_obj_chopped, num_slices, n_obj_modes, n_probe_modes, this_distances, this_wavelength, q2, qx, qy, exclude_mask, is_single_dist, this_tan_x_inside,this_tan_y_inside, damping_cutoff_multislice, smooth_rolloff, master_propagator_phase_space,  half_master_propagator_phase_space, exclude_mask_ishift, waves_multislice,this_exit_wave, default_float, default_complex)
                 
         if tilt_mode==1 or tilt_mode>=3: ## after if tilt mode is 1, 3 or 4
             tilting_mask_real_space_after=cp.exp(x_real_grid_tilt*this_tan_x_after+y_real_grid_tilt*this_tan_y_after)[:,:,:,:, None]
             if propmethod=="multislice" and num_slices==1:
-                this_exit_wave=fft2(this_exit_wave, axes=(1,2), overwrite_x=True)
+                this_exit_wave=pyptyfft.fft2(this_exit_wave, axes=(1,2), overwrite_x=True)
                 this_exit_wave*=exclude_mask_ishift[:,:,:,None,None]
-                this_exit_wave=ifft2(this_exit_wave, axes=(1,2), overwrite_x=True)
+                this_exit_wave=pyptyfft.ifft2(this_exit_wave, axes=(1,2), overwrite_x=True)
             this_exit_wave_before_tilt=this_exit_wave[:]
             this_exit_wave = this_exit_wave_before_tilt*tilting_mask_real_space_after
         else:
             tilting_mask_real_space_after=None
         ## PROPAGATION FROM THE SPECIMEN PLANE TO THE DETECTOR PLANE
         if recon_type=="far_field":
-            this_wave=shift_fft2(this_exit_wave, axes=(1,2))
+            this_wave=pyptyfft.shift_fft2(this_exit_wave, axes=(1,2))
             this_wave*=exclude_mask[:,:,:,None,None]
         else:
             CTF=(cp.exp(-3.141592654j*(((this_wavelength*q2+2*(qx*this_tan_x_inside+qy*this_tan_y_inside))*defocus_near_field)+(0.5*Cs*this_wavelength**3*q2**2)))*exclude_mask_ishift)[:,:,:,None,None]
-            fourier_exit_wave=fft2(this_exit_wave, axes=(1,2))
-            this_wave=ifft2(fourier_exit_wave*CTF, axes=(1,2))
+            fourier_exit_wave=pyptyfft.fft2(this_exit_wave, axes=(1,2))
+            this_wave=pyptyfft.ifft2(fourier_exit_wave*CTF, axes=(1,2))
         this_pattern=cp.abs(this_wave)**2
         if is_fully_coherent:
             this_pattern=this_pattern[:,:,:,0,0]
@@ -426,9 +426,9 @@ def loss_and_direction(this_obj, full_probe, this_pos_array, this_pos_correction
             this_pattern=cp.mean(this_pattern, (-1,-2))
         if recon_type=="near_field" and alpha_near_field>0: ## the correction to a coherent case
             E_near_field_not_coherent_correction=(cp.exp(-q2*(3.14152654*alpha_near_field*defocus_near_field)**2))[ None,:,:]
-            this_pattern=cp.real(ifft2(fft2(this_pattern, axes=(1,2))*E_near_field_not_coherent_correction, axes=(1,2)))
+            this_pattern=cp.real(pyptyfft.ifft2(pyptyfft.fft2(this_pattern, axes=(1,2))*E_near_field_not_coherent_correction, axes=(1,2)))
         if upsample_pattern!=1:
-            this_pattern=downsample_something_3d(this_pattern, upsample_pattern, xp)
+            this_pattern=pyptyutils.downsample_something_3d(this_pattern, upsample_pattern, xp)
         if static_background_is_there:
             this_pattern+=static_square
         try:
@@ -497,17 +497,17 @@ def loss_and_direction(this_obj, full_probe, this_pos_array, this_pos_correction
         if this_step_static_background and static_background_is_there:
             static_background_grad+=cp.sum(dLoss_dint,0)*2*static_background*this_loss_weight
         if upsample_pattern!=1:
-            dLoss_dint=upsample_something_3d(dLoss_dint, upsample_pattern, False, xp)
+            dLoss_dint=pyptyutils.upsample_something_3d(dLoss_dint, upsample_pattern, False, xp)
         if recon_type=="far_field":
             dLoss_dWave  =  dLoss_dint[:,:,:,None,None] * this_wave * (this_loss_weight * dLoss_dint.shape[1]* dLoss_dint.shape[2])
-            dLoss_dP_out = ifft2_ishift(dLoss_dWave, axes=(1,2))
+            dLoss_dP_out = pyptyfft.ifft2_ishift(dLoss_dWave, axes=(1,2))
         else:
             if alpha_near_field>0:
-                dLoss_dWave=this_wave*cp.expand_dims(cp.real(ifft2(fft2(dLoss_dint, axes=(1,2))*E_near_field_not_coherent_correction, axes=(1,2))),(-1,-2))
+                dLoss_dWave=this_wave*cp.expand_dims(cp.real(pyptyfft.ifft2(pyptyfft.fft2(dLoss_dint, axes=(1,2))*E_near_field_not_coherent_correction, axes=(1,2))),(-1,-2))
             else:
                 dLoss_dWave=this_wave*cp.expand_dims(dLoss_dint, (-1,-2))
-            fouirer_wave_grad=this_loss_weight * fft2(dLoss_dWave, axes=(1,2))*cp.conjugate(CTF) #(n_m, y,x, mp, mo)
-            dLoss_dP_out=ifft2(fouirer_wave_grad, axes=(1,2))
+            fouirer_wave_grad=this_loss_weight * pyptyfft.fft2(dLoss_dWave, axes=(1,2))*cp.conjugate(CTF) #(n_m, y,x, mp, mo)
+            dLoss_dP_out=pyptyfft.ifft2(fouirer_wave_grad, axes=(1,2))
             if this_step_tilts:
                 if tilt_mode==0 or tilt_mode==3 or tilt_mode==4:
                     rsc=-12.566370614359172/(fouirer_wave_grad.shape[1]*fouirer_wave_grad.shape[2])
@@ -537,22 +537,22 @@ def loss_and_direction(this_obj, full_probe, this_pos_array, this_pos_correction
                 else:
                     tilts_grad[tiltind,4:]=dL_dtilt
             if propmethod=="multislice" and num_slices==1:
-                dLoss_dP_out=fft2(dLoss_dP_out, axes=(1,2), overwrite_x=True)
+                dLoss_dP_out=pyptyfft.fft2(dLoss_dP_out, axes=(1,2), overwrite_x=True)
                 dLoss_dP_out*=exclude_mask_ishift[:,:,:,None,None]
-                dLoss_dP_out=ifft2(dLoss_dP_out, axes=(1,2), overwrite_x=True)
+                dLoss_dP_out=pyptyfft.ifft2(dLoss_dP_out, axes=(1,2), overwrite_x=True)
         if propmethod=="multislice":
-            object_grad, interm_probe_grad, tilts_grad = multislice_grads(dLoss_dP_out, waves_multislice, this_obj_chopped, object_grad, tilts_grad, is_single_dist,this_distances, exclude_mask, this_wavelength, q2, qx, this_tan_x_inside, qy, this_tan_y_inside, num_slices, n_obj_modes,tiltind, master_propagator_phase_space, this_step_tilts, damping_cutoff_multislice, smooth_rolloff, tilt_mode,  compute_batch, exclude_mask_ishift, this_step_probe, this_step_obj, this_step_pos_correction, masked_pixels_y, masked_pixels_x, default_float, default_complex, helper_flag_4)
+            object_grad, interm_probe_grad, tilts_grad = pyptymultislice.multislice_grads(dLoss_dP_out, waves_multislice, this_obj_chopped, object_grad, tilts_grad, is_single_dist,this_distances, exclude_mask, this_wavelength, q2, qx, this_tan_x_inside, qy, this_tan_y_inside, num_slices, n_obj_modes,tiltind, master_propagator_phase_space, this_step_tilts, damping_cutoff_multislice, smooth_rolloff, tilt_mode,  compute_batch, exclude_mask_ishift, this_step_probe, this_step_obj, this_step_pos_correction, masked_pixels_y, masked_pixels_x, default_float, default_complex, helper_flag_4)
         else:
             if propmethod=="better_multislice":
-                object_grad,  interm_probe_grad, tilts_grad = better_multislice_grads(dLoss_dP_out, waves_multislice, this_obj_chopped, object_grad, tilts_grad, is_single_dist, this_distances, exclude_mask, this_wavelength, q2, qx, this_tan_x_inside, qy, this_tan_y_inside, num_slices, n_probe_modes, n_obj_modes,tiltind, this_step_tilts,  master_propagator_phase_space, half_master_propagator_phase_space, damping_cutoff_multislice, smooth_rolloff, tilt_mode,  compute_batch, exclude_mask_ishift, masked_pixels_y, masked_pixels_x, default_float, default_complex)
+                object_grad,  interm_probe_grad, tilts_grad = pyptymultislice.better_multislice_grads(dLoss_dP_out, waves_multislice, this_obj_chopped, object_grad, tilts_grad, is_single_dist, this_distances, exclude_mask, this_wavelength, q2, qx, this_tan_x_inside, qy, this_tan_y_inside, num_slices, n_probe_modes, n_obj_modes,tiltind, this_step_tilts,  master_propagator_phase_space, half_master_propagator_phase_space, damping_cutoff_multislice, smooth_rolloff, tilt_mode,  compute_batch, exclude_mask_ishift, masked_pixels_y, masked_pixels_x, default_float, default_complex)
             if propmethod=="yoshida":
-                object_grad, interm_probe_grad, tilts_grad = yoshida_multislice_grads(dLoss_dP_out, waves_multislice, this_obj_chopped, object_grad, tilts_grad, is_single_dist, this_distances, exclude_mask, this_wavelength, q2, qx, this_tan_x_inside, qy, this_tan_y_inside, num_slices, n_probe_modes, n_obj_modes,tiltind, this_step_tilts,  master_propagator_phase_space, half_master_propagator_phase_space, damping_cutoff_multislice, smooth_rolloff, tilt_mode,  compute_batch, exclude_mask_ishift, masked_pixels_y, masked_pixels_x, default_float, default_complex)
+                object_grad, interm_probe_grad, tilts_grad = pyptymultislice.yoshida_multislice_grads(dLoss_dP_out, waves_multislice, this_obj_chopped, object_grad, tilts_grad, is_single_dist, this_distances, exclude_mask, this_wavelength, q2, qx, this_tan_x_inside, qy, this_tan_y_inside, num_slices, n_probe_modes, n_obj_modes,tiltind, this_step_tilts,  master_propagator_phase_space, half_master_propagator_phase_space, damping_cutoff_multislice, smooth_rolloff, tilt_mode,  compute_batch, exclude_mask_ishift, masked_pixels_y, masked_pixels_x, default_float, default_complex)
         if helper_flag_4:
             fourier_probe_grad=None
             if probe_shift_flag:
-                fourier_probe_grad=fft2(interm_probe_grad, axes=(1,2))
+                fourier_probe_grad=pyptyfft.fft2(interm_probe_grad, axes=(1,2))
                 fourier_probe_grad=fourier_probe_grad*cp.conjugate(shift_probe_mask)[:,:,:,None]
-                interm_probe_grad=ifft2(fourier_probe_grad, axes=(1,2))
+                interm_probe_grad=pyptyfft.ifft2(fourier_probe_grad, axes=(1,2))
                 if this_step_pos_correction:
                     shift_mask_grad=cp.conjugate(this_probe_fourier)*fourier_probe_grad
                     sh = -2/(this_probe_fourier.shape[1]*this_probe_fourier.shape[2]) ## -1 for conj, 2 for real-grad shape for ifft
@@ -581,9 +581,9 @@ def loss_and_direction(this_obj, full_probe, this_pos_array, this_pos_correction
                             tilts_grad[tiltind,:2]=dL_dtilt
                 if helper_flag_2:
                     if morph_incomming_beam:
-                        if fourier_probe_grad is None: fourier_probe_grad=fft2(interm_probe_grad, axes=(1,2));
+                        if fourier_probe_grad is None: fourier_probe_grad=pyptyfft.fft2(interm_probe_grad, axes=(1,2));
                         fourier_probe_grad*=cp.conjugate(local_aberrations_phase_plate[:,:,:,None])
-                        interm_probe_grad=ifft2(fourier_probe_grad, axes=(1,2))
+                        interm_probe_grad=pyptyfft.ifft2(fourier_probe_grad, axes=(1,2))
                         if this_step_aberrations_array:
                             sh = 2/(fourier_probe_grad.shape[1]*fourier_probe_grad.shape[2])
                             defgr=sh*cp.sum(cp.real((fourier_probe_grad*cp.conjugate(this_fourier_probe_before_local_aberrations))[:,None, :,:,:] * cp.conjugate(aberrations_polynomials[None,:,:,:,None])), axis=(2,3,4), dtype=default_float)
@@ -592,9 +592,9 @@ def loss_and_direction(this_obj, full_probe, this_pos_array, this_pos_correction
                              #   aberrations_array_grad[aberration_marker[t],:]+=defgr[dumbindex,:]
                     if helper_flag_1:
                         if phase_plate_active:
-                            if fourier_probe_grad is None: fourier_probe_grad=fft2(interm_probe_grad, axes=(1,2));
+                            if fourier_probe_grad is None: fourier_probe_grad=pyptyfft.fft2(interm_probe_grad, axes=(1,2));
                             cp.conjugate(this_phase_plate, out=this_phase_plate)
-                            interm_probe_grad=ifft2(fourier_probe_grad*this_phase_plate[:,:,:,None], (1,2))
+                            interm_probe_grad=pyptyfft.ifft2(fourier_probe_grad*this_phase_plate[:,:,:,None], (1,2))
                         if fluctuating_current_flag:
                             if this_beam_current_step:
                                 if n_probe_modes==1:
@@ -668,7 +668,7 @@ def loss_and_direction(this_obj, full_probe, this_pos_array, this_pos_correction
         constraint_contributions.append(0)
     #######
     if phase_norm_weight!=0: # l_1 norm of the potential
-        grad_mask=generate_mask_for_grad_from_pos(this_obj.shape[1], this_obj.shape[0], this_pos_array, full_probe.shape[1],full_probe.shape[0], 0)
+        grad_mask=pyptyutils.generate_mask_for_grad_from_pos(this_obj.shape[1], this_obj.shape[0], this_pos_array, full_probe.shape[1],full_probe.shape[0], 0)
         l1_reg_term, l1_object_grad=compute_full_l1_constraint(this_obj, 0, phase_norm_weight, grad_mask, True, smart_memory)
         if print_flag==4:
             sys.stdout.write("\nWith abs weight of %.3e and phase weight of %.3e, l1 constaint is %.2e %% of the main loss"%(abs_norm_weight, phase_norm_weight, l1_reg_term*100/loss_print_copy));
@@ -752,12 +752,12 @@ def loss_and_direction(this_obj, full_probe, this_pos_array, this_pos_correction
     if loss!=loss:
         raise ValueError('A very specific bad thing. Loss is Nan.')
     if this_step_probe:
-        probe_grad=fft2(probe_grad, (0,1), overwrite_x=True)
+        probe_grad=pyptyfft.fft2(probe_grad, (0,1), overwrite_x=True)
         if multiple_scenarios:
             probe_grad*=exclude_mask_ishift[0,:,:,None, None]
         else:
             probe_grad*=exclude_mask_ishift[0,:,:,None]
-        probe_grad=ifft2(probe_grad, (0,1), overwrite_x=True)
+        probe_grad=pyptyfft.ifft2(probe_grad, (0,1), overwrite_x=True)
     try:
         cp.get_default_memory_pool().free_all_blocks()
         cp.get_default_pinned_memory_pool().free_all_blocks()
@@ -871,7 +871,7 @@ def charge_flip(a, delta_phase = 0.03, delta_abs = 0.14, beta_phase = -0.95, bet
             psf_2_phase/=cp.sum(psf_2_phase)
             
             if not(do_richardson_lucy_phase):
-                psf_1_phase=shift_fft2(psf_1_phase)#+1e-20
+                psf_1_phase=pyptyfft.shift_fft2(psf_1_phase)#+1e-20
         if do_abs_things:
             sigma_1_abs=fancy_sigma[1][0]
             sigma_2_abs=fancy_sigma[1][1]
@@ -882,7 +882,7 @@ def charge_flip(a, delta_phase = 0.03, delta_abs = 0.14, beta_phase = -0.95, bet
             psf_1_abs/=cp.sum(psf_1_abs)
             psf_2_abs/=cp.sum(psf_2_abs)
             if not(do_richardson_lucy_abs):
-                psf_1_abs=shift_fft2(psf_1_abs)#+1e-20
+                psf_1_abs=pyptyfft.shift_fft2(psf_1_abs)#+1e-20
         for i in range(phase.shape[-1]):
             for j in range(phase.shape[-2]):
                 if do_phase_things:
@@ -890,14 +890,14 @@ def charge_flip(a, delta_phase = 0.03, delta_abs = 0.14, beta_phase = -0.95, bet
                     if do_richardson_lucy_phase:
                         phase[:,:,j,i]=richardson_lucy(phase[:,:,j,i], psf_1_phase, tolerance=1e-3)
                     else:
-                        phase[:,:,j,i]=cp.real((ifft2_ishift(shift_fft2(phase[:,:,j,i])/psf_1_phase)))
+                        phase[:,:,j,i]=cp.real((pyptyfft.ifft2_ishift(pyptyfft.shift_fft2(phase[:,:,j,i])/psf_1_phase)))
             
                 if do_abs_things:
                     absorption[:,:,j,i]-=cp.min(absorption[:,:,j,i])
                     if do_richardson_lucy_abs:
                         absorption[:,:,j,i]=richardson_lucy(absorption[:,:,j,i], psf_1_abs, tolerance=1e-3)
                     else:
-                        absorption[:,:,j,i]=cp.real(fftshift(ifft2_ishift(shift_fft2(absorption[:,:,j,i])/psf_1_abs)))
+                        absorption[:,:,j,i]=cp.real(pyptyfft.fftshift(pyptyfft.ifft2_ishift(pyptyfft.shift_fft2(absorption[:,:,j,i])/psf_1_abs)))
     for i in range(phase.shape[-1]):
         for j in range(phase.shape[-2]):
             p=phase[:,:,j,i]
@@ -984,17 +984,17 @@ def clear_missing_wedge(obj, px_size_x_A, px_size_y_A, slice_distance, beta_wedg
     ndarray
         Filtered object with reduced missing wedge effects.
     """
-    qx=fftfreq(obj.shape[1],px_size_x_A)
-    qy=fftfreq(obj.shape[0],px_size_y_A)
-    qz=fftfreq(obj.shape[2],slice_distance)
+    qx=pyptyfft.fftfreq(obj.shape[1],px_size_x_A)
+    qy=pyptyfft.fftfreq(obj.shape[0],px_size_y_A)
+    qz=pyptyfft.fftfreq(obj.shape[2],slice_distance)
     qx,qy,qz=cp.meshgrid(qx,qy,qz, indexing="xy")
     qr=qx**2+qy**2
     qr[qr==0]=1e-10
     weight=(beta_wedge**2)*(qz**2)/qr
     weight=1-0.63661977236*cp.arctan(weight)
     del qx,qy,qz
-    fft_times_weight=fftn(obj, axes=(0,1,2))*weight[:,:,:,None]
-    fft_times_weight=ifftn(fft_times_weight, axes=(0,1,2))
+    fft_times_weight=pyptyfft.fftn(obj, axes=(0,1,2))*weight[:,:,:,None]
+    fft_times_weight=pyptyfft.ifftn(fft_times_weight, axes=(0,1,2))
     return fft_times_weight
     
 
@@ -1224,19 +1224,19 @@ def compute_probe_constraint(to_reg_probe, aperture, weight, return_direction):
         aperture=1-cp.expand_dims(aperture.astype(bool),-1) ### actually a mask
     else:
         ## if aperture is a float, then you should construct a circular mask yourself! Here the aperture is supposed to be a ratio between the convergence and collection angles!
-        ffx=fftshift(fftfreq(to_reg_probe.shape[1]))
-        ffy=fftshift(fftfreq(to_reg_probe.shape[0]))
+        ffx=pyptyfft.fftshift(pyptyfft.fftfreq(to_reg_probe.shape[1]))
+        ffy=pyptyfft.fftshift(pyptyfft.fftfreq(to_reg_probe.shape[0]))
         ffx,ffy=cp.meshgrid(ffx,ffy, indexing="xy")
         ffr=cp.expand_dims((ffx**2+ffy**2)**0.5,-1)
         aperture=ffr>(0.5*aperture)
         del ffx,ffy, ffr
     if len(to_reg_probe.shape)==4:
         aperture=cp.expand_dims(aperture,-1)
-    probe_fft=shift_fft2(to_reg_probe, axes=(0,1))
+    probe_fft=pyptyfft.shift_fft2(to_reg_probe, axes=(0,1))
     probe_fft=probe_fft * aperture
     reg_term=weight*cp.sum(cp.abs(probe_fft)**2)
     if return_direction:
-        probe_fft=ifft2_ishift(probe_fft, axes=(0,1))*(weight*probe_fft.shape[0]*probe_fft.shape[1])
+        probe_fft=pyptyfft.ifft2_ishift(probe_fft, axes=(0,1))*(weight*probe_fft.shape[0]*probe_fft.shape[1])
     else:
         probe_fft=None
     return reg_term, probe_fft
@@ -1331,14 +1331,14 @@ def compute_missing_wedge_constraint(obj, px_size_x_A, px_size_y_A, slice_distan
     grad_obj : ndarray
         Gradient of the loss with respect to the object.
     """
-    qx=fftfreq(obj.shape[1],px_size_x_A)
-    qy=fftfreq(obj.shape[0],px_size_y_A)
-    qz=fftfreq(obj.shape[2],slice_distance)
+    qx=pyptyfft.fftfreq(obj.shape[1],px_size_x_A)
+    qy=pyptyfft.fftfreq(obj.shape[0],px_size_y_A)
+    qz=pyptyfft.fftfreq(obj.shape[2],slice_distance)
     qx,qy,qz=cp.meshgrid(qx,qy,qz)
     weight=0.63661977236*cp.arctan((beta_wedge**2)*(qz**2)/(1e-20+qx**2+qy**2))
-    fft_times_weight=fftn(obj, axes=(0,1,2))*weight[:,:,:,None]
+    fft_times_weight=pyptyfft.fftn(obj, axes=(0,1,2))*weight[:,:,:,None]
     loss_term=wegde_mu*cp.sum(cp.abs(fft_times_weight)**2)
-    grad_obj=wegde_mu*ifftn(fft_times_weight*weight[:,:,:,None], axes=(0,1,2))*fft_times_weight.shape[0]*fft_times_weight.shape[1]*fft_times_weight.shape[2]
+    grad_obj=wegde_mu*pyptyfft.ifftn(fft_times_weight*weight[:,:,:,None], axes=(0,1,2))*fft_times_weight.shape[0]*fft_times_weight.shape[1]*fft_times_weight.shape[2]
     return loss_term, grad_obj
     
 def compute_mixed_object_variance_constraint(this_obj, weight, sigma, return_direction, smart_memory):
@@ -1366,12 +1366,12 @@ def compute_mixed_object_variance_constraint(this_obj, weight, sigma, return_dir
     grad : ndarray or None
         Gradient with respect to the object if `return_direction` is True.
     """
-    mask=cp.exp(-cp.sum(cp.array(cp.meshgrid(fftfreq(this_obj.shape[1]), fftfreq(this_obj.shape[0]), indexing="xy"))**2, axis=0)/sigma**2)
+    mask=cp.exp(-cp.sum(cp.array(cp.meshgrid(pyptyfft.fftfreq(this_obj.shape[1]), pyptyfft.fftfreq(this_obj.shape[0]), indexing="xy"))**2, axis=0)/sigma**2)
     if smart_memory:
         this_obj_blur=cp.copy(this_obj)
         for i in range(this_obj.shape[2]):
             for j in range(this_obj.shape[3]):
-                this_obj_blur[:,:,i,j]=fft2(this_obj[:,:,i,j])
+                this_obj_blur[:,:,i,j]=pyptyfft.fft2(this_obj[:,:,i,j])
                 this_obj_blur[:,:,i,j]*=mask
         try:
             cp.fft.config.clear_plan_cache()
@@ -1379,13 +1379,13 @@ def compute_mixed_object_variance_constraint(this_obj, weight, sigma, return_dir
             pass
         for i in range(this_obj.shape[2]):
             for j in range(this_obj.shape[3]):
-                this_obj_blur[:,:,i,j]=ifft2(this_obj_blur[:,:,i,j])
+                this_obj_blur[:,:,i,j]=pyptyfft.ifft2(this_obj_blur[:,:,i,j])
         try:
             cp.fft.config.clear_plan_cache()
         except:
             pass
     else:
-        this_obj_blur=ifft2(fft2(this_obj, axes=(0,1))*mask[:,:,None,None], axes=(0,1))
+        this_obj_blur=pyptyfft.ifft2(pyptyfft.fft2(this_obj, axes=(0,1))*mask[:,:,None,None], axes=(0,1))
     n_states=this_obj.shape[-1]
     mean_obj=cp.mean(this_obj_blur, axis=-1)
     mean_obj=this_obj_blur-mean_obj[:,:,:,None] ## not the mean object anymore
@@ -1396,20 +1396,20 @@ def compute_mixed_object_variance_constraint(this_obj, weight, sigma, return_dir
         if smart_memory:
             for i in range(this_obj.shape[2]):
                 for j in range(this_obj.shape[3]):
-                    mean_obj[:,:,i,j]=fft2(mean_obj[:,:,i,j])*mask
+                    mean_obj[:,:,i,j]=pyptyfft.fft2(mean_obj[:,:,i,j])*mask
             try:
                 cp.fft.config.clear_plan_cache()
             except:
                 pass
             for i in range(this_obj.shape[2]):
                 for j in range(this_obj.shape[3]):
-                    mean_obj[:,:,i,j]=ifft2(mean_obj[:,:,i,j])
+                    mean_obj[:,:,i,j]=pyptyfft.ifft2(mean_obj[:,:,i,j])
             try:
                 cp.fft.config.clear_plan_cache()
             except:
                 pass
         else:
-            mean_obj=ifft2(fft2(mean_obj, axes=(0,1))*mask[:,:,None,None], axes=(0,1)) ## I am not dumb, the above disaster should be less memory hungry than this beauty
+            mean_obj=pyptyfft.ifft2(pyptyfft.fft2(mean_obj, axes=(0,1))*mask[:,:,None,None], axes=(0,1)) ## I am not dumb, the above disaster should be less memory hungry than this beauty
     else:
         del mean_obj, mask
         mean_obj=None

@@ -15,7 +15,7 @@ except:
     import numpy as cp
     import scipy.fft as sf
     
-from pypty.fft import *
+from pypty import fft as pyptyfft
 
 import h5py
 import datetime
@@ -48,8 +48,8 @@ def fourier_clean_3d(array, cutoff=0.66, mask=None, rolloff=0, default_float=cp.
     if not(cutoff is None) or not(mask is None):
         shape=array.shape
         if mask is None:
-            x=fftshift(fftfreq(shape[2]))
-            y=fftshift(fftfreq(shape[1]))
+            x=pyptyfft.fftshift(pyptyfft.fftfreq(shape[2]))
+            y=pyptyfft.fftshift(pyptyfft.fftfreq(shape[1]))
             x,y=cp.meshgrid(x,y, indexing="xy")
             r=x**2+y**2
             max_r=0.5*cutoff ## maximum freq for fftfreq is 0.5 when the px size is not specified
@@ -58,7 +58,7 @@ def fourier_clean_3d(array, cutoff=0.66, mask=None, rolloff=0, default_float=cp.
                 r0=(0.5*(cutoff-rolloff))**2
                 mask[r>r0]*=0.5*(1+cp.cos(3.141592654*(r-r0)/(max_r**2-r0)))[r>r0]
             del x,y, r
-        arrayff=shift_fft2(array, axes=(1,2), overwrite_x=True)
+        arrayff=pyptyfft.shift_fft2(array, axes=(1,2), overwrite_x=True)
         if len(shape)==6:
             arrayff=arrayff*mask[None, :,:, None,None,None]
         if len(shape)==5:
@@ -67,7 +67,7 @@ def fourier_clean_3d(array, cutoff=0.66, mask=None, rolloff=0, default_float=cp.
             arrayff=arrayff*mask[None, :,:, None]
         if len(shape)==3:
             arrayff=arrayff*mask[None, :,:]
-        arrayff=ifft2_ishift(arrayff, axes=(1,2), overwrite_x=True)
+        arrayff=pyptyfft.ifft2_ishift(arrayff, axes=(1,2), overwrite_x=True)
         del mask
         return arrayff
     else:
@@ -101,8 +101,8 @@ def fourier_clean(array, cutoff=0.66, mask=None, rolloff=0, default_float=cp.flo
     if not(cutoff is None) or not(mask is None):
         shape=array.shape
         if mask is None:
-            x=fftshift(fftfreq(shape[1]))
-            y=fftshift(fftfreq(shape[0]))
+            x=pyptyfft.fftshift(pyptyfft.fftfreq(shape[1]))
+            y=pyptyfft.fftshift(pyptyfft.fftfreq(shape[0]))
             x,y=cp.meshgrid(x,y, indexing="xy")
             r=x**2+y**2
             max_r=0.5*cutoff ## maximum freq for fftfreq is 0.5 when the px size is not specified
@@ -111,14 +111,14 @@ def fourier_clean(array, cutoff=0.66, mask=None, rolloff=0, default_float=cp.flo
                 r0=(0.5*(cutoff-rolloff))**2
                 mask[r>r0]*=0.5*(1+cp.cos(3.141592654*(r-r0)/(max_r**2-r0)))[r>r0]
             del x,y, r
-        arrayff=shift_fft2(array, axes=(0,1))
+        arrayff=pyptyfft.shift_fft2(array, axes=(0,1))
         if len(shape)==4:
             arrayff=arrayff*mask[:,:, None, None]
         if len(shape)==3:
             arrayff=arrayff*mask[:,:, None]
         if len(shape)==2:
             arrayff=arrayff*mask
-        arrayff=ifft2_ishift(arrayff, axes=(0,1))
+        arrayff=pyptyfft.ifft2_ishift(arrayff, axes=(0,1))
         del mask
         return arrayff
     else:
@@ -154,7 +154,7 @@ def create_spatial_frequencies(px, py, shape, damping_cutoff_multislice, smooth_
         - exclude_mask: Mask in Fourier space.
         - exclude_mask_ishift: Unshifted mask.
     """
-    qx,qy= cp.meshgrid(fftfreq(shape, px), fftfreq(shape, py), indexing="xy")
+    qx,qy= cp.meshgrid(pyptyfft.fftfreq(shape, px), pyptyfft.fftfreq(shape, py), indexing="xy")
     qx,qy=qx.astype(default_float),qy.astype(default_float)
     q2=qx**2+qy**2
     if damping_cutoff_multislice<0:
@@ -168,7 +168,7 @@ def create_spatial_frequencies(px, py, shape, damping_cutoff_multislice, smooth_
         r0=(max_x*(damping_cutoff_multislice-smooth_rolloff))**2
         exclude_mask_ishift[q2>r0]*=(0.5*(1+cp.cos(3.141592654*(q2-r0)/(r_max-r0))))[q2>r0]
     exclude_mask_ishift=exclude_mask_ishift.astype(default_float)
-    exclude_mask=fftshift(exclude_mask_ishift)
+    exclude_mask=pyptyfft.fftshift(exclude_mask_ishift)
     return q2, qx, qy, exclude_mask, exclude_mask_ishift
 def shift_probe_fourier(probe, shift_px):
     """
@@ -187,10 +187,10 @@ def shift_probe_fourier(probe, shift_px):
         Tuple containing the shifted probe, the phase mask, the Fourier transform of the probe,
         and the spatial frequency grids (maskx, masky).
     """
-    maskx, masky=cp.meshgrid(fftfreq(probe.shape[1]), fftfreq(probe.shape[0]), indexing="xy")
+    maskx, masky=cp.meshgrid(pyptyfft.fftfreq(probe.shape[1]), pyptyfft.fftfreq(probe.shape[0]), indexing="xy")
     mask=cp.exp(-6.283185307179586j*(maskx*shift_px[1]+masky*shift_px[0]))
-    phat=fft2(probe, axes=(0,1))
-    probe=ifft2(mask[:,:,None]*phat, axes=(0,1))
+    phat=pyptyfft.fft2(probe, axes=(0,1))
+    probe=pyptyfft.ifft2(mask[:,:,None]*phat, axes=(0,1))
     return probe, mask, phat, maskx, masky
 def generate_mask_for_grad_from_pos(shapex, shapey, positions_list, shape_footprint_x,shape_footprint_y, shrink=0):
     """
@@ -815,10 +815,10 @@ def apply_defocus_probe(probe, distance, acc_voltage, pixel_size_x_A, pixel_size
     q2, exclude_mask_ishift, =xp.asarray(q2), xp.asarray(exclude_mask_ishift)
     propagator_phase_space=np.exp(-1j*xp.pi*distance*wavelength*q2)*exclude_mask_ishift
     if len(probe.shape)==3:
-        wave_fourier=fft2(probe, axes=(0,1))*propagator_phase_space[:,:,None]
+        wave_fourier=pyptyfft.fft2(probe, axes=(0,1))*propagator_phase_space[:,:,None]
     else:
-        wave_fourier=fft2(probe, axes=(0,1))*propagator_phase_space[:,:,None, None]
-    return ifft2(wave_fourier, axes=(0,1))
+        wave_fourier=pyptyfft.fft2(probe, axes=(0,1))*propagator_phase_space[:,:,None, None]
+    return pyptyfft.ifft2(wave_fourier, axes=(0,1))
 
 
 def padfft(array, pad):
@@ -1411,17 +1411,17 @@ def apply_probe_modulation(probe, extra_probe_defocus, acc_voltage, pixel_size_x
         kx, ky=np.meshgrid(kx,ky, indexing="xy")
         ctf = xp.asarray(get_ctf(aberrations, kx, ky, wavelength))
         if len(probe.shape)==3:
-            probe=ifft2_ishift(shift_fft2(probe)*xp.exp(-1j*ctf)[:,:,None])
+            probe=pyptyfft.ifft2_ishift(pyptyfft.shift_fft2(probe)*xp.exp(-1j*ctf)[:,:,None])
         else:
-            probe=ifft2_ishift(shift_fft2(probe)*xp.exp(-1j*ctf)[:,:,None, None])
+            probe=pyptyfft.ifft2_ishift(pyptyfft.shift_fft2(probe)*xp.exp(-1j*ctf)[:,:,None, None])
     if not(beam_ctf is None):
         beam_ctf= xp.asarray(beam_ctf)
         if beam_ctf.shape[0]!=probe.shape[0]:
             beam_ctf=np.pad(beam_ctf, data_pad)
         if len(probe.shape)==3:
-            probe=ifft2_ishift(shift_fft2(probe)*xp.exp(-1j*beam_ctf)[:,:,None])
+            probe=pyptyfft.ifft2_ishift(pyptyfft.shift_fft2(probe)*xp.exp(-1j*beam_ctf)[:,:,None])
         else:
-            probe=ifft2_ishift(shift_fft2(probe)*xp.exp(-1j*beam_ctf)[:,:,None,None])
+            probe=pyptyfft.ifft2_ishift(pyptyfft.shift_fft2(probe)*xp.exp(-1j*beam_ctf)[:,:,None,None])
         if print_flag:
             sys.stdout.write("\nUsing the provided CTF for the beam initial guess!\n")
     if not(defocus_spread_modes is None):

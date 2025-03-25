@@ -10,7 +10,7 @@ try:
     from skimage.restoration import unwrap_phase
 except:
     pass
-from pypty.utils import *
+from pypty import utils as pyptyutils
 from tqdm import tqdm
 import matplotlib
 import csv
@@ -110,7 +110,7 @@ def fit_aberrations_to_wave(wave, px_size_A, acc_voltage, thresh=0,
     phase-=phase[kr==0]
     phase*=mag
     
-    ctf_matrix=get_ctf_matrix(kx, ky, len(aberrations_guess), wavelength, np)[:, mag]
+    ctf_matrix=pyptyutils.get_ctf_matrix(kx, ky, len(aberrations_guess), wavelength, np)[:, mag]
     ctf_matrix=np.swapaxes(ctf_matrix, 0,1)
     def jac_ctf_fit(x):
         nonlocal ctf_matrix
@@ -123,11 +123,11 @@ def fit_aberrations_to_wave(wave, px_size_A, acc_voltage, thresh=0,
     result=least_squares(objective,aberrations_guess, jac=jac_ctf_fit, ftol=ftol, loss=loss, xtol=xtol)
     aberrations=result["x"]
     num_abs=len(aberrations)
-    possible_n, possible_m, possible_ab=convert_num_to_nmab(num_abs)
-    aber_print, s=nmab_to_strings(possible_n, possible_m, possible_ab), ""
+    possible_n, possible_m, possible_ab=pyptyutils.convert_num_to_nmab(num_abs)
+    aber_print, s=pyptyutils.nmab_to_strings(possible_n, possible_m, possible_ab), ""
     for i in range(len(aberrations)): s+=aber_print[i]+": %.2e Å; "%aberrations[i];
     sys.stdout.write("\nFitted aberrations: %s"%s[:-1])
-    fitted_ctf=get_ctf(aberrations, kx, ky, wavelength, angle_offset=0)*mag
+    fitted_ctf=pyptyutils.get_ctf(aberrations, kx, ky, wavelength, angle_offset=0)*mag
     if plot:
         fig, ax=plt.subplots(1,3, figsize=(9,3))
         im0=ax[0].imshow(fitted_ctf)

@@ -14,8 +14,8 @@ try:
 except:
     import numpy as cp
     cpu_mode=True
-from pypty.fft import *
-from pypty.utils import *
+from pypty import fft as pyptyfft
+from pypty import utils as pyptyutils
 
 def run_tcbf_alignment(params, binning_for_fit=[8],
                         save=True, optimize_angle=True,  aberrations=None, n_aberrations_to_fit=12,
@@ -129,7 +129,7 @@ def run_tcbf_alignment(params, binning_for_fit=[8],
         mask_sequence=mask_sequence.reshape(scan_size[0], scan_size[1])
     if upsample_pattern!=1:
         if not(aperture is None):
-            aperture=downsample_something(aperture, upsample_pattern, np)
+            aperture=pyptyutils.downsample_something(aperture, upsample_pattern, np)
         data_pad=data_pad//upsample_pattern
         rez_pixel_size_A*=upsample_pattern
     if data_pad!=0 and not(aperture is None):
@@ -145,8 +145,8 @@ def run_tcbf_alignment(params, binning_for_fit=[8],
     print_flag=pypty_params.get("print_flag", False)
     flip_ky=pypty_params.get("flip_ky", False)
     num_abs=len(aberrations)
-    possible_n, possible_m, possible_ab=convert_num_to_nmab(num_abs)
-    aber_print, s=nmab_to_strings(possible_n, possible_m, possible_ab), ""
+    possible_n, possible_m, possible_ab=pyptyutils.convert_num_to_nmab(num_abs)
+    aber_print, s=pyptyutils.nmab_to_strings(possible_n, possible_m, possible_ab), ""
     for i in range(len(aberrations)): s+=aber_print[i]+" %.2e Å, "%aberrations[i];
     if print_flag:
         sys.stdout.write("\n******************************************************************************\n************************ Running the tcBF alignment **************************\n******************************************************************************\n")
@@ -348,13 +348,13 @@ def run_tcbf_alignment(params, binning_for_fit=[8],
                 binned_data_bright_field[:,:scan_pad,dummyind]=mean
                 binned_data_bright_field[:,-scan_pad:,dummyind]=mean
             zero_freq=np.argmin(binned_kx_detector**2+binned_ky_detector**2) ## find where is your lowest spatial frequency after binning
-            binned_data_bright_field_fourier=fft2(binned_data_bright_field, axes=(0,1)) ### fourier transform
+            binned_data_bright_field_fourier=pyptyfft.fft2(binned_data_bright_field, axes=(0,1)) ### fourier transform
             Matrix_shifts_x=np.zeros((len(binned_ky_detector), len(aberrations)))  ## this thing will be needed for aberation fit later
             Matrix_shifts_y=np.zeros((len(binned_ky_detector), len(aberrations)))
             for indmat2 in range(len(aberrations)): ## we prepare a Jacobian for the CTF fit
                 thisaberations_delta=np.zeros_like(aberrations)
                 thisaberations_delta[indmat2]=1
-                D_ctf_grad_x_dab, D_ctf_grad_y_dab=get_ctf_derivatives(thisaberations_delta, binned_kx_detector ,binned_ky_detector, wavelength, angle_offset)
+                D_ctf_grad_x_dab, D_ctf_grad_y_dab=pyptyutils.get_ctf_derivatives(thisaberations_delta, binned_kx_detector ,binned_ky_detector, wavelength, angle_offset)
                 Matrix_shifts_x[:,indmat2]=D_ctf_grad_x_dab*wavelength/(6.283185307179586*scan_step_A)
                 Matrix_shifts_y[:,indmat2]=D_ctf_grad_y_dab*wavelength/(6.283185307179586*scan_step_A)
             if print_flag:
@@ -365,7 +365,7 @@ def run_tcbf_alignment(params, binning_for_fit=[8],
             if print_flag:
                 sys.stdout.write("\nUsing results of previous binning")
                 sys.stdout.flush()
-        ctf_grad_x, ctf_grad_y=get_ctf_derivatives(aberrations,binned_kx_detector, binned_ky_detector, wavelength, angle_offset)
+        ctf_grad_x, ctf_grad_y=pyptyutils.get_ctf_derivatives(aberrations,binned_kx_detector, binned_ky_detector, wavelength, angle_offset)
             
         reference_x, reference_y=ctf_grad_x*wavelength/(6.283185307179586*scan_step_A),ctf_grad_y*wavelength/(6.283185307179586*scan_step_A) ## this are our reference shifts
         reference_shifts=np.zeros((2, reference_x.shape[0]))
@@ -381,14 +381,14 @@ def run_tcbf_alignment(params, binning_for_fit=[8],
         else: # option 2: cross-corelate the individual pixel images with an image corresponding to the lowest spatial frequency
             refence=binned_data_bright_field_fourier[:,:, zero_freq]
         if cross_corr_type=="phase":
-            full_cross_corr=cp.fft.fftshift(ifft2(cp.exp(-1j*cp.angle(binned_data_bright_field_fourier*cp.conjugate(refence)[:,:,None])), axes=(0,1)), axes=(0,1)) ## phase cross correlation
+            full_cross_corr=cp.fft.fftshift(pyptyfft.ifft2(cp.exp(-1j*cp.angle(binned_data_bright_field_fourier*cp.conjugate(refence)[:,:,None])), axes=(0,1)), axes=(0,1)) ## phase cross correlation
         else:
-            full_cross_corr=cp.fft.fftshift(ifft2( cp.conjugate(binned_data_bright_field_fourier)*refence[:,:,None]  , axes=(0,1)), axes=(0,1)) ## phase cross correlation
+            full_cross_corr=cp.fft.fftshift(pyptyfft.ifft2( cp.conjugate(binned_data_bright_field_fourier)*refence[:,:,None]  , axes=(0,1)), axes=(0,1)) ## phase cross correlation
         if not cpu_mode:
             reference_x=reference_x.get()
             reference_y=reference_y.get()
         if plot or save: ## plot the tcBF estimate
-            image_bf_binned_plot=cp.real(ifft2(image_bf_binned_fourier))
+            image_bf_binned_plot=cp.real(pyptyfft.ifft2(image_bf_binned_fourier))
             if not(cpu_mode):
                 image_bf_binned_plot=image_bf_binned_plot.get()
             plt.imshow(image_bf_binned_plot, cmap="gray")
@@ -496,7 +496,7 @@ def run_tcbf_alignment(params, binning_for_fit=[8],
                 aberrations, angle_offset=this_guess[:-1], this_guess[-1]
             else:
                 aberrations, angle_offset=this_guess, 0
-            ctf_grad_x, ctf_grad_y=get_ctf_derivatives(aberrations, binned_kx_detector_suc, binned_ky_detector_suc, wavelength, angle_offset)
+            ctf_grad_x, ctf_grad_y=pyptyutils.get_ctf_derivatives(aberrations, binned_kx_detector_suc, binned_ky_detector_suc, wavelength, angle_offset)
             this_shifts_x=ctf_grad_x*wavelength/(6.283185307179586*scan_step_A)
             this_shifts_y=ctf_grad_y*wavelength/(6.283185307179586*scan_step_A)
             if not(phase_cross_corr_formula): ### this rounds the residuals, so jacobian is not true anymore, but it also prevents fitting super high values for higher aberrations. It is what it is..
@@ -533,10 +533,10 @@ def run_tcbf_alignment(params, binning_for_fit=[8],
                 for indmat2 in range(len(aberrations)):
                     thisaberations_delta=np.zeros_like(aberrations)
                     thisaberations_delta[indmat2]=1
-                    D_ctf_grad_x_dab, D_ctf_grad_y_dab=get_ctf_derivatives(thisaberations_delta, binned_kx_detector_suc ,binned_ky_detector_suc, wavelength, angle_offset)
+                    D_ctf_grad_x_dab, D_ctf_grad_y_dab=pyptyutils.get_ctf_derivatives(thisaberations_delta, binned_kx_detector_suc ,binned_ky_detector_suc, wavelength, angle_offset)
                     Matrix_shifts_x[:,indmat2]=D_ctf_grad_x_dab*wavelength/(6.283185307179586*scan_step_A)
                     Matrix_shifts_y[:,indmat2]=D_ctf_grad_y_dab*wavelength/(6.283185307179586*scan_step_A)
-                angle_gradient_x, angle_gradient_y=get_ctf_gradient_rotation_angle(aberrations, binned_kx_detector_suc, binned_ky_detector_suc, wavelength, angle_offset)
+                angle_gradient_x, angle_gradient_y=pyptyutils.get_ctf_gradient_rotation_angle(aberrations, binned_kx_detector_suc, binned_ky_detector_suc, wavelength, angle_offset)
                 shape=len(binned_ky_detector_suc)
                 final_mat=np.zeros((shape*2, len(x)))
                 final_mat[:shape,:-1]=Matrix_shifts_x
@@ -563,7 +563,7 @@ def run_tcbf_alignment(params, binning_for_fit=[8],
             sys.stdout.write("\nCTF fitted successfully: %s."%(result.success))
             sys.stdout.flush()
         if plot or save: ## plot the results
-            ctf_grad_x, ctf_grad_y=get_ctf_derivatives(aberrations, binned_kx_detector_suc,binned_ky_detector_suc,  wavelength, angle_offset)
+            ctf_grad_x, ctf_grad_y=pyptyutils.get_ctf_derivatives(aberrations, binned_kx_detector_suc,binned_ky_detector_suc,  wavelength, angle_offset)
             fig, ax=plt.subplots(1,2, figsize=(10,5))
             ap_show=rotate(aperture_binned, angle=0, axes=(1, 0), reshape=False, order=0)
             ax[0].imshow(ap_show, cmap="gray", extent=[np.min(binned_kx_detector_full),np.max(binned_kx_detector_full), np.min(binned_ky_detector_full), np.max(binned_ky_detector_full)])
@@ -581,8 +581,8 @@ def run_tcbf_alignment(params, binning_for_fit=[8],
             plt.show()
         if print_flag:
             num_abs=len(aberrations)
-            possible_n, possible_m, possible_ab=convert_num_to_nmab(num_abs)
-            aber_print, s=nmab_to_strings(possible_n, possible_m, possible_ab), ""
+            possible_n, possible_m, possible_ab=pyptyutils.convert_num_to_nmab(num_abs)
+            aber_print, s=pyptyutils.nmab_to_strings(possible_n, possible_m, possible_ab), ""
             for i in range(len(aberrations)): s+=aber_print[i]+" %.2e A, "%aberrations[i];
             sys.stdout.write("\nFitted aberrations: %s"%s[:-2])
             if optimize_angle:
@@ -602,8 +602,8 @@ def run_tcbf_alignment(params, binning_for_fit=[8],
     
     if plot:
         num_abs=len(aberrations)
-        possible_n, possible_m, possible_ab=convert_num_to_nmab(num_abs)
-        leg=nmab_to_strings(possible_n, possible_m, possible_ab)
+        possible_n, possible_m, possible_ab=pyptyutils.convert_num_to_nmab(num_abs)
+        leg=pyptyutils.nmab_to_strings(possible_n, possible_m, possible_ab)
         fig, ax=plt.subplots(len(aberrations),1,figsize=(10, 2*len(aberrations)))
         if len(aberrations)==1:
             ax=[ax]
@@ -723,7 +723,7 @@ def upsampled_tcbf(pypty_params, upsample=5, pad=10,
     if data_pad!=0:
         aperture=aperture[data_pad:-data_pad,data_pad:-data_pad]
     if upsample_pattern!=1:
-        aperture=downsample_something(aperture, upsample_pattern, np)
+        aperture=pyptyutils.downsample_something(aperture, upsample_pattern, np)
         rez_pixel_size_A*=upsample_pattern
     scan_size= np.copy(pypty_params.get("scan_size", None))
     patterns=pypty_params.get("dataset", None)
@@ -816,7 +816,7 @@ def upsampled_tcbf(pypty_params, upsample=5, pad=10,
     weights=xp.zeros_like(mask_scan).astype(default_complex)
     O_r=xp.zeros_like(mask_scan).astype(default_complex)
     mask_for_weights=xp.fft.fft2(mask_scan)
-    drx, dry=get_ctf_derivatives(aberrations, dqx, dqy, wavelength, 0)
+    drx, dry=pyptyutils.get_ctf_derivatives(aberrations, dqx, dqy, wavelength, 0)
     drx, dry=xp.array(drx), xp.array(dry)
     drx*=wavelength/px_size_final
     dry*=wavelength/px_size_final
@@ -967,7 +967,7 @@ def run_tcbf_compressed_alignment(params, num_iterations,
  
     if upsample_pattern!=1:
         if not(aperture is None):
-            aperture=downsample_something(aperture, upsample_pattern, np)
+            aperture=pyptyutils.downsample_something(aperture, upsample_pattern, np)
         data_pad=data_pad//upsample_pattern
         rez_pixel_size_A*=upsample_pattern
         
@@ -985,8 +985,8 @@ def run_tcbf_compressed_alignment(params, num_iterations,
     print_flag=pypty_params.get("print_flag", False)
     flip_ky=pypty_params.get("flip_ky", False)
     num_abs=len(aberrations)
-    possible_n, possible_m, possible_ab=convert_num_to_nmab(num_abs)
-    aber_print, s=nmab_to_strings(possible_n, possible_m, possible_ab), ""
+    possible_n, possible_m, possible_ab=pyptyutils.convert_num_to_nmab(num_abs)
+    aber_print, s=pyptyutils.nmab_to_strings(possible_n, possible_m, possible_ab), ""
     for i in range(len(aberrations)): s+=aber_print[i]+" %.2e Å, "%aberrations[i];
     if print_flag:
         sys.stdout.write("\n******************************************************************************\n************************ Running the tcBF alignment **************************\n******************************************************************************\n")
@@ -1054,13 +1054,13 @@ def run_tcbf_compressed_alignment(params, num_iterations,
         binned_data_bright_field[:,:scan_pad,dummyind]=mean
         binned_data_bright_field[:,-scan_pad:,dummyind]=mean
     zero_freq=np.argmin(binned_kx_detector**2+binned_ky_detector**2) ## find where is your lowest spatial frequency after binning
-    binned_data_bright_field_fourier=fft2(binned_data_bright_field, axes=(0,1)) ### fourier transform
+    binned_data_bright_field_fourier=pyptyfft.fft2(binned_data_bright_field, axes=(0,1)) ### fourier transform
     Matrix_shifts_x=np.zeros((len(binned_ky_detector), len(aberrations)))  ## this thing will be needed for aberation fit later
     Matrix_shifts_y=np.zeros((len(binned_ky_detector), len(aberrations)))
     for indmat2 in range(len(aberrations)): ## we prepare a Jacobian for the CTF fit
         thisaberations_delta=np.zeros_like(aberrations)
         thisaberations_delta[indmat2]=1
-        D_ctf_grad_x_dab, D_ctf_grad_y_dab=get_ctf_derivatives(thisaberations_delta, binned_kx_detector ,binned_ky_detector, wavelength, angle_offset)
+        D_ctf_grad_x_dab, D_ctf_grad_y_dab=pyptyutils.get_ctf_derivatives(thisaberations_delta, binned_kx_detector ,binned_ky_detector, wavelength, angle_offset)
         Matrix_shifts_x[:,indmat2]=D_ctf_grad_x_dab*wavelength/(6.283185307179586*scan_step_A)
         Matrix_shifts_y[:,indmat2]=D_ctf_grad_y_dab*wavelength/(6.283185307179586*scan_step_A)
   
@@ -1089,7 +1089,7 @@ def run_tcbf_compressed_alignment(params, num_iterations,
             sys.stdout.flush()
         
        
-        ctf_grad_x, ctf_grad_y=get_ctf_derivatives(aberrations, binned_kx_detector, binned_ky_detector, wavelength, angle_offset)
+        ctf_grad_x, ctf_grad_y=pyptyutils.get_ctf_derivatives(aberrations, binned_kx_detector, binned_ky_detector, wavelength, angle_offset)
         reference_x, reference_y=ctf_grad_x*wavelength/(6.283185307179586*scan_step_A),ctf_grad_y*wavelength/(6.283185307179586*scan_step_A) ## this are our reference shifts
         reference_shifts=np.zeros((2, reference_x.shape[0]))
         reference_shifts[0]=reference_x
@@ -1102,16 +1102,16 @@ def run_tcbf_compressed_alignment(params, num_iterations,
         else: # option 2: cross-corelate the individual pixel images with an image corresponding to the lowest spatial frequency
             refence=binned_data_bright_field_fourier[:,:, zero_freq]
         if cross_corr_type=="phase":
-            full_cross_corr=cp.fft.fftshift(ifft2(cp.exp(-1j*cp.angle(binned_data_bright_field_fourier*cp.conjugate(refence)[:,:,None])), axes=(0,1)), axes=(0,1)) ## phase cross correlation
+            full_cross_corr=cp.fft.fftshift(pyptyfft.ifft2(cp.exp(-1j*cp.angle(binned_data_bright_field_fourier*cp.conjugate(refence)[:,:,None])), axes=(0,1)), axes=(0,1)) ## phase cross correlation
         else:
-            full_cross_corr=cp.fft.fftshift(ifft2( cp.conjugate(binned_data_bright_field_fourier)*refence[:,:,None]  , axes=(0,1)), axes=(0,1)) ## phase cross correlation
+            full_cross_corr=cp.fft.fftshift(pyptyfft.ifft2( cp.conjugate(binned_data_bright_field_fourier)*refence[:,:,None]  , axes=(0,1)), axes=(0,1)) ## phase cross correlation
         try:
             reference_x=reference_x.get()
             reference_y=reference_y.get()
         except:
             pass
         if plot or save: ## plot the tcBF estimate
-            image_bf_binned_plot=cp.real(ifft2(image_bf_binned_fourier))
+            image_bf_binned_plot=cp.real(pyptyfft.ifft2(image_bf_binned_fourier))
             try:
                 image_bf_binned_plot=image_bf_binned_plot.get()
             except:
@@ -1215,7 +1215,7 @@ def run_tcbf_compressed_alignment(params, num_iterations,
                 aberrations, angle_offset=this_guess[:-1], this_guess[-1]
             else:
                 aberrations, angle_offset=this_guess, 0
-            ctf_grad_x, ctf_grad_y=get_ctf_derivatives(aberrations, binned_kx_detector_suc, binned_ky_detector_suc, wavelength, angle_offset)
+            ctf_grad_x, ctf_grad_y=pyptyutils.get_ctf_derivatives(aberrations, binned_kx_detector_suc, binned_ky_detector_suc, wavelength, angle_offset)
             this_shifts_x=ctf_grad_x*wavelength/(6.283185307179586*scan_step_A)
             this_shifts_y=ctf_grad_y*wavelength/(6.283185307179586*scan_step_A)
             if not(phase_cross_corr_formula): ### this rounds the residuals, so jacobian is not true anymore, but it also prevents fitting super high values for higher aberrations. It is what it is..
@@ -1252,10 +1252,10 @@ def run_tcbf_compressed_alignment(params, num_iterations,
                 for indmat2 in range(len(aberrations)):
                     thisaberations_delta=np.zeros_like(aberrations)
                     thisaberations_delta[indmat2]=1
-                    D_ctf_grad_x_dab, D_ctf_grad_y_dab=get_ctf_derivatives(thisaberations_delta, binned_kx_detector_suc ,binned_ky_detector_suc, wavelength, angle_offset)
+                    D_ctf_grad_x_dab, D_ctf_grad_y_dab=pyptyutils.get_ctf_derivatives(thisaberations_delta, binned_kx_detector_suc ,binned_ky_detector_suc, wavelength, angle_offset)
                     Matrix_shifts_x[:,indmat2]=D_ctf_grad_x_dab*wavelength/(6.283185307179586*scan_step_A)
                     Matrix_shifts_y[:,indmat2]=D_ctf_grad_y_dab*wavelength/(6.283185307179586*scan_step_A)
-                angle_gradient_x, angle_gradient_y=get_ctf_gradient_rotation_angle(aberrations, binned_kx_detector_suc, binned_ky_detector_suc, wavelength, angle_offset)
+                angle_gradient_x, angle_gradient_y=pyptyutils.get_ctf_gradient_rotation_angle(aberrations, binned_kx_detector_suc, binned_ky_detector_suc, wavelength, angle_offset)
                 shape=len(binned_ky_detector_suc)
                 final_mat=np.zeros((shape*2, len(x)))
                 final_mat[:shape,:-1]=Matrix_shifts_x
@@ -1282,7 +1282,7 @@ def run_tcbf_compressed_alignment(params, num_iterations,
             sys.stdout.write("\nCTF fitted successfully: %s."%(result.success))
             sys.stdout.flush()
         if plot or save: ## plot the results
-            ctf_grad_x, ctf_grad_y=get_ctf_derivatives(aberrations, binned_kx_detector_suc,binned_ky_detector_suc,  wavelength, angle_offset)
+            ctf_grad_x, ctf_grad_y=pyptyutils.get_ctf_derivatives(aberrations, binned_kx_detector_suc,binned_ky_detector_suc,  wavelength, angle_offset)
             fig, ax=plt.subplots(1,2, figsize=(10,5))
             ap_show=aperture
             ax[0].imshow(ap_show, cmap="gray", extent=[np.min(kx_detector_full),np.max(kx_detector_full), np.min(ky_detector_full), np.max(ky_detector_full)])
@@ -1300,8 +1300,8 @@ def run_tcbf_compressed_alignment(params, num_iterations,
             plt.show()
         if print_flag:
             num_abs=len(aberrations)
-            possible_n, possible_m, possible_ab=convert_num_to_nmab(num_abs)
-            aber_print, s=nmab_to_strings(possible_n, possible_m, possible_ab), ""
+            possible_n, possible_m, possible_ab=pyptyutils.convert_num_to_nmab(num_abs)
+            aber_print, s=pyptyutils.nmab_to_strings(possible_n, possible_m, possible_ab), ""
             for i in range(len(aberrations)): s+=aber_print[i]+" %.2e A, "%aberrations[i];
             sys.stdout.write("\nFitted aberrations: %s"%s[:-2])
             if optimize_angle:
@@ -1323,8 +1323,8 @@ def run_tcbf_compressed_alignment(params, num_iterations,
     
     if plot:
         num_abs=len(aberrations)
-        possible_n, possible_m, possible_ab=convert_num_to_nmab(num_abs)
-        leg=nmab_to_strings(possible_n, possible_m, possible_ab)
+        possible_n, possible_m, possible_ab=pyptyutils.convert_num_to_nmab(num_abs)
+        leg=pyptyutils.nmab_to_strings(possible_n, possible_m, possible_ab)
         fig, ax=plt.subplots(len(aberrations),1,figsize=(10, 2*len(aberrations)))
         if len(aberrations)==1:
             ax=[ax]
