@@ -1,0 +1,323 @@
+Module: direct_ptychography.py
+	Usages from fft.py:
+		Function shift_fft2 at line 96
+		Function ifft2_ishift at line 105
+		Function ifft2_ishift at line 121
+		Function shift_fft2 at line 121
+		Function shift_fft2 at line 146
+		Function shift_fft2 at line 152
+		Function ifft2_ishift at line 167
+		Function shift_fft2 at line 178
+		Function ifft2_ishift at line 190
+		Function ifft2_ishift at line 219
+	Usages from utils.py:
+		Function downsample_something at line 101
+		Function apply_defocus_probe at line 106
+		Function convert_num_to_nmab at line 113
+		Function nmab_to_strings at line 114
+		Function get_ctf at line 120
+		Function get_window at line 134
+
+Module: initialize.py
+	Usages from dpc.py:
+		Function GetPLRotation at line 459
+	Usages from utils.py:
+		Function load_params at line 335
+		Function downsample_something at line 992
+
+Module: iterative_ptychography.py
+	Usages from fft.py:
+		Function ifft2 at line 450
+		Function fft2 at line 451
+		Function ifft2_ishift at line 456
+		Function shift_fft2 at line 457
+		Function shift_fft2 at line 643
+		Function ifft2_ishift at line 645
+		Function shift_fft2 at line 648
+		Function ifft2_ishift at line 650
+		Function ifft2 at line 680
+		Function fft2 at line 681
+		Function ifft2_ishift at line 685
+		Function shift_fft2 at line 686
+	Usages from loss_and_direction.py:
+		Function make_states_orthogonal at line 403
+		Function charge_flip at line 408
+		Function loss_and_direction at line 430
+		Function loss_and_direction at line 660
+	Usages from utils.py:
+		Function load_params at line 52
+		Function prepare_saving_stuff at line 83
+		Function save_params at line 85
+		Function print_pypty_header at line 86
+		Function string_params_to_usefull_params at line 87
+		Function preprocess_dataset at line 223
+		Function preprocess_dataset at line 236
+		Function create_probe_from_nothing at line 241
+		Function create_static_background_from_nothing at line 242
+		Function prepare_main_loop_params at line 243
+		Function try_to_gpu at line 245
+		Function try_to_gpu at line 256
+		Function apply_probe_modulation at line 257
+		Function fourier_clean at line 258
+		Function get_compute_batch at line 264
+		Function fourier_clean at line 274
+		Function fourier_clean at line 276
+		Function save_current_checkpoint_obj_probe at line 284
+		Function preprocess_dataset at line 285
+		Function get_value_for_epoch at line 294
+		Function get_window at line 325
+		Function try_to_initialize_beam_current at line 330
+		Function print_recon_state at line 334
+		Function save_current_checkpoint_obj_probe at line 336
+		Function save_updated_arrays at line 337
+		Function save_current_checkpoint_obj_probe at line 338
+		Function fourier_clean at line 398
+		Function fourier_clean at line 400
+		Function fourier_clean at line 404
+		Function fourier_clean at line 416
+		Function fourier_clean at line 418
+		Function fourier_clean at line 444
+		Function fourier_clean at line 446
+		Function complex_grad_to_phase_grad at line 448
+		Function complex_grad_to_mag_grad at line 453
+		Function complex_grad_to_phase_grad at line 459
+		Function fourier_clean at line 569
+		Function fourier_clean at line 571
+		Function fourier_clean at line 634
+		Function fourier_clean at line 636
+		Function fourier_clean at line 674
+		Function fourier_clean at line 676
+		Function complex_grad_to_phase_grad at line 678
+		Function complex_grad_to_mag_grad at line 683
+		Function complex_grad_to_phase_grad at line 688
+		Function wolfe_1 at line 697
+		Function wolfe_2 at line 698
+
+Module: loss_and_direction.py
+	Usages from fft.py:
+		Function fftshift at line 220
+		Function fftshift at line 220
+		Function fftfreq at line 220
+		Function fftfreq at line 220
+		Function fftfreq at line 225
+		Function fftfreq at line 225
+		Function fft2 at line 344
+		Function ifft2 at line 346
+		Function fft2 at line 363
+		Function ifft2 at line 364
+		Function fft2 at line 367
+		Function ifft2 at line 369
+		Function fft2 at line 377
+		Function ifft2 at line 379
+		Function fft2 at line 407
+		Function ifft2 at line 409
+		Function shift_fft2 at line 416
+		Function fft2 at line 420
+		Function ifft2 at line 421
+		Function ifft2 at line 429
+		Function fft2 at line 429
+		Function ifft2_ishift at line 503
+		Function ifft2 at line 506
+		Function fft2 at line 506
+		Function fft2 at line 509
+		Function ifft2 at line 510
+		Function fft2 at line 540
+		Function ifft2 at line 542
+		Function fft2 at line 553
+		Function ifft2 at line 555
+		Function fft2 at line 584
+		Function ifft2 at line 586
+		Function fft2 at line 595
+		Function ifft2 at line 597
+		Function fft2 at line 755
+		Function ifft2 at line 760
+		Function shift_fft2 at line 874
+		Function shift_fft2 at line 885
+		Function ifft2_ishift at line 893
+		Function shift_fft2 at line 893
+		Function fftshift at line 900
+		Function ifft2_ishift at line 900
+		Function shift_fft2 at line 900
+		Function fftfreq at line 987
+		Function fftfreq at line 988
+		Function fftfreq at line 989
+		Function fftn at line 996
+		Function ifftn at line 997
+		Function fftshift at line 1227
+		Function fftfreq at line 1227
+		Function fftshift at line 1228
+		Function fftfreq at line 1228
+		Function shift_fft2 at line 1235
+		Function ifft2_ishift at line 1239
+		Function fftfreq at line 1334
+		Function fftfreq at line 1335
+		Function fftfreq at line 1336
+		Function fftn at line 1339
+		Function ifftn at line 1341
+		Function fftfreq at line 1369
+		Function fftfreq at line 1369
+		Function fft2 at line 1374
+		Function ifft2 at line 1382
+		Function ifft2 at line 1388
+		Function fft2 at line 1388
+		Function fft2 at line 1399
+		Function ifft2 at line 1406
+		Function ifft2 at line 1412
+		Function fft2 at line 1412
+	Usages from multislice.py:
+		Function multislice at line 389
+		Function better_multislice at line 396
+		Function yoshida_multislice at line 402
+		Function multislice_grads at line 544
+		Function better_multislice_grads at line 547
+		Function yoshida_multislice_grads at line 549
+	Usages from utils.py:
+		Function create_spatial_frequencies at line 217
+		Function get_ctf_matrix at line 239
+		Function preprocess_dataset at line 314
+		Function preprocess_dataset at line 317
+		Function downsample_something_3d at line 431
+		Function upsample_something_3d at line 500
+		Function generate_mask_for_grad_from_pos at line 671
+
+Module: multislice.py
+	Usages from fft.py:
+		Function fft2 at line 76
+		Function fft2 at line 79
+		Function ifft2 at line 80
+		Function fft2 at line 82
+		Function ifft2 at line 83
+		Function ifft2 at line 85
+		Function fft2 at line 87
+		Function ifft2 at line 88
+		Function ifft2 at line 92
+		Function fft2 at line 96
+		Function ifft2 at line 97
+		Function ifftshift at line 190
+		Function fft2 at line 213
+		Function ifft2 at line 214
+		Function fft2 at line 216
+		Function ifft2 at line 217
+		Function fft2 at line 219
+		Function ifft2 at line 220
+		Function fft2 at line 222
+		Function fft2 at line 224
+		Function fft2 at line 225
+		Function ifft2 at line 226
+		Function ifft2 at line 227
+		Function fft2 at line 227
+		Function fft2 at line 317
+		Function ifft2 at line 319
+		Function fft2 at line 322
+		Function ifft2 at line 324
+		Function fft2 at line 327
+		Function ifft2 at line 329
+		Function fft2 at line 437
+		Function ifft2 at line 438
+		Function fft2 at line 441
+		Function ifft2 at line 442
+		Function fft2 at line 445
+		Function ifft2 at line 446
+		Function fft2 at line 529
+		Function ifft2 at line 532
+		Function fft2 at line 623
+		Function ifft2 at line 630
+		Function fft2 at line 636
+		Function ifft2 at line 638
+	Usages from utils.py:
+		Function fourier_clean_3d at line 68
+		Function fourier_clean_3d at line 90
+		Function fourier_clean_3d at line 94
+		Function fourier_clean_3d at line 200
+		Function fourier_clean_3d at line 232
+		Function fourier_clean_3d at line 307
+		Function fourier_clean_3d at line 308
+		Function fourier_clean_3d at line 332
+		Function fourier_clean_3d at line 422
+		Function fourier_clean_3d at line 423
+		Function fourier_clean_3d at line 424
+		Function fourier_clean_3d at line 425
+		Function fourier_clean_3d at line 449
+		Function fourier_clean_3d at line 450
+		Function fourier_clean_3d at line 451
+		Function fourier_clean_3d at line 454
+
+Module: tcbf.py
+	Usages from fft.py:
+		Function fft2 at line 351
+		Function ifft2 at line 384
+		Function ifft2 at line 386
+		Function ifft2 at line 391
+		Function fft2 at line 1057
+		Function ifft2 at line 1105
+		Function ifft2 at line 1107
+		Function ifft2 at line 1114
+	Usages from utils.py:
+		Function downsample_something at line 132
+		Function convert_num_to_nmab at line 148
+		Function nmab_to_strings at line 149
+		Function get_ctf_derivatives at line 357
+		Function get_ctf_derivatives at line 368
+		Function get_ctf_derivatives at line 499
+		Function get_ctf_derivatives at line 536
+		Function get_ctf_gradient_rotation_angle at line 539
+		Function get_ctf_derivatives at line 566
+		Function convert_num_to_nmab at line 584
+		Function nmab_to_strings at line 585
+		Function convert_num_to_nmab at line 605
+		Function nmab_to_strings at line 606
+		Function downsample_something at line 726
+		Function get_ctf_derivatives at line 819
+		Function downsample_something at line 970
+		Function convert_num_to_nmab at line 988
+		Function nmab_to_strings at line 989
+		Function get_ctf_derivatives at line 1063
+		Function get_ctf_derivatives at line 1092
+		Function get_ctf_derivatives at line 1218
+		Function get_ctf_derivatives at line 1255
+		Function get_ctf_gradient_rotation_angle at line 1258
+		Function get_ctf_derivatives at line 1285
+		Function convert_num_to_nmab at line 1303
+		Function nmab_to_strings at line 1304
+		Function convert_num_to_nmab at line 1326
+		Function nmab_to_strings at line 1327
+
+Module: utils.py
+	Usages from fft.py:
+		Function fftshift at line 51
+		Function fftfreq at line 51
+		Function fftshift at line 52
+		Function fftfreq at line 52
+		Function shift_fft2 at line 61
+		Function ifft2_ishift at line 70
+		Function fftshift at line 104
+		Function fftfreq at line 104
+		Function fftshift at line 105
+		Function fftfreq at line 105
+		Function shift_fft2 at line 114
+		Function ifft2_ishift at line 121
+		Function fftfreq at line 157
+		Function fftfreq at line 157
+		Function fftshift at line 171
+		Function fftfreq at line 190
+		Function fftfreq at line 190
+		Function fft2 at line 192
+		Function ifft2 at line 193
+		Function fft2 at line 818
+		Function fft2 at line 820
+		Function ifft2 at line 821
+		Function ifft2_ishift at line 1414
+		Function shift_fft2 at line 1414
+		Function ifft2_ishift at line 1416
+		Function shift_fft2 at line 1416
+		Function ifft2_ishift at line 1422
+		Function shift_fft2 at line 1422
+		Function ifft2_ishift at line 1424
+		Function shift_fft2 at line 1424
+
+Module: vaa.py
+	Usages from utils.py:
+		Function get_ctf_matrix at line 113
+		Function convert_num_to_nmab at line 126
+		Function nmab_to_strings at line 127
+		Function get_ctf at line 130

@@ -26,8 +26,142 @@ def loss_and_direction(this_obj, full_probe, this_pos_array, this_pos_correction
 
     Parameters
     ----------
-    Params : list
-        Way to many to describe right now
+    this_obj: ndarray
+        Complex 4D object (current estimate)
+    full_probe: ndarray
+        Complex probe (y,x,modes) optionally 4D (y,x,modes, scenatios)
+    this_pos_array: ndarray
+        Integer beam postions in pixels [[y0,x0],.. [yn, xn]]. Note: units are pixels, not angstrom!
+    this_pos_correction: ndarray
+        Float sub-pixel postions for more precise beam shift. Note: units are pixels, not angstrom!
+    this_tilt_array: ndarray
+        Beam tilts in radians, shape should be (N_measurements, 6), where first two tilts are applied before the sample, second and third are applied inside (tilted propagator) and two last are applied after the sample
+    this_tilts_correction: ndarray
+        legacy paramter, actually is not really required. It is a correction that is added to the tilts array.
+    this_distances: ndarray
+        
+    measured_array: ndarray  
+    
+    algorithm_type: string 
+    
+    this_wavelength: float 
+    
+    this_step_probe: float 
+    
+    this_step_obj: float 
+    
+    this_step_pos_correction: float 
+    
+    this_step_tilts: float 
+    
+    masks: ndarray 
+    
+    pixel_size_x_A: float 
+    
+    pixel_size_y_A: float 
+    
+    recon_type: string 
+    
+    Cs: float 
+    
+    defocus_array: ndarray 
+    
+    alpha_near_field: float 
+    
+    damping_cutoff_multislice: float 
+    
+    smooth_rolloff: float 
+    
+    propmethod: string 
+    
+    this_chopped_sequence: ndarray 
+    
+    load_one_by_one: bool 
+    
+    data_multiplier: int 
+    
+    data_pad: int 
+    
+    phase_plate_in_h5: string
+    
+    this_loss_weight: float 
+    
+    data_bin: int 
+    
+    data_shift_vector: tuple 
+    
+    upsample_pattern: int 
+    
+    static_background: ndarray or float
+    
+    this_step_static_background: float 
+    
+    tilt_mode: int 
+    
+    aberration_marker: ndarray or None
+    
+    probe_marker: ndarray or None
+    
+    aberrations_array: ndarray or None
+    
+    compute_batch: int 
+    
+    phase_only_obj: bool 
+    
+    beam_current: ndarray 
+    
+    this_beam_current_step: float 
+    
+    this_step_aberrations_array: float 
+    
+    default_float: dtype 
+    
+    default_complex: dtype 
+    
+    xp: module 
+    
+    is_first_epoch: bool
+    
+    scan_size: tuple or list or ndarray
+    
+    fast_axis_reg_weight_positions: float
+    
+    slow_axis_reg_weight_positions: float 
+    
+    slow_axis_reg_weight_tilts: float 
+    
+    current_deformation_reg_weight_positions: float 
+    
+    current_deformation_reg_weight_tilts: float 
+    
+    fast_axis_reg_weight_tilts: float 
+    
+    aperture_mask: ndarray 
+    
+    probe_reg_weight: float 
+    
+    current_window_weight: float 
+    
+    current_window: ndarray 
+    
+    phase_norm_weight: float 
+    
+    abs_norm_weight: float 
+    
+    atv_weight: float 
+    
+    atv_q: float 
+    
+    atv_p: float 
+    
+    mixed_variance_weight: float 
+    
+    mixed_variance_sigma: float 
+    
+    smart_memory: bool
+    
+    print_flag: int
+        
         
     Returns
     -------
