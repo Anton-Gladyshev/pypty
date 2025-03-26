@@ -42,10 +42,12 @@ The examples will be provided in the `examples` folder. To to configure a **comp
 
 # **_Documentation_**
 
-Documentation can be accesses localy via 
+Documentation can be generated localy via 
 
 ```bash
 bash generate_docs.sh
 ```
 
-There are also mark-down notes about every function and module in `docs/reference/pypty`
+or launched in browser with file `site/index.html`
+
+
