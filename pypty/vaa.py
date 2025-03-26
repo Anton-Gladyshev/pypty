@@ -130,7 +130,7 @@ def fit_aberrations_to_wave(wave, px_size_A, acc_voltage, thresh=0,
     phase_crop=phase[mag]
     def objective(aberrations):
         nonlocal phase_crop, ctf_matrix
-        ctf=cp.sum(aberrations[None,:]*ctf_matrix, axis=1)
+        ctf=np.sum(aberrations[None,:]*ctf_matrix, axis=1)
         return ctf-phase_crop
     result=least_squares(objective,aberrations_guess, jac=jac_ctf_fit, ftol=ftol, loss=loss, xtol=xtol)
     aberrations=result["x"]
