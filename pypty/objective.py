@@ -26,141 +26,141 @@ def loss_and_direction(this_obj, full_probe, this_pos_array, this_pos_correction
 
     Parameters
     ----------
-    this_obj: ndarray
+    this_obj : ndarray
         Complex 4D object (current estimate)
-    full_probe: ndarray
+    full_probe : ndarray
         Complex probe (y,x,modes) optionally 4D (y,x,modes, scenatios)
-    this_pos_array: ndarray
+    this_pos_array : ndarray
         Integer beam postions in pixels [[y0,x0],.. [yn, xn]]. Note: units are pixels, not angstrom!
-    this_pos_correction: ndarray
+    this_pos_correction : ndarray
         Float sub-pixel postions for more precise beam shift. Note: units are pixels, not angstrom!
-    this_tilt_array: ndarray
+    this_tilt_array : ndarray
         Beam tilts in radians, shape should be (N_measurements, 6), where first two tilts are applied before the sample, second and third are applied inside (tilted propagator) and two last are applied after the sample
-    this_tilts_correction: ndarray
+    this_tilts_correction : ndarray
         legacy paramter, actually is not really required. It is a correction that is added to the tilts array.
-    this_distances: ndarray
-        
-    measured_array: ndarray  
-    
+    this_distances : ndarray
+        either just one value for a common slice spacing or list of values for each slice. If object has N slices, it should have N-1 entries.
+    measured_array : ndarray  
+        array or h5-dataset with diffraction patterns. Should be 3D, [N_measurements, y,x]
     algorithm_type: string 
-    
-    this_wavelength: float 
-    
-    this_step_probe: float 
-    
-    this_step_obj: float 
-    
+        string indicating the loss function (error metric)
+    this_wavelength : float 
+        Electron wavelength in Angstrom
+    this_step_probe : float 
+        do you refine the beam?
+    this_step_obj : float 
+        do you refine the object?
     this_step_pos_correction: float 
+        do you refine the positions?
+    this_step_tilts : float 
+        do you refine the tilts?
+    masks : ndarray 
+        optional, if the data is compressed, you should provide the 3D array with virtual detectors [N_detectors, y,x].
+    pixel_size_x_A : float 
+        real-space pixel size in x-direction (Angstrom).
+    pixel_size_y_A : float 
+        real-space pixel size in y-direction (Angstrom).
+    recon_type : string 
+        "far_field" or "near_field". Changes the exit-wave propagation regime.
+    Cs : float 
+        Spherical aberration (Angstrom). Only needed for near-field propagation.
+    defocus_array : ndarray 
+        Array of exit-wave defocus values (Angstrom). Only needed for near-field propagation.
+    alpha_near_field : float 
+        Flux-preserving correction for near-field propagation.
+    damping_cutoff_multislice : float 
+        Cutoff (fraction smaller than 1) beyond which the Fouirer-space is cleaned.
+    smooth_rolloff : float 
+        Smooth rolloff for Fourier masking
+    propmethod : string 
+        string indicating the method for split-step integration
+    this_chopped_sequence : ndarray 
+        
+    load_one_by_one : bool 
     
-    this_step_tilts: float 
+    data_multiplier : int 
     
-    masks: ndarray 
+    data_pad : int 
     
-    pixel_size_x_A: float 
+    phase_plate_in_h5 : string
     
-    pixel_size_y_A: float 
+    this_loss_weight : float 
     
-    recon_type: string 
+    data_bin : int 
     
-    Cs: float 
+    data_shift_vector : tuple 
     
-    defocus_array: ndarray 
+    upsample_pattern : int 
     
-    alpha_near_field: float 
+    static_background : ndarray or float
     
-    damping_cutoff_multislice: float 
+    this_step_static_background : float 
     
-    smooth_rolloff: float 
+    tilt_mode : int 
     
-    propmethod: string 
+    aberration_marker : ndarray
     
-    this_chopped_sequence: ndarray 
+    probe_marker : ndarray
     
-    load_one_by_one: bool 
+    aberrations_array : ndarray
     
-    data_multiplier: int 
+    compute_batch : int 
     
-    data_pad: int 
+    phase_only_obj : bool 
     
-    phase_plate_in_h5: string
+    beam_current : ndarray 
     
-    this_loss_weight: float 
+    this_beam_current_step : float 
     
-    data_bin: int 
+    this_step_aberrations_array : float 
     
-    data_shift_vector: tuple 
+    default_float : dtype 
     
-    upsample_pattern: int 
+    default_complex : dtype 
     
-    static_background: ndarray or float
+    xp : module 
     
-    this_step_static_background: float 
+    is_first_epoch : bool
     
-    tilt_mode: int 
+    scan_size : tuple
     
-    aberration_marker: ndarray or None
+    fast_axis_reg_weight_positions : float
     
-    probe_marker: ndarray or None
+    slow_axis_reg_weight_positions : float 
     
-    aberrations_array: ndarray or None
+    slow_axis_reg_weight_tilts : float 
     
-    compute_batch: int 
+    current_deformation_reg_weight_positions : float 
     
-    phase_only_obj: bool 
+    current_deformation_reg_weight_tilts : float 
     
-    beam_current: ndarray 
+    fast_axis_reg_weight_tilts : float 
     
-    this_beam_current_step: float 
+    aperture_mask : ndarray 
     
-    this_step_aberrations_array: float 
+    probe_reg_weight : float 
     
-    default_float: dtype 
+    current_window_weight : float 
     
-    default_complex: dtype 
+    current_window : ndarray 
     
-    xp: module 
+    phase_norm_weight : float 
     
-    is_first_epoch: bool
+    abs_norm_weight : float 
     
-    scan_size: tuple or list or ndarray
+    atv_weight : float 
     
-    fast_axis_reg_weight_positions: float
+    atv_q : float 
     
-    slow_axis_reg_weight_positions: float 
+    atv_p : float 
     
-    slow_axis_reg_weight_tilts: float 
+    mixed_variance_weight : float 
     
-    current_deformation_reg_weight_positions: float 
+    mixed_variance_sigma : float 
     
-    current_deformation_reg_weight_tilts: float 
+    smart_memory : bool
     
-    fast_axis_reg_weight_tilts: float 
-    
-    aperture_mask: ndarray 
-    
-    probe_reg_weight: float 
-    
-    current_window_weight: float 
-    
-    current_window: ndarray 
-    
-    phase_norm_weight: float 
-    
-    abs_norm_weight: float 
-    
-    atv_weight: float 
-    
-    atv_q: float 
-    
-    atv_p: float 
-    
-    mixed_variance_weight: float 
-    
-    mixed_variance_sigma: float 
-    
-    smart_memory: bool
-    
-    print_flag: int
+    print_flag : int
         
         
     Returns
