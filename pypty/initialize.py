@@ -292,7 +292,7 @@ def append_exp_params(experimental_params, pypty_params=None):
         Updated PyPty parameter dictionary.
     
     Notes
-    -------
+    -----
     experimental_params should contain following entries:
         -data_path - path to a PyPty-style 3d .h5 file [N_measurements, ky,kx] or .npy Nion-style 4d-stem dataset (or 3d .npy dataset)
         -masks - 3d numpy array or None. if data is compressed provide the virtual detectors (masks) shape should be [N_masks,ky,kx]

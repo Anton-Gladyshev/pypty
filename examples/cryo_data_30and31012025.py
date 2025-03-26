@@ -130,4 +130,4 @@ pypty_params=pypty.initialize.get_focussed_probe_from_vacscan(pypty_params, vac_
 pypty_params=pypty.initialize.tiltbeamtodata(pypty_params, align_type="com")
 
 pypty_params["print_flag"]=3
-pypty.iterative_ptychography.run_ptychography(pypty_params)
+pypty.iterative.run(pypty_params)

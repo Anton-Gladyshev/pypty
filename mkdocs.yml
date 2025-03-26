@@ -1,0 +1,96 @@
+site_name: PyPty (python + ptychography)
+theme:
+  name: material
+  palette:
+    - scheme: slate  # dark mode; use 'default' for light mode
+      primary: deep purple
+      accent: cyan
+      toggle:
+        icon: material/weather-night
+        name: Switch to light mode
+    - scheme: default  # optional toggle for light mode
+      primary: indigo
+      accent: teal
+      toggle:
+        icon: material/weather-sunny
+        name: Switch to dark mode
+  font:
+    text: Roboto
+    code: Roboto Mono
+  logo: logo.png
+  features:
+    - navigation.expand
+    - navigation.sections
+    - content.code.annotate
+    - content.tabs.link  # linkable tabs
+
+markdown_extensions:
+  - toc:
+      permalink: true
+  - admonition
+  - attr_list
+  - def_list
+  - codehilite:
+      guess_lang: false
+  - pymdownx.superfences:
+      preserve_tabs: true
+  - pymdownx.highlight:
+      anchor_linenums: true
+      pygments_style: monokai
+  - pymdownx.inlinehilite
+  - pymdownx.tabbed
+  - pymdownx.details
+  - pymdownx.snippets
+  
+
+
+plugins:
+  - search
+  - autorefs
+  - mkdocstrings:
+      handlers:
+        python:
+          options:
+           # members: true
+         #   group_by_module: true
+          #  show_submodules: true
+            #show_inheritance_diagram: true
+            show_source: false
+            # Headings options
+            heading_level: 3
+         
+            show_symbol_type_toc: false
+            # Members options
+           # inherited_members: true
+           # members_order: alphabetical
+          #  filters: ['!^_', ^__init__]
+          #  summary: true
+            show_labels: true
+            # Docstrings options
+            docstring_section_style: table
+            show_signature_annotations: false
+            separate_signature: true
+            show_source: false
+            heading_level: 3
+            docstring_style: numpy
+
+
+
+nav:
+  - Home: index.md
+  - Guide for creating custom presets: custom_presets.md
+  - Guide for using provided initialization routines: ini_custom.md
+  - API Reference:
+    - initialize: reference/initialize.md
+    - dpc: reference/dpc.md
+    - tcbf: reference/tcbf.md
+    - direct: reference/direct.md
+    - iterative: reference/iterative.md
+    - objective: reference/objective.md
+    - multicore: reference/multicore.md
+    - fft: reference/fft.md
+    - utils: reference/utils.md
+    - se: reference/se.md
+    - vaa: reference/vaa.md
+
+

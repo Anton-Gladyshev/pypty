@@ -1,0 +1,5 @@
+# `pypty.iterative`
+
+::: pypty.iterative
+
+
