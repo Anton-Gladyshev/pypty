@@ -294,39 +294,54 @@ def append_exp_params(experimental_params, pypty_params=None):
     Notes
     -----
     experimental_params should contain following entries:
-        -data_path - path to a PyPty-style 3d .h5 file [N_measurements, ky,kx] or .npy Nion-style 4d-stem dataset (or 3d .npy dataset)
-        -masks - 3d numpy array or None. if data is compressed provide the virtual detectors (masks) shape should be [N_masks,ky,kx]
-        -output_folder - path to an outputfolder where the results will be stored
-        -path_json - path to a nion-style json file with metadata (optional)
-        -acc_voltage - float, accelerating voltage in kV
+    
+        data_path - path to a PyPty-style 3d .h5 file [N_measurements, ky,kx] or .npy Nion-style 4d-stem dataset (or 3d .npy dataset)
+        
+        masks - 3d numpy array or None. if data is compressed provide the virtual detectors (masks) shape should be [N_masks,ky,kx]
+        
+        output_folder - path to an outputfolder where the results will be stored
+        
+        path_json - path to a nion-style json file with metadata (optional)
+        
+        acc_voltage - float, accelerating voltage in kV
         
         One or multiple of the following callibrations:
-            -rez_pixel_size_A - reciprocal pixel size in Å^-1
-            -rez_pixel_size_mrad - reciprocal pixel size in mrad
+            rez_pixel_size_A - reciprocal pixel size in Å^-1
+            rez_pixel_size_mrad - reciprocal pixel size in mrad
+            conv_semiangle_mrad - beam convergence semi-angle in mrad
+            aperture - (optional)- binary 2D mask
+            bright_threshold - threshold to estimate an aperture, everything above threshold times maximum value in a pacbed will be concidered as bright field disk.
             
-            -conv_semiangle_mrad - beam convergence semi-angle in mrad
-            -aperture - (optional)- binary 2D mask
-            -bright_threshold - threshold to estimate an aperture, everything above threshold times maximum value in a pacbed will be concidered as bright field disk.
-        -data_pad - int, reciprocal space padding. If None (default), pading is 1/4 of the total width of a diffraction pattern
-        -upsample_pattern - int, default 1 (no upsampling)
+        data_pad - int, reciprocal space padding. If None (default), pading is 1/4 of the total width of a diffraction pattern
+        upsample_pattern - int, default 1 (no upsampling)
         
-        -aberrations - list or 1d numpy array containing beam aberrations (in Å). Aberrations are stored in Krivanek notation, e.g. C10, C12a, C12b, C21a, C21b, C23a, C23b, C30 etc
-        -defocus - float, default 0. Extra probe defocus besides the one contained in aberrations.
+        aberrations - list or 1d numpy array containing beam aberrations (in Å). Aberrations are stored in Krivanek notation, e.g. C10, C12a, C12b, C21a, C21b, C23a, C23b, C30 etc
         
-        -scan_size - tuple of two ints, number of scan points along slow (y) and fast (x) axes. Optional. If no scan step or position grid is provided, it will be used to get the scan step
-        -scan_step_A - float, scan step (STEM pixel size) in Å.
-        -fov_nm - float, FOV along the fast axis in nm.
-        -special_postions_A - 2d numpy array, default None. If you acquiered a data on a special non-rectangular grid, please specify the positions in Å via this array for all measurements in a following form: [y_0,x_0],[y_1,x_1],....[y_n,x_n]]
-        -transform_axis_matrix- 2x2 matrix for postions transformation
-        -PLRotation_deg - float, rotation angle between scan and detector axes. Default None. If None, a DPC measurement will be exectuted to get this angle. !!!!!!! Note that negative PLRotation_deg values rotate scan counter clockwise and diffraction space clockwise !!!!!!!!!!!
-        -flip_ky - boolean Flag. Default is False. If no PyPty-style h5 data was created, this flag will flip the y-axis of diffraction patterns.
+        defocus - float, default 0. Extra probe defocus besides the one contained in aberrations.
         
-        -total_thickness - total thickness of a sample in Å. Has no effect if num_slices is 1 and propagation method (pypty_params entry) is multislice 
-        -num_slices - integer, number of slices, default is 1.
+        scan_size - tuple of two ints, number of scan points along slow (y) and fast (x) axes. Optional. If no scan step or position grid is provided, it will be used to get the scan step
         
-        -plot - boolean Flag, default is True 
-        -print_flag - integer. Default is 1. If 0 nothing will be printed. 1 prints only thelatest state of the computation, 2 prints every state as a separate line. 3 prints the linesearch progress in iterative optimization. 4 prints everything that 3 does and if constraints are applied, it prints how they contribute so that a user can configure the weights properly.
-        -save_preprocessing_files - Boolean Flag. Default is True. 
+        scan_step_A - float, scan step (STEM pixel size) in Å.
+        
+        fov_nm - float, FOV along the fast axis in nm.
+        
+        special_postions_A - 2d numpy array, default None. If you acquiered a data on a special non-rectangular grid, please specify the positions in Å via this array for all measurements in a following form: [y_0,x_0],[y_1,x_1],....[y_n,x_n]]
+        
+        transform_axis_matrix- 2x2 matrix for postions transformation
+        
+        PLRotation_deg - float, rotation angle between scan and detector axes. Default None. If None, a DPC measurement will be exectuted to get this angle. !!!!!!! Note that negative PLRotation_deg values rotate scan counter clockwise and diffraction space clockwise !!!!!!!!!!!
+        
+        flip_ky - boolean Flag. Default is False. If no PyPty-style h5 data was created, this flag will flip the y-axis of diffraction patterns.
+        
+        total_thickness - total thickness of a sample in Å. Has no effect if num_slices is 1 and propagation method (pypty_params entry) is multislice 
+        
+        num_slices - integer, number of slices, default is 1.
+        
+        plot - boolean Flag, default is True 
+        
+        print_flag - integer. Default is 1. If 0 nothing will be printed. 1 prints only thelatest state of the computation, 2 prints every state as a separate line. 3 prints the linesearch progress in iterative optimization. 4 prints everything that 3 does and if constraints are applied, it prints how they contribute so that a user can configure the weights properly.
+        
+        save_preprocessing_files - Boolean Flag. Default is True. 
         
     """
     sys.stdout.write("\n******************************************************************************\n******** Attaching the experimental parameters to your PyPty preset. *********\n******************************************************************************\n")

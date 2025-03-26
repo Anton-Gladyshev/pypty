@@ -912,14 +912,6 @@ def bfgs_update(algorithm_type, this_slice_distances, this_step_probe, this_step
 def reset_bfgs_history():
     """
     Reset a global variable history_bfgs that contains information about previous steps.
-    
-    Parameters
-    ----------
-    None
-    
-    Returns
-    -------
-    None
     """
     global history_bfgs, pool, pinned_pool
     history_bfgs={

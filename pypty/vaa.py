@@ -77,19 +77,31 @@ def fit_aberrations_to_wave(wave, px_size_A, acc_voltage, thresh=0,
 
     Parameters
     ----------
-    step_size : float
-        The step size for the model.
-    angle_rad : float
-        The angle in radians.
-    x : numpy.ndarray
-        The x coordinates.
-    y : numpy.ndarray
-        The y coordinates.
+    wave : ndarray
+        complex real-space wave
+    px_size_A: float
+    
+    acc_voltage: float
+    
+    thresh: int
+    
+    aberrations_guess: list
+
+    plot: bool 
+    
+    ftol: float 
+    
+    xtol: float 
+    
+    loss: string 
+    
+    max_mrad: float
+
 
     Returns
     -------
-    tuple
-        The model x and y coordinates.
+    list
+        list of fitted aberrations (in Angstrom)
     """
     wave=wave.copy()
     x=np.arange(wave.shape[0])-wave.shape[0]//2
