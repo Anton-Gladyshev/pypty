@@ -9,10 +9,10 @@
       
       
       
-        <link rel="prev" href="index.html">
+        <link rel="prev" href="example_breakdown.html">
       
       
-        <link rel="next" href="ini_custom.html">
+        <link rel="next" href="reference/initialize.html">
       
       
       <link rel="icon" href="assets/images/favicon.png">
@@ -271,6 +271,48 @@
       
   
   
+  
+  
+    <li class="md-nav__item">
+      <a href="experiment.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Description of the experiment
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="example_breakdown.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Breakdown of some examples
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
     
   
   
@@ -484,48 +526,6 @@
   
 </nav>
       
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="ini_custom.html" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    Guide for using provided initialization routines
-    
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="example_breakdown.html" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    Breakdown of some examples
-    
-  </span>
-  
-
-      </a>
     </li>
   
 
@@ -1029,7 +1029,7 @@
 <h1 id="pypty-parameters-for-creating-custom-presets"><strong><em>PyPty Parameters for Creating Custom Presets</em></strong><a class="headerlink" href="#pypty-parameters-for-creating-custom-presets" title="Permanent link">&para;</a></h1>
 <hr />
 <p>All functions in PyPty work dictionary describing your preset. We tend to name it <code>pypty_params</code>.
-The main function of PyPty package providing an iterative ptychographic reconsturction is launched via <code>run_ptychography()</code> functon from <code>pypty.iterative</code> module. It takes a single argument- <code>pypty_params</code>.</p>
+The main function of PyPty package providing an iterative ptychographic reconsturction is launched via <code>run()</code> functon from  <a href="reference/iterative.html">pypty.iterative</a>  module. It takes a single argument- <code>pypty_params</code>.</p>
 <p>For an easy preset configuration, please refer to the <code>pypty.initialize</code> module. It allows easy creation of all arrays. However, for a non-trivial experiment please follow this guide to create your own dictionary and fill in the requiered entries.</p>
 <h2 id="lambda-type-in-pypty">Lambda-type in PyPty<a class="headerlink" href="#lambda-type-in-pypty" title="Permanent link">&para;</a></h2>
 <p>Before starting this guide, one important usage case must be discussed.

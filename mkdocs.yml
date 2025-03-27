@@ -70,9 +70,9 @@ plugins:
 
 nav:
   - Home: index.md
-  - Guide for creating custom presets: custom_presets.md
-  - Guide for using provided initialization routines: ini_custom.md
+  - Description of the experiment: experiment.md
   - Breakdown of some examples: example_breakdown.md
+  - Guide for creating custom presets: custom_presets.md
   - API Reference:
     - pypty.initialize: reference/initialize.md
     - pypty.dpc: reference/dpc.md

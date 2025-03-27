@@ -2,7 +2,7 @@
 ---
 
 All functions in PyPty work dictionary describing your preset. We tend to name it `pypty_params`.
-The main function of PyPty package providing an iterative ptychographic reconsturction is launched via `run_ptychography()` functon from `pypty.iterative` module. It takes a single argument- `pypty_params`.
+The main function of PyPty package providing an iterative ptychographic reconsturction is launched via `run()` functon from  [pypty.iterative](reference/iterative.md)  module. It takes a single argument- `pypty_params`.
 
 For an easy preset configuration, please refer to the `pypty.initialize` module. It allows easy creation of all arrays. However, for a non-trivial experiment please follow this guide to create your own dictionary and fill in the requiered entries.
 

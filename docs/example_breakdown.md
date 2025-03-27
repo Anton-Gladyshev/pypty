@@ -30,7 +30,8 @@ pypty.initialize.create_pypty_data(path_raw, path_h5, swap_axes=False,
 
 ### **__Experimental parameters__**
 
-PyPty accepts .json metadata from Nion microscopes, but you can also specify all entries yourself. Here I create a dictionary `experimental_params` with relevant parameters.
+PyPty accepts .json metadata from Nion microscopes, but you can also specify all entries yourself. Here I create a dictionary `experimental_params` with relevant parameters (Please see the [description](experiment.md) for further details.
+)
 
 ```python
 path_json="" ## I will leave this string like this and specify everything by hand.
@@ -94,7 +95,7 @@ pypty_params=pypty.utils.load_preset(path_to_your_pkl_preset)
 path_to_your_nxs_preset=
 pypty_params=pypty.utils.load_nexus_params(path_to_your_nxs_preset)
 ```
-3) Third option is to construct you custom preset as a dictionary from scratch (see section **Guide for creating custom presets**)
+3) Third option is to construct you custom preset as a dictionary from scratch (Please see the [guide](custom_presets.md) )
 
 ```python
 pypty_params={
@@ -177,6 +178,6 @@ pypty_params={
         #... Rest of your parameters
         }
 ```
-Then you can launch ptychography with the same `pypty.iterative.run` function.
+Then you can launch ptychography with the same [pypty.iterative.run](reference/iterative.md) function.
 
     

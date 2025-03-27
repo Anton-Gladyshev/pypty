@@ -9,10 +9,10 @@
       
       
       
-        <link rel="prev" href="ini_custom.html">
+        <link rel="prev" href="experiment.html">
       
       
-        <link rel="next" href="reference/initialize.html">
+        <link rel="next" href="custom_presets.html">
       
       
       <link rel="icon" href="assets/images/favicon.png">
@@ -274,32 +274,11 @@
   
   
     <li class="md-nav__item">
-      <a href="custom_presets.html" class="md-nav__link">
+      <a href="experiment.html" class="md-nav__link">
         
   
   <span class="md-ellipsis">
-    Guide for creating custom presets
-    
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="ini_custom.html" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    Guide for using provided initialization routines
+    Description of the experiment
     
   </span>
   
@@ -454,6 +433,27 @@
   
 </nav>
       
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="custom_presets.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Guide for creating custom presets
+    
+  </span>
+  
+
+      </a>
     </li>
   
 
@@ -904,7 +904,8 @@ We will need numpy to do some small preprocessing outside of pypty, but the majo
 <a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a>                    <span class="n">crop_right</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">crop_top</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">crop_bottom</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">normalize</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
 </code></pre></div></p>
 <h3 id="experimental-parameters"><strong><strong>Experimental parameters</strong></strong><a class="headerlink" href="#experimental-parameters" title="Permanent link">&para;</a></h3>
-<p>PyPty accepts .json metadata from Nion microscopes, but you can also specify all entries yourself. Here I create a dictionary <code>experimental_params</code> with relevant parameters.</p>
+<p>PyPty accepts .json metadata from Nion microscopes, but you can also specify all entries yourself. Here I create a dictionary <code>experimental_params</code> with relevant parameters (Please see the <a href="experiment.html">description</a> for further details.
+)</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="n">path_json</span><span class="o">=</span><span class="s2">&quot;&quot;</span> <span class="c1">## I will leave this string like this and specify everything by hand.</span>
 <a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="n">output_folder</span><span class="o">=</span><span class="n">your_output_folder</span>
 <a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>
@@ -957,7 +958,7 @@ We will need numpy to do some small preprocessing outside of pypty, but the majo
 <p><div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="n">path_to_your_nxs_preset</span><span class="o">=</span>
 <a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="n">pypty_params</span><span class="o">=</span><span class="n">pypty</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">load_nexus_params</span><span class="p">(</span><span class="n">path_to_your_nxs_preset</span><span class="p">)</span>
 </code></pre></div>
-3) Third option is to construct you custom preset as a dictionary from scratch (see section <strong>Guide for creating custom presets</strong>)</p>
+3) Third option is to construct you custom preset as a dictionary from scratch (Please see the <a href="custom_presets.html">guide</a> )</p>
 <p><div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="n">pypty_params</span><span class="o">=</span><span class="p">{</span>
 <a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>    <span class="s2">&quot;your_entry&quot;</span><span class="p">:</span> <span class="n">something</span><span class="p">,</span>
 <a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>    <span class="o">...</span>
@@ -1027,7 +1028,7 @@ Also, you may want to update your reconstrction settings. For Compressed data Py
 <a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a>        <span class="c1">#... Rest of your parameters</span>
 <a id="__codelineno-12-4" name="__codelineno-12-4" href="#__codelineno-12-4"></a>        <span class="p">}</span>
 </code></pre></div>
-Then you can launch ptychography with the same <code>pypty.iterative.run</code> function.</p>
+Then you can launch ptychography with the same <a href="reference/iterative.html">pypty.iterative.run</a> function.</p>
 
 
 

@@ -9,7 +9,7 @@
       
       
       
-        <link rel="prev" href="custom_presets.html">
+        <link rel="prev" href="index.html">
       
       
         <link rel="next" href="example_breakdown.html">
@@ -20,7 +20,7 @@
     
     
       
-        <title>Guide for using provided initialization routines - PyPty (python + ptychography)</title>
+        <title>Description of the experiment - PyPty (python + ptychography)</title>
       
     
     
@@ -76,7 +76,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#initialization-functions-availible-for-configuring-custom-presets" class="md-skip">
+        <a href="#expected-keys-for-experimental-parameters" class="md-skip">
           Skip to content
         </a>
       
@@ -111,7 +111,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Guide for using provided initialization routines
+              Description of the experiment
             
           </span>
         </div>
@@ -271,27 +271,6 @@
       
   
   
-  
-  
-    <li class="md-nav__item">
-      <a href="custom_presets.html" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    Guide for creating custom presets
-    
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-    
-      
-      
-  
-  
     
   
   
@@ -308,7 +287,7 @@
           
   
   <span class="md-ellipsis">
-    Guide for using provided initialization routines
+    Description of the experiment
     
   </span>
   
@@ -316,11 +295,11 @@
           <span class="md-nav__icon md-icon"></span>
         </label>
       
-      <a href="ini_custom.html" class="md-nav__link md-nav__link--active">
+      <a href="experiment.html" class="md-nav__link md-nav__link--active">
         
   
   <span class="md-ellipsis">
-    Guide for using provided initialization routines
+    Description of the experiment
     
   </span>
   
@@ -343,44 +322,56 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#create_pypty_data" class="md-nav__link">
+  <a href="#essential-data-paths" class="md-nav__link">
     <span class="md-ellipsis">
-      create_pypty_data()
+      Essential Data Paths
     </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#append_exp_params" class="md-nav__link">
+  <a href="#electron-beam-properties" class="md-nav__link">
     <span class="md-ellipsis">
-      append_exp_params()
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="append_exp_params()">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#parameters" class="md-nav__link">
-    <span class="md-ellipsis">
-      Parameters
+      Electron Beam Properties
     </span>
   </a>
   
 </li>
-        
-          <li class="md-nav__item">
-  <a href="#expected-keys-in-experimental_params" class="md-nav__link">
+      
+        <li class="md-nav__item">
+  <a href="#scan-and-positioning" class="md-nav__link">
     <span class="md-ellipsis">
-      Expected Keys in experimental_params
+      Scan and Positioning
     </span>
   </a>
   
 </li>
-        
-      </ul>
-    </nav>
+      
+        <li class="md-nav__item">
+  <a href="#reconstruction-settings" class="md-nav__link">
+    <span class="md-ellipsis">
+      Reconstruction Settings
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#output-debugging" class="md-nav__link">
+    <span class="md-ellipsis">
+      Output &amp; Debugging
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#nexus-tags" class="md-nav__link">
+    <span class="md-ellipsis">
+      Nexus Tags
+    </span>
+  </a>
   
 </li>
       
@@ -404,6 +395,27 @@
   
   <span class="md-ellipsis">
     Breakdown of some examples
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="custom_presets.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Guide for creating custom presets
     
   </span>
   
@@ -732,44 +744,56 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#create_pypty_data" class="md-nav__link">
+  <a href="#essential-data-paths" class="md-nav__link">
     <span class="md-ellipsis">
-      create_pypty_data()
+      Essential Data Paths
     </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#append_exp_params" class="md-nav__link">
+  <a href="#electron-beam-properties" class="md-nav__link">
     <span class="md-ellipsis">
-      append_exp_params()
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="append_exp_params()">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#parameters" class="md-nav__link">
-    <span class="md-ellipsis">
-      Parameters
+      Electron Beam Properties
     </span>
   </a>
   
 </li>
-        
-          <li class="md-nav__item">
-  <a href="#expected-keys-in-experimental_params" class="md-nav__link">
+      
+        <li class="md-nav__item">
+  <a href="#scan-and-positioning" class="md-nav__link">
     <span class="md-ellipsis">
-      Expected Keys in experimental_params
+      Scan and Positioning
     </span>
   </a>
   
 </li>
-        
-      </ul>
-    </nav>
+      
+        <li class="md-nav__item">
+  <a href="#reconstruction-settings" class="md-nav__link">
+    <span class="md-ellipsis">
+      Reconstruction Settings
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#output-debugging" class="md-nav__link">
+    <span class="md-ellipsis">
+      Output &amp; Debugging
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#nexus-tags" class="md-nav__link">
+    <span class="md-ellipsis">
+      Nexus Tags
+    </span>
+  </a>
   
 </li>
       
@@ -792,182 +816,10 @@
   
 
 
-<h1 id="initialization-functions-availible-for-configuring-custom-presets">Initialization functions availible for configuring custom presets<a class="headerlink" href="#initialization-functions-availible-for-configuring-custom-presets" title="Permanent link">&para;</a></h1>
-<p>PyPty is supplied with an inialize module (see API reference). It allows to create a callibrated dataset and a pypty-preset from scratch. Here two core functions are explained in details:</p>
-<h3 id="create_pypty_data"><strong>create_pypty_data()</strong><a class="headerlink" href="#create_pypty_data" title="Permanent link">&para;</a></h3>
-<p>The <code>create_pypty_data()</code> function is used to generate a <strong>PyPty-style <code>.h5</code> dataset</strong> from an existing <strong>4D-STEM dataset</strong> stored as an <code>.h5</code> or <code>.npy</code> file, or from a raw NumPy array. This function has no returns.</p>
-<table>
-<thead>
-<tr>
-<th>Parameter</th>
-<th>Type</th>
-<th>Default</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><strong><code>data</code></strong></td>
-<td><code>str</code> or <code>ndarray</code></td>
-<td>-</td>
-<td>Path to an input dataset (<code>.h5</code> or <code>.npy</code>) or a NumPy array containing 4D-STEM data.</td>
-</tr>
-<tr>
-<td><strong><code>path_output</code></strong></td>
-<td><code>str</code></td>
-<td>-</td>
-<td>Path where the new <strong>PyPty dataset</strong> will be saved.</td>
-</tr>
-<tr>
-<td><strong><code>swap_axes</code></strong></td>
-<td><code>bool</code></td>
-<td><code>False</code></td>
-<td>Swap the last two coordinate axes.</td>
-</tr>
-<tr>
-<td><strong><code>flip_ky</code></strong></td>
-<td><code>bool</code></td>
-<td><code>False</code></td>
-<td>Flip the second last axis.</td>
-</tr>
-<tr>
-<td><strong><code>flip_kx</code></strong></td>
-<td><code>bool</code></td>
-<td><code>False</code></td>
-<td>Flip the last axis.</td>
-</tr>
-<tr>
-<td><strong><code>flip_y</code></strong></td>
-<td><code>bool</code></td>
-<td><code>False</code></td>
-<td>Flip the first axis.</td>
-</tr>
-<tr>
-<td><strong><code>flip_x</code></strong></td>
-<td><code>bool</code></td>
-<td><code>False</code></td>
-<td>Flip the second axis.</td>
-</tr>
-<tr>
-<td><strong><code>comcalc_len</code></strong></td>
-<td><code>int</code></td>
-<td><code>1000</code></td>
-<td>Number of measurements used to estimate the center.</td>
-</tr>
-<tr>
-<td><strong><code>comx</code></strong></td>
-<td><code>int</code> or <code>None</code></td>
-<td><code>None</code></td>
-<td>X-center of the measurements (computed if <code>None</code>).</td>
-</tr>
-<tr>
-<td><strong><code>comy</code></strong></td>
-<td><code>int</code> or <code>None</code></td>
-<td><code>None</code></td>
-<td>Y-center of the measurements (computed if <code>None</code>).</td>
-</tr>
-<tr>
-<td><strong><code>bin</code></strong></td>
-<td><code>int</code></td>
-<td><code>1</code></td>
-<td>Binning factor applied to the last two axes.</td>
-</tr>
-<tr>
-<td><strong><code>crop_left</code></strong></td>
-<td><code>int</code></td>
-<td><code>None/0</code></td>
-<td>Number of pixels cropped from the left.</td>
-</tr>
-<tr>
-<td><strong><code>crop_right</code></strong></td>
-<td><code>int</code></td>
-<td><code>None/0</code></td>
-<td>Number of pixels cropped from the right.</td>
-</tr>
-<tr>
-<td><strong><code>crop_top</code></strong></td>
-<td><code>int</code></td>
-<td><code>None/0</code></td>
-<td>Number of pixels cropped from the top.</td>
-</tr>
-<tr>
-<td><strong><code>crop_bottom</code></strong></td>
-<td><code>int</code></td>
-<td><code>None/0</code></td>
-<td>Number of pixels cropped from the bottom.</td>
-</tr>
-<tr>
-<td><strong><code>normalize</code></strong></td>
-<td><code>bool</code></td>
-<td><code>False</code></td>
-<td>If <code>True</code>, each pattern is rescaled so that its sum is <strong>1 on average</strong>.</td>
-</tr>
-<tr>
-<td><strong><code>cutoff_ratio</code></strong></td>
-<td><code>float</code></td>
-<td><code>None</code></td>
-<td>If provided, values farther than <code>cutoff_ratio * (width/2)</code> will be zeroed.</td>
-</tr>
-<tr>
-<td><strong><code>pad_k</code></strong></td>
-<td><code>int</code></td>
-<td><code>0</code></td>
-<td>Padding applied to the last two axes.</td>
-</tr>
-<tr>
-<td><strong><code>data_dtype</code></strong></td>
-<td><code>dtype</code></td>
-<td><code>np.float32</code></td>
-<td>Data type of the output file.</td>
-</tr>
-<tr>
-<td><strong><code>rescale</code></strong></td>
-<td><code>float</code></td>
-<td><code>1</code></td>
-<td>If not <strong>1</strong>, patterns are divided by this value.</td>
-</tr>
-<tr>
-<td><strong><code>exist_ok</code></strong></td>
-<td><code>bool</code></td>
-<td><code>True</code></td>
-<td>If <code>True</code>, does not overwrite the output file if it already exists.</td>
-</tr>
-</tbody>
-</table>
-<p><strong>Usage Example</strong>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">pypty</span><span class="o">.</span><span class="n">initialize</span><span class="o">.</span><span class="n">create_pypty_data</span><span class="p">(</span><span class="s2">&quot;input_data.h5&quot;</span><span class="p">,</span> <span class="s2">&quot;output_data.h5&quot;</span><span class="p">,</span> <span class="n">flip_x</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="nb">bin</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">normalize</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-</code></pre></div></p>
-<h3 id="append_exp_params"><strong>append_exp_params()</strong><a class="headerlink" href="#append_exp_params" title="Permanent link">&para;</a></h3>
-<p>The <code>append_exp_params()</code> function is used to <strong>calibrate an existing PyPty preset to new experimental data</strong> by incorporating experimental metadata and calibration parameters.</p>
-<h4 id="parameters"><strong>Parameters</strong><a class="headerlink" href="#parameters" title="Permanent link">&para;</a></h4>
-<table>
-<thead>
-<tr>
-<th>Parameter</th>
-<th>Type</th>
-<th>Default</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><strong><code>experimental_params</code></strong></td>
-<td><code>dict</code></td>
-<td>-</td>
-<td>A dictionary containing experimental metadata. (See details below)</td>
-</tr>
-<tr>
-<td><strong><code>pypty_params</code></strong></td>
-<td><code>dict</code> or <code>str</code> or <code>None</code></td>
-<td><code>None</code></td>
-<td>Existing PyPty parameters. If <code>str</code>, it should be a path to a preset file. If <code>None</code>, a new parameter set is created.</td>
-</tr>
-</tbody>
-</table>
-<hr />
-<h4 id="expected-keys-in-experimental_params"><strong>Expected Keys in <code>experimental_params</code></strong><a class="headerlink" href="#expected-keys-in-experimental_params" title="Permanent link">&para;</a></h4>
-<p>The <code>experimental_params</code> dictionary should contain the following keys:</p>
-<p><strong>Essential Data Paths</strong></p>
+<h1 id="expected-keys-for-experimental-parameters"><strong><strong>Expected keys for experimental parameters</strong></strong><a class="headerlink" href="#expected-keys-for-experimental-parameters" title="Permanent link">&para;</a></h1>
+<p>PyPty is supplied with an inialize module (see API reference). It allows to create a callibrated dataset and a pypty-preset from scratch. 
+To do it, you usually need to summarize experimental parameters in one dictionary. I tend to call call it <code>experimental_params</code> and it should contain the following keys:</p>
+<h2 id="essential-data-paths"><strong>Essential Data Paths</strong><a class="headerlink" href="#essential-data-paths" title="Permanent link">&para;</a></h2>
 <table>
 <thead>
 <tr>
@@ -999,7 +851,7 @@
 </tr>
 </tbody>
 </table>
-<p><strong>Electron Beam Properties</strong></p>
+<h2 id="electron-beam-properties"><strong>Electron Beam Properties</strong><a class="headerlink" href="#electron-beam-properties" title="Permanent link">&para;</a></h2>
 <table>
 <thead>
 <tr>
@@ -1041,7 +893,7 @@
 </tr>
 </tbody>
 </table>
-<p><strong>Scan and Positioning</strong></p>
+<h2 id="scan-and-positioning"><strong>Scan and Positioning</strong><a class="headerlink" href="#scan-and-positioning" title="Permanent link">&para;</a></h2>
 <table>
 <thead>
 <tr>
@@ -1083,7 +935,7 @@
 </tr>
 </tbody>
 </table>
-<p><strong>Reconstruction Settings</strong></p>
+<h2 id="reconstruction-settings"><strong>Reconstruction Settings</strong><a class="headerlink" href="#reconstruction-settings" title="Permanent link">&para;</a></h2>
 <table>
 <thead>
 <tr>
@@ -1130,7 +982,7 @@
 </tr>
 </tbody>
 </table>
-<p><strong>Output &amp; Debugging</strong></p>
+<h2 id="output-debugging"><strong>Output &amp; Debugging</strong><a class="headerlink" href="#output-debugging" title="Permanent link">&para;</a></h2>
 <table>
 <thead>
 <tr>
@@ -1157,7 +1009,7 @@
 </tr>
 </tbody>
 </table>
-<p><strong>Nexus Tags</strong></p>
+<h2 id="nexus-tags"><strong>Nexus Tags</strong><a class="headerlink" href="#nexus-tags" title="Permanent link">&para;</a></h2>
 <table>
 <thead>
 <tr>
@@ -1179,19 +1031,6 @@
 </tr>
 </tbody>
 </table>
-<p><strong>Usage Example</strong></p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="n">experimental_params</span> <span class="o">=</span> <span class="p">{</span>
-<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>    <span class="s2">&quot;data_path&quot;</span><span class="p">:</span> <span class="s2">&quot;experiment_data.h5&quot;</span><span class="p">,</span>
-<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>    <span class="s2">&quot;acc_voltage&quot;</span><span class="p">:</span> <span class="mi">300</span><span class="p">,</span>
-<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>    <span class="s2">&quot;rez_pixel_size_A&quot;</span><span class="p">:</span> <span class="mf">0.01</span><span class="p">,</span>
-<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>    <span class="s2">&quot;scan_size&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mi">256</span><span class="p">,</span> <span class="mi">256</span><span class="p">),</span>
-<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>    <span class="s2">&quot;scan_step_A&quot;</span><span class="p">:</span> <span class="mf">1.5</span><span class="p">,</span>
-<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>    <span class="s2">&quot;PLRotation_deg&quot;</span><span class="p">:</span> <span class="s2">&quot;auto&quot;</span><span class="p">,</span>
-<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a>    <span class="s2">&quot;output_folder&quot;</span><span class="p">:</span> <span class="s2">&quot;results/&quot;</span>
-<a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a><span class="p">}</span>
-<a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a><span class="n">pypty_params</span> <span class="o">=</span> <span class="kc">None</span> <span class="c1"># or your custom preset</span>
-<a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a><span class="n">pypty_params</span> <span class="o">=</span> <span class="n">pypty</span><span class="o">.</span><span class="n">initialize</span><span class="o">.</span><span class="n">append_exp_params</span><span class="p">(</span><span class="n">experimental_params</span><span class="p">,</span> <span class="n">pypty_params</span><span class="p">)</span>
-</code></pre></div>
 <hr />
 
 
