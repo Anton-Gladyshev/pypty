@@ -55,7 +55,7 @@ plugins:
             show_inheritance_diagram: true
             show_source: false
             heading_level: 3
-         
+            members_order: source
             show_symbol_type_toc: false
 
             inherited_members: true

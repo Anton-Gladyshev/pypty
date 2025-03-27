@@ -75,31 +75,31 @@ def loss_and_direction(this_obj, full_probe, this_pos_array, this_pos_correction
     propmethod : string 
         string indicating the method for split-step integration
     this_chopped_sequence : ndarray 
-        
+        sequence of measruement indices used for loss and grad calculation (should be sorted)
     load_one_by_one : bool 
-    
+        boolean flag. should be True for lazy loading.
     data_multiplier : int 
-    
+        multiplicative factor applied to data on the fly.
     data_pad : int 
-    
+        padding factor applied to data on the fly.
     phase_plate_in_h5 : string
-    
+        path to h5 dataset containing phase plates for each measurement.
     this_loss_weight : float 
-    
+        weight applied to the main part of the loss
     data_bin : int 
-    
+        binning factor applied to data on the fly
     data_shift_vector : tuple 
-    
+        shift vector in pixels (y,x) applied to data on the fly
     upsample_pattern : int 
-    
+        virtual "decompression" of the data used to enlarge the probe window
     static_background : ndarray or float
-    
+        real-valued array descripting the square root of the static offset on the diffraction patterns.
     this_step_static_background : float 
-    
+        do you refine the static background?
     tilt_mode : int 
-    
+        flag for tilting
     aberration_marker : ndarray
-    
+        
     probe_marker : ndarray
     
     aberrations_array : ndarray
@@ -157,11 +157,11 @@ def loss_and_direction(this_obj, full_probe, this_pos_array, this_pos_correction
     mixed_variance_weight : float 
     
     mixed_variance_sigma : float 
-    
-    smart_memory : bool
-    
-    print_flag : int
         
+    smart_memory : bool
+        do you want to prevent memory fragmentation? Makes the reconstrcution slightly slower
+    print_flag : int
+        verbodity level
         
     Returns
     -------

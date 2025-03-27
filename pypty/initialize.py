@@ -139,141 +139,6 @@ def create_pypty_data(data, path_output, swap_axes=False,flip_ky=False,flip_kx=F
     f=h5py.File(path_output, "a")
     f.create_dataset("data", data=data)
     f.close()
-
-
-    
-def get_offset(x_range, y_range, scan_step_A, detector_pixel_size_rezA, patternshape, rot_angle_deg=0):
-    """
-    Compute pixel offsets between scan grid and reconstruction grid. In PyPty framework, scan grid is usually rotated to compensate the misalignment between scan- and detector- axes. Also, a reconstruction grid is larger than the scanned FOV, this is done to accomodate the extent of the probe. 
-
-    Parameters
-    ----------
-    x_range, y_range : int
-        Scan dimensions.
-    scan_step_A : float
-        STEM scan step size in Å.
-    detector_pixel_size_rezA : float
-        Reciprocal space pixel size in Å⁻¹.
-    patternshape : tuple
-        Shape of diffraction patterns.
-    rot_angle_deg : float, optional
-        Rotation between scan and detector axes (degrees).
-
-    Returns
-    -------
-    offy, offx : float
-        Offset values (in reconstruction pixels).
-    """
-    pixel_size=1/(detector_pixel_size_rezA*patternshape[-1])
-    positions=np.empty((x_range*y_range,2))
-    i=0
-    for ind1 in range(0,y_range,1):
-        for ind2 in range(0, x_range,1):
-            positions[i,0]=ind1
-            positions[i,1]=ind2
-            i+=1
-    if rot_angle_deg!=0:
-        rot_ang=rot_angle_deg*np.pi/180
-        positions_prime_x,positions_prime_y=positions[:,1] * np.cos(rot_ang) + positions[:,0] * np.sin(rot_ang), -1*positions[:,1] * np.sin(rot_ang) + positions[:,0] * np.cos(rot_ang)
-        positions[:,0]=positions_prime_y
-        positions[:,1]=positions_prime_x
-    offy=-np.min(positions[:,0])*scan_step_A
-    offx=-np.min(positions[:,1])*scan_step_A
-    return offy, offx
-       
-def get_positions_pixel_size(x_range, y_range,scan_step_A, detector_pixel_size_rezA, patternshape, rot_angle_deg=0, flip_x=False,flip_y=False, print_flag=False, transform_axis_matrix=np.eye(2)):
-    """
-    Generate scan positions in reconstruction pixel units.
-
-    Parameters
-    ----------
-    x_range, y_range : int
-        Scan grid size.
-    scan_step_A : float
-        STEM scan step size (Å).
-    detector_pixel_size_rezA : float
-        Pixel size in reciprocal space (Å⁻¹).
-    patternshape : tuple
-        Shape of the diffraction pattern.
-    rot_angle_deg : float, optional
-        Scan-detector rotation angle in degrees. Default is 0.
-    flip_x, flip_y : bool, optional
-        Flip scan axes. Default is False.
-    print_flag : bool, optional
-        Print pixel size. Default is False.
-    transform_axis_matrix : array_like
-        Optional 2x2 matrix to apply to positions.
-
-    Returns
-    -------
-    positions : ndarray
-        Scan positions in reconstruction pixels.
-    pixel_size : float
-        Size of one reconstruction pixel in Å.
-    """
-    pixel_size=1/(detector_pixel_size_rezA*patternshape[-1])
-    if print_flag:
-        sys.stdout.write("\npixel size in A: %.3e"%pixel_size)
-    positions=(np.array(np.meshgrid( np.arange(x_range)*((-1)**flip_x), np.arange(y_range)* ((-1)**flip_y), indexing="xy")).reshape(2,y_range*x_range)).astype(np.float64)
-    
-    positions=positions[::-1,:]
-    positions=transform_axis_matrix@positions
-    positions=np.swapaxes(positions, 0,1)
-    
-    if rot_angle_deg!=0:
-        rot_ang=rot_angle_deg*np.pi/180
-        positions_prime_x,positions_prime_y=positions[:,1] * np.cos(rot_ang) + positions[:,0] * np.sin(rot_ang), -1*positions[:,1] * np.sin(rot_ang) + positions[:,0] * np.cos(rot_ang)
-        positions[:,0]=positions_prime_y
-        positions[:,1]=positions_prime_x
-        
-    positions[:,0]=positions[:,0]-np.min(positions[:,0])
-    positions[:,1]=positions[:,1]-np.min(positions[:,1])
-    positions*=scan_step_A/pixel_size
-    return positions, pixel_size
-
-
-def get_grid_for_upsampled_image(pypty_params, image,image_pixel_size, left_zero_of_scan_grid=0, top_zero_of_scan_grid=0):
-    """
-    Map coordinates of an upsampled image onto the reconstruction grid.
-    
-    This function calculates where pixel of an arbitary image (e.g. upsampled tcBF image) will land on a grid corresponding to a ptychographic reconstruction.
-
-
-    Parameters
-    ----------
-    pypty_params : dict
-        Dictionary of PyPty reconstruction parameters.
-    image : ndarray
-        2D image (e.g., upsampled tcBF) to map.
-    image_pixel_size : float
-        Pixel size of the image in Å.
-    left_zero_of_scan_grid : int, optional
-        Pixel offset on left side of image relative to scan grid. Default is 0.
-    top_zero_of_scan_grid : int, optional
-        Pixel offset on top side of image relative to scan grid. Default is 0.
-
-    Returns
-    -------
-    sc : ndarray
-        Array of pixel coordinates [[y, x], ...] in reconstruction grid units.
-    """
-
-    scx, scy=np.meshgrid((np.arange(0, image.shape[1],1)-left_zero_of_scan_grid)*image_pixel_size,
-                        (np.arange(0, image.shape[0],1)-top_zero_of_scan_grid)*image_pixel_size,
-                        indexing="xy")
-    rot_ang=pypty_params["PLRotation_deg"]*np.pi/180
-    sc_prime_x,sc_prime_y=scx * np.cos(rot_ang) - scy * np.sin(rot_ang), scx * np.sin(rot_ang) + scy * np.cos(rot_ang)
-    ofy, ofx=get_offset(x_range=pypty_params["scan_size"][1],
-                        y_range=pypty_params["scan_size"][0],
-                        scan_step_A=pypty_params["scan_step_A"],
-                        detector_pixel_size_rezA=pypty_params["rez_pixel_size_A"],
-                        patternshape=pypty_params["aperture_mask"].shape,
-                        rot_angle_deg=-1*pypty_params["PLRotation_deg"])
-    sc_prime_x, sc_prime_y=sc_prime_x+ofx, sc_prime_y+ofy
-    sc=np.swapaxes(np.array([sc_prime_y.flatten(), sc_prime_x.flatten()]),0,1)
-    return sc
-
-    
     
 def append_exp_params(experimental_params, pypty_params=None):
     """
@@ -587,6 +452,141 @@ def append_exp_params(experimental_params, pypty_params=None):
     except:
         pass
     return pypty_params
+
+    
+def get_offset(x_range, y_range, scan_step_A, detector_pixel_size_rezA, patternshape, rot_angle_deg=0):
+    """
+    Compute pixel offsets between scan grid and reconstruction grid. In PyPty framework, scan grid is usually rotated to compensate the misalignment between scan- and detector- axes. Also, a reconstruction grid is larger than the scanned FOV, this is done to accomodate the extent of the probe. 
+
+    Parameters
+    ----------
+    x_range, y_range : int
+        Scan dimensions.
+    scan_step_A : float
+        STEM scan step size in Å.
+    detector_pixel_size_rezA : float
+        Reciprocal space pixel size in Å⁻¹.
+    patternshape : tuple
+        Shape of diffraction patterns.
+    rot_angle_deg : float, optional
+        Rotation between scan and detector axes (degrees).
+
+    Returns
+    -------
+    offy, offx : float
+        Offset values (in reconstruction pixels).
+    """
+    pixel_size=1/(detector_pixel_size_rezA*patternshape[-1])
+    positions=np.empty((x_range*y_range,2))
+    i=0
+    for ind1 in range(0,y_range,1):
+        for ind2 in range(0, x_range,1):
+            positions[i,0]=ind1
+            positions[i,1]=ind2
+            i+=1
+    if rot_angle_deg!=0:
+        rot_ang=rot_angle_deg*np.pi/180
+        positions_prime_x,positions_prime_y=positions[:,1] * np.cos(rot_ang) + positions[:,0] * np.sin(rot_ang), -1*positions[:,1] * np.sin(rot_ang) + positions[:,0] * np.cos(rot_ang)
+        positions[:,0]=positions_prime_y
+        positions[:,1]=positions_prime_x
+    offy=-np.min(positions[:,0])*scan_step_A
+    offx=-np.min(positions[:,1])*scan_step_A
+    return offy, offx
+       
+def get_positions_pixel_size(x_range, y_range,scan_step_A, detector_pixel_size_rezA, patternshape, rot_angle_deg=0, flip_x=False,flip_y=False, print_flag=False, transform_axis_matrix=np.eye(2)):
+    """
+    Generate scan positions in reconstruction pixel units.
+
+    Parameters
+    ----------
+    x_range, y_range : int
+        Scan grid size.
+    scan_step_A : float
+        STEM scan step size (Å).
+    detector_pixel_size_rezA : float
+        Pixel size in reciprocal space (Å⁻¹).
+    patternshape : tuple
+        Shape of the diffraction pattern.
+    rot_angle_deg : float, optional
+        Scan-detector rotation angle in degrees. Default is 0.
+    flip_x, flip_y : bool, optional
+        Flip scan axes. Default is False.
+    print_flag : bool, optional
+        Print pixel size. Default is False.
+    transform_axis_matrix : array_like
+        Optional 2x2 matrix to apply to positions.
+
+    Returns
+    -------
+    positions : ndarray
+        Scan positions in reconstruction pixels.
+    pixel_size : float
+        Size of one reconstruction pixel in Å.
+    """
+    pixel_size=1/(detector_pixel_size_rezA*patternshape[-1])
+    if print_flag:
+        sys.stdout.write("\npixel size in A: %.3e"%pixel_size)
+    positions=(np.array(np.meshgrid( np.arange(x_range)*((-1)**flip_x), np.arange(y_range)* ((-1)**flip_y), indexing="xy")).reshape(2,y_range*x_range)).astype(np.float64)
+    
+    positions=positions[::-1,:]
+    positions=transform_axis_matrix@positions
+    positions=np.swapaxes(positions, 0,1)
+    
+    if rot_angle_deg!=0:
+        rot_ang=rot_angle_deg*np.pi/180
+        positions_prime_x,positions_prime_y=positions[:,1] * np.cos(rot_ang) + positions[:,0] * np.sin(rot_ang), -1*positions[:,1] * np.sin(rot_ang) + positions[:,0] * np.cos(rot_ang)
+        positions[:,0]=positions_prime_y
+        positions[:,1]=positions_prime_x
+        
+    positions[:,0]=positions[:,0]-np.min(positions[:,0])
+    positions[:,1]=positions[:,1]-np.min(positions[:,1])
+    positions*=scan_step_A/pixel_size
+    return positions, pixel_size
+
+
+def get_grid_for_upsampled_image(pypty_params, image,image_pixel_size, left_zero_of_scan_grid=0, top_zero_of_scan_grid=0):
+    """
+    Map coordinates of an upsampled image onto the reconstruction grid.
+    
+    This function calculates where pixel of an arbitary image (e.g. upsampled tcBF image) will land on a grid corresponding to a ptychographic reconstruction.
+
+
+    Parameters
+    ----------
+    pypty_params : dict
+        Dictionary of PyPty reconstruction parameters.
+    image : ndarray
+        2D image (e.g., upsampled tcBF) to map.
+    image_pixel_size : float
+        Pixel size of the image in Å.
+    left_zero_of_scan_grid : int, optional
+        Pixel offset on left side of image relative to scan grid. Default is 0.
+    top_zero_of_scan_grid : int, optional
+        Pixel offset on top side of image relative to scan grid. Default is 0.
+
+    Returns
+    -------
+    sc : ndarray
+        Array of pixel coordinates [[y, x], ...] in reconstruction grid units.
+    """
+
+    scx, scy=np.meshgrid((np.arange(0, image.shape[1],1)-left_zero_of_scan_grid)*image_pixel_size,
+                        (np.arange(0, image.shape[0],1)-top_zero_of_scan_grid)*image_pixel_size,
+                        indexing="xy")
+    rot_ang=pypty_params["PLRotation_deg"]*np.pi/180
+    sc_prime_x,sc_prime_y=scx * np.cos(rot_ang) - scy * np.sin(rot_ang), scx * np.sin(rot_ang) + scy * np.cos(rot_ang)
+    ofy, ofx=get_offset(x_range=pypty_params["scan_size"][1],
+                        y_range=pypty_params["scan_size"][0],
+                        scan_step_A=pypty_params["scan_step_A"],
+                        detector_pixel_size_rezA=pypty_params["rez_pixel_size_A"],
+                        patternshape=pypty_params["aperture_mask"].shape,
+                        rot_angle_deg=-1*pypty_params["PLRotation_deg"])
+    sc_prime_x, sc_prime_y=sc_prime_x+ofx, sc_prime_y+ofy
+    sc=np.swapaxes(np.array([sc_prime_y.flatten(), sc_prime_x.flatten()]),0,1)
+    return sc
+
+    
+ 
     
     
 def get_ptycho_obj_from_scan(params, num_slices=None, array_phase=None,array_abs=None, scale_phase=1, scale_abs=1,  scan_array_A=None, fill_value_type=None):
