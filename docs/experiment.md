@@ -1,6 +1,6 @@
 # **__Expected keys for experimental parameters__**
 
-PyPty is supplied with an inialize module (see API reference). It allows to create a callibrated dataset and a pypty-preset from scratch. 
+PyPty is supplied with an inialize module (see [API reference](reference/initialize.md)). It allows to create a callibrated dataset and a pypty-preset from scratch. 
 To do it, you usually need to summarize experimental parameters in one dictionary. I tend to call call it `experimental_params` and it should contain the following keys:
 
 
