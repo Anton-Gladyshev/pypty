@@ -1,0 +1,3 @@
+# `pypty.multicore`
+
+::: pypty.multicore

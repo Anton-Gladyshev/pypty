@@ -21,6 +21,8 @@ import h5py
 import datetime
 
  
+sys.setrecursionlimit(10000)
+
 def fourier_clean_3d(array, cutoff=0.66, mask=None, rolloff=0, default_float=cp.float32, xp=cp):
     """
     Apply a 3D Fourier filter to the input array.

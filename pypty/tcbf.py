@@ -28,73 +28,70 @@ def run_tcbf_alignment(params, binning_for_fit=[8],
                         interpolate_scan_factor=1,
                         binning_cross_corr=1, phase_cross_corr_formula=False,
                         f_scale_lsq=1,x_scale_lsq=1, loss_lsq="linear", tol_ctf=1e-8):
-    """
-    Align and fit the beam contrast transfer function (CTF) using 4D-STEM data.
+    """Align and fit the beam contrast transfer function (CTF) using 4D-STEM data.
 
     This function estimates beam aberrations by aligning individual pixel images using 
     cross-correlation and fitting a CTF model. It supports iterative fitting with various 
     binning levels and options for low-frequency drift compensation.
 
+
     Parameters
     ----------
-    params : dict
+    params:
         Dictionary containing PyPTY experimental and reconstruction settings.
-    binning_for_fit : list of int, optional
-        List of binning factors for each iteration of the CTF fit.
+    binning_for_fit : list
+        List (for integers) of binning factors for each iteration of the CTF fit.
     save : bool, optional
         Whether to save intermediate tcBF images and shift estimates.
-    optimize_angle : bool, optional
-        Whether to include probe rotation angle in the fit.
-    aberrations : list or None, optional
-        Initial guess for aberrations. If None, `n_aberrations_to_fit` zeros will be used.
-    n_aberrations_to_fit : int, optional
+    optimize_angle : bool
+        Whether to include probe rotation angle in the fit. 
+    aberrations : list
+        Initial guess for aberrations. If None, n_aberrations_to_fit zeros will be used.
+    n_aberrations_to_fit : int
         Number of aberrations to fit if no initial guess is provided.
-    reference_type : str, optional
+    reference_type : string
         Reference used for cross-correlation ("bf" or "zero").
-    refine_box_dim : int, optional
+    refine_box_dim : int
         Radius (in pixels) of the interpolation box for sub-pixel shift refinement.
     upsample : int, optional
         Factor for refining cross-correlation to estimate sub-pixel shifts.
-    cross_corr_type : str, optional
+    cross_corr_type : str
         Type of cross-correlation to use ("phase" or "classical").
-    cancel_large_shifts : float or None, optional
+    cancel_large_shifts : float
         Threshold (0–1) to ignore large shift outliers in the fit.
-    pattern_blur_width : int or None, optional
+    pattern_blur_width : int
         Radius for optional circular blur mask applied to patterns.
-    scan_pad : int or None, optional
+    scan_pad : int
         Number of scan pixels to pad around the dataset (auto if None).
-    aperture : ndarray or None, optional
+    aperture : ndarray
         Aperture mask. If None, attempts to extract from parameters.
-    subscan_region : list or None, optional
+    subscan_region : list
         Subregion for CTF fitting: [left, top, right, bottom].
-    compensate_lowfreq_drift : bool, optional
+    compensate_lowfreq_drift : bool
         Whether to compensate for pattern drift in large FOVs.
-    append_lowfreq_shifts_to_params : bool, optional
+    append_lowfreq_shifts_to_params : bool
         Whether to store low-frequency drift corrections in `params`.
-    interpolate_scan_factor : int, optional
+    interpolate_scan_factor : int
         Factor to upsample the scan via interpolation (experimental).
-    binning_cross_corr : int, optional
+    binning_cross_corr : int
         Binning factor before peak detection in cross-correlation.
-    phase_cross_corr_formula : bool, optional
+    phase_cross_corr_formula : bool
         Use analytical peak refinement formula for phase correlation.
-    f_scale_lsq : float, optional
+    f_scale_lsq : float
         Scaling factor for residuals in `least_squares`.
-    x_scale_lsq : float, optional
+    x_scale_lsq : float
         Scaling for initial step size in `least_squares`.
-    loss_lsq : str, optional
+    loss_lsq : string
         Loss function for `least_squares` optimization.
-    tol_ctf : float, optional
+    tol_ctf : float
         Tolerance (`ftol`) for stopping criterion in optimization.
+
 
     Returns
     -------
-    pypty_params : dict
-        Updated parameter dictionary with fitted aberrations, defocus, and potentially
-        updated scan positions and rotation.
-    Notes
-    -----
-    - Requires a scan dataset and optionally a precomputed aperture mask.
-    - Intermediate results and diagnostics can be saved to disk if `save` is True.    
+    dict
+        Updated parameter dictionary with fitted aberrations, defocus, and potentially updated scan positions and rotation.
+        
     """
     global cpu_mode
     pypty_params=params.copy()
@@ -702,9 +699,9 @@ def upsampled_tcbf(pypty_params, upsample=5, pad=10,
     
     Returns
     -------
-    O_r : ndarray
+    ndarray
         Real-valued tcBF image reconstructed on the upsampled grid.
-    px_size_final : float
+    float
         Final pixel size in Ångströms after upsampling.
     """
     bright_field_pixels=None
@@ -937,12 +934,9 @@ def run_tcbf_compressed_alignment(params, num_iterations,
 
     Returns
     -------
-    pypty_params : dict
+    dict
         Updated dictionary of reconstruction parameters including fitted aberrations and scan rotation.
 
-    Notes
-    -----
-    - Requires masks to define the compressed bright field regions.
     """
     pypty_params=params.copy()
     ## load parameters

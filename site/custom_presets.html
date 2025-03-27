@@ -1,0 +1,2000 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      
+        <link rel="prev" href="index.html">
+      
+      
+        <link rel="next" href="ini_custom.html">
+      
+      
+      <link rel="icon" href="assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.9">
+    
+    
+      
+        <title>Guide for creating custom presets - PyPty (python + ptychography)</title>
+      
+    
+    
+      <link rel="stylesheet" href="assets/stylesheets/main.4af4bdda.min.css">
+      
+        
+        <link rel="stylesheet" href="assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+        <script src="https://unpkg.com/iframe-worker/shim"></script>
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="assets/_mkdocstrings.css">
+    
+    <script>__md_scope=new URL(".",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="slate" data-md-color-primary="deep-purple" data-md-color-accent="cyan">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#pypty-parameters-for-creating-custom-presets" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="index.html" title="PyPty (python + ptychography)" class="md-header__button md-logo" aria-label="PyPty (python + ptychography)" data-md-component="logo">
+      
+  <img src="logo.png" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            PyPty (python + ptychography)
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Guide for creating custom presets
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="deep-purple" data-md-color-accent="cyan"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3zm3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95zm-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="teal"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5s-1.65.15-2.39.42zM3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29zm.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14zM20.65 7l-1.77 3.79a7.02 7.02 0 0 0-2.38-4.15zm-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29zM12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/Anton-Gladyshev/pypty" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="index.html" title="PyPty (python + ptychography)" class="md-nav__button md-logo" aria-label="PyPty (python + ptychography)" data-md-component="logo">
+      
+  <img src="logo.png" alt="logo">
+
+    </a>
+    PyPty (python + ptychography)
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/Anton-Gladyshev/pypty" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="index.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Home
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    Guide for creating custom presets
+    
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="custom_presets.html" class="md-nav__link md-nav__link--active">
+        
+  
+  <span class="md-ellipsis">
+    Guide for creating custom presets
+    
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#lambda-type-in-pypty" class="md-nav__link">
+    <span class="md-ellipsis">
+      Lambda-type in PyPty
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#full-list-of-paramerers-for-pyptyiterativerun" class="md-nav__link">
+    <span class="md-ellipsis">
+      Full list of paramerers for pypty.iterative.run()
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Full list of paramerers for pypty.iterative.run()">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#backend-settings" class="md-nav__link">
+    <span class="md-ellipsis">
+      Backend Settings
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dataset" class="md-nav__link">
+    <span class="md-ellipsis">
+      Dataset
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#saving-and-printing" class="md-nav__link">
+    <span class="md-ellipsis">
+      Saving and Printing
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#experimental-parameters" class="md-nav__link">
+    <span class="md-ellipsis">
+      Experimental Parameters
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#spatial-calibration" class="md-nav__link">
+    <span class="md-ellipsis">
+      Spatial Calibration
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#refinable-arrays" class="md-nav__link">
+    <span class="md-ellipsis">
+      Refinable Arrays
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#propagation-shifting-and-resizing" class="md-nav__link">
+    <span class="md-ellipsis">
+      Propagation, Shifting, and Resizing
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bandwidth-limitation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Bandwidth Limitation
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#optimization-settings" class="md-nav__link">
+    <span class="md-ellipsis">
+      Optimization Settings
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#updating-refinable-arrays" class="md-nav__link">
+    <span class="md-ellipsis">
+      Updating Refinable Arrays
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#multiple-illumination-functions" class="md-nav__link">
+    <span class="md-ellipsis">
+      Multiple Illumination Functions
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#memory-usage" class="md-nav__link">
+    <span class="md-ellipsis">
+      Memory Usage
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#constraints-contributing-to-the-loss" class="md-nav__link">
+    <span class="md-ellipsis">
+      Constraints Contributing to the Loss
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#constraints-that-modify-the-object-and-probe-by-hand" class="md-nav__link">
+    <span class="md-ellipsis">
+      Constraints That Modify the Object and Probe 'By Hand'
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#beam-initialization" class="md-nav__link">
+    <span class="md-ellipsis">
+      Beam Initialization
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="ini_custom.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Guide for using provided initialization routines
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    API Reference
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            API Reference
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="reference/initialize.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    pypty.initialize
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="reference/dpc.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    pypty.dpc
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="reference/tcbf.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    pypty.tcbf
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="reference/direct.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    pypty.direct
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="reference/iterative.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    pypty.iterative
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="reference/objective.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    pypty.objective
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="reference/multicore.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    pypty.multicore
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="reference/fft.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    pypty.fft
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="reference/utils.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    pypty.utils
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="reference/se.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    pypty.se
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="reference/vaa.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    pypty.vaa
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#lambda-type-in-pypty" class="md-nav__link">
+    <span class="md-ellipsis">
+      Lambda-type in PyPty
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#full-list-of-paramerers-for-pyptyiterativerun" class="md-nav__link">
+    <span class="md-ellipsis">
+      Full list of paramerers for pypty.iterative.run()
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Full list of paramerers for pypty.iterative.run()">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#backend-settings" class="md-nav__link">
+    <span class="md-ellipsis">
+      Backend Settings
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dataset" class="md-nav__link">
+    <span class="md-ellipsis">
+      Dataset
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#saving-and-printing" class="md-nav__link">
+    <span class="md-ellipsis">
+      Saving and Printing
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#experimental-parameters" class="md-nav__link">
+    <span class="md-ellipsis">
+      Experimental Parameters
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#spatial-calibration" class="md-nav__link">
+    <span class="md-ellipsis">
+      Spatial Calibration
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#refinable-arrays" class="md-nav__link">
+    <span class="md-ellipsis">
+      Refinable Arrays
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#propagation-shifting-and-resizing" class="md-nav__link">
+    <span class="md-ellipsis">
+      Propagation, Shifting, and Resizing
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bandwidth-limitation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Bandwidth Limitation
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#optimization-settings" class="md-nav__link">
+    <span class="md-ellipsis">
+      Optimization Settings
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#updating-refinable-arrays" class="md-nav__link">
+    <span class="md-ellipsis">
+      Updating Refinable Arrays
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#multiple-illumination-functions" class="md-nav__link">
+    <span class="md-ellipsis">
+      Multiple Illumination Functions
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#memory-usage" class="md-nav__link">
+    <span class="md-ellipsis">
+      Memory Usage
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#constraints-contributing-to-the-loss" class="md-nav__link">
+    <span class="md-ellipsis">
+      Constraints Contributing to the Loss
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#constraints-that-modify-the-object-and-probe-by-hand" class="md-nav__link">
+    <span class="md-ellipsis">
+      Constraints That Modify the Object and Probe 'By Hand'
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#beam-initialization" class="md-nav__link">
+    <span class="md-ellipsis">
+      Beam Initialization
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="pypty-parameters-for-creating-custom-presets"><strong><em>PyPty Parameters for Creating Custom Presets</em></strong><a class="headerlink" href="#pypty-parameters-for-creating-custom-presets" title="Permanent link">&para;</a></h1>
+<hr />
+<p>All functions in PyPty work dictionary describing your preset. We tend to name it <code>pypty_params</code>.
+The main function of PyPty package providing an iterative ptychographic reconsturction is launched via <code>run_ptychography()</code> functon from <code>pypty.iterative</code> module. It takes a single argument- <code>pypty_params</code>.</p>
+<p>For an easy preset configuration, please refer to the <code>pypty.initialize</code> module. It allows easy creation of all arrays. However, for a non-trivial experiment please follow this guide to create your own dictionary and fill in the requiered entries.</p>
+<h2 id="lambda-type-in-pypty">Lambda-type in PyPty<a class="headerlink" href="#lambda-type-in-pypty" title="Permanent link">&para;</a></h2>
+<p>Before starting this guide, one important usage case must be discussed.
+PyPty is an iterative algorithm and, as you will see, it requires a number of input parameters. Some of these parameters can be specified in an iteration-dependent fashion using a lambda function. This function should take a single input argument and return the desired value for a given epoch.</p>
+<p>For example, if you want to apply <code>smart_memory</code> parameter every 10 epochs, you can set <code>smart_memory</code> in <code>pypty_params</code> dictionary as:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">smart_memory</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span> <span class="o">%</span> <span class="mi">10</span> <span class="o">==</span> <span class="mi">0</span><span class="p">;</span>
+</code></pre></div>
+<p>The parameters that can be written in this way are marked as <code>pypty_lambda</code> <strong>type</strong> in the  <strong>Default Data Type</strong> column. They can also be specified as a sting containing the code, e.g. </p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="n">smart_memory</span><span class="p">:</span> <span class="s2">&quot;lambda x: x % 10 == 0&quot;</span><span class="p">;</span>
+</code></pre></div>
+<p>We do not recommend applying constraints every n epochs, as PyPty’s BFGS algorithm attempts to construct a Hessian matrix, and such modifications can disrupt this process.
+As a general rule of thumb, we suggest configuring lambda functions so that once an optimization parameter is activated, it maintains a consistent value throughout execution.</p>
+<h2 id="full-list-of-paramerers-for-pyptyiterativerun">Full list of paramerers for pypty.iterative.run()<a class="headerlink" href="#full-list-of-paramerers-for-pyptyiterativerun" title="Permanent link">&para;</a></h2>
+<hr />
+<h3 id="backend-settings">Backend Settings<a class="headerlink" href="#backend-settings" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Default Value</th>
+<th>Default Data Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>backend</code></td>
+<td><code>cp</code></td>
+<td><code>NumPy-like python module</code></td>
+<td>Currently not used, but will be a feature in the future. Right now, whenever CuPy is available, it is used as the GPU backend. If no CUDA is detected, NumPy is used as a CPU replacement. We plan to add support for Apple Silicon, but we are waiting for an optimal library to appear.</td>
+</tr>
+<tr>
+<td><code>default_dtype</code></td>
+<td><code>"double"</code></td>
+<td><code>str</code></td>
+<td>Default data type for computations. Another option is <code>"single"</code>.</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3 id="dataset">Dataset<a class="headerlink" href="#dataset" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Default Value</th>
+<th>Default Data Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>data_path</code></td>
+<td><code>""</code></td>
+<td><code>str</code></td>
+<td>Path to the dataset. It can be an <code>.h5</code> file with a dataset named <code>"data"</code> containing a <strong>3D measurement array</strong> <code>(N_measurements, y, x)</code>. Another option is a <strong>4D <code>.npy</code> array</strong> or a <strong>3D <code>.npy</code> array</strong>.</td>
+</tr>
+<tr>
+<td><code>dataset</code></td>
+<td><code>None</code></td>
+<td><code>numpy-array</code> or None</td>
+<td>If you don't want to store data on disk, you can attach a numpy-array with your data to the parameters. If it's provided, <code>data_path</code> is ignored.</td>
+</tr>
+<tr>
+<td><code>masks</code></td>
+<td><code>None</code></td>
+<td><code>numpy.ndarray</code> or <code>None</code></td>
+<td>Masks (virtual detectors) used for data compression. For uncompressed data, leave it as <code>None</code>.</td>
+</tr>
+<tr>
+<td><code>data_multiplier</code></td>
+<td><code>1</code></td>
+<td><code>float</code></td>
+<td>Multiplier for data values. Used to rescale patterns on the fly without modifying the stored dataset. All patterns will be multiplied by this number.</td>
+</tr>
+<tr>
+<td><code>data_pad</code></td>
+<td><code>0</code></td>
+<td><code>int</code></td>
+<td>Padding applied to data. Use it to pad patterns on the fly without modifying the stored dataset. We recommend setting it to <strong>1/4 of the pattern width</strong> for optimal sampling conditions in far-field mode.</td>
+</tr>
+<tr>
+<td><code>data_bin</code></td>
+<td><code>1</code></td>
+<td><code>int</code></td>
+<td>Binning factor for data. Used to bin patterns on the fly without modifying the stored dataset. All patterns will be binned by this number.</td>
+</tr>
+<tr>
+<td><code>flip_ky</code></td>
+<td><code>False</code></td>
+<td><code>bool</code></td>
+<td>Flag indicating that one has to flip <code>ky</code>. Useful if patterns are flipped and you don’t want to modify the stored dataset. Another option is to create a PyPty-style <code>.h5</code> dataset.</td>
+</tr>
+<tr>
+<td><code>data_shift_vector</code></td>
+<td><code>[0,0]</code></td>
+<td><code>list</code></td>
+<td>Shift vector (list with two-values) applied to measurements. Used to shift patterns on the fly without modifying the stored dataset. All patterns will be shifted by the specified number of pixels.</td>
+</tr>
+<tr>
+<td><code>upsample_pattern</code></td>
+<td><code>1</code></td>
+<td><code>int</code></td>
+<td>Upsampling factor. If the beam footprint is larger than the extent (in far-field mode), this allows to artificially upsample the beam in reciprocal space. <strong>Experimental feature!</strong> Windowing constraints may be required.</td>
+</tr>
+<tr>
+<td><code>sequence</code></td>
+<td><code>None</code></td>
+<td><code>list</code> or <code>None</code> or <code>pypty_lambda</code></td>
+<td>Sequence used in data processing. This is a list indicating the measurements that will be used for iterative refinement. If <code>None</code>, all measurements contribute. This parameter is useful for reconstructions on subscans without creating additional data files.</td>
+</tr>
+<tr>
+<td><code>use_full_FOV</code></td>
+<td><code>True</code></td>
+<td><code>bool</code></td>
+<td>Boolean flag. Only useful if a sequence is provided. If <code>True</code>, the object can accommodate all measurements. If <code>False</code>, the object accommodates only selected measurements.</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3 id="saving-and-printing">Saving and Printing<a class="headerlink" href="#saving-and-printing" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Default Value</th>
+<th>Default Data Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>output_folder</code></td>
+<td><code>""</code></td>
+<td><code>str</code></td>
+<td>Path to the folder where output files will be saved.</td>
+</tr>
+<tr>
+<td><code>save_loss_log</code></td>
+<td><code>True</code></td>
+<td><code>bool</code></td>
+<td>Boolean flag. If <code>True</code>, the loss log will be saved as <code>loss.csv</code>.</td>
+</tr>
+<tr>
+<td><code>epoch_prev</code></td>
+<td><code>0</code></td>
+<td><code>int</code></td>
+<td>Previous epoch count. Useful for restarting a reconstruction.</td>
+</tr>
+<tr>
+<td><code>save_checkpoints_every_epoch</code></td>
+<td><code>False</code></td>
+<td><code>bool</code>   or <code>int</code></td>
+<td>Save checkpoints every epoch. If <code>True</code>, checkpoints will be always saved, if it is provided as an integer, checkpoints will be saved every n'th epoch.</td>
+</tr>
+<tr>
+<td><code>save_inter_checkpoints</code></td>
+<td><code>True</code></td>
+<td><code>bool</code>  or <code>int</code></td>
+<td>Save intermediate <strong>overwritable</strong> checkpoints. This will create <code>.npy</code> arrays: <code>co.npy</code> for the object, <code>cp.npy</code> for the probe, <code>cg.npy</code> for the scan grid, <code>ct.npy</code> for the tilts, <code>cs.npy</code> for the static background, and <code>cb.npy</code> for the beam current. If <code>True</code>, checkpoints will be always saved, if it is provided as an integer, checkpoints will be saved every n'th epoch.</td>
+</tr>
+<tr>
+<td><code>print_flag</code></td>
+<td><code>3</code></td>
+<td><code>int</code></td>
+<td>Print verbosity level: <code>0</code> for no printing, <code>1</code> for one overwritable line, <code>2</code> and <code>3</code> for moderate output. <code>4</code> gives the most detailed output.</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3 id="experimental-parameters">Experimental Parameters<a class="headerlink" href="#experimental-parameters" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Default Value</th>
+<th>Default Data Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>acc_voltage</code></td>
+<td><code>60</code></td>
+<td><code>float</code></td>
+<td>Acceleration voltage in kV.</td>
+</tr>
+<tr>
+<td><code>aperture_mask</code></td>
+<td><code>None</code></td>
+<td><code>numpy.ndarray</code> or <code>None</code></td>
+<td>Mask for the aperture. Can be used for reciprocal probe constaint later (see section constraints).</td>
+</tr>
+<tr>
+<td><code>recon_type</code></td>
+<td><code>"far_field"</code></td>
+<td><code>str</code></td>
+<td>Type of reconstruction. Options: <code>"far_field"</code> or <code>"near_field"</code>.</td>
+</tr>
+<tr>
+<td><code>alpha_near_field</code></td>
+<td><code>0.0</code></td>
+<td><code>float</code></td>
+<td>Alpha parameter for near-field reconstruction &amp; flux preservation.</td>
+</tr>
+<tr>
+<td><code>defocus_array</code></td>
+<td><code>np.array([0.0])</code></td>
+<td><code>numpy.ndarray</code></td>
+<td>Array of defocus values for near-field measurement. Irrelevant for far-field. It can contain either a single common defocus value for all measurements or individual values for each measurement. <strong>Units: Angstroms.</strong></td>
+</tr>
+<tr>
+<td><code>Cs</code></td>
+<td><code>0.0</code></td>
+<td><code>float</code></td>
+<td>Spherical aberration coefficient. <strong>Units: Angstroms.</strong></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3 id="spatial-calibration">Spatial Calibration<a class="headerlink" href="#spatial-calibration" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Default Value</th>
+<th>Default Data Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>slice_distances</code></td>
+<td><code>np.array([10.0])</code></td>
+<td><code>numpy.ndarray</code></td>
+<td>Distances between object slices. <strong>Units: Angstroms.</strong> You can specify a single value common for all slices or provide individual values.</td>
+</tr>
+<tr>
+<td><code>pixel_size_x_A</code></td>
+<td><code>1.0</code></td>
+<td><code>float</code></td>
+<td>Pixel size in the <strong>x-direction</strong> (<strong>Angstroms</strong>).</td>
+</tr>
+<tr>
+<td><code>pixel_size_y_A</code></td>
+<td><code>1.0</code></td>
+<td><code>float</code></td>
+<td>Pixel size in the <strong>y-direction</strong> (<strong>Angstroms</strong>).</td>
+</tr>
+<tr>
+<td><code>scan_size</code></td>
+<td><code>None</code></td>
+<td><code>tuple</code> or <code>None</code></td>
+<td>Tuple describing the number of scan points in <strong>y- and x- directions</strong>. Required for constraining positions and tilts.</td>
+</tr>
+<tr>
+<td><code>num_slices</code></td>
+<td><code>1</code></td>
+<td><code>int</code></td>
+<td>Number of slices in the object.</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3 id="refinable-arrays">Refinable Arrays<a class="headerlink" href="#refinable-arrays" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Default Value</th>
+<th>Default Data Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>obj</code></td>
+<td><code>np.ones((1, 1, num_slices, 1))</code></td>
+<td><code>numpy.ndarray</code></td>
+<td>Initial guess for the transmission function to be retrieved. Shape: <code>(y, x, z, modes)</code>. If the <code>y</code> and <code>x</code> dimensions are insufficient for the scan grid, the object will be padded with ones.</td>
+</tr>
+<tr>
+<td><code>probe</code></td>
+<td><code>None</code></td>
+<td><code>numpy.ndarray</code> or <code>None</code></td>
+<td>Real-space probe. Shape: <code>(y, x, modes)</code>. For advanced experiments, the probe can be 4D <code>(y, x, modes, subscans)</code>. If <code>None</code>, PyPty will automatically initialize the beam from the dataset.</td>
+</tr>
+<tr>
+<td><code>positions</code></td>
+<td><code>np.array([[0.0, 0.0]])</code></td>
+<td><code>numpy.ndarray</code></td>
+<td>Scan positions in <strong>pixels</strong> of the reconstruction. Shape: <code>[N_measurements, 2]</code>, formatted as <code>[[y0, x0], [y1, x1], ..., [yn, xn]]</code>. Single-shot experiments can define one common scan point, e.g., <code>[[0,0]]</code>.</td>
+</tr>
+<tr>
+<td><code>tilts</code></td>
+<td><code>np.array([[0.0, 0.0, 0.0, 0.0, 0.0, 0.0]])</code></td>
+<td><code>numpy.ndarray</code></td>
+<td>Tilt angles in <strong>real and reciprocal spaces</strong>. There are 3 types of tilts in PyPty framework: before, inside and after. First one is a beam tilt before the specimen, i.e. a shift in aperture plane. Second type is a tilt inside of a specimen, i.e. after each slice the beam is shifted in real space. Third type is a post-specimen tilt i.e. a shift in a detector plane.  All three types of shifts are contained in this tilt array. Shape:  <code>[N_measurements, 6]</code>. Format: <code>[[y0_before, x0_before, y0_inside, x0_inside, y0_after, x0_after], ..., [yN, xN]]</code>. Single-shot experiments can define one common tilt (with shape <code>[1, 6]</code>).</td>
+</tr>
+<tr>
+<td><code>tilt_mode</code></td>
+<td><code>0</code></td>
+<td><code>int</code></td>
+<td>Mode for applying tilts: <code>0, 3, 4</code> for <strong>inside</strong>, <code>2, 4</code> for <strong>before</strong>, and <code>1, 3, 4</code> for <strong>after</strong> the specimen.</td>
+</tr>
+<tr>
+<td><code>static_background</code></td>
+<td><code>0</code></td>
+<td><code>numpy.ndarray</code> or <code>float</code></td>
+<td>Static background intensity. Shape should match initial patterns but padded by <code>data_pad//upsample_pattern</code>. Use <code>0</code> for no static offset. If provided as postive float, the algorithm will initialize the backgrund with a proper shape on its own.</td>
+</tr>
+<tr>
+<td><code>beam_current</code></td>
+<td><code>None</code></td>
+<td><code>numpy.ndarray</code> or <code>None</code></td>
+<td>Accounts for different currents (or exposure times) during measurements. If provided, must be a <strong>1D array</strong> with length matching <code>N_measurements</code>.</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3 id="propagation-shifting-and-resizing">Propagation, Shifting, and Resizing<a class="headerlink" href="#propagation-shifting-and-resizing" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Default Value</th>
+<th>Default Data Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>propmethod</code></td>
+<td><code>"multislice"</code></td>
+<td><code>str</code></td>
+<td>Wave propagation method. Options: <code>"multislice"</code>, <code>"better_multislice"</code>, and <code>"yoshida"</code>. The last two are <strong>higher precision but slower</strong>.</td>
+</tr>
+<tr>
+<td><code>allow_subPixel_shift</code></td>
+<td><code>True</code></td>
+<td><code>bool</code></td>
+<td>Allow <strong>subpixel shifts</strong>. If <code>False</code>, positions will be rounded to integers until refined.</td>
+</tr>
+<tr>
+<td><code>dynamically_resize_yx_object</code></td>
+<td><code>False</code></td>
+<td><code>bool</code> or <code>int</code>  or <code>pypty_lambda</code></td>
+<td>If position updates become too large, the object will be padded to accommodate the new scan grid. If set to a <strong>positive integer</strong>, resizing occurs when position updates exceed this value.</td>
+</tr>
+<tr>
+<td><code>extra_space_on_side_px</code></td>
+<td><code>0</code></td>
+<td><code>int</code></td>
+<td>Extra space added around the object in <strong>pixels</strong>.</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3 id="bandwidth-limitation">Bandwidth Limitation<a class="headerlink" href="#bandwidth-limitation" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Default Value</th>
+<th>Default Data Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>damping_cutoff_multislice</code></td>
+<td><code>2/3</code></td>
+<td><code>float</code></td>
+<td>Frequency cutoff for <strong>multislice beam propagation</strong>. Values larger than <code>2/3</code> can cause aliasing artifacts. Recommended <strong>≤ 2/3</strong>.</td>
+</tr>
+<tr>
+<td><code>smooth_rolloff</code></td>
+<td><code>0</code></td>
+<td><code>float</code></td>
+<td>Rolloff parameter for smooth frequency cutoffs.</td>
+</tr>
+<tr>
+<td><code>update_extra_cut</code></td>
+<td><code>0.005</code></td>
+<td><code>float</code></td>
+<td>Extra frequency cutoff for the <strong>full object</strong>. Ensures bandwidth limitation beyond the <strong>cropped ROIs</strong> of the multislice object.</td>
+</tr>
+<tr>
+<td><code>lazy_clean</code></td>
+<td><code>False</code></td>
+<td><code>bool</code></td>
+<td>If <code>True</code>, the full transmission function <strong>will not</strong> be bandwidth-limited (only cropped ROIs will be). <strong>Recommended: <code>False</code></strong>.</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3 id="optimization-settings">Optimization Settings<a class="headerlink" href="#optimization-settings" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Default Value</th>
+<th>Default Data Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>algorithm</code></td>
+<td><code>"lsq_sqrt"</code></td>
+<td><code>str</code></td>
+<td>Error metric for reconstruction comparison. Options: <code>"lsq_sqrt"</code> (Gaussian), <code>"ml"</code> (Poisson), <code>"lsq"</code> (classic summed squared error), and <code>"lsq_sqrt_2"</code> (modified Gaussian). If data is compressed via virtual detectors, the only option is <code>"lsq_compressed"</code> (summed squared error  between signals).</td>
+</tr>
+<tr>
+<td><code>epoch_max</code></td>
+<td><code>200</code></td>
+<td><code>int</code></td>
+<td>Maximum number of <strong>epochs (iterations)</strong>.</td>
+</tr>
+<tr>
+<td><code>wolfe_c1_constant</code></td>
+<td><code>0.1</code></td>
+<td><code>float</code>  or <code>pypty_lambda</code></td>
+<td><strong>Wolfe condition parameter (C1)</strong>. Prevents update steps from being too large. Must be <strong>&gt; 0</strong> and <strong>&lt; C2</strong>. Larger values enforce shorter step size.</td>
+</tr>
+<tr>
+<td><code>wolfe_c2_constant</code></td>
+<td><code>0.9</code></td>
+<td><code>float</code>   or <code>pypty_lambda</code></td>
+<td><strong>Wolfe condition parameter (C2)</strong>. Prevents update steps from being too small. Must be <strong>&gt; C1</strong> but <strong>&lt; 1</strong>. Larger values allow larger steps.</td>
+</tr>
+<tr>
+<td><code>loss_weight</code></td>
+<td><code>1</code></td>
+<td><code>float</code>    or <code>pypty_lambda</code></td>
+<td>Weight applied to the <strong>loss function</strong>.</td>
+</tr>
+<tr>
+<td><code>max_count</code></td>
+<td><code>20</code></td>
+<td><code>int</code> or <code>None</code></td>
+<td>Maximum number of forward-backward propagations per <strong>line search iteration</strong>. If exceeded, the update is <strong>rejected</strong> and history is reset. Use <code>None</code> or <code>np.inf</code> to disable.</td>
+</tr>
+<tr>
+<td><code>reduce_factor</code></td>
+<td><code>0.1</code></td>
+<td><code>float</code></td>
+<td>Factor for <strong>reducing step size</strong> when the first Wolfe condition <strong>is not met</strong>.</td>
+</tr>
+<tr>
+<td><code>optimism</code></td>
+<td><code>3.0</code></td>
+<td><code>float</code></td>
+<td>Factor for <strong>increasing step size</strong> when the second Wolfe condition <strong>is not met</strong>. To prevenet algorithm from going back and forth during linesearch, multiplication of optimism and reduce_factor (or of any powers of them) should not be equal to 1.</td>
+</tr>
+<tr>
+<td><code>min_step</code></td>
+<td><code>1e-20</code></td>
+<td><code>float</code></td>
+<td><strong>Minimum step size</strong>. If the step falls below this value, the algorithm <strong>resets history</strong>. Use <code>0</code> to disable.</td>
+</tr>
+<tr>
+<td><code>hist_length</code></td>
+<td><code>10</code></td>
+<td><code>int</code> or <code>np.inf</code> or <code>pypty_lambda</code></td>
+<td><strong>BFGS optimization history length</strong>. Values: <code>0</code> (Gradient Descent), <code>1</code> (Conjugate Gradient), <code>N&gt;1</code> (Limited-memory BFGS), <code>np.inf</code> (Full BFGS).</td>
+</tr>
+<tr>
+<td><code>update_step_bfgs</code></td>
+<td><code>1</code></td>
+<td><code>float</code> or <code>pypty_lambda</code></td>
+<td>Common step applied to all refinable quantities. By default, after the first iteration, a Barzilai-Borwein method is used to inistialize the inverse Hessian, so most of the time, an update step of 1 should be accepted. Only during the very first iteration the linesearch might take some time to find an appropriate step.</td>
+</tr>
+<tr>
+<td><code>phase_only_obj</code></td>
+<td><code>False</code></td>
+<td><code>bool</code> or <code>pypty_lambda</code></td>
+<td>Whether to consider the object as phase-only.</td>
+</tr>
+<tr>
+<td><code>tune_only_probe_phase</code></td>
+<td><code>False</code></td>
+<td><code>bool</code> or <code>pypty_lambda</code></td>
+<td>Optimize only the reciprocal-space phase (CTF) of the probe.</td>
+</tr>
+<tr>
+<td><code>tune_only_probe_abs</code></td>
+<td><code>False</code></td>
+<td><code>bool</code> or <code>pypty_lambda</code></td>
+<td>Optimize only the reciprocal-space amplitude (aperture) of the probe.</td>
+</tr>
+<tr>
+<td><code>reset_history_flag</code></td>
+<td><code>False</code></td>
+<td><code>bool</code> or <code>pypty_lambda</code></td>
+<td>Flag to reset optimization history. See section "lambda-types" in this document. If provided, history will be manually resetted.</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3 id="updating-refinable-arrays">Updating Refinable Arrays<a class="headerlink" href="#updating-refinable-arrays" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Default Value</th>
+<th>Default Data Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>update_probe</code></td>
+<td><code>1</code></td>
+<td><code>bool</code>   or <code>pypty_lambda</code></td>
+<td>Whether to update the <strong>probe</strong> (<code>1</code> for yes, <code>0</code> for no).</td>
+</tr>
+<tr>
+<td><code>update_obj</code></td>
+<td><code>1</code></td>
+<td><code>bool</code>   or <code>pypty_lambda</code></td>
+<td>Whether to update the <strong>object</strong> (<code>1</code> for yes, <code>0</code> for no).</td>
+</tr>
+<tr>
+<td><code>update_probe_pos</code></td>
+<td><code>0</code></td>
+<td><code>bool</code>   or <code>pypty_lambda</code></td>
+<td>Whether to update <strong>probe positions</strong> (<code>1</code> for yes, <code>0</code> for no).</td>
+</tr>
+<tr>
+<td><code>update_tilts</code></td>
+<td><code>0</code></td>
+<td><code>bool</code>   or <code>pypty_lambda</code></td>
+<td>Whether to update <strong>tilt angles</strong> (<code>1</code> for yes, <code>0</code> for no).</td>
+</tr>
+<tr>
+<td><code>update_beam_current</code></td>
+<td><code>0</code></td>
+<td><code>bool</code>    or <code>pypty_lambda</code></td>
+<td>Whether to update <strong>beam current</strong> (<code>1</code> for yes, <code>0</code> for no).</td>
+</tr>
+<tr>
+<td><code>update_aberrations_array</code></td>
+<td><code>0</code></td>
+<td><code>bool</code>   or <code>pypty_lambda</code></td>
+<td>Whether to update <strong>aberration array</strong> (<code>1</code> for yes, <code>0</code> for no).</td>
+</tr>
+<tr>
+<td><code>update_static_background</code></td>
+<td><code>0</code></td>
+<td><code>bool</code>   or <code>pypty_lambda</code></td>
+<td>Whether to update <strong>static background</strong> (<code>1</code> for yes, <code>0</code> for no).</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3 id="multiple-illumination-functions">Multiple Illumination Functions<a class="headerlink" href="#multiple-illumination-functions" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Default Value</th>
+<th>Default Data Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>aberrations_array</code></td>
+<td><code>np.array([[0.0]])</code></td>
+<td><code>numpy.ndarray</code></td>
+<td>Array of aberration values for multiple beams. Useful for large fields of view where the beam changes. Shape: <code>[N_subscans, N_aberrations]</code>.</td>
+</tr>
+<tr>
+<td><code>phase_plate_in_h5</code></td>
+<td><code>None</code></td>
+<td><code>str</code> or <code>None</code></td>
+<td>Path to an <strong>HDF5 file</strong> containing phase plates for different measurements. Dataset name should be <code>"configs"</code>. Shape: <code>[N_measurements, Y_probe, X_probe]</code>.</td>
+</tr>
+<tr>
+<td><code>aberration_marker</code></td>
+<td><code>None</code></td>
+<td><code>numpy.ndarray</code> or <code>None</code></td>
+<td><strong>Marker for multiple CTFs</strong>. Should be a <strong>1D array</strong> of length <code>N_measurements</code>, where each entry corresponds to a CTF index in <code>aberrations_array</code>.</td>
+</tr>
+<tr>
+<td><code>probe_marker</code></td>
+<td><code>None</code></td>
+<td><code>numpy.ndarray</code> or <code>None</code></td>
+<td><strong>Marker for probe variations</strong>. If provided, the probe should have shape <code>[y, x, modes, N_subscans]</code>, and this array should contain indices specifying which probe to use for each measurement.</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3 id="memory-usage">Memory Usage<a class="headerlink" href="#memory-usage" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Default Value</th>
+<th>Default Data Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>load_one_by_one</code></td>
+<td><code>True</code></td>
+<td><code>bool</code></td>
+<td>If <code>True</code>, data is <strong>loaded dynamically</strong> to save GPU memory. If <code>False</code>, all data is loaded at once (faster but memory-intensive).</td>
+</tr>
+<tr>
+<td><code>smart_memory</code></td>
+<td><code>True</code></td>
+<td><code>bool</code>   or <code>pypty_lambda</code></td>
+<td>If <code>True</code>, <strong>memory is managed intelligently</strong>, clearing cache when necessary to prevent memory fragmentation.</td>
+</tr>
+<tr>
+<td><code>remove_fft_cache</code></td>
+<td><code>False</code></td>
+<td><code>bool</code></td>
+<td>If <code>True</code>, <strong>FFT cache is removed</strong> periodically to save memory. <strong>(Experimental feature)</strong></td>
+</tr>
+<tr>
+<td><code>compute_batch</code></td>
+<td><code>"auto"</code></td>
+<td><code>int</code> or <code>str</code></td>
+<td><strong>Batch size for multislice computation.</strong> Default value "auto" will automatically estimate a value that would fit into your memory, but ideally one should balance it by hand for a particular GPU. Increasing this can speed up reconstruction but requires more GPU memory. Super large values are also useless as at some point you will reash the limit the compute capability.</td>
+</tr>
+<tr>
+<td><code>force_dataset_dtype</code></td>
+<td><code>default_float_cpu</code></td>
+<td><code>numpy.dtype</code></td>
+<td>Forces the dataset to be stored in a specified <strong>data type</strong>. Can help reduce memory usage at the cost of precision.</td>
+</tr>
+<tr>
+<td><code>preload_to_cpu</code></td>
+<td><code>False</code></td>
+<td><code>bool</code></td>
+<td>If <code>True</code>, <strong>preloads data to CPU</strong> before transferring it to GPU, improving transfer speeds for <code>.h5</code> datasets.</td>
+</tr>
+<tr>
+<td><code>force_pad</code></td>
+<td><code>False</code></td>
+<td><code>bool</code></td>
+<td>If <code>True</code>, pads data <strong>at the start</strong> of reconstruction (uses more memory but speeds up computation). If <code>False</code>, padding is applied <strong>on the fly</strong> to save memory.</td>
+</tr>
+<tr>
+<td><code>memory_saturation</code></td>
+<td><code>0.7</code></td>
+<td><code>float</code></td>
+<td>If compute batch is set to <code>"auto"</code>, this ratio will be used to estimate a compute batch that would requiere <code>memory_saturation</code> of the avalible GPU memory. If <code>compute_batch</code> is integer, <code>memory_saturation</code> is ignored.</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3 id="constraints-contributing-to-the-loss">Constraints Contributing to the Loss<a class="headerlink" href="#constraints-contributing-to-the-loss" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Default Value</th>
+<th>Default Data Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>mixed_variance_weight</code></td>
+<td><code>0</code></td>
+<td><code>float</code>   or <code>pypty_lambda</code></td>
+<td>Regularization weight that prevents <strong>low-frequency variations</strong> between object states.</td>
+</tr>
+<tr>
+<td><code>mixed_variance_sigma</code></td>
+<td><code>0.5</code></td>
+<td><code>float</code>   or <code>pypty_lambda</code></td>
+<td>Controls the <strong>spatial frequency range</strong> affected by <code>mixed_variance_weight</code>.</td>
+</tr>
+<tr>
+<td><code>probe_constraint_mask</code></td>
+<td><code>None</code></td>
+<td><code>numpy.ndarray</code> or <code>None</code></td>
+<td>Mask for <strong>probe constraint in reciprocal space</strong>. Masked pixels are <strong>regularized using L2 norm</strong>.</td>
+</tr>
+<tr>
+<td><code>probe_reg_constraint_weight</code></td>
+<td><code>0</code></td>
+<td><code>float</code></td>
+<td>L2 regularization weight for the <strong>probe in reciprocal space</strong>.</td>
+</tr>
+<tr>
+<td><code>window_weight</code></td>
+<td><code>0</code></td>
+<td><code>float</code>   or <code>pypty_lambda</code></td>
+<td>L2 regularization weight for the <strong>probe in real space</strong>.</td>
+</tr>
+<tr>
+<td><code>window</code></td>
+<td><code>None</code></td>
+<td><code>numpy.ndarray</code> or <code>None</code> or or <code>pypty_lambda</code></td>
+<td><strong>Window function</strong> used to constrain the probe in real space. Masked pixels are damped using L2 regularization. It can be either a 2d- real valued array with the same shape as upsampled and padded beam <strong>or</strong> a list containing two values: inner radius (fraction) and outer radius (fraction). Fractions will be multiplied with half of the probe width, everything inside of window will be kept intact, everything outside will be zeroed and intermediate values will be slighly damped.</td>
+</tr>
+<tr>
+<td><code>abs_norm_weight</code></td>
+<td><code>0</code></td>
+<td><code>float</code></td>
+<td>L1 regularization weight applied to the <strong>absorptive potential</strong> (negative log of the transmission function’s absolute value).</td>
+</tr>
+<tr>
+<td><code>phase_norm_weight</code></td>
+<td><code>0</code></td>
+<td><code>float</code>   or <code>pypty_lambda</code></td>
+<td>L1 regularization weight applied to the <strong>phase of the object</strong>.</td>
+</tr>
+<tr>
+<td><code>atv_weight</code></td>
+<td><code>0</code></td>
+<td><code>float</code>   or <code>pypty_lambda</code></td>
+<td>Weight for <strong>Adaptive Total Variation (ATV)</strong> regularization on the transmission function.</td>
+</tr>
+<tr>
+<td><code>atv_q</code></td>
+<td><code>1</code></td>
+<td><code>float</code>   or <code>pypty_lambda</code></td>
+<td>ATV <strong>q parameter</strong> (controls the strength of smoothing). Recommended: <code>1</code>.</td>
+</tr>
+<tr>
+<td><code>atv_p</code></td>
+<td><code>2</code></td>
+<td><code>float</code>  or <code>pypty_lambda</code></td>
+<td>ATV <strong>p parameter</strong> (<code>1</code> = L1-like regularization, <code>2</code> = L2-like smoothing). Recommended: <code>2</code>.</td>
+</tr>
+<tr>
+<td><code>fast_axis_reg_weight_positions</code></td>
+<td><code>0</code></td>
+<td><code>float</code> or <code>pypty_lambda</code></td>
+<td>Regularization weight for <strong>fast-axis scan positions</strong>. Reduces the acceleration along one line.</td>
+</tr>
+<tr>
+<td><code>slow_axis_reg_weight_positions</code></td>
+<td><code>0</code></td>
+<td><code>float</code> or <code>pypty_lambda</code></td>
+<td>Regularization weight for <strong>slow-axis scan positions</strong>. Reduces the acceleration along one column.</td>
+</tr>
+<tr>
+<td><code>fast_axis_reg_weight_tilts</code></td>
+<td><code>0</code></td>
+<td><code>float</code>  or <code>pypty_lambda</code></td>
+<td>Regularization weight for <strong>fast-axis tilts</strong>. Reduces the acceleration along one line.</td>
+</tr>
+<tr>
+<td><code>slow_axis_reg_weight_tilts</code></td>
+<td><code>0</code></td>
+<td><code>float</code>  or <code>pypty_lambda</code></td>
+<td>Regularization weight for <strong>slow-axis tilts</strong>. Reduces the acceleration along one column.</td>
+</tr>
+<tr>
+<td><code>deformation_reg_weight_positions</code></td>
+<td><code>0</code></td>
+<td><code>float</code>  or <code>pypty_lambda</code></td>
+<td>Regularization weight for enfourcing a regular (but deformed) <strong>scan</strong> grid.</td>
+</tr>
+<tr>
+<td><code>deformation_reg_weight_tilts</code></td>
+<td><code>0</code></td>
+<td><code>float</code>  or <code>pypty_lambda</code></td>
+<td>Regularization weight for enfourcing a regular (but deformed) <strong>tilts</strong> grid.</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3 id="constraints-that-modify-the-object-and-probe-by-hand">Constraints That Modify the Object and Probe 'By Hand'<a class="headerlink" href="#constraints-that-modify-the-object-and-probe-by-hand" title="Permanent link">&para;</a></h3>
+<p><strong>Warning:</strong> These constraints <strong>reset the BFGS history</strong> when applied.</p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Default Value</th>
+<th>Default Data Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>apply_gaussian_filter</code></td>
+<td><code>False</code></td>
+<td><code>bool</code>   or <code>pypty_lambda</code></td>
+<td>Applies a <strong>Gaussian filter</strong> to the <strong>phase</strong> of the object.</td>
+</tr>
+<tr>
+<td><code>apply_gaussian_filter_amplitude</code></td>
+<td><code>False</code></td>
+<td><code>bool</code>    or <code>pypty_lambda</code></td>
+<td>Applies a <strong>Gaussian filter</strong> to the <strong>amplitude</strong> of the object.</td>
+</tr>
+<tr>
+<td><code>beta_wedge</code></td>
+<td><code>0</code></td>
+<td><code>float</code>  or <code>pypty_lambda</code></td>
+<td><strong>Removes high kz frequencies</strong> for low kx and ky in <strong>3D object FFTs</strong>.</td>
+</tr>
+<tr>
+<td><code>keep_probe_states_orthogonal</code></td>
+<td><code>False</code></td>
+<td><code>bool</code>  or <code>pypty_lambda</code></td>
+<td>Enforces <strong>orthogonality of probe modes</strong>.</td>
+</tr>
+<tr>
+<td><code>do_charge_flip</code></td>
+<td><code>False</code></td>
+<td><code>bool</code></td>
+<td>Performs <strong>charge flipping</strong> on the object.</td>
+</tr>
+<tr>
+<td><code>cf_delta_phase</code></td>
+<td><code>0.1</code></td>
+<td><code>float</code></td>
+<td><strong>Delta phase</strong> for charge flipping.</td>
+</tr>
+<tr>
+<td><code>cf_delta_abs</code></td>
+<td><code>0.01</code></td>
+<td><code>float</code></td>
+<td><strong>Delta amplitude</strong> for charge flipping.</td>
+</tr>
+<tr>
+<td><code>do_charge_flip</code></td>
+<td><code>False</code></td>
+<td><code>bool</code>      or <code>pypty_lambda</code></td>
+<td>Perform charge flipping on the object.</td>
+</tr>
+<tr>
+<td><code>cf_delta_phase</code></td>
+<td><code>0.1</code></td>
+<td><code>float</code> or <code>pypty_lambda</code></td>
+<td>Delta phase for charge flipping.</td>
+</tr>
+<tr>
+<td><code>cf_delta_abs</code></td>
+<td><code>0.01</code></td>
+<td><code>float</code> or <code>pypty_lambda</code></td>
+<td>Delta amplitude for charge flipping.</td>
+</tr>
+<tr>
+<td><code>cf_beta_phase</code></td>
+<td><code>-0.95</code></td>
+<td><code>float</code> or <code>pypty_lambda</code></td>
+<td>Beta phase parameter for charge flipping.</td>
+</tr>
+<tr>
+<td><code>cf_beta_abs</code></td>
+<td><code>-0.95</code></td>
+<td><code>float</code> or <code>pypty_lambda</code></td>
+<td>Beta amplitude parameter for charge flipping.</td>
+</tr>
+<tr>
+<td><code>fancy_sigma</code></td>
+<td><code>None</code></td>
+<td><code>None</code> or <code>float</code> oor <code>pypty_lambda</code></td>
+<td>Custom sigma parameter to enforce atomicity.</td>
+</tr>
+<tr>
+<td><code>restart_from_vacuum</code></td>
+<td><code>False</code></td>
+<td><code>bool</code> or <code>pypty_lambda</code></td>
+<td><strong>Resets the object to 1</strong> while keeping other parameters unchanged. See section "lambda-types" in this document.</td>
+</tr>
+<tr>
+<td><code>reset_positions</code></td>
+<td><code>False</code></td>
+<td><code>bool</code> or <code>pypty_lambda</code></td>
+<td><strong>Resets the positions to initial guess</strong> while keeping other parameters unchanged. See section "lambda-types" in this document.</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3 id="beam-initialization">Beam Initialization<a class="headerlink" href="#beam-initialization" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Default Value</th>
+<th>Default Data Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>n_hermite_probe_modes</code></td>
+<td><code>None</code></td>
+<td><code>tuple</code> or <code>None</code></td>
+<td>Number of <strong>Hermite probe modes</strong>. A tuple <code>[nx, ny]</code> specifying mode orders in <code>x</code> and <code>y</code> directions. If <code>None</code>, no Hermite modes are applied.</td>
+</tr>
+<tr>
+<td><code>defocus_spread_modes</code></td>
+<td><code>None</code></td>
+<td><code>numpy.ndarray</code> or <code>None</code></td>
+<td>1D array with <strong>different defocus values</strong> for initializing probe modes. Useful for simulating <strong>defocus spread</strong> in the beam.</td>
+</tr>
+<tr>
+<td><code>aberrations</code></td>
+<td><code>None</code></td>
+<td><code>numpy.ndarray</code> or <code>None</code></td>
+<td>1D array of <strong>aberration coefficients</strong> in <strong>Krivanek notation</strong>, e.g., <code>C10, C12a, C12b, C21a, C21b, C23a, C23b, C30</code>. Units: <strong>Angstroms</strong>.</td>
+</tr>
+<tr>
+<td><code>extra_probe_defocus</code></td>
+<td><code>0</code></td>
+<td><code>float</code></td>
+<td>Extra <strong>probe defocus</strong> applied in <strong>Angstroms</strong>. Useful for adjusting initial beam focus in <strong>multislice reconstructions</strong>.</td>
+</tr>
+<tr>
+<td><code>estimate_aperture_based_on_binary</code></td>
+<td><code>0</code></td>
+<td><code>float</code></td>
+<td>If <strong>&gt; 0</strong>, the aperture is estimated <strong>based on a binary threshold</strong>. Pixels in the data larger than <code>mean(data) * estimate_aperture_based_on_binary</code> are considered part of the <strong>aperture</strong>.</td>
+</tr>
+<tr>
+<td><code>beam_ctf</code></td>
+<td><code>None</code></td>
+<td><code>numpy.ndarray</code> or <code>None</code></td>
+<td><strong>Beam Contrast Transfer Function (CTF).</strong> If provided, must be a <strong>2D NumPy array</strong> with dimensions matching the upsampled probe size.</td>
+</tr>
+<tr>
+<td><code>mean_pattern</code></td>
+<td><code>None</code></td>
+<td><code>numpy.ndarray</code> or <code>None</code></td>
+<td><strong>Mean diffraction pattern</strong> used for probe initialization. If provided, the probe is created using an <strong>inverse Fourier transform</strong> of this pattern.</td>
+</tr>
+</tbody>
+</table>
+<hr />
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var labels=set.querySelector(".tabbed-labels");for(var tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": ".", "features": ["navigation.expand", "navigation.sections", "content.code.annotate", "content.tabs.link"], "search": "assets/javascripts/workers/search.f8cc74c7.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+    
+      <script src="assets/javascripts/bundle.c8b220af.min.js"></script>
+      
+    
+  </body>
+</html>

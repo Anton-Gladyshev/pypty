@@ -1,10 +1,7 @@
 #!/bin/bash
 
 # Install necessary dependencies
-pip install pdoc3==0.11.6 mkdocs==1.6.1
-
-# Generate Markdown docs from Python code
-#pdoc3 --output-dir docs/reference --template-dir markdown_template pypty
+pip install --upgrade mkdocs-literate-nav myst-parser
 
 # Serve docs locally and open browser automatically
 mkdocs serve &

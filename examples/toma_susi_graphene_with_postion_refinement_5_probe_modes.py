@@ -88,4 +88,4 @@ pypty_params={
 pypty_params=pypty.initialize.append_exp_params(experimental_params, pypty_params)
 
 
-pypty.iterative_ptychography.run_ptychography(pypty_params)
+pypty.iterative.run(pypty_params)
