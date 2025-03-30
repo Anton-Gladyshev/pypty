@@ -12,7 +12,7 @@
         <link rel="prev" href="iterative.html">
       
       
-        <link rel="next" href="multicore.html">
+        <link rel="next" href="multislice_core.html">
       
       
       <link rel="icon" href="../assets/images/favicon.png">
@@ -299,7 +299,28 @@
         
   
   <span class="md-ellipsis">
-    Breakdown of some examples
+    Examples for iterative ptychography
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../examples_direct.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Examples for direct methods
     
   </span>
   
@@ -351,10 +372,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" checked>
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" checked>
         
           
-          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
             
   
   <span class="md-ellipsis">
@@ -366,8 +387,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="true">
-          <label class="md-nav__title" for="__nav_5">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_6">
             <span class="md-nav__icon md-icon"></span>
             API Reference
           </label>
@@ -547,9 +568,54 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#pypty.objective.loss_and_direction" class="md-nav__link">
+    <span class="md-ellipsis">
+      loss_and_direction
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#pypty.objective.scatteradd_probe" class="md-nav__link">
+    <span class="md-ellipsis">
+      scatteradd_probe
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#pypty.objective.scatteradd_abers" class="md-nav__link">
+    <span class="md-ellipsis">
+      scatteradd_abers
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#pypty.objective.charge_flip" class="md-nav__link">
     <span class="md-ellipsis">
       charge_flip
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#pypty.objective.make_states_orthogonal" class="md-nav__link">
+    <span class="md-ellipsis">
+      make_states_orthogonal
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#pypty.objective.make_basis_orthogonal" class="md-nav__link">
+    <span class="md-ellipsis">
+      make_basis_orthogonal
     </span>
   </a>
   
@@ -565,9 +631,18 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#pypty.objective.compute_atv_constraint" class="md-nav__link">
+  <a href="#pypty.objective.compute_fast_axis_constraint_on_grid" class="md-nav__link">
     <span class="md-ellipsis">
-      compute_atv_constraint
+      compute_fast_axis_constraint_on_grid
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#pypty.objective.compute_slow_axis_constraint_on_grid" class="md-nav__link">
+    <span class="md-ellipsis">
+      compute_slow_axis_constraint_on_grid
     </span>
   </a>
   
@@ -583,18 +658,36 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#pypty.objective.compute_fast_axis_constraint_on_grid" class="md-nav__link">
+  <a href="#pypty.objective.compute_full_l1_constraint" class="md-nav__link">
     <span class="md-ellipsis">
-      compute_fast_axis_constraint_on_grid
+      compute_full_l1_constraint
     </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#pypty.objective.compute_full_l1_constraint" class="md-nav__link">
+  <a href="#pypty.objective.compute_window_constraint" class="md-nav__link">
     <span class="md-ellipsis">
-      compute_full_l1_constraint
+      compute_window_constraint
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#pypty.objective.compute_probe_constraint" class="md-nav__link">
+    <span class="md-ellipsis">
+      compute_probe_constraint
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#pypty.objective.compute_atv_constraint" class="md-nav__link">
+    <span class="md-ellipsis">
+      compute_atv_constraint
     </span>
   </a>
   
@@ -618,78 +711,6 @@
   
 </li>
       
-        <li class="md-nav__item">
-  <a href="#pypty.objective.compute_probe_constraint" class="md-nav__link">
-    <span class="md-ellipsis">
-      compute_probe_constraint
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#pypty.objective.compute_slow_axis_constraint_on_grid" class="md-nav__link">
-    <span class="md-ellipsis">
-      compute_slow_axis_constraint_on_grid
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#pypty.objective.compute_window_constraint" class="md-nav__link">
-    <span class="md-ellipsis">
-      compute_window_constraint
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#pypty.objective.loss_and_direction" class="md-nav__link">
-    <span class="md-ellipsis">
-      loss_and_direction
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#pypty.objective.make_basis_orthogonal" class="md-nav__link">
-    <span class="md-ellipsis">
-      make_basis_orthogonal
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#pypty.objective.make_states_orthogonal" class="md-nav__link">
-    <span class="md-ellipsis">
-      make_states_orthogonal
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#pypty.objective.scatteradd_abers" class="md-nav__link">
-    <span class="md-ellipsis">
-      scatteradd_abers
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#pypty.objective.scatteradd_probe" class="md-nav__link">
-    <span class="md-ellipsis">
-      scatteradd_probe
-    </span>
-  </a>
-  
-</li>
-      
     </ul>
   
 </nav>
@@ -706,11 +727,11 @@
   
   
     <li class="md-nav__item">
-      <a href="multicore.html" class="md-nav__link">
+      <a href="multislice_core.html" class="md-nav__link">
         
   
   <span class="md-ellipsis">
-    pypty.multicore
+    pypty.multislice_core
     
   </span>
   
@@ -852,9 +873,54 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#pypty.objective.loss_and_direction" class="md-nav__link">
+    <span class="md-ellipsis">
+      loss_and_direction
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#pypty.objective.scatteradd_probe" class="md-nav__link">
+    <span class="md-ellipsis">
+      scatteradd_probe
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#pypty.objective.scatteradd_abers" class="md-nav__link">
+    <span class="md-ellipsis">
+      scatteradd_abers
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#pypty.objective.charge_flip" class="md-nav__link">
     <span class="md-ellipsis">
       charge_flip
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#pypty.objective.make_states_orthogonal" class="md-nav__link">
+    <span class="md-ellipsis">
+      make_states_orthogonal
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#pypty.objective.make_basis_orthogonal" class="md-nav__link">
+    <span class="md-ellipsis">
+      make_basis_orthogonal
     </span>
   </a>
   
@@ -870,9 +936,18 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#pypty.objective.compute_atv_constraint" class="md-nav__link">
+  <a href="#pypty.objective.compute_fast_axis_constraint_on_grid" class="md-nav__link">
     <span class="md-ellipsis">
-      compute_atv_constraint
+      compute_fast_axis_constraint_on_grid
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#pypty.objective.compute_slow_axis_constraint_on_grid" class="md-nav__link">
+    <span class="md-ellipsis">
+      compute_slow_axis_constraint_on_grid
     </span>
   </a>
   
@@ -888,18 +963,36 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#pypty.objective.compute_fast_axis_constraint_on_grid" class="md-nav__link">
+  <a href="#pypty.objective.compute_full_l1_constraint" class="md-nav__link">
     <span class="md-ellipsis">
-      compute_fast_axis_constraint_on_grid
+      compute_full_l1_constraint
     </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#pypty.objective.compute_full_l1_constraint" class="md-nav__link">
+  <a href="#pypty.objective.compute_window_constraint" class="md-nav__link">
     <span class="md-ellipsis">
-      compute_full_l1_constraint
+      compute_window_constraint
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#pypty.objective.compute_probe_constraint" class="md-nav__link">
+    <span class="md-ellipsis">
+      compute_probe_constraint
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#pypty.objective.compute_atv_constraint" class="md-nav__link">
+    <span class="md-ellipsis">
+      compute_atv_constraint
     </span>
   </a>
   
@@ -918,78 +1011,6 @@
   <a href="#pypty.objective.compute_mixed_object_variance_constraint" class="md-nav__link">
     <span class="md-ellipsis">
       compute_mixed_object_variance_constraint
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#pypty.objective.compute_probe_constraint" class="md-nav__link">
-    <span class="md-ellipsis">
-      compute_probe_constraint
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#pypty.objective.compute_slow_axis_constraint_on_grid" class="md-nav__link">
-    <span class="md-ellipsis">
-      compute_slow_axis_constraint_on_grid
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#pypty.objective.compute_window_constraint" class="md-nav__link">
-    <span class="md-ellipsis">
-      compute_window_constraint
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#pypty.objective.loss_and_direction" class="md-nav__link">
-    <span class="md-ellipsis">
-      loss_and_direction
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#pypty.objective.make_basis_orthogonal" class="md-nav__link">
-    <span class="md-ellipsis">
-      make_basis_orthogonal
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#pypty.objective.make_states_orthogonal" class="md-nav__link">
-    <span class="md-ellipsis">
-      make_states_orthogonal
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#pypty.objective.scatteradd_abers" class="md-nav__link">
-    <span class="md-ellipsis">
-      scatteradd_abers
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#pypty.objective.scatteradd_probe" class="md-nav__link">
-    <span class="md-ellipsis">
-      scatteradd_probe
     </span>
   </a>
   
@@ -1041,1648 +1062,6 @@
 
 
 
-
-<div class="doc doc-object doc-function">
-
-
-<h3 id="pypty.objective.charge_flip" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">charge_flip</span></code>
-
-<a href="#pypty.objective.charge_flip" class="headerlink" title="Permanent link">&para;</a></h3>
-
-
-    <div class="doc doc-contents ">
-
-        <p>Perform charge-flipping style object regularization to enhance phase and absorption contrast.</p>
-
-
-<table>
-      <thead>
-        <tr>
-          <th><span class="doc-section-title">PARAMETER</span></th>
-          <th><span>DESCRIPTION</span></th>
-        </tr>
-      </thead>
-      <tbody>
-          <tr class="doc-section-item">
-            <td>
-                <code>a</code>
-            </td>
-            <td class="doc-param-details">
-              <div class="doc-md-description">
-                <p>Complex object to regularize.</p>
-              </div>
-              <p>
-                  <span class="doc-param-annotation">
-                    <b>TYPE:</b>
-                      <code><span title="ndarray">ndarray</span></code>
-                  </span>
-              </p>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                <code>delta_phase</code>
-            </td>
-            <td class="doc-param-details">
-              <div class="doc-md-description">
-                <p>Phase threshold ratio.</p>
-              </div>
-              <p>
-                  <span class="doc-param-annotation">
-                    <b>TYPE:</b>
-                      <code><span title="float">float</span></code>
-                  </span>
-                  <span class="doc-param-default">
-                    <b>DEFAULT:</b>
-                      <code>0.03</code>
-                  </span>
-              </p>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                <code>delta_abs</code>
-            </td>
-            <td class="doc-param-details">
-              <div class="doc-md-description">
-                <p>Absorption threshold ratio.</p>
-              </div>
-              <p>
-                  <span class="doc-param-annotation">
-                    <b>TYPE:</b>
-                      <code><span title="float">float</span></code>
-                  </span>
-                  <span class="doc-param-default">
-                    <b>DEFAULT:</b>
-                      <code>0.14</code>
-                  </span>
-              </p>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                <code>beta_phase</code>
-            </td>
-            <td class="doc-param-details">
-              <div class="doc-md-description">
-                <p>Inversion multiplier for low-phase regions.</p>
-              </div>
-              <p>
-                  <span class="doc-param-annotation">
-                    <b>TYPE:</b>
-                      <code><span title="float">float</span></code>
-                  </span>
-                  <span class="doc-param-default">
-                    <b>DEFAULT:</b>
-                      <code>-0.95</code>
-                  </span>
-              </p>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                <code>beta_abs</code>
-            </td>
-            <td class="doc-param-details">
-              <div class="doc-md-description">
-                <p>Inversion multiplier for low-absorption regions.</p>
-              </div>
-              <p>
-                  <span class="doc-param-annotation">
-                    <b>TYPE:</b>
-                      <code><span title="float">float</span></code>
-                  </span>
-                  <span class="doc-param-default">
-                    <b>DEFAULT:</b>
-                      <code>-0.95</code>
-                  </span>
-              </p>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                <code>fancy_sigma</code>
-            </td>
-            <td class="doc-param-details">
-              <div class="doc-md-description">
-                <p>Tuple of atomic-shape gaussian kernel sigmas (for phase, absorption).</p>
-              </div>
-              <p>
-                  <span class="doc-param-annotation">
-                    <b>TYPE:</b>
-                      <code><span title="tuple">tuple</span> or None</code>
-                  </span>
-                  <span class="doc-param-default">
-                    <b>DEFAULT:</b>
-                      <code>None</code>
-                  </span>
-              </p>
-            </td>
-          </tr>
-      </tbody>
-    </table>
-
-
-<table>
-      <thead>
-        <tr>
-          <th><span class="doc-section-title">RETURNS</span></th>
-          <th><span>DESCRIPTION</span></th>
-        </tr>
-      </thead>
-      <tbody>
-          <tr class="doc-section-item">
-            <td>
-                <span class="doc-returns-annotation">
-                    <code><span title="ndarray">ndarray</span></code>
-                </span>
-            </td>
-            <td class="doc-returns-details">
-              <div class="doc-md-description">
-                <p>Regularized complex object.</p>
-              </div>
-            </td>
-          </tr>
-      </tbody>
-    </table>
-
-
-    </div>
-
-</div>
-
-<div class="doc doc-object doc-function">
-
-
-<h3 id="pypty.objective.clear_missing_wedge" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">clear_missing_wedge</span></code>
-
-<a href="#pypty.objective.clear_missing_wedge" class="headerlink" title="Permanent link">&para;</a></h3>
-
-
-    <div class="doc doc-contents ">
-
-        <p>Remove missing wedge artifacts by applying a cone filter in 3D FFT space.</p>
-
-
-<table>
-      <thead>
-        <tr>
-          <th><span class="doc-section-title">PARAMETER</span></th>
-          <th><span>DESCRIPTION</span></th>
-        </tr>
-      </thead>
-      <tbody>
-          <tr class="doc-section-item">
-            <td>
-                <code>obj</code>
-            </td>
-            <td class="doc-param-details">
-              <div class="doc-md-description">
-                <p>3D complex object.</p>
-              </div>
-              <p>
-                  <span class="doc-param-annotation">
-                    <b>TYPE:</b>
-                      <code><span title="ndarray">ndarray</span></code>
-                  </span>
-              </p>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                <code>px_size_x_A</code>
-            </td>
-            <td class="doc-param-details">
-              <div class="doc-md-description">
-                <p>Pixel size along x (Å).</p>
-              </div>
-              <p>
-                  <span class="doc-param-annotation">
-                    <b>TYPE:</b>
-                      <code><span title="float">float</span></code>
-                  </span>
-              </p>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                <code>px_size_y_A</code>
-            </td>
-            <td class="doc-param-details">
-              <div class="doc-md-description">
-                <p>Pixel size along y (Å).</p>
-              </div>
-              <p>
-                  <span class="doc-param-annotation">
-                    <b>TYPE:</b>
-                      <code><span title="float">float</span></code>
-                  </span>
-              </p>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                <code>slice_distance</code>
-            </td>
-            <td class="doc-param-details">
-              <div class="doc-md-description">
-                <p>Distance between slices (Å).</p>
-              </div>
-              <p>
-                  <span class="doc-param-annotation">
-                    <b>TYPE:</b>
-                      <code><span title="float">float</span></code>
-                  </span>
-              </p>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                <code>beta_wedge</code>
-            </td>
-            <td class="doc-param-details">
-              <div class="doc-md-description">
-                <p>Cone sharpness parameter.</p>
-              </div>
-              <p>
-                  <span class="doc-param-annotation">
-                    <b>TYPE:</b>
-                      <code><span title="float">float</span></code>
-                  </span>
-              </p>
-            </td>
-          </tr>
-      </tbody>
-    </table>
-
-
-<table>
-      <thead>
-        <tr>
-          <th><span class="doc-section-title">RETURNS</span></th>
-          <th><span>DESCRIPTION</span></th>
-        </tr>
-      </thead>
-      <tbody>
-          <tr class="doc-section-item">
-            <td>
-                <span class="doc-returns-annotation">
-                    <code><span title="ndarray">ndarray</span></code>
-                </span>
-            </td>
-            <td class="doc-returns-details">
-              <div class="doc-md-description">
-                <p>Filtered object with reduced missing wedge effects.</p>
-              </div>
-            </td>
-          </tr>
-      </tbody>
-    </table>
-
-
-    </div>
-
-</div>
-
-<div class="doc doc-object doc-function">
-
-
-<h3 id="pypty.objective.compute_atv_constraint" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">compute_atv_constraint</span></code>
-
-<a href="#pypty.objective.compute_atv_constraint" class="headerlink" title="Permanent link">&para;</a></h3>
-
-
-    <div class="doc doc-contents ">
-
-        <p>Apply adaptive total variation (ATV) regularization to the object.</p>
-
-
-<table>
-      <thead>
-        <tr>
-          <th><span class="doc-section-title">PARAMETER</span></th>
-          <th><span>DESCRIPTION</span></th>
-        </tr>
-      </thead>
-      <tbody>
-          <tr class="doc-section-item">
-            <td>
-                <code>obj</code>
-            </td>
-            <td class="doc-param-details">
-              <div class="doc-md-description">
-                <p>Complex object.</p>
-              </div>
-              <p>
-                  <span class="doc-param-annotation">
-                    <b>TYPE:</b>
-                      <code><span title="ndarray">ndarray</span></code>
-                  </span>
-              </p>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                <code>atv_weight</code>
-            </td>
-            <td class="doc-param-details">
-              <div class="doc-md-description">
-                <p>Regularization weight.</p>
-              </div>
-              <p>
-                  <span class="doc-param-annotation">
-                    <b>TYPE:</b>
-                      <code><span title="float">float</span></code>
-                  </span>
-              </p>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                <code>atv_q</code>
-            </td>
-            <td class="doc-param-details">
-              <div class="doc-md-description">
-                <p>q-norm parameter.</p>
-              </div>
-              <p>
-                  <span class="doc-param-annotation">
-                    <b>TYPE:</b>
-                      <code><span title="float">float</span></code>
-                  </span>
-              </p>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                <code>atv_p</code>
-            </td>
-            <td class="doc-param-details">
-              <div class="doc-md-description">
-                <p>p-norm parameter.</p>
-              </div>
-              <p>
-                  <span class="doc-param-annotation">
-                    <b>TYPE:</b>
-                      <code><span title="float">float</span></code>
-                  </span>
-              </p>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                <code>pixel_size_x_A</code>
-            </td>
-            <td class="doc-param-details">
-              <div class="doc-md-description">
-                <p>Pixel size along x (Å).</p>
-              </div>
-              <p>
-                  <span class="doc-param-annotation">
-                    <b>TYPE:</b>
-                      <code><span title="float">float</span></code>
-                  </span>
-              </p>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                <code>pixel_size_y_A</code>
-            </td>
-            <td class="doc-param-details">
-              <div class="doc-md-description">
-                <p>Pixel size along y (Å).</p>
-              </div>
-              <p>
-                  <span class="doc-param-annotation">
-                    <b>TYPE:</b>
-                      <code><span title="float">float</span></code>
-                  </span>
-              </p>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                <code>atv_grad_mask</code>
-            </td>
-            <td class="doc-param-details">
-              <div class="doc-md-description">
-                <p>Optional gradient mask.</p>
-              </div>
-              <p>
-                  <span class="doc-param-annotation">
-                    <b>TYPE:</b>
-                      <code><span title="ndarray">ndarray</span> or None</code>
-                  </span>
-              </p>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                <code>return_direction</code>
-            </td>
-            <td class="doc-param-details">
-              <div class="doc-md-description">
-                <p>If True, return the gradient.</p>
-              </div>
-              <p>
-                  <span class="doc-param-annotation">
-                    <b>TYPE:</b>
-                      <code><span title="bool">bool</span></code>
-                  </span>
-              </p>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                <code>smart_memory</code>
-            </td>
-            <td class="doc-param-details">
-              <div class="doc-md-description">
-                <p>If True, use memory-efficient computation.</p>
-              </div>
-              <p>
-                  <span class="doc-param-annotation">
-                    <b>TYPE:</b>
-                      <code><span title="bool">bool</span></code>
-                  </span>
-              </p>
-            </td>
-          </tr>
-      </tbody>
-    </table>
-
-
-<table>
-      <thead>
-        <tr>
-          <th><span class="doc-section-title">RETURNS</span></th>
-          <th><span>DESCRIPTION</span></th>
-        </tr>
-      </thead>
-      <tbody>
-          <tr class="doc-section-item">
-            <td>
-                <code>reg_term</code>
-            </td>
-            <td class="doc-returns-details">
-              <div class="doc-md-description">
-                <p>ATV regularization value.</p>
-              </div>
-                <p>
-                  <span class="doc-returns-annotation">
-                    <b>TYPE:</b>
-                      <code><span title="float">float</span></code>
-                  </span>
-                </p>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                <code>dR_dTerm</code>
-            </td>
-            <td class="doc-returns-details">
-              <div class="doc-md-description">
-                <p>Gradient with respect to the object.</p>
-              </div>
-                <p>
-                  <span class="doc-returns-annotation">
-                    <b>TYPE:</b>
-                      <code><span title="ndarray">ndarray</span></code>
-                  </span>
-                </p>
-            </td>
-          </tr>
-      </tbody>
-    </table>
-
-
-    </div>
-
-</div>
-
-<div class="doc doc-object doc-function">
-
-
-<h3 id="pypty.objective.compute_deformation_constraint_on_grid" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">compute_deformation_constraint_on_grid</span></code>
-
-<a href="#pypty.objective.compute_deformation_constraint_on_grid" class="headerlink" title="Permanent link">&para;</a></h3>
-
-
-    <div class="doc doc-contents ">
-
-        <p>Penalize deviations from affine transformations in local scan patches.</p>
-
-
-<table>
-      <thead>
-        <tr>
-          <th><span class="doc-section-title">PARAMETER</span></th>
-          <th><span>DESCRIPTION</span></th>
-        </tr>
-      </thead>
-      <tbody>
-          <tr class="doc-section-item">
-            <td>
-                <code>something</code>
-            </td>
-            <td class="doc-param-details">
-              <div class="doc-md-description">
-                <p>Grid to regularize (positions or tilts).</p>
-              </div>
-              <p>
-                  <span class="doc-param-annotation">
-                    <b>TYPE:</b>
-                      <code><span title="ndarray">ndarray</span></code>
-                  </span>
-              </p>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                <code>scan_size</code>
-            </td>
-            <td class="doc-param-details">
-              <div class="doc-md-description">
-                <p>Dimensions of the scan.</p>
-              </div>
-              <p>
-                  <span class="doc-param-annotation">
-                    <b>TYPE:</b>
-                      <code><span title="tuple">tuple</span></code>
-                  </span>
-              </p>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                <code>reg_weight</code>
-            </td>
-            <td class="doc-param-details">
-              <div class="doc-md-description">
-                <p>Regularization weight.</p>
-              </div>
-              <p>
-                  <span class="doc-param-annotation">
-                    <b>TYPE:</b>
-                      <code><span title="float">float</span></code>
-                  </span>
-              </p>
-            </td>
-          </tr>
-      </tbody>
-    </table>
-
-
-<table>
-      <thead>
-        <tr>
-          <th><span class="doc-section-title">RETURNS</span></th>
-          <th><span>DESCRIPTION</span></th>
-        </tr>
-      </thead>
-      <tbody>
-          <tr class="doc-section-item">
-            <td>
-                <code>reg_term</code>
-            </td>
-            <td class="doc-returns-details">
-              <div class="doc-md-description">
-                <p>Regularization loss.</p>
-              </div>
-                <p>
-                  <span class="doc-returns-annotation">
-                    <b>TYPE:</b>
-                      <code><span title="float">float</span></code>
-                  </span>
-                </p>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                <code>grad</code>
-            </td>
-            <td class="doc-returns-details">
-              <div class="doc-md-description">
-                <p>Gradient of the loss with respect to the grid.</p>
-              </div>
-                <p>
-                  <span class="doc-returns-annotation">
-                    <b>TYPE:</b>
-                      <code><span title="ndarray">ndarray</span></code>
-                  </span>
-                </p>
-            </td>
-          </tr>
-      </tbody>
-    </table>
-
-
-    </div>
-
-</div>
-
-<div class="doc doc-object doc-function">
-
-
-<h3 id="pypty.objective.compute_fast_axis_constraint_on_grid" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">compute_fast_axis_constraint_on_grid</span></code>
-
-<a href="#pypty.objective.compute_fast_axis_constraint_on_grid" class="headerlink" title="Permanent link">&para;</a></h3>
-
-
-    <div class="doc doc-contents ">
-
-        <p>Apply second-order TV regularization along the fast scan axis.</p>
-
-
-<table>
-      <thead>
-        <tr>
-          <th><span class="doc-section-title">PARAMETER</span></th>
-          <th><span>DESCRIPTION</span></th>
-        </tr>
-      </thead>
-      <tbody>
-          <tr class="doc-section-item">
-            <td>
-                <code>something</code>
-            </td>
-            <td class="doc-param-details">
-              <div class="doc-md-description">
-                <p>Positions or tilts to regularize.</p>
-              </div>
-              <p>
-                  <span class="doc-param-annotation">
-                    <b>TYPE:</b>
-                      <code><span title="ndarray">ndarray</span></code>
-                  </span>
-              </p>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                <code>scan_size</code>
-            </td>
-            <td class="doc-param-details">
-              <div class="doc-md-description">
-                <p>Size of the scan grid.</p>
-              </div>
-              <p>
-                  <span class="doc-param-annotation">
-                    <b>TYPE:</b>
-                      <code><span title="tuple">tuple</span></code>
-                  </span>
-              </p>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                <code>tv_reg_weight</code>
-            </td>
-            <td class="doc-param-details">
-              <div class="doc-md-description">
-                <p>Regularization weight.</p>
-              </div>
-              <p>
-                  <span class="doc-param-annotation">
-                    <b>TYPE:</b>
-                      <code><span title="float">float</span></code>
-                  </span>
-              </p>
-            </td>
-          </tr>
-      </tbody>
-    </table>
-
-
-<table>
-      <thead>
-        <tr>
-          <th><span class="doc-section-title">RETURNS</span></th>
-          <th><span>DESCRIPTION</span></th>
-        </tr>
-      </thead>
-      <tbody>
-          <tr class="doc-section-item">
-            <td>
-                <code>reg_term</code>
-            </td>
-            <td class="doc-returns-details">
-              <div class="doc-md-description">
-                <p>Value of the regularization term.</p>
-              </div>
-                <p>
-                  <span class="doc-returns-annotation">
-                    <b>TYPE:</b>
-                      <code><span title="float">float</span></code>
-                  </span>
-                </p>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                <code>grad</code>
-            </td>
-            <td class="doc-returns-details">
-              <div class="doc-md-description">
-                <p>Gradient of the regularization.</p>
-              </div>
-                <p>
-                  <span class="doc-returns-annotation">
-                    <b>TYPE:</b>
-                      <code><span title="ndarray">ndarray</span></code>
-                  </span>
-                </p>
-            </td>
-          </tr>
-      </tbody>
-    </table>
-
-
-    </div>
-
-</div>
-
-<div class="doc doc-object doc-function">
-
-
-<h3 id="pypty.objective.compute_full_l1_constraint" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">compute_full_l1_constraint</span></code>
-
-<a href="#pypty.objective.compute_full_l1_constraint" class="headerlink" title="Permanent link">&para;</a></h3>
-
-
-    <div class="doc doc-contents ">
-
-        <p>Apply L1 norm regularization to the object's phase and absorption.</p>
-
-
-<table>
-      <thead>
-        <tr>
-          <th><span class="doc-section-title">PARAMETER</span></th>
-          <th><span>DESCRIPTION</span></th>
-        </tr>
-      </thead>
-      <tbody>
-          <tr class="doc-section-item">
-            <td>
-                <code>object</code>
-            </td>
-            <td class="doc-param-details">
-              <div class="doc-md-description">
-                <p>Complex object array.</p>
-              </div>
-              <p>
-                  <span class="doc-param-annotation">
-                    <b>TYPE:</b>
-                      <code><span title="ndarray">ndarray</span></code>
-                  </span>
-              </p>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                <code>abs_norm_weight</code>
-            </td>
-            <td class="doc-param-details">
-              <div class="doc-md-description">
-                <p>Weight for absorption norm.</p>
-              </div>
-              <p>
-                  <span class="doc-param-annotation">
-                    <b>TYPE:</b>
-                      <code><span title="float">float</span></code>
-                  </span>
-              </p>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                <code>phase_norm_weight</code>
-            </td>
-            <td class="doc-param-details">
-              <div class="doc-md-description">
-                <p>Weight for phase norm.</p>
-              </div>
-              <p>
-                  <span class="doc-param-annotation">
-                    <b>TYPE:</b>
-                      <code><span title="float">float</span></code>
-                  </span>
-              </p>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                <code>grad_mask</code>
-            </td>
-            <td class="doc-param-details">
-              <div class="doc-md-description">
-                <p>Mask to restrict gradient computation.</p>
-              </div>
-              <p>
-                  <span class="doc-param-annotation">
-                    <b>TYPE:</b>
-                      <code><span title="ndarray">ndarray</span></code>
-                  </span>
-              </p>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                <code>return_direction</code>
-            </td>
-            <td class="doc-param-details">
-              <div class="doc-md-description">
-                <p>If True, return the gradient.</p>
-              </div>
-              <p>
-                  <span class="doc-param-annotation">
-                    <b>TYPE:</b>
-                      <code><span title="bool">bool</span></code>
-                  </span>
-              </p>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                <code>smart_memory</code>
-            </td>
-            <td class="doc-param-details">
-              <div class="doc-md-description">
-                <p>Memory-efficient option.</p>
-              </div>
-              <p>
-                  <span class="doc-param-annotation">
-                    <b>TYPE:</b>
-                      <code><span title="bool">bool</span></code>
-                  </span>
-              </p>
-            </td>
-          </tr>
-      </tbody>
-    </table>
-
-
-<table>
-      <thead>
-        <tr>
-          <th><span class="doc-section-title">RETURNS</span></th>
-          <th><span>DESCRIPTION</span></th>
-        </tr>
-      </thead>
-      <tbody>
-          <tr class="doc-section-item">
-            <td>
-                <code>reg_term</code>
-            </td>
-            <td class="doc-returns-details">
-              <div class="doc-md-description">
-                <p>Regularization loss.</p>
-              </div>
-                <p>
-                  <span class="doc-returns-annotation">
-                    <b>TYPE:</b>
-                      <code><span title="float">float</span></code>
-                  </span>
-                </p>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                <code>grad</code>
-            </td>
-            <td class="doc-returns-details">
-              <div class="doc-md-description">
-                <p>Gradient if <code>return_direction</code> is True, else None.</p>
-              </div>
-                <p>
-                  <span class="doc-returns-annotation">
-                    <b>TYPE:</b>
-                      <code><span title="ndarray">ndarray</span> or None</code>
-                  </span>
-                </p>
-            </td>
-          </tr>
-      </tbody>
-    </table>
-
-
-    </div>
-
-</div>
-
-<div class="doc doc-object doc-function">
-
-
-<h3 id="pypty.objective.compute_missing_wedge_constraint" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">compute_missing_wedge_constraint</span></code>
-
-<a href="#pypty.objective.compute_missing_wedge_constraint" class="headerlink" title="Permanent link">&para;</a></h3>
-
-
-    <div class="doc doc-contents ">
-
-        <p>Enforce missing wedge constraint in 3D reciprocal space.</p>
-
-
-<table>
-      <thead>
-        <tr>
-          <th><span class="doc-section-title">PARAMETER</span></th>
-          <th><span>DESCRIPTION</span></th>
-        </tr>
-      </thead>
-      <tbody>
-          <tr class="doc-section-item">
-            <td>
-                <code>obj</code>
-            </td>
-            <td class="doc-param-details">
-              <div class="doc-md-description">
-                <p>3D complex object.</p>
-              </div>
-              <p>
-                  <span class="doc-param-annotation">
-                    <b>TYPE:</b>
-                      <code><span title="ndarray">ndarray</span></code>
-                  </span>
-              </p>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                <code>px_size_x_A</code>
-            </td>
-            <td class="doc-param-details">
-              <div class="doc-md-description">
-                <p>Pixel size along x (Å).</p>
-              </div>
-              <p>
-                  <span class="doc-param-annotation">
-                    <b>TYPE:</b>
-                      <code><span title="float">float</span></code>
-                  </span>
-              </p>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                <code>px_size_y_A</code>
-            </td>
-            <td class="doc-param-details">
-              <div class="doc-md-description">
-                <p>Pixel size along y (Å).</p>
-              </div>
-              <p>
-                  <span class="doc-param-annotation">
-                    <b>TYPE:</b>
-                      <code><span title="float">float</span></code>
-                  </span>
-              </p>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                <code>slice_distance</code>
-            </td>
-            <td class="doc-param-details">
-              <div class="doc-md-description">
-                <p>Slice spacing (Å).</p>
-              </div>
-              <p>
-                  <span class="doc-param-annotation">
-                    <b>TYPE:</b>
-                      <code><span title="float">float</span></code>
-                  </span>
-              </p>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                <code>beta_wedge</code>
-            </td>
-            <td class="doc-param-details">
-              <div class="doc-md-description">
-                <p>Cone sharpness.</p>
-              </div>
-              <p>
-                  <span class="doc-param-annotation">
-                    <b>TYPE:</b>
-                      <code><span title="float">float</span></code>
-                  </span>
-              </p>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                <code>wegde_mu</code>
-            </td>
-            <td class="doc-param-details">
-              <div class="doc-md-description">
-                <p>Regularization weight.</p>
-              </div>
-              <p>
-                  <span class="doc-param-annotation">
-                    <b>TYPE:</b>
-                      <code><span title="float">float</span></code>
-                  </span>
-              </p>
-            </td>
-          </tr>
-      </tbody>
-    </table>
-
-
-<table>
-      <thead>
-        <tr>
-          <th><span class="doc-section-title">RETURNS</span></th>
-          <th><span>DESCRIPTION</span></th>
-        </tr>
-      </thead>
-      <tbody>
-          <tr class="doc-section-item">
-            <td>
-                <code>loss_term</code>
-            </td>
-            <td class="doc-returns-details">
-              <div class="doc-md-description">
-                <p>Regularization loss.</p>
-              </div>
-                <p>
-                  <span class="doc-returns-annotation">
-                    <b>TYPE:</b>
-                      <code><span title="float">float</span></code>
-                  </span>
-                </p>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                <code>grad_obj</code>
-            </td>
-            <td class="doc-returns-details">
-              <div class="doc-md-description">
-                <p>Gradient of the loss with respect to the object.</p>
-              </div>
-                <p>
-                  <span class="doc-returns-annotation">
-                    <b>TYPE:</b>
-                      <code><span title="ndarray">ndarray</span></code>
-                  </span>
-                </p>
-            </td>
-          </tr>
-      </tbody>
-    </table>
-
-
-    </div>
-
-</div>
-
-<div class="doc doc-object doc-function">
-
-
-<h3 id="pypty.objective.compute_mixed_object_variance_constraint" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">compute_mixed_object_variance_constraint</span></code>
-
-<a href="#pypty.objective.compute_mixed_object_variance_constraint" class="headerlink" title="Permanent link">&para;</a></h3>
-
-
-    <div class="doc doc-contents ">
-
-        <p>Regularize variance across object modes by penalizing their differences.</p>
-
-
-<table>
-      <thead>
-        <tr>
-          <th><span class="doc-section-title">PARAMETER</span></th>
-          <th><span>DESCRIPTION</span></th>
-        </tr>
-      </thead>
-      <tbody>
-          <tr class="doc-section-item">
-            <td>
-                <code>this_obj</code>
-            </td>
-            <td class="doc-param-details">
-              <div class="doc-md-description">
-                <p>Complex object array with multiple modes.</p>
-              </div>
-              <p>
-                  <span class="doc-param-annotation">
-                    <b>TYPE:</b>
-                      <code><span title="ndarray">ndarray</span></code>
-                  </span>
-              </p>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                <code>weight</code>
-            </td>
-            <td class="doc-param-details">
-              <div class="doc-md-description">
-                <p>Regularization strength.</p>
-              </div>
-              <p>
-                  <span class="doc-param-annotation">
-                    <b>TYPE:</b>
-                      <code><span title="float">float</span></code>
-                  </span>
-              </p>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                <code>sigma</code>
-            </td>
-            <td class="doc-param-details">
-              <div class="doc-md-description">
-                <p>Smoothing kernel width in frequency space.</p>
-              </div>
-              <p>
-                  <span class="doc-param-annotation">
-                    <b>TYPE:</b>
-                      <code><span title="float">float</span></code>
-                  </span>
-              </p>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                <code>return_direction</code>
-            </td>
-            <td class="doc-param-details">
-              <div class="doc-md-description">
-                <p>If True, return the gradient.</p>
-              </div>
-              <p>
-                  <span class="doc-param-annotation">
-                    <b>TYPE:</b>
-                      <code><span title="bool">bool</span></code>
-                  </span>
-              </p>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                <code>smart_memory</code>
-            </td>
-            <td class="doc-param-details">
-              <div class="doc-md-description">
-                <p>Use memory-efficient FFT loops.</p>
-              </div>
-              <p>
-                  <span class="doc-param-annotation">
-                    <b>TYPE:</b>
-                      <code><span title="bool">bool</span></code>
-                  </span>
-              </p>
-            </td>
-          </tr>
-      </tbody>
-    </table>
-
-
-<table>
-      <thead>
-        <tr>
-          <th><span class="doc-section-title">RETURNS</span></th>
-          <th><span>DESCRIPTION</span></th>
-        </tr>
-      </thead>
-      <tbody>
-          <tr class="doc-section-item">
-            <td>
-                <code>reg_term</code>
-            </td>
-            <td class="doc-returns-details">
-              <div class="doc-md-description">
-                <p>Mixed variance loss.</p>
-              </div>
-                <p>
-                  <span class="doc-returns-annotation">
-                    <b>TYPE:</b>
-                      <code><span title="float">float</span></code>
-                  </span>
-                </p>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                <code>grad</code>
-            </td>
-            <td class="doc-returns-details">
-              <div class="doc-md-description">
-                <p>Gradient with respect to the object if <code>return_direction</code> is True.</p>
-              </div>
-                <p>
-                  <span class="doc-returns-annotation">
-                    <b>TYPE:</b>
-                      <code><span title="ndarray">ndarray</span> or None</code>
-                  </span>
-                </p>
-            </td>
-          </tr>
-      </tbody>
-    </table>
-
-
-    </div>
-
-</div>
-
-<div class="doc doc-object doc-function">
-
-
-<h3 id="pypty.objective.compute_probe_constraint" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">compute_probe_constraint</span></code>
-
-<a href="#pypty.objective.compute_probe_constraint" class="headerlink" title="Permanent link">&para;</a></h3>
-
-
-    <div class="doc doc-contents ">
-
-        <p>Apply reciprocal space constraint to the probe using an aperture mask. Penalize probe values outside an aperture.</p>
-
-
-<table>
-      <thead>
-        <tr>
-          <th><span class="doc-section-title">PARAMETER</span></th>
-          <th><span>DESCRIPTION</span></th>
-        </tr>
-      </thead>
-      <tbody>
-          <tr class="doc-section-item">
-            <td>
-                <code>to_reg_probe</code>
-            </td>
-            <td class="doc-param-details">
-              <div class="doc-md-description">
-                <p>Complex probe array.</p>
-              </div>
-              <p>
-                  <span class="doc-param-annotation">
-                    <b>TYPE:</b>
-                      <code><span title="ndarray">ndarray</span></code>
-                  </span>
-              </p>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                <code>aperture</code>
-            </td>
-            <td class="doc-param-details">
-              <div class="doc-md-description">
-                <p>Binary mask or scalar defining aperture radius.</p>
-              </div>
-              <p>
-                  <span class="doc-param-annotation">
-                    <b>TYPE:</b>
-                      <code><span title="ndarray">ndarray</span> or <span title="float">float</span></code>
-                  </span>
-              </p>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                <code>weight</code>
-            </td>
-            <td class="doc-param-details">
-              <div class="doc-md-description">
-                <p>Regularization weight.</p>
-              </div>
-              <p>
-                  <span class="doc-param-annotation">
-                    <b>TYPE:</b>
-                      <code><span title="float">float</span></code>
-                  </span>
-              </p>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                <code>return_direction</code>
-            </td>
-            <td class="doc-param-details">
-              <div class="doc-md-description">
-                <p>If True, return the gradient.</p>
-              </div>
-              <p>
-                  <span class="doc-param-annotation">
-                    <b>TYPE:</b>
-                      <code><span title="bool">bool</span></code>
-                  </span>
-              </p>
-            </td>
-          </tr>
-      </tbody>
-    </table>
-
-
-<table>
-      <thead>
-        <tr>
-          <th><span class="doc-section-title">RETURNS</span></th>
-          <th><span>DESCRIPTION</span></th>
-        </tr>
-      </thead>
-      <tbody>
-          <tr class="doc-section-item">
-            <td>
-                <code>reg_term</code>
-            </td>
-            <td class="doc-returns-details">
-              <div class="doc-md-description">
-                <p>Loss from masked frequency components.</p>
-              </div>
-                <p>
-                  <span class="doc-returns-annotation">
-                    <b>TYPE:</b>
-                      <code><span title="float">float</span></code>
-                  </span>
-                </p>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                <code>probe_fft</code>
-            </td>
-            <td class="doc-returns-details">
-              <div class="doc-md-description">
-                <p>Gradient of the constraint if requested.</p>
-              </div>
-                <p>
-                  <span class="doc-returns-annotation">
-                    <b>TYPE:</b>
-                      <code><span title="ndarray">ndarray</span> or None</code>
-                  </span>
-                </p>
-            </td>
-          </tr>
-      </tbody>
-    </table>
-
-
-    </div>
-
-</div>
-
-<div class="doc doc-object doc-function">
-
-
-<h3 id="pypty.objective.compute_slow_axis_constraint_on_grid" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">compute_slow_axis_constraint_on_grid</span></code>
-
-<a href="#pypty.objective.compute_slow_axis_constraint_on_grid" class="headerlink" title="Permanent link">&para;</a></h3>
-
-
-    <div class="doc doc-contents ">
-
-        <p>Apply second-order TV regularization along the slow scan axis.</p>
-
-
-<table>
-      <thead>
-        <tr>
-          <th><span class="doc-section-title">PARAMETER</span></th>
-          <th><span>DESCRIPTION</span></th>
-        </tr>
-      </thead>
-      <tbody>
-          <tr class="doc-section-item">
-            <td>
-                <code>something</code>
-            </td>
-            <td class="doc-param-details">
-              <div class="doc-md-description">
-                <p>Positions or tilts to regularize.</p>
-              </div>
-              <p>
-                  <span class="doc-param-annotation">
-                    <b>TYPE:</b>
-                      <code><span title="ndarray">ndarray</span></code>
-                  </span>
-              </p>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                <code>scan_size</code>
-            </td>
-            <td class="doc-param-details">
-              <div class="doc-md-description">
-                <p>Size of the scan grid.</p>
-              </div>
-              <p>
-                  <span class="doc-param-annotation">
-                    <b>TYPE:</b>
-                      <code><span title="tuple">tuple</span></code>
-                  </span>
-              </p>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                <code>tv_reg_weight</code>
-            </td>
-            <td class="doc-param-details">
-              <div class="doc-md-description">
-                <p>Regularization weight.</p>
-              </div>
-              <p>
-                  <span class="doc-param-annotation">
-                    <b>TYPE:</b>
-                      <code><span title="float">float</span></code>
-                  </span>
-              </p>
-            </td>
-          </tr>
-      </tbody>
-    </table>
-
-
-<table>
-      <thead>
-        <tr>
-          <th><span class="doc-section-title">RETURNS</span></th>
-          <th><span>DESCRIPTION</span></th>
-        </tr>
-      </thead>
-      <tbody>
-          <tr class="doc-section-item">
-            <td>
-                <code>reg_term</code>
-            </td>
-            <td class="doc-returns-details">
-              <div class="doc-md-description">
-                <p>Regularization loss.</p>
-              </div>
-                <p>
-                  <span class="doc-returns-annotation">
-                    <b>TYPE:</b>
-                      <code><span title="float">float</span></code>
-                  </span>
-                </p>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                <code>grad</code>
-            </td>
-            <td class="doc-returns-details">
-              <div class="doc-md-description">
-                <p>Gradient with respect to the input.</p>
-              </div>
-                <p>
-                  <span class="doc-returns-annotation">
-                    <b>TYPE:</b>
-                      <code><span title="ndarray">ndarray</span></code>
-                  </span>
-                </p>
-            </td>
-          </tr>
-      </tbody>
-    </table>
-
-
-    </div>
-
-</div>
-
-<div class="doc doc-object doc-function">
-
-
-<h3 id="pypty.objective.compute_window_constraint" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">compute_window_constraint</span></code>
-
-<a href="#pypty.objective.compute_window_constraint" class="headerlink" title="Permanent link">&para;</a></h3>
-
-
-    <div class="doc doc-contents ">
-
-        <p>Penalize probe values outside a predefined window region in real-space.</p>
-
-
-<table>
-      <thead>
-        <tr>
-          <th><span class="doc-section-title">PARAMETER</span></th>
-          <th><span>DESCRIPTION</span></th>
-        </tr>
-      </thead>
-      <tbody>
-          <tr class="doc-section-item">
-            <td>
-                <code>to_reg_probe</code>
-            </td>
-            <td class="doc-param-details">
-              <div class="doc-md-description">
-                <p>Complex probe array.</p>
-              </div>
-              <p>
-                  <span class="doc-param-annotation">
-                    <b>TYPE:</b>
-                      <code><span title="ndarray">ndarray</span></code>
-                  </span>
-              </p>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                <code>current_window</code>
-            </td>
-            <td class="doc-param-details">
-              <div class="doc-md-description">
-                <p>Window mask.</p>
-              </div>
-              <p>
-                  <span class="doc-param-annotation">
-                    <b>TYPE:</b>
-                      <code><span title="ndarray">ndarray</span></code>
-                  </span>
-              </p>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                <code>current_window_weight</code>
-            </td>
-            <td class="doc-param-details">
-              <div class="doc-md-description">
-                <p>Weight of the constraint.</p>
-              </div>
-              <p>
-                  <span class="doc-param-annotation">
-                    <b>TYPE:</b>
-                      <code><span title="float">float</span></code>
-                  </span>
-              </p>
-            </td>
-          </tr>
-      </tbody>
-    </table>
-
-
-<table>
-      <thead>
-        <tr>
-          <th><span class="doc-section-title">RETURNS</span></th>
-          <th><span>DESCRIPTION</span></th>
-        </tr>
-      </thead>
-      <tbody>
-          <tr class="doc-section-item">
-            <td>
-                <code>reg_term</code>
-            </td>
-            <td class="doc-returns-details">
-              <div class="doc-md-description">
-                <p>Window constraint loss.</p>
-              </div>
-                <p>
-                  <span class="doc-returns-annotation">
-                    <b>TYPE:</b>
-                      <code><span title="float">float</span></code>
-                  </span>
-                </p>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                <code>reg_grad</code>
-            </td>
-            <td class="doc-returns-details">
-              <div class="doc-md-description">
-                <p>Gradient of the loss with respect to the probe.</p>
-              </div>
-                <p>
-                  <span class="doc-returns-annotation">
-                    <b>TYPE:</b>
-                      <code><span title="ndarray">ndarray</span></code>
-                  </span>
-                </p>
-            </td>
-          </tr>
-      </tbody>
-    </table>
-
-
-    </div>
-
-</div>
 
 <div class="doc doc-object doc-function">
 
@@ -3091,7 +1470,7 @@ of all active reconstruction parameters (object, probe, positions, tilts, etc.).
             </td>
             <td class="doc-param-details">
               <div class="doc-md-description">
-                
+                <p>sequence of measruement indices used for loss and grad calculation (should be sorted)</p>
               </div>
               <p>
                   <span class="doc-param-annotation">
@@ -3107,7 +1486,7 @@ of all active reconstruction parameters (object, probe, positions, tilts, etc.).
             </td>
             <td class="doc-param-details">
               <div class="doc-md-description">
-                
+                <p>boolean flag. should be True for lazy loading.</p>
               </div>
               <p>
                   <span class="doc-param-annotation">
@@ -3123,7 +1502,7 @@ of all active reconstruction parameters (object, probe, positions, tilts, etc.).
             </td>
             <td class="doc-param-details">
               <div class="doc-md-description">
-                
+                <p>multiplicative factor applied to data on the fly.</p>
               </div>
               <p>
                   <span class="doc-param-annotation">
@@ -3139,7 +1518,7 @@ of all active reconstruction parameters (object, probe, positions, tilts, etc.).
             </td>
             <td class="doc-param-details">
               <div class="doc-md-description">
-                
+                <p>padding factor applied to data on the fly.</p>
               </div>
               <p>
                   <span class="doc-param-annotation">
@@ -3155,7 +1534,7 @@ of all active reconstruction parameters (object, probe, positions, tilts, etc.).
             </td>
             <td class="doc-param-details">
               <div class="doc-md-description">
-                
+                <p>path to h5 dataset containing phase plates for each measurement.</p>
               </div>
               <p>
                   <span class="doc-param-annotation">
@@ -3171,7 +1550,7 @@ of all active reconstruction parameters (object, probe, positions, tilts, etc.).
             </td>
             <td class="doc-param-details">
               <div class="doc-md-description">
-                
+                <p>weight applied to the main part of the loss</p>
               </div>
               <p>
                   <span class="doc-param-annotation">
@@ -3187,7 +1566,7 @@ of all active reconstruction parameters (object, probe, positions, tilts, etc.).
             </td>
             <td class="doc-param-details">
               <div class="doc-md-description">
-                
+                <p>binning factor applied to data on the fly</p>
               </div>
               <p>
                   <span class="doc-param-annotation">
@@ -3203,7 +1582,7 @@ of all active reconstruction parameters (object, probe, positions, tilts, etc.).
             </td>
             <td class="doc-param-details">
               <div class="doc-md-description">
-                
+                <p>shift vector in pixels (y,x) applied to data on the fly</p>
               </div>
               <p>
                   <span class="doc-param-annotation">
@@ -3219,7 +1598,7 @@ of all active reconstruction parameters (object, probe, positions, tilts, etc.).
             </td>
             <td class="doc-param-details">
               <div class="doc-md-description">
-                
+                <p>virtual "decompression" of the data used to enlarge the probe window</p>
               </div>
               <p>
                   <span class="doc-param-annotation">
@@ -3235,7 +1614,7 @@ of all active reconstruction parameters (object, probe, positions, tilts, etc.).
             </td>
             <td class="doc-param-details">
               <div class="doc-md-description">
-                
+                <p>real-valued array descripting the square root of the static offset on the diffraction patterns.</p>
               </div>
               <p>
                   <span class="doc-param-annotation">
@@ -3251,7 +1630,7 @@ of all active reconstruction parameters (object, probe, positions, tilts, etc.).
             </td>
             <td class="doc-param-details">
               <div class="doc-md-description">
-                
+                <p>do you refine the static background?</p>
               </div>
               <p>
                   <span class="doc-param-annotation">
@@ -3267,7 +1646,7 @@ of all active reconstruction parameters (object, probe, positions, tilts, etc.).
             </td>
             <td class="doc-param-details">
               <div class="doc-md-description">
-                
+                <p>flag for tilting</p>
               </div>
               <p>
                   <span class="doc-param-annotation">
@@ -3763,7 +2142,7 @@ of all active reconstruction parameters (object, probe, positions, tilts, etc.).
             </td>
             <td class="doc-param-details">
               <div class="doc-md-description">
-                
+                <p>do you want to prevent memory fragmentation? Makes the reconstrcution slightly slower</p>
               </div>
               <p>
                   <span class="doc-param-annotation">
@@ -3779,7 +2158,7 @@ of all active reconstruction parameters (object, probe, positions, tilts, etc.).
             </td>
             <td class="doc-param-details">
               <div class="doc-md-description">
-                
+                <p>verbodity level</p>
               </div>
               <p>
                   <span class="doc-param-annotation">
@@ -3972,15 +2351,15 @@ of all active reconstruction parameters (object, probe, positions, tilts, etc.).
 <div class="doc doc-object doc-function">
 
 
-<h3 id="pypty.objective.make_basis_orthogonal" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">make_basis_orthogonal</span></code>
+<h3 id="pypty.objective.scatteradd_probe" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">scatteradd_probe</span></code>
 
-<a href="#pypty.objective.make_basis_orthogonal" class="headerlink" title="Permanent link">&para;</a></h3>
+<a href="#pypty.objective.scatteradd_probe" class="headerlink" title="Permanent link">&para;</a></h3>
 
 
     <div class="doc doc-contents ">
 
-        <p>Orthogonalize a set of 1D basis vectors using Gram-Schmidt.</p>
+        <p>Adds batched probe updates to their respective positions in the full probe array. This wrapper is needed to support older CuPy version.</p>
 
 
 <table>
@@ -3993,11 +2372,11 @@ of all active reconstruction parameters (object, probe, positions, tilts, etc.).
       <tbody>
           <tr class="doc-section-item">
             <td>
-                <code>vectors</code>
+                <code>full</code>
             </td>
             <td class="doc-param-details">
               <div class="doc-md-description">
-                <p>2D array of vectors to orthogonalize.</p>
+                <p>Full probe gradient array.</p>
               </div>
               <p>
                   <span class="doc-param-annotation">
@@ -4007,67 +2386,29 @@ of all active reconstruction parameters (object, probe, positions, tilts, etc.).
               </p>
             </td>
           </tr>
-      </tbody>
-    </table>
-
-
-<table>
-      <thead>
-        <tr>
-          <th><span class="doc-section-title">RETURNS</span></th>
-          <th><span>DESCRIPTION</span></th>
-        </tr>
-      </thead>
-      <tbody>
           <tr class="doc-section-item">
             <td>
-                <span class="doc-returns-annotation">
-                    <code><span title="ndarray">ndarray</span></code>
-                </span>
-            </td>
-            <td class="doc-returns-details">
-              <div class="doc-md-description">
-                <p>Orthogonalized basis.</p>
-              </div>
-            </td>
-          </tr>
-      </tbody>
-    </table>
-
-
-    </div>
-
-</div>
-
-<div class="doc doc-object doc-function">
-
-
-<h3 id="pypty.objective.make_states_orthogonal" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">make_states_orthogonal</span></code>
-
-<a href="#pypty.objective.make_states_orthogonal" class="headerlink" title="Permanent link">&para;</a></h3>
-
-
-    <div class="doc doc-contents ">
-
-        <p>Apply Gram-Schmidt orthogonalization to probe modes.</p>
-
-
-<table>
-      <thead>
-        <tr>
-          <th><span class="doc-section-title">PARAMETER</span></th>
-          <th><span>DESCRIPTION</span></th>
-        </tr>
-      </thead>
-      <tbody>
-          <tr class="doc-section-item">
-            <td>
-                <code>probe_states</code>
+                <code>indic</code>
             </td>
             <td class="doc-param-details">
               <div class="doc-md-description">
-                <p>Probe array with multiple modes.</p>
+                <p>Indices specifying where to add each batch.</p>
+              </div>
+              <p>
+                  <span class="doc-param-annotation">
+                    <b>TYPE:</b>
+                      <code><span title="array_like">array_like</span></code>
+                  </span>
+              </p>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>batches</code>
+            </td>
+            <td class="doc-param-details">
+              <div class="doc-md-description">
+                <p>Batched gradients to scatter-add.</p>
               </div>
               <p>
                   <span class="doc-param-annotation">
@@ -4075,30 +2416,6 @@ of all active reconstruction parameters (object, probe, positions, tilts, etc.).
                       <code><span title="ndarray">ndarray</span></code>
                   </span>
               </p>
-            </td>
-          </tr>
-      </tbody>
-    </table>
-
-
-<table>
-      <thead>
-        <tr>
-          <th><span class="doc-section-title">RETURNS</span></th>
-          <th><span>DESCRIPTION</span></th>
-        </tr>
-      </thead>
-      <tbody>
-          <tr class="doc-section-item">
-            <td>
-                <span class="doc-returns-annotation">
-                    <code><span title="ndarray">ndarray</span></code>
-                </span>
-            </td>
-            <td class="doc-returns-details">
-              <div class="doc-md-description">
-                <p>Orthogonalized probe states.</p>
-              </div>
             </td>
           </tr>
       </tbody>
@@ -4190,15 +2507,15 @@ of all active reconstruction parameters (object, probe, positions, tilts, etc.).
 <div class="doc doc-object doc-function">
 
 
-<h3 id="pypty.objective.scatteradd_probe" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">scatteradd_probe</span></code>
+<h3 id="pypty.objective.charge_flip" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">charge_flip</span></code>
 
-<a href="#pypty.objective.scatteradd_probe" class="headerlink" title="Permanent link">&para;</a></h3>
+<a href="#pypty.objective.charge_flip" class="headerlink" title="Permanent link">&para;</a></h3>
 
 
     <div class="doc doc-contents ">
 
-        <p>Adds batched probe updates to their respective positions in the full probe array. This wrapper is needed to support older CuPy version.</p>
+        <p>Perform charge-flipping style object regularization to enhance phase and absorption contrast.</p>
 
 
 <table>
@@ -4211,11 +2528,11 @@ of all active reconstruction parameters (object, probe, positions, tilts, etc.).
       <tbody>
           <tr class="doc-section-item">
             <td>
-                <code>full</code>
+                <code>a</code>
             </td>
             <td class="doc-param-details">
               <div class="doc-md-description">
-                <p>Full probe gradient array.</p>
+                <p>Complex object to regularize.</p>
               </div>
               <p>
                   <span class="doc-param-annotation">
@@ -4227,27 +2544,165 @@ of all active reconstruction parameters (object, probe, positions, tilts, etc.).
           </tr>
           <tr class="doc-section-item">
             <td>
-                <code>indic</code>
+                <code>delta_phase</code>
             </td>
             <td class="doc-param-details">
               <div class="doc-md-description">
-                <p>Indices specifying where to add each batch.</p>
+                <p>Phase threshold ratio.</p>
               </div>
               <p>
                   <span class="doc-param-annotation">
                     <b>TYPE:</b>
-                      <code><span title="array_like">array_like</span></code>
+                      <code><span title="float">float</span></code>
+                  </span>
+                  <span class="doc-param-default">
+                    <b>DEFAULT:</b>
+                      <code>0.03</code>
                   </span>
               </p>
             </td>
           </tr>
           <tr class="doc-section-item">
             <td>
-                <code>batches</code>
+                <code>delta_abs</code>
             </td>
             <td class="doc-param-details">
               <div class="doc-md-description">
-                <p>Batched gradients to scatter-add.</p>
+                <p>Absorption threshold ratio.</p>
+              </div>
+              <p>
+                  <span class="doc-param-annotation">
+                    <b>TYPE:</b>
+                      <code><span title="float">float</span></code>
+                  </span>
+                  <span class="doc-param-default">
+                    <b>DEFAULT:</b>
+                      <code>0.14</code>
+                  </span>
+              </p>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>beta_phase</code>
+            </td>
+            <td class="doc-param-details">
+              <div class="doc-md-description">
+                <p>Inversion multiplier for low-phase regions.</p>
+              </div>
+              <p>
+                  <span class="doc-param-annotation">
+                    <b>TYPE:</b>
+                      <code><span title="float">float</span></code>
+                  </span>
+                  <span class="doc-param-default">
+                    <b>DEFAULT:</b>
+                      <code>-0.95</code>
+                  </span>
+              </p>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>beta_abs</code>
+            </td>
+            <td class="doc-param-details">
+              <div class="doc-md-description">
+                <p>Inversion multiplier for low-absorption regions.</p>
+              </div>
+              <p>
+                  <span class="doc-param-annotation">
+                    <b>TYPE:</b>
+                      <code><span title="float">float</span></code>
+                  </span>
+                  <span class="doc-param-default">
+                    <b>DEFAULT:</b>
+                      <code>-0.95</code>
+                  </span>
+              </p>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>fancy_sigma</code>
+            </td>
+            <td class="doc-param-details">
+              <div class="doc-md-description">
+                <p>Tuple of atomic-shape gaussian kernel sigmas (for phase, absorption).</p>
+              </div>
+              <p>
+                  <span class="doc-param-annotation">
+                    <b>TYPE:</b>
+                      <code><span title="tuple">tuple</span> or None</code>
+                  </span>
+                  <span class="doc-param-default">
+                    <b>DEFAULT:</b>
+                      <code>None</code>
+                  </span>
+              </p>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+<table>
+      <thead>
+        <tr>
+          <th><span class="doc-section-title">RETURNS</span></th>
+          <th><span>DESCRIPTION</span></th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <span class="doc-returns-annotation">
+                    <code><span title="ndarray">ndarray</span></code>
+                </span>
+            </td>
+            <td class="doc-returns-details">
+              <div class="doc-md-description">
+                <p>Regularized complex object.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="pypty.objective.make_states_orthogonal" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">make_states_orthogonal</span></code>
+
+<a href="#pypty.objective.make_states_orthogonal" class="headerlink" title="Permanent link">&para;</a></h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Apply Gram-Schmidt orthogonalization to probe modes.</p>
+
+
+<table>
+      <thead>
+        <tr>
+          <th><span class="doc-section-title">PARAMETER</span></th>
+          <th><span>DESCRIPTION</span></th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>probe_states</code>
+            </td>
+            <td class="doc-param-details">
+              <div class="doc-md-description">
+                <p>Probe array with multiple modes.</p>
               </div>
               <p>
                   <span class="doc-param-annotation">
@@ -4255,6 +2710,1572 @@ of all active reconstruction parameters (object, probe, positions, tilts, etc.).
                       <code><span title="ndarray">ndarray</span></code>
                   </span>
               </p>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+<table>
+      <thead>
+        <tr>
+          <th><span class="doc-section-title">RETURNS</span></th>
+          <th><span>DESCRIPTION</span></th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <span class="doc-returns-annotation">
+                    <code><span title="ndarray">ndarray</span></code>
+                </span>
+            </td>
+            <td class="doc-returns-details">
+              <div class="doc-md-description">
+                <p>Orthogonalized probe states.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="pypty.objective.make_basis_orthogonal" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">make_basis_orthogonal</span></code>
+
+<a href="#pypty.objective.make_basis_orthogonal" class="headerlink" title="Permanent link">&para;</a></h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Orthogonalize a set of 1D basis vectors using Gram-Schmidt.</p>
+
+
+<table>
+      <thead>
+        <tr>
+          <th><span class="doc-section-title">PARAMETER</span></th>
+          <th><span>DESCRIPTION</span></th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>vectors</code>
+            </td>
+            <td class="doc-param-details">
+              <div class="doc-md-description">
+                <p>2D array of vectors to orthogonalize.</p>
+              </div>
+              <p>
+                  <span class="doc-param-annotation">
+                    <b>TYPE:</b>
+                      <code><span title="ndarray">ndarray</span></code>
+                  </span>
+              </p>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+<table>
+      <thead>
+        <tr>
+          <th><span class="doc-section-title">RETURNS</span></th>
+          <th><span>DESCRIPTION</span></th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <span class="doc-returns-annotation">
+                    <code><span title="ndarray">ndarray</span></code>
+                </span>
+            </td>
+            <td class="doc-returns-details">
+              <div class="doc-md-description">
+                <p>Orthogonalized basis.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="pypty.objective.clear_missing_wedge" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">clear_missing_wedge</span></code>
+
+<a href="#pypty.objective.clear_missing_wedge" class="headerlink" title="Permanent link">&para;</a></h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Remove missing wedge artifacts by applying a cone filter in 3D FFT space.</p>
+
+
+<table>
+      <thead>
+        <tr>
+          <th><span class="doc-section-title">PARAMETER</span></th>
+          <th><span>DESCRIPTION</span></th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>obj</code>
+            </td>
+            <td class="doc-param-details">
+              <div class="doc-md-description">
+                <p>3D complex object.</p>
+              </div>
+              <p>
+                  <span class="doc-param-annotation">
+                    <b>TYPE:</b>
+                      <code><span title="ndarray">ndarray</span></code>
+                  </span>
+              </p>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>px_size_x_A</code>
+            </td>
+            <td class="doc-param-details">
+              <div class="doc-md-description">
+                <p>Pixel size along x (Å).</p>
+              </div>
+              <p>
+                  <span class="doc-param-annotation">
+                    <b>TYPE:</b>
+                      <code><span title="float">float</span></code>
+                  </span>
+              </p>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>px_size_y_A</code>
+            </td>
+            <td class="doc-param-details">
+              <div class="doc-md-description">
+                <p>Pixel size along y (Å).</p>
+              </div>
+              <p>
+                  <span class="doc-param-annotation">
+                    <b>TYPE:</b>
+                      <code><span title="float">float</span></code>
+                  </span>
+              </p>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>slice_distance</code>
+            </td>
+            <td class="doc-param-details">
+              <div class="doc-md-description">
+                <p>Distance between slices (Å).</p>
+              </div>
+              <p>
+                  <span class="doc-param-annotation">
+                    <b>TYPE:</b>
+                      <code><span title="float">float</span></code>
+                  </span>
+              </p>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>beta_wedge</code>
+            </td>
+            <td class="doc-param-details">
+              <div class="doc-md-description">
+                <p>Cone sharpness parameter.</p>
+              </div>
+              <p>
+                  <span class="doc-param-annotation">
+                    <b>TYPE:</b>
+                      <code><span title="float">float</span></code>
+                  </span>
+              </p>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+<table>
+      <thead>
+        <tr>
+          <th><span class="doc-section-title">RETURNS</span></th>
+          <th><span>DESCRIPTION</span></th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <span class="doc-returns-annotation">
+                    <code><span title="ndarray">ndarray</span></code>
+                </span>
+            </td>
+            <td class="doc-returns-details">
+              <div class="doc-md-description">
+                <p>Filtered object with reduced missing wedge effects.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="pypty.objective.compute_fast_axis_constraint_on_grid" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">compute_fast_axis_constraint_on_grid</span></code>
+
+<a href="#pypty.objective.compute_fast_axis_constraint_on_grid" class="headerlink" title="Permanent link">&para;</a></h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Apply second-order TV regularization along the fast scan axis.</p>
+
+
+<table>
+      <thead>
+        <tr>
+          <th><span class="doc-section-title">PARAMETER</span></th>
+          <th><span>DESCRIPTION</span></th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>something</code>
+            </td>
+            <td class="doc-param-details">
+              <div class="doc-md-description">
+                <p>Positions or tilts to regularize.</p>
+              </div>
+              <p>
+                  <span class="doc-param-annotation">
+                    <b>TYPE:</b>
+                      <code><span title="ndarray">ndarray</span></code>
+                  </span>
+              </p>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>scan_size</code>
+            </td>
+            <td class="doc-param-details">
+              <div class="doc-md-description">
+                <p>Size of the scan grid.</p>
+              </div>
+              <p>
+                  <span class="doc-param-annotation">
+                    <b>TYPE:</b>
+                      <code><span title="tuple">tuple</span></code>
+                  </span>
+              </p>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>tv_reg_weight</code>
+            </td>
+            <td class="doc-param-details">
+              <div class="doc-md-description">
+                <p>Regularization weight.</p>
+              </div>
+              <p>
+                  <span class="doc-param-annotation">
+                    <b>TYPE:</b>
+                      <code><span title="float">float</span></code>
+                  </span>
+              </p>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+<table>
+      <thead>
+        <tr>
+          <th><span class="doc-section-title">RETURNS</span></th>
+          <th><span>DESCRIPTION</span></th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>reg_term</code>
+            </td>
+            <td class="doc-returns-details">
+              <div class="doc-md-description">
+                <p>Value of the regularization term.</p>
+              </div>
+                <p>
+                  <span class="doc-returns-annotation">
+                    <b>TYPE:</b>
+                      <code><span title="float">float</span></code>
+                  </span>
+                </p>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>grad</code>
+            </td>
+            <td class="doc-returns-details">
+              <div class="doc-md-description">
+                <p>Gradient of the regularization.</p>
+              </div>
+                <p>
+                  <span class="doc-returns-annotation">
+                    <b>TYPE:</b>
+                      <code><span title="ndarray">ndarray</span></code>
+                  </span>
+                </p>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="pypty.objective.compute_slow_axis_constraint_on_grid" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">compute_slow_axis_constraint_on_grid</span></code>
+
+<a href="#pypty.objective.compute_slow_axis_constraint_on_grid" class="headerlink" title="Permanent link">&para;</a></h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Apply second-order TV regularization along the slow scan axis.</p>
+
+
+<table>
+      <thead>
+        <tr>
+          <th><span class="doc-section-title">PARAMETER</span></th>
+          <th><span>DESCRIPTION</span></th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>something</code>
+            </td>
+            <td class="doc-param-details">
+              <div class="doc-md-description">
+                <p>Positions or tilts to regularize.</p>
+              </div>
+              <p>
+                  <span class="doc-param-annotation">
+                    <b>TYPE:</b>
+                      <code><span title="ndarray">ndarray</span></code>
+                  </span>
+              </p>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>scan_size</code>
+            </td>
+            <td class="doc-param-details">
+              <div class="doc-md-description">
+                <p>Size of the scan grid.</p>
+              </div>
+              <p>
+                  <span class="doc-param-annotation">
+                    <b>TYPE:</b>
+                      <code><span title="tuple">tuple</span></code>
+                  </span>
+              </p>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>tv_reg_weight</code>
+            </td>
+            <td class="doc-param-details">
+              <div class="doc-md-description">
+                <p>Regularization weight.</p>
+              </div>
+              <p>
+                  <span class="doc-param-annotation">
+                    <b>TYPE:</b>
+                      <code><span title="float">float</span></code>
+                  </span>
+              </p>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+<table>
+      <thead>
+        <tr>
+          <th><span class="doc-section-title">RETURNS</span></th>
+          <th><span>DESCRIPTION</span></th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>reg_term</code>
+            </td>
+            <td class="doc-returns-details">
+              <div class="doc-md-description">
+                <p>Regularization loss.</p>
+              </div>
+                <p>
+                  <span class="doc-returns-annotation">
+                    <b>TYPE:</b>
+                      <code><span title="float">float</span></code>
+                  </span>
+                </p>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>grad</code>
+            </td>
+            <td class="doc-returns-details">
+              <div class="doc-md-description">
+                <p>Gradient with respect to the input.</p>
+              </div>
+                <p>
+                  <span class="doc-returns-annotation">
+                    <b>TYPE:</b>
+                      <code><span title="ndarray">ndarray</span></code>
+                  </span>
+                </p>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="pypty.objective.compute_deformation_constraint_on_grid" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">compute_deformation_constraint_on_grid</span></code>
+
+<a href="#pypty.objective.compute_deformation_constraint_on_grid" class="headerlink" title="Permanent link">&para;</a></h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Penalize deviations from affine transformations in local scan patches.</p>
+
+
+<table>
+      <thead>
+        <tr>
+          <th><span class="doc-section-title">PARAMETER</span></th>
+          <th><span>DESCRIPTION</span></th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>something</code>
+            </td>
+            <td class="doc-param-details">
+              <div class="doc-md-description">
+                <p>Grid to regularize (positions or tilts).</p>
+              </div>
+              <p>
+                  <span class="doc-param-annotation">
+                    <b>TYPE:</b>
+                      <code><span title="ndarray">ndarray</span></code>
+                  </span>
+              </p>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>scan_size</code>
+            </td>
+            <td class="doc-param-details">
+              <div class="doc-md-description">
+                <p>Dimensions of the scan.</p>
+              </div>
+              <p>
+                  <span class="doc-param-annotation">
+                    <b>TYPE:</b>
+                      <code><span title="tuple">tuple</span></code>
+                  </span>
+              </p>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>reg_weight</code>
+            </td>
+            <td class="doc-param-details">
+              <div class="doc-md-description">
+                <p>Regularization weight.</p>
+              </div>
+              <p>
+                  <span class="doc-param-annotation">
+                    <b>TYPE:</b>
+                      <code><span title="float">float</span></code>
+                  </span>
+              </p>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+<table>
+      <thead>
+        <tr>
+          <th><span class="doc-section-title">RETURNS</span></th>
+          <th><span>DESCRIPTION</span></th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>reg_term</code>
+            </td>
+            <td class="doc-returns-details">
+              <div class="doc-md-description">
+                <p>Regularization loss.</p>
+              </div>
+                <p>
+                  <span class="doc-returns-annotation">
+                    <b>TYPE:</b>
+                      <code><span title="float">float</span></code>
+                  </span>
+                </p>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>grad</code>
+            </td>
+            <td class="doc-returns-details">
+              <div class="doc-md-description">
+                <p>Gradient of the loss with respect to the grid.</p>
+              </div>
+                <p>
+                  <span class="doc-returns-annotation">
+                    <b>TYPE:</b>
+                      <code><span title="ndarray">ndarray</span></code>
+                  </span>
+                </p>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="pypty.objective.compute_full_l1_constraint" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">compute_full_l1_constraint</span></code>
+
+<a href="#pypty.objective.compute_full_l1_constraint" class="headerlink" title="Permanent link">&para;</a></h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Apply L1 norm regularization to the object's phase and absorption.</p>
+
+
+<table>
+      <thead>
+        <tr>
+          <th><span class="doc-section-title">PARAMETER</span></th>
+          <th><span>DESCRIPTION</span></th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>object</code>
+            </td>
+            <td class="doc-param-details">
+              <div class="doc-md-description">
+                <p>Complex object array.</p>
+              </div>
+              <p>
+                  <span class="doc-param-annotation">
+                    <b>TYPE:</b>
+                      <code><span title="ndarray">ndarray</span></code>
+                  </span>
+              </p>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>abs_norm_weight</code>
+            </td>
+            <td class="doc-param-details">
+              <div class="doc-md-description">
+                <p>Weight for absorption norm.</p>
+              </div>
+              <p>
+                  <span class="doc-param-annotation">
+                    <b>TYPE:</b>
+                      <code><span title="float">float</span></code>
+                  </span>
+              </p>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>phase_norm_weight</code>
+            </td>
+            <td class="doc-param-details">
+              <div class="doc-md-description">
+                <p>Weight for phase norm.</p>
+              </div>
+              <p>
+                  <span class="doc-param-annotation">
+                    <b>TYPE:</b>
+                      <code><span title="float">float</span></code>
+                  </span>
+              </p>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>grad_mask</code>
+            </td>
+            <td class="doc-param-details">
+              <div class="doc-md-description">
+                <p>Mask to restrict gradient computation.</p>
+              </div>
+              <p>
+                  <span class="doc-param-annotation">
+                    <b>TYPE:</b>
+                      <code><span title="ndarray">ndarray</span></code>
+                  </span>
+              </p>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>return_direction</code>
+            </td>
+            <td class="doc-param-details">
+              <div class="doc-md-description">
+                <p>If True, return the gradient.</p>
+              </div>
+              <p>
+                  <span class="doc-param-annotation">
+                    <b>TYPE:</b>
+                      <code><span title="bool">bool</span></code>
+                  </span>
+              </p>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>smart_memory</code>
+            </td>
+            <td class="doc-param-details">
+              <div class="doc-md-description">
+                <p>Memory-efficient option.</p>
+              </div>
+              <p>
+                  <span class="doc-param-annotation">
+                    <b>TYPE:</b>
+                      <code><span title="bool">bool</span></code>
+                  </span>
+              </p>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+<table>
+      <thead>
+        <tr>
+          <th><span class="doc-section-title">RETURNS</span></th>
+          <th><span>DESCRIPTION</span></th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>reg_term</code>
+            </td>
+            <td class="doc-returns-details">
+              <div class="doc-md-description">
+                <p>Regularization loss.</p>
+              </div>
+                <p>
+                  <span class="doc-returns-annotation">
+                    <b>TYPE:</b>
+                      <code><span title="float">float</span></code>
+                  </span>
+                </p>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>grad</code>
+            </td>
+            <td class="doc-returns-details">
+              <div class="doc-md-description">
+                <p>Gradient if <code>return_direction</code> is True, else None.</p>
+              </div>
+                <p>
+                  <span class="doc-returns-annotation">
+                    <b>TYPE:</b>
+                      <code><span title="ndarray">ndarray</span> or None</code>
+                  </span>
+                </p>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="pypty.objective.compute_window_constraint" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">compute_window_constraint</span></code>
+
+<a href="#pypty.objective.compute_window_constraint" class="headerlink" title="Permanent link">&para;</a></h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Penalize probe values outside a predefined window region in real-space.</p>
+
+
+<table>
+      <thead>
+        <tr>
+          <th><span class="doc-section-title">PARAMETER</span></th>
+          <th><span>DESCRIPTION</span></th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>to_reg_probe</code>
+            </td>
+            <td class="doc-param-details">
+              <div class="doc-md-description">
+                <p>Complex probe array.</p>
+              </div>
+              <p>
+                  <span class="doc-param-annotation">
+                    <b>TYPE:</b>
+                      <code><span title="ndarray">ndarray</span></code>
+                  </span>
+              </p>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>current_window</code>
+            </td>
+            <td class="doc-param-details">
+              <div class="doc-md-description">
+                <p>Window mask.</p>
+              </div>
+              <p>
+                  <span class="doc-param-annotation">
+                    <b>TYPE:</b>
+                      <code><span title="ndarray">ndarray</span></code>
+                  </span>
+              </p>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>current_window_weight</code>
+            </td>
+            <td class="doc-param-details">
+              <div class="doc-md-description">
+                <p>Weight of the constraint.</p>
+              </div>
+              <p>
+                  <span class="doc-param-annotation">
+                    <b>TYPE:</b>
+                      <code><span title="float">float</span></code>
+                  </span>
+              </p>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+<table>
+      <thead>
+        <tr>
+          <th><span class="doc-section-title">RETURNS</span></th>
+          <th><span>DESCRIPTION</span></th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>reg_term</code>
+            </td>
+            <td class="doc-returns-details">
+              <div class="doc-md-description">
+                <p>Window constraint loss.</p>
+              </div>
+                <p>
+                  <span class="doc-returns-annotation">
+                    <b>TYPE:</b>
+                      <code><span title="float">float</span></code>
+                  </span>
+                </p>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>reg_grad</code>
+            </td>
+            <td class="doc-returns-details">
+              <div class="doc-md-description">
+                <p>Gradient of the loss with respect to the probe.</p>
+              </div>
+                <p>
+                  <span class="doc-returns-annotation">
+                    <b>TYPE:</b>
+                      <code><span title="ndarray">ndarray</span></code>
+                  </span>
+                </p>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="pypty.objective.compute_probe_constraint" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">compute_probe_constraint</span></code>
+
+<a href="#pypty.objective.compute_probe_constraint" class="headerlink" title="Permanent link">&para;</a></h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Apply reciprocal space constraint to the probe using an aperture mask. Penalize probe values outside an aperture.</p>
+
+
+<table>
+      <thead>
+        <tr>
+          <th><span class="doc-section-title">PARAMETER</span></th>
+          <th><span>DESCRIPTION</span></th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>to_reg_probe</code>
+            </td>
+            <td class="doc-param-details">
+              <div class="doc-md-description">
+                <p>Complex probe array.</p>
+              </div>
+              <p>
+                  <span class="doc-param-annotation">
+                    <b>TYPE:</b>
+                      <code><span title="ndarray">ndarray</span></code>
+                  </span>
+              </p>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>aperture</code>
+            </td>
+            <td class="doc-param-details">
+              <div class="doc-md-description">
+                <p>Binary mask or scalar defining aperture radius.</p>
+              </div>
+              <p>
+                  <span class="doc-param-annotation">
+                    <b>TYPE:</b>
+                      <code><span title="ndarray">ndarray</span> or <span title="float">float</span></code>
+                  </span>
+              </p>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>weight</code>
+            </td>
+            <td class="doc-param-details">
+              <div class="doc-md-description">
+                <p>Regularization weight.</p>
+              </div>
+              <p>
+                  <span class="doc-param-annotation">
+                    <b>TYPE:</b>
+                      <code><span title="float">float</span></code>
+                  </span>
+              </p>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>return_direction</code>
+            </td>
+            <td class="doc-param-details">
+              <div class="doc-md-description">
+                <p>If True, return the gradient.</p>
+              </div>
+              <p>
+                  <span class="doc-param-annotation">
+                    <b>TYPE:</b>
+                      <code><span title="bool">bool</span></code>
+                  </span>
+              </p>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+<table>
+      <thead>
+        <tr>
+          <th><span class="doc-section-title">RETURNS</span></th>
+          <th><span>DESCRIPTION</span></th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>reg_term</code>
+            </td>
+            <td class="doc-returns-details">
+              <div class="doc-md-description">
+                <p>Loss from masked frequency components.</p>
+              </div>
+                <p>
+                  <span class="doc-returns-annotation">
+                    <b>TYPE:</b>
+                      <code><span title="float">float</span></code>
+                  </span>
+                </p>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>probe_fft</code>
+            </td>
+            <td class="doc-returns-details">
+              <div class="doc-md-description">
+                <p>Gradient of the constraint if requested.</p>
+              </div>
+                <p>
+                  <span class="doc-returns-annotation">
+                    <b>TYPE:</b>
+                      <code><span title="ndarray">ndarray</span> or None</code>
+                  </span>
+                </p>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="pypty.objective.compute_atv_constraint" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">compute_atv_constraint</span></code>
+
+<a href="#pypty.objective.compute_atv_constraint" class="headerlink" title="Permanent link">&para;</a></h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Apply adaptive total variation (ATV) regularization to the object.</p>
+
+
+<table>
+      <thead>
+        <tr>
+          <th><span class="doc-section-title">PARAMETER</span></th>
+          <th><span>DESCRIPTION</span></th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>obj</code>
+            </td>
+            <td class="doc-param-details">
+              <div class="doc-md-description">
+                <p>Complex object.</p>
+              </div>
+              <p>
+                  <span class="doc-param-annotation">
+                    <b>TYPE:</b>
+                      <code><span title="ndarray">ndarray</span></code>
+                  </span>
+              </p>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>atv_weight</code>
+            </td>
+            <td class="doc-param-details">
+              <div class="doc-md-description">
+                <p>Regularization weight.</p>
+              </div>
+              <p>
+                  <span class="doc-param-annotation">
+                    <b>TYPE:</b>
+                      <code><span title="float">float</span></code>
+                  </span>
+              </p>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>atv_q</code>
+            </td>
+            <td class="doc-param-details">
+              <div class="doc-md-description">
+                <p>q-norm parameter.</p>
+              </div>
+              <p>
+                  <span class="doc-param-annotation">
+                    <b>TYPE:</b>
+                      <code><span title="float">float</span></code>
+                  </span>
+              </p>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>atv_p</code>
+            </td>
+            <td class="doc-param-details">
+              <div class="doc-md-description">
+                <p>p-norm parameter.</p>
+              </div>
+              <p>
+                  <span class="doc-param-annotation">
+                    <b>TYPE:</b>
+                      <code><span title="float">float</span></code>
+                  </span>
+              </p>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>pixel_size_x_A</code>
+            </td>
+            <td class="doc-param-details">
+              <div class="doc-md-description">
+                <p>Pixel size along x (Å).</p>
+              </div>
+              <p>
+                  <span class="doc-param-annotation">
+                    <b>TYPE:</b>
+                      <code><span title="float">float</span></code>
+                  </span>
+              </p>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>pixel_size_y_A</code>
+            </td>
+            <td class="doc-param-details">
+              <div class="doc-md-description">
+                <p>Pixel size along y (Å).</p>
+              </div>
+              <p>
+                  <span class="doc-param-annotation">
+                    <b>TYPE:</b>
+                      <code><span title="float">float</span></code>
+                  </span>
+              </p>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>atv_grad_mask</code>
+            </td>
+            <td class="doc-param-details">
+              <div class="doc-md-description">
+                <p>Optional gradient mask.</p>
+              </div>
+              <p>
+                  <span class="doc-param-annotation">
+                    <b>TYPE:</b>
+                      <code><span title="ndarray">ndarray</span> or None</code>
+                  </span>
+              </p>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>return_direction</code>
+            </td>
+            <td class="doc-param-details">
+              <div class="doc-md-description">
+                <p>If True, return the gradient.</p>
+              </div>
+              <p>
+                  <span class="doc-param-annotation">
+                    <b>TYPE:</b>
+                      <code><span title="bool">bool</span></code>
+                  </span>
+              </p>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>smart_memory</code>
+            </td>
+            <td class="doc-param-details">
+              <div class="doc-md-description">
+                <p>If True, use memory-efficient computation.</p>
+              </div>
+              <p>
+                  <span class="doc-param-annotation">
+                    <b>TYPE:</b>
+                      <code><span title="bool">bool</span></code>
+                  </span>
+              </p>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+<table>
+      <thead>
+        <tr>
+          <th><span class="doc-section-title">RETURNS</span></th>
+          <th><span>DESCRIPTION</span></th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>reg_term</code>
+            </td>
+            <td class="doc-returns-details">
+              <div class="doc-md-description">
+                <p>ATV regularization value.</p>
+              </div>
+                <p>
+                  <span class="doc-returns-annotation">
+                    <b>TYPE:</b>
+                      <code><span title="float">float</span></code>
+                  </span>
+                </p>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>dR_dTerm</code>
+            </td>
+            <td class="doc-returns-details">
+              <div class="doc-md-description">
+                <p>Gradient with respect to the object.</p>
+              </div>
+                <p>
+                  <span class="doc-returns-annotation">
+                    <b>TYPE:</b>
+                      <code><span title="ndarray">ndarray</span></code>
+                  </span>
+                </p>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="pypty.objective.compute_missing_wedge_constraint" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">compute_missing_wedge_constraint</span></code>
+
+<a href="#pypty.objective.compute_missing_wedge_constraint" class="headerlink" title="Permanent link">&para;</a></h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Enforce missing wedge constraint in 3D reciprocal space.</p>
+
+
+<table>
+      <thead>
+        <tr>
+          <th><span class="doc-section-title">PARAMETER</span></th>
+          <th><span>DESCRIPTION</span></th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>obj</code>
+            </td>
+            <td class="doc-param-details">
+              <div class="doc-md-description">
+                <p>3D complex object.</p>
+              </div>
+              <p>
+                  <span class="doc-param-annotation">
+                    <b>TYPE:</b>
+                      <code><span title="ndarray">ndarray</span></code>
+                  </span>
+              </p>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>px_size_x_A</code>
+            </td>
+            <td class="doc-param-details">
+              <div class="doc-md-description">
+                <p>Pixel size along x (Å).</p>
+              </div>
+              <p>
+                  <span class="doc-param-annotation">
+                    <b>TYPE:</b>
+                      <code><span title="float">float</span></code>
+                  </span>
+              </p>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>px_size_y_A</code>
+            </td>
+            <td class="doc-param-details">
+              <div class="doc-md-description">
+                <p>Pixel size along y (Å).</p>
+              </div>
+              <p>
+                  <span class="doc-param-annotation">
+                    <b>TYPE:</b>
+                      <code><span title="float">float</span></code>
+                  </span>
+              </p>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>slice_distance</code>
+            </td>
+            <td class="doc-param-details">
+              <div class="doc-md-description">
+                <p>Slice spacing (Å).</p>
+              </div>
+              <p>
+                  <span class="doc-param-annotation">
+                    <b>TYPE:</b>
+                      <code><span title="float">float</span></code>
+                  </span>
+              </p>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>beta_wedge</code>
+            </td>
+            <td class="doc-param-details">
+              <div class="doc-md-description">
+                <p>Cone sharpness.</p>
+              </div>
+              <p>
+                  <span class="doc-param-annotation">
+                    <b>TYPE:</b>
+                      <code><span title="float">float</span></code>
+                  </span>
+              </p>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>wegde_mu</code>
+            </td>
+            <td class="doc-param-details">
+              <div class="doc-md-description">
+                <p>Regularization weight.</p>
+              </div>
+              <p>
+                  <span class="doc-param-annotation">
+                    <b>TYPE:</b>
+                      <code><span title="float">float</span></code>
+                  </span>
+              </p>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+<table>
+      <thead>
+        <tr>
+          <th><span class="doc-section-title">RETURNS</span></th>
+          <th><span>DESCRIPTION</span></th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>loss_term</code>
+            </td>
+            <td class="doc-returns-details">
+              <div class="doc-md-description">
+                <p>Regularization loss.</p>
+              </div>
+                <p>
+                  <span class="doc-returns-annotation">
+                    <b>TYPE:</b>
+                      <code><span title="float">float</span></code>
+                  </span>
+                </p>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>grad_obj</code>
+            </td>
+            <td class="doc-returns-details">
+              <div class="doc-md-description">
+                <p>Gradient of the loss with respect to the object.</p>
+              </div>
+                <p>
+                  <span class="doc-returns-annotation">
+                    <b>TYPE:</b>
+                      <code><span title="ndarray">ndarray</span></code>
+                  </span>
+                </p>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="pypty.objective.compute_mixed_object_variance_constraint" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">compute_mixed_object_variance_constraint</span></code>
+
+<a href="#pypty.objective.compute_mixed_object_variance_constraint" class="headerlink" title="Permanent link">&para;</a></h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Regularize variance across object modes by penalizing their differences.</p>
+
+
+<table>
+      <thead>
+        <tr>
+          <th><span class="doc-section-title">PARAMETER</span></th>
+          <th><span>DESCRIPTION</span></th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>this_obj</code>
+            </td>
+            <td class="doc-param-details">
+              <div class="doc-md-description">
+                <p>Complex object array with multiple modes.</p>
+              </div>
+              <p>
+                  <span class="doc-param-annotation">
+                    <b>TYPE:</b>
+                      <code><span title="ndarray">ndarray</span></code>
+                  </span>
+              </p>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>weight</code>
+            </td>
+            <td class="doc-param-details">
+              <div class="doc-md-description">
+                <p>Regularization strength.</p>
+              </div>
+              <p>
+                  <span class="doc-param-annotation">
+                    <b>TYPE:</b>
+                      <code><span title="float">float</span></code>
+                  </span>
+              </p>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>sigma</code>
+            </td>
+            <td class="doc-param-details">
+              <div class="doc-md-description">
+                <p>Smoothing kernel width in frequency space.</p>
+              </div>
+              <p>
+                  <span class="doc-param-annotation">
+                    <b>TYPE:</b>
+                      <code><span title="float">float</span></code>
+                  </span>
+              </p>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>return_direction</code>
+            </td>
+            <td class="doc-param-details">
+              <div class="doc-md-description">
+                <p>If True, return the gradient.</p>
+              </div>
+              <p>
+                  <span class="doc-param-annotation">
+                    <b>TYPE:</b>
+                      <code><span title="bool">bool</span></code>
+                  </span>
+              </p>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>smart_memory</code>
+            </td>
+            <td class="doc-param-details">
+              <div class="doc-md-description">
+                <p>Use memory-efficient FFT loops.</p>
+              </div>
+              <p>
+                  <span class="doc-param-annotation">
+                    <b>TYPE:</b>
+                      <code><span title="bool">bool</span></code>
+                  </span>
+              </p>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+<table>
+      <thead>
+        <tr>
+          <th><span class="doc-section-title">RETURNS</span></th>
+          <th><span>DESCRIPTION</span></th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>reg_term</code>
+            </td>
+            <td class="doc-returns-details">
+              <div class="doc-md-description">
+                <p>Mixed variance loss.</p>
+              </div>
+                <p>
+                  <span class="doc-returns-annotation">
+                    <b>TYPE:</b>
+                      <code><span title="float">float</span></code>
+                  </span>
+                </p>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>grad</code>
+            </td>
+            <td class="doc-returns-details">
+              <div class="doc-md-description">
+                <p>Gradient with respect to the object if <code>return_direction</code> is True.</p>
+              </div>
+                <p>
+                  <span class="doc-returns-annotation">
+                    <b>TYPE:</b>
+                      <code><span title="ndarray">ndarray</span> or None</code>
+                  </span>
+                </p>
             </td>
           </tr>
       </tbody>

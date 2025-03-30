@@ -299,7 +299,28 @@
         
   
   <span class="md-ellipsis">
-    Breakdown of some examples
+    Examples for iterative ptychography
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../examples_direct.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Examples for direct methods
     
   </span>
   
@@ -351,10 +372,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" checked>
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" checked>
         
           
-          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
             
   
   <span class="md-ellipsis">
@@ -366,8 +387,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="true">
-          <label class="md-nav__title" for="__nav_5">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_6">
             <span class="md-nav__icon md-icon"></span>
             API Reference
           </label>
@@ -525,6 +546,15 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#pypty.iterative.run" class="md-nav__link">
+    <span class="md-ellipsis">
+      run
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#pypty.iterative.bfgs_update" class="md-nav__link">
     <span class="md-ellipsis">
       bfgs_update
@@ -537,15 +567,6 @@
   <a href="#pypty.iterative.reset_bfgs_history" class="md-nav__link">
     <span class="md-ellipsis">
       reset_bfgs_history
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#pypty.iterative.run" class="md-nav__link">
-    <span class="md-ellipsis">
-      run
     </span>
   </a>
   
@@ -589,11 +610,11 @@
   
   
     <li class="md-nav__item">
-      <a href="multicore.html" class="md-nav__link">
+      <a href="multislice_core.html" class="md-nav__link">
         
   
   <span class="md-ellipsis">
-    pypty.multicore
+    pypty.multislice_core
     
   </span>
   
@@ -735,6 +756,15 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#pypty.iterative.run" class="md-nav__link">
+    <span class="md-ellipsis">
+      run
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#pypty.iterative.bfgs_update" class="md-nav__link">
     <span class="md-ellipsis">
       bfgs_update
@@ -747,15 +777,6 @@
   <a href="#pypty.iterative.reset_bfgs_history" class="md-nav__link">
     <span class="md-ellipsis">
       reset_bfgs_history
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#pypty.iterative.run" class="md-nav__link">
-    <span class="md-ellipsis">
-      run
     </span>
   </a>
   
@@ -807,6 +828,57 @@
 
 
 
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="pypty.iterative.run" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">run</span></code>
+
+<a href="#pypty.iterative.run" class="headerlink" title="Permanent link">&para;</a></h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Launch iterative reconstuction.</p>
+
+
+<table>
+      <thead>
+        <tr>
+          <th><span class="doc-section-title">PARAMETER</span></th>
+          <th><span>DESCRIPTION</span></th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>pypty_params</code>
+            </td>
+            <td class="doc-param-details">
+              <div class="doc-md-description">
+                <p>Dictionary containing calibrated parameters, including paths and settings for data processing.</p>
+              </div>
+              <p>
+                  <span class="doc-param-annotation">
+                    <b>TYPE:</b>
+                      <code><span title="dict">dict</span></code>
+                  </span>
+              </p>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+<details class="note" open>
+  <summary>Notes</summary>
+  <p>pypty_params dictionary can be constructed from a predefined preset and a given dataset via append_exp_params() function. Full list of expected entries can be found in the documentation,</p>
+</details>
+
+    </div>
+
+</div>
 
 <div class="doc doc-object doc-function">
 
@@ -1007,81 +1079,6 @@
 
         <p>Reset a global variable history_bfgs that contains information about previous steps.</p>
 
-
-    </div>
-
-</div>
-
-<div class="doc doc-object doc-function">
-
-
-<h3 id="pypty.iterative.run" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">run</span></code>
-
-<a href="#pypty.iterative.run" class="headerlink" title="Permanent link">&para;</a></h3>
-
-
-    <div class="doc doc-contents ">
-
-        <p>Launch iterative reconstuction.</p>
-
-
-<table>
-      <thead>
-        <tr>
-          <th><span class="doc-section-title">PARAMETER</span></th>
-          <th><span>DESCRIPTION</span></th>
-        </tr>
-      </thead>
-      <tbody>
-          <tr class="doc-section-item">
-            <td>
-                <code>pypty_params</code>
-            </td>
-            <td class="doc-param-details">
-              <div class="doc-md-description">
-                <p>Dictionary containing calibrated parameters, including paths and settings for data processing.</p>
-              </div>
-              <p>
-                  <span class="doc-param-annotation">
-                    <b>TYPE:</b>
-                      <code><span title="dict">dict</span></code>
-                  </span>
-              </p>
-            </td>
-          </tr>
-      </tbody>
-    </table>
-
-
-<table>
-      <thead>
-        <tr>
-          <th><span class="doc-section-title">RETURNS</span></th>
-          <th><span>DESCRIPTION</span></th>
-        </tr>
-      </thead>
-      <tbody>
-          <tr class="doc-section-item">
-            <td>
-                <span class="doc-returns-annotation">
-                    <code>None</code>
-                </span>
-            </td>
-            <td class="doc-returns-details">
-              <div class="doc-md-description">
-                
-              </div>
-            </td>
-          </tr>
-      </tbody>
-    </table>
-
-
-<details class="note" open>
-  <summary>Notes</summary>
-  <p>pypty_params dictionary can be constructed from a predefined preset and a given dataset via append_exp_params() function. Otherwise one can create the  pypty_params dictionary by hand. For more info about creating pypty_params from scratch please reffer to https://github.com/Anton-Gladyshev/pypty/tree/main (there is a .md file lisitng all possible entries). Otherwise contact Anton Gladyshev directly.</p>
-</details>
 
     </div>
 

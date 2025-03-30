@@ -299,7 +299,28 @@
         
   
   <span class="md-ellipsis">
-    Breakdown of some examples
+    Examples for iterative ptychography
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../examples_direct.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Examples for direct methods
     
   </span>
   
@@ -351,10 +372,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" checked>
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" checked>
         
           
-          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
             
   
   <span class="md-ellipsis">
@@ -366,8 +387,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="true">
-          <label class="md-nav__title" for="__nav_5">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_6">
             <span class="md-nav__icon md-icon"></span>
             API Reference
           </label>
@@ -490,18 +511,18 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#pypty.tcbf.run_tcbf_compressed_alignment" class="md-nav__link">
+  <a href="#pypty.tcbf.upsampled_tcbf" class="md-nav__link">
     <span class="md-ellipsis">
-      run_tcbf_compressed_alignment
+      upsampled_tcbf
     </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#pypty.tcbf.upsampled_tcbf" class="md-nav__link">
+  <a href="#pypty.tcbf.run_tcbf_compressed_alignment" class="md-nav__link">
     <span class="md-ellipsis">
-      upsampled_tcbf
+      run_tcbf_compressed_alignment
     </span>
   </a>
   
@@ -589,11 +610,11 @@
   
   
     <li class="md-nav__item">
-      <a href="multicore.html" class="md-nav__link">
+      <a href="multislice_core.html" class="md-nav__link">
         
   
   <span class="md-ellipsis">
-    pypty.multicore
+    pypty.multislice_core
     
   </span>
   
@@ -744,18 +765,18 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#pypty.tcbf.run_tcbf_compressed_alignment" class="md-nav__link">
+  <a href="#pypty.tcbf.upsampled_tcbf" class="md-nav__link">
     <span class="md-ellipsis">
-      run_tcbf_compressed_alignment
+      upsampled_tcbf
     </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#pypty.tcbf.upsampled_tcbf" class="md-nav__link">
+  <a href="#pypty.tcbf.run_tcbf_compressed_alignment" class="md-nav__link">
     <span class="md-ellipsis">
-      upsampled_tcbf
+      run_tcbf_compressed_alignment
     </span>
   </a>
   
@@ -1340,6 +1361,279 @@ binning levels and options for low-frequency drift compensation.</p>
 <div class="doc doc-object doc-function">
 
 
+<h3 id="pypty.tcbf.upsampled_tcbf" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">upsampled_tcbf</span></code>
+
+<a href="#pypty.tcbf.upsampled_tcbf" class="headerlink" title="Permanent link">&para;</a></h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Perform an upsampled tcBF (transmission coherent Bright Field) reconstruction.</p>
+<p>This function reconstructs a tcBF image on an upsampled scan grid from 4D-STEM data.
+It applies Fourier-based shifts to align the bright field pixel images and combines them into a final image.
+Prior to calling this function, it is recommended to run the tcBF alignment routine to update <code>pypty_params</code>.</p>
+
+
+<table>
+      <thead>
+        <tr>
+          <th><span class="doc-section-title">PARAMETER</span></th>
+          <th><span>DESCRIPTION</span></th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>pypty_params</code>
+            </td>
+            <td class="doc-param-details">
+              <div class="doc-md-description">
+                <p>Dictionary containing experimental parameters and reconstruction settings.
+This should include keys such as 'data_path', 'scan_size', 'aperture_mask', 'acc_voltage', etc.</p>
+              </div>
+              <p>
+                  <span class="doc-param-annotation">
+                    <b>TYPE:</b>
+                      <code><span title="dict">dict</span></code>
+                  </span>
+              </p>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>upsample</code>
+            </td>
+            <td class="doc-param-details">
+              <div class="doc-md-description">
+                <p>Upsampling factor for the scan grid. Default is 5.</p>
+              </div>
+              <p>
+                  <span class="doc-param-annotation">
+                    <b>TYPE:</b>
+                      <code><span title="int">int</span></code>
+                  </span>
+                  <span class="doc-param-default">
+                    <b>DEFAULT:</b>
+                      <code>5</code>
+                  </span>
+              </p>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>pad</code>
+            </td>
+            <td class="doc-param-details">
+              <div class="doc-md-description">
+                <p>Number of additional scan positions to pad on each side to avoid wrap-around artifacts.
+Default is 10.</p>
+              </div>
+              <p>
+                  <span class="doc-param-annotation">
+                    <b>TYPE:</b>
+                      <code><span title="int">int</span></code>
+                  </span>
+                  <span class="doc-param-default">
+                    <b>DEFAULT:</b>
+                      <code>10</code>
+                  </span>
+              </p>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>compensate_lowfreq_drift</code>
+            </td>
+            <td class="doc-param-details">
+              <div class="doc-md-description">
+                <p>If True, compensates for low-frequency drift of the aperture.
+Requires that run_tcbf_alignment has been executed to provide drift corrections.
+Default is False.</p>
+              </div>
+              <p>
+                  <span class="doc-param-annotation">
+                    <b>TYPE:</b>
+                      <code><span title="bool">bool</span></code>
+                  </span>
+                  <span class="doc-param-default">
+                    <b>DEFAULT:</b>
+                      <code>False</code>
+                  </span>
+              </p>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>default_float</code>
+            </td>
+            <td class="doc-param-details">
+              <div class="doc-md-description">
+                <p>Precision for floating point computations. Use 64 for higher precision or 32 for lower memory usage.
+Default is 64.</p>
+              </div>
+              <p>
+                  <span class="doc-param-annotation">
+                    <b>TYPE:</b>
+                      <code>(64, 32)</code>
+                  </span>
+                  <span class="doc-param-default">
+                    <b>DEFAULT:</b>
+                      <code>64</code>
+                  </span>
+              </p>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>round_shifts</code>
+            </td>
+            <td class="doc-param-details">
+              <div class="doc-md-description">
+                <p>If True, shifts are rounded and alignment is performed using array roll operations.
+If False, FFT-based subpixel shifting is used. Default is False.</p>
+              </div>
+              <p>
+                  <span class="doc-param-annotation">
+                    <b>TYPE:</b>
+                      <code><span title="bool">bool</span></code>
+                  </span>
+                  <span class="doc-param-default">
+                    <b>DEFAULT:</b>
+                      <code>False</code>
+                  </span>
+              </p>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>xp</code>
+            </td>
+            <td class="doc-param-details">
+              <div class="doc-md-description">
+                <p>Backend array module (e.g., numpy or cupy). Default is cupy.</p>
+              </div>
+              <p>
+                  <span class="doc-param-annotation">
+                    <b>TYPE:</b>
+                      <code><span title="module">module</span></code>
+                  </span>
+                  <span class="doc-param-default">
+                    <b>DEFAULT:</b>
+                      <code><span title="numpy">numpy</span></code>
+                  </span>
+              </p>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>save</code>
+            </td>
+            <td class="doc-param-details">
+              <div class="doc-md-description">
+                <p>Flag to save the output image. If True, the image is saved to disk.
+Ignored if 'save_preprocessing_files' is set in <code>pypty_params</code>. Default is 0 (False).</p>
+              </div>
+              <p>
+                  <span class="doc-param-annotation">
+                    <b>TYPE:</b>
+                      <code><span title="bool">bool</span> or <span title="int">int</span></code>
+                  </span>
+                  <span class="doc-param-default">
+                    <b>DEFAULT:</b>
+                      <code>0</code>
+                  </span>
+              </p>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>max_parallel_fft</code>
+            </td>
+            <td class="doc-param-details">
+              <div class="doc-md-description">
+                <p>Maximum number of FFTs to perform in parallel for vectorized processing.
+Default is 100.</p>
+              </div>
+              <p>
+                  <span class="doc-param-annotation">
+                    <b>TYPE:</b>
+                      <code><span title="int">int</span></code>
+                  </span>
+                  <span class="doc-param-default">
+                    <b>DEFAULT:</b>
+                      <code>100</code>
+                  </span>
+              </p>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>bin_fac</code>
+            </td>
+            <td class="doc-param-details">
+              <div class="doc-md-description">
+                <p>Binning factor for the data in reciprocal space. Default is 1 (no binning).</p>
+              </div>
+              <p>
+                  <span class="doc-param-annotation">
+                    <b>TYPE:</b>
+                      <code><span title="int">int</span></code>
+                  </span>
+                  <span class="doc-param-default">
+                    <b>DEFAULT:</b>
+                      <code>1</code>
+                  </span>
+              </p>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+<table>
+      <thead>
+        <tr>
+          <th><span class="doc-section-title">RETURNS</span></th>
+          <th><span>DESCRIPTION</span></th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <span class="doc-returns-annotation">
+                    <code><span title="ndarray">ndarray</span></code>
+                </span>
+            </td>
+            <td class="doc-returns-details">
+              <div class="doc-md-description">
+                <p>Real-valued tcBF image reconstructed on the upsampled grid.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <span class="doc-returns-annotation">
+                    <code><span title="float">float</span></code>
+                </span>
+            </td>
+            <td class="doc-returns-details">
+              <div class="doc-md-description">
+                <p>Final pixel size in Ångströms after upsampling.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
 <h3 id="pypty.tcbf.run_tcbf_compressed_alignment" class="doc doc-heading">
             <code class="highlight language-python"><span class="n">run_tcbf_compressed_alignment</span></code>
 
@@ -1853,279 +2147,6 @@ binning levels and options for low-frequency drift compensation.</p>
             <td class="doc-returns-details">
               <div class="doc-md-description">
                 <p>Updated dictionary of reconstruction parameters including fitted aberrations and scan rotation.</p>
-              </div>
-            </td>
-          </tr>
-      </tbody>
-    </table>
-
-
-    </div>
-
-</div>
-
-<div class="doc doc-object doc-function">
-
-
-<h3 id="pypty.tcbf.upsampled_tcbf" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">upsampled_tcbf</span></code>
-
-<a href="#pypty.tcbf.upsampled_tcbf" class="headerlink" title="Permanent link">&para;</a></h3>
-
-
-    <div class="doc doc-contents ">
-
-        <p>Perform an upsampled tcBF (transmission coherent Bright Field) reconstruction.</p>
-<p>This function reconstructs a tcBF image on an upsampled scan grid from 4D-STEM data.
-It applies Fourier-based shifts to align the bright field pixel images and combines them into a final image.
-Prior to calling this function, it is recommended to run the tcBF alignment routine to update <code>pypty_params</code>.</p>
-
-
-<table>
-      <thead>
-        <tr>
-          <th><span class="doc-section-title">PARAMETER</span></th>
-          <th><span>DESCRIPTION</span></th>
-        </tr>
-      </thead>
-      <tbody>
-          <tr class="doc-section-item">
-            <td>
-                <code>pypty_params</code>
-            </td>
-            <td class="doc-param-details">
-              <div class="doc-md-description">
-                <p>Dictionary containing experimental parameters and reconstruction settings.
-This should include keys such as 'data_path', 'scan_size', 'aperture_mask', 'acc_voltage', etc.</p>
-              </div>
-              <p>
-                  <span class="doc-param-annotation">
-                    <b>TYPE:</b>
-                      <code><span title="dict">dict</span></code>
-                  </span>
-              </p>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                <code>upsample</code>
-            </td>
-            <td class="doc-param-details">
-              <div class="doc-md-description">
-                <p>Upsampling factor for the scan grid. Default is 5.</p>
-              </div>
-              <p>
-                  <span class="doc-param-annotation">
-                    <b>TYPE:</b>
-                      <code><span title="int">int</span></code>
-                  </span>
-                  <span class="doc-param-default">
-                    <b>DEFAULT:</b>
-                      <code>5</code>
-                  </span>
-              </p>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                <code>pad</code>
-            </td>
-            <td class="doc-param-details">
-              <div class="doc-md-description">
-                <p>Number of additional scan positions to pad on each side to avoid wrap-around artifacts.
-Default is 10.</p>
-              </div>
-              <p>
-                  <span class="doc-param-annotation">
-                    <b>TYPE:</b>
-                      <code><span title="int">int</span></code>
-                  </span>
-                  <span class="doc-param-default">
-                    <b>DEFAULT:</b>
-                      <code>10</code>
-                  </span>
-              </p>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                <code>compensate_lowfreq_drift</code>
-            </td>
-            <td class="doc-param-details">
-              <div class="doc-md-description">
-                <p>If True, compensates for low-frequency drift of the aperture.
-Requires that run_tcbf_alignment has been executed to provide drift corrections.
-Default is False.</p>
-              </div>
-              <p>
-                  <span class="doc-param-annotation">
-                    <b>TYPE:</b>
-                      <code><span title="bool">bool</span></code>
-                  </span>
-                  <span class="doc-param-default">
-                    <b>DEFAULT:</b>
-                      <code>False</code>
-                  </span>
-              </p>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                <code>default_float</code>
-            </td>
-            <td class="doc-param-details">
-              <div class="doc-md-description">
-                <p>Precision for floating point computations. Use 64 for higher precision or 32 for lower memory usage.
-Default is 64.</p>
-              </div>
-              <p>
-                  <span class="doc-param-annotation">
-                    <b>TYPE:</b>
-                      <code>(64, 32)</code>
-                  </span>
-                  <span class="doc-param-default">
-                    <b>DEFAULT:</b>
-                      <code>64</code>
-                  </span>
-              </p>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                <code>round_shifts</code>
-            </td>
-            <td class="doc-param-details">
-              <div class="doc-md-description">
-                <p>If True, shifts are rounded and alignment is performed using array roll operations.
-If False, FFT-based subpixel shifting is used. Default is False.</p>
-              </div>
-              <p>
-                  <span class="doc-param-annotation">
-                    <b>TYPE:</b>
-                      <code><span title="bool">bool</span></code>
-                  </span>
-                  <span class="doc-param-default">
-                    <b>DEFAULT:</b>
-                      <code>False</code>
-                  </span>
-              </p>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                <code>xp</code>
-            </td>
-            <td class="doc-param-details">
-              <div class="doc-md-description">
-                <p>Backend array module (e.g., numpy or cupy). Default is cupy.</p>
-              </div>
-              <p>
-                  <span class="doc-param-annotation">
-                    <b>TYPE:</b>
-                      <code><span title="module">module</span></code>
-                  </span>
-                  <span class="doc-param-default">
-                    <b>DEFAULT:</b>
-                      <code><span title="numpy">numpy</span></code>
-                  </span>
-              </p>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                <code>save</code>
-            </td>
-            <td class="doc-param-details">
-              <div class="doc-md-description">
-                <p>Flag to save the output image. If True, the image is saved to disk.
-Ignored if 'save_preprocessing_files' is set in <code>pypty_params</code>. Default is 0 (False).</p>
-              </div>
-              <p>
-                  <span class="doc-param-annotation">
-                    <b>TYPE:</b>
-                      <code><span title="bool">bool</span> or <span title="int">int</span></code>
-                  </span>
-                  <span class="doc-param-default">
-                    <b>DEFAULT:</b>
-                      <code>0</code>
-                  </span>
-              </p>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                <code>max_parallel_fft</code>
-            </td>
-            <td class="doc-param-details">
-              <div class="doc-md-description">
-                <p>Maximum number of FFTs to perform in parallel for vectorized processing.
-Default is 100.</p>
-              </div>
-              <p>
-                  <span class="doc-param-annotation">
-                    <b>TYPE:</b>
-                      <code><span title="int">int</span></code>
-                  </span>
-                  <span class="doc-param-default">
-                    <b>DEFAULT:</b>
-                      <code>100</code>
-                  </span>
-              </p>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                <code>bin_fac</code>
-            </td>
-            <td class="doc-param-details">
-              <div class="doc-md-description">
-                <p>Binning factor for the data in reciprocal space. Default is 1 (no binning).</p>
-              </div>
-              <p>
-                  <span class="doc-param-annotation">
-                    <b>TYPE:</b>
-                      <code><span title="int">int</span></code>
-                  </span>
-                  <span class="doc-param-default">
-                    <b>DEFAULT:</b>
-                      <code>1</code>
-                  </span>
-              </p>
-            </td>
-          </tr>
-      </tbody>
-    </table>
-
-
-<table>
-      <thead>
-        <tr>
-          <th><span class="doc-section-title">RETURNS</span></th>
-          <th><span>DESCRIPTION</span></th>
-        </tr>
-      </thead>
-      <tbody>
-          <tr class="doc-section-item">
-            <td>
-                <span class="doc-returns-annotation">
-                    <code><span title="ndarray">ndarray</span></code>
-                </span>
-            </td>
-            <td class="doc-returns-details">
-              <div class="doc-md-description">
-                <p>Real-valued tcBF image reconstructed on the upsampled grid.</p>
-              </div>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                <span class="doc-returns-annotation">
-                    <code><span title="float">float</span></code>
-                </span>
-            </td>
-            <td class="doc-returns-details">
-              <div class="doc-md-description">
-                <p>Final pixel size in Ångströms after upsampling.</p>
               </div>
             </td>
           </tr>

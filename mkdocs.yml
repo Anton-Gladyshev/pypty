@@ -71,7 +71,8 @@ plugins:
 nav:
   - Home: index.md
   - Description of the experiment: experiment.md
-  - Breakdown of some examples: example_breakdown.md
+  - Examples for iterative ptychography: example_breakdown.md
+  - Examples for direct methods: examples_direct.md
   - Guide for creating custom presets: custom_presets.md
   - API Reference:
     - pypty.initialize: reference/initialize.md
@@ -80,7 +81,7 @@ nav:
     - pypty.direct: reference/direct.md
     - pypty.iterative: reference/iterative.md
     - pypty.objective: reference/objective.md
-    - pypty.multicore: reference/multicore.md
+    - pypty.multislice_core: reference/multislice_core.md
     - pypty.fft: reference/fft.md
     - pypty.utils: reference/utils.md
     - pypty.se: reference/se.md

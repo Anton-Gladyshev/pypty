@@ -299,7 +299,28 @@
         
   
   <span class="md-ellipsis">
-    Breakdown of some examples
+    Examples for iterative ptychography
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../examples_direct.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Examples for direct methods
     
   </span>
   
@@ -351,10 +372,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" checked>
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" checked>
         
           
-          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
             
   
   <span class="md-ellipsis">
@@ -366,8 +387,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="true">
-          <label class="md-nav__title" for="__nav_5">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_6">
             <span class="md-nav__icon md-icon"></span>
             API Reference
           </label>
@@ -459,24 +480,6 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#pypty.dpc.GetPLRotation" class="md-nav__link">
-    <span class="md-ellipsis">
-      GetPLRotation
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#pypty.dpc.fft_based_dpc" class="md-nav__link">
-    <span class="md-ellipsis">
-      fft_based_dpc
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
   <a href="#pypty.dpc.get_curl" class="md-nav__link">
     <span class="md-ellipsis">
       get_curl
@@ -489,6 +492,24 @@
   <a href="#pypty.dpc.get_curl_derivative" class="md-nav__link">
     <span class="md-ellipsis">
       get_curl_derivative
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#pypty.dpc.GetPLRotation" class="md-nav__link">
+    <span class="md-ellipsis">
+      GetPLRotation
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#pypty.dpc.fft_based_dpc" class="md-nav__link">
+    <span class="md-ellipsis">
+      fft_based_dpc
     </span>
   </a>
   
@@ -616,11 +637,11 @@
   
   
     <li class="md-nav__item">
-      <a href="multicore.html" class="md-nav__link">
+      <a href="multislice_core.html" class="md-nav__link">
         
   
   <span class="md-ellipsis">
-    pypty.multicore
+    pypty.multislice_core
     
   </span>
   
@@ -762,24 +783,6 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#pypty.dpc.GetPLRotation" class="md-nav__link">
-    <span class="md-ellipsis">
-      GetPLRotation
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#pypty.dpc.fft_based_dpc" class="md-nav__link">
-    <span class="md-ellipsis">
-      fft_based_dpc
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
   <a href="#pypty.dpc.get_curl" class="md-nav__link">
     <span class="md-ellipsis">
       get_curl
@@ -792,6 +795,24 @@
   <a href="#pypty.dpc.get_curl_derivative" class="md-nav__link">
     <span class="md-ellipsis">
       get_curl_derivative
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#pypty.dpc.GetPLRotation" class="md-nav__link">
+    <span class="md-ellipsis">
+      GetPLRotation
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#pypty.dpc.fft_based_dpc" class="md-nav__link">
+    <span class="md-ellipsis">
+      fft_based_dpc
     </span>
   </a>
   
@@ -861,6 +882,210 @@
 
 
 
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="pypty.dpc.get_curl" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">get_curl</span></code>
+
+<a href="#pypty.dpc.get_curl" class="headerlink" title="Permanent link">&para;</a></h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Compute the standard deviation of the curl of a rotated DPC vector field. This is the objective function for minimization. This particular function was copied from a DPC plugin written by Jordan Hachtel.</p>
+
+
+<table>
+      <thead>
+        <tr>
+          <th><span class="doc-section-title">PARAMETER</span></th>
+          <th><span>DESCRIPTION</span></th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>angle</code>
+            </td>
+            <td class="doc-param-details">
+              <div class="doc-md-description">
+                <p>Rotation angle in radians.</p>
+              </div>
+              <p>
+                  <span class="doc-param-annotation">
+                    <b>TYPE:</b>
+                      <code><span title="float">float</span></code>
+                  </span>
+              </p>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>dpcx</code>
+            </td>
+            <td class="doc-param-details">
+              <div class="doc-md-description">
+                <p>X-component of the DPC signal.</p>
+              </div>
+              <p>
+                  <span class="doc-param-annotation">
+                    <b>TYPE:</b>
+                      <code><span title="ndarray">ndarray</span></code>
+                  </span>
+              </p>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>dpcy</code>
+            </td>
+            <td class="doc-param-details">
+              <div class="doc-md-description">
+                <p>Y-component of the DPC signal.</p>
+              </div>
+              <p>
+                  <span class="doc-param-annotation">
+                    <b>TYPE:</b>
+                      <code><span title="ndarray">ndarray</span></code>
+                  </span>
+              </p>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+<table>
+      <thead>
+        <tr>
+          <th><span class="doc-section-title">RETURNS</span></th>
+          <th><span>DESCRIPTION</span></th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <span class="doc-returns-annotation">
+                    <code><span title="float">float</span></code>
+                </span>
+            </td>
+            <td class="doc-returns-details">
+              <div class="doc-md-description">
+                <p>Standard deviation of the curl after rotation.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="pypty.dpc.get_curl_derivative" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">get_curl_derivative</span></code>
+
+<a href="#pypty.dpc.get_curl_derivative" class="headerlink" title="Permanent link">&para;</a></h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Compute the derivative of the curl-based objective function with respect to rotation angle.</p>
+
+
+<table>
+      <thead>
+        <tr>
+          <th><span class="doc-section-title">PARAMETER</span></th>
+          <th><span>DESCRIPTION</span></th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>angle</code>
+            </td>
+            <td class="doc-param-details">
+              <div class="doc-md-description">
+                <p>Rotation angle in radians.</p>
+              </div>
+              <p>
+                  <span class="doc-param-annotation">
+                    <b>TYPE:</b>
+                      <code><span title="float">float</span></code>
+                  </span>
+              </p>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>dpcx</code>
+            </td>
+            <td class="doc-param-details">
+              <div class="doc-md-description">
+                <p>X-component of the DPC signal.</p>
+              </div>
+              <p>
+                  <span class="doc-param-annotation">
+                    <b>TYPE:</b>
+                      <code><span title="ndarray">ndarray</span></code>
+                  </span>
+              </p>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>dpcy</code>
+            </td>
+            <td class="doc-param-details">
+              <div class="doc-md-description">
+                <p>Y-component of the DPC signal.</p>
+              </div>
+              <p>
+                  <span class="doc-param-annotation">
+                    <b>TYPE:</b>
+                      <code><span title="ndarray">ndarray</span></code>
+                  </span>
+              </p>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+<table>
+      <thead>
+        <tr>
+          <th><span class="doc-section-title">RETURNS</span></th>
+          <th><span>DESCRIPTION</span></th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <span class="doc-returns-annotation">
+                    <code><span title="float">float</span></code>
+                </span>
+            </td>
+            <td class="doc-returns-details">
+              <div class="doc-md-description">
+                <p>Derivative of the curl-based objective function.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    </div>
+
+</div>
 
 <div class="doc doc-object doc-function">
 
@@ -1148,210 +1373,6 @@
                       <code><span title="dict">dict</span></code>
                   </span>
                 </p>
-            </td>
-          </tr>
-      </tbody>
-    </table>
-
-
-    </div>
-
-</div>
-
-<div class="doc doc-object doc-function">
-
-
-<h3 id="pypty.dpc.get_curl" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">get_curl</span></code>
-
-<a href="#pypty.dpc.get_curl" class="headerlink" title="Permanent link">&para;</a></h3>
-
-
-    <div class="doc doc-contents ">
-
-        <p>Compute the standard deviation of the curl of a rotated DPC vector field. This is the objective function for minimization. This particular function was copied from a DPC plugin written by Jordan Hachtel.</p>
-
-
-<table>
-      <thead>
-        <tr>
-          <th><span class="doc-section-title">PARAMETER</span></th>
-          <th><span>DESCRIPTION</span></th>
-        </tr>
-      </thead>
-      <tbody>
-          <tr class="doc-section-item">
-            <td>
-                <code>angle</code>
-            </td>
-            <td class="doc-param-details">
-              <div class="doc-md-description">
-                <p>Rotation angle in radians.</p>
-              </div>
-              <p>
-                  <span class="doc-param-annotation">
-                    <b>TYPE:</b>
-                      <code><span title="float">float</span></code>
-                  </span>
-              </p>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                <code>dpcx</code>
-            </td>
-            <td class="doc-param-details">
-              <div class="doc-md-description">
-                <p>X-component of the DPC signal.</p>
-              </div>
-              <p>
-                  <span class="doc-param-annotation">
-                    <b>TYPE:</b>
-                      <code><span title="ndarray">ndarray</span></code>
-                  </span>
-              </p>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                <code>dpcy</code>
-            </td>
-            <td class="doc-param-details">
-              <div class="doc-md-description">
-                <p>Y-component of the DPC signal.</p>
-              </div>
-              <p>
-                  <span class="doc-param-annotation">
-                    <b>TYPE:</b>
-                      <code><span title="ndarray">ndarray</span></code>
-                  </span>
-              </p>
-            </td>
-          </tr>
-      </tbody>
-    </table>
-
-
-<table>
-      <thead>
-        <tr>
-          <th><span class="doc-section-title">RETURNS</span></th>
-          <th><span>DESCRIPTION</span></th>
-        </tr>
-      </thead>
-      <tbody>
-          <tr class="doc-section-item">
-            <td>
-                <span class="doc-returns-annotation">
-                    <code><span title="float">float</span></code>
-                </span>
-            </td>
-            <td class="doc-returns-details">
-              <div class="doc-md-description">
-                <p>Standard deviation of the curl after rotation.</p>
-              </div>
-            </td>
-          </tr>
-      </tbody>
-    </table>
-
-
-    </div>
-
-</div>
-
-<div class="doc doc-object doc-function">
-
-
-<h3 id="pypty.dpc.get_curl_derivative" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">get_curl_derivative</span></code>
-
-<a href="#pypty.dpc.get_curl_derivative" class="headerlink" title="Permanent link">&para;</a></h3>
-
-
-    <div class="doc doc-contents ">
-
-        <p>Compute the derivative of the curl-based objective function with respect to rotation angle.</p>
-
-
-<table>
-      <thead>
-        <tr>
-          <th><span class="doc-section-title">PARAMETER</span></th>
-          <th><span>DESCRIPTION</span></th>
-        </tr>
-      </thead>
-      <tbody>
-          <tr class="doc-section-item">
-            <td>
-                <code>angle</code>
-            </td>
-            <td class="doc-param-details">
-              <div class="doc-md-description">
-                <p>Rotation angle in radians.</p>
-              </div>
-              <p>
-                  <span class="doc-param-annotation">
-                    <b>TYPE:</b>
-                      <code><span title="float">float</span></code>
-                  </span>
-              </p>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                <code>dpcx</code>
-            </td>
-            <td class="doc-param-details">
-              <div class="doc-md-description">
-                <p>X-component of the DPC signal.</p>
-              </div>
-              <p>
-                  <span class="doc-param-annotation">
-                    <b>TYPE:</b>
-                      <code><span title="ndarray">ndarray</span></code>
-                  </span>
-              </p>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                <code>dpcy</code>
-            </td>
-            <td class="doc-param-details">
-              <div class="doc-md-description">
-                <p>Y-component of the DPC signal.</p>
-              </div>
-              <p>
-                  <span class="doc-param-annotation">
-                    <b>TYPE:</b>
-                      <code><span title="ndarray">ndarray</span></code>
-                  </span>
-              </p>
-            </td>
-          </tr>
-      </tbody>
-    </table>
-
-
-<table>
-      <thead>
-        <tr>
-          <th><span class="doc-section-title">RETURNS</span></th>
-          <th><span>DESCRIPTION</span></th>
-        </tr>
-      </thead>
-      <tbody>
-          <tr class="doc-section-item">
-            <td>
-                <span class="doc-returns-annotation">
-                    <code><span title="float">float</span></code>
-                </span>
-            </td>
-            <td class="doc-returns-details">
-              <div class="doc-md-description">
-                <p>Derivative of the curl-based objective function.</p>
-              </div>
             </td>
           </tr>
       </tbody>

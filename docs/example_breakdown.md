@@ -1,6 +1,6 @@
-# **__Breakdown of examples__**
+# **__Breakdown of Examples for Iterative Ptychography__**
 
-Here i will try to do an example breakdown. To start a Pypty-Reconstruction you should construct a python script. And import all libraries
+Here, I will provide a detailed breakdown of the example. To start a Pypty-Reconstruction you should construct a python script. And import all libraries
 
 ```python
 import numpy as np
@@ -13,7 +13,7 @@ We will need numpy to do some small preprocessing outside of pypty, but the majo
 
 In this section I will go through the steps required to do a ptychographic reconstruction from normal 4D-STEM data (far-field).
 
-### Creation of Callibrated Data
+### **__Creation of Calibrated Data__**
 
 In a first step we want to create and center a 4D-STEM dataset (in h5 format). PyPty can also accept raw numpy-arrays, but it's better to do this preprocessing step.
 ```python
@@ -77,7 +77,7 @@ experimental_params={
     }
 ```
 
-### **__Loading a recostructon preset__**
+### **__Loading a reconstruction preset__**
 
  
 The parameters for iterative ptychography are also contained in a dictionary, i tend to call it `pypty_params`. 
@@ -95,7 +95,7 @@ pypty_params=pypty.utils.load_preset(path_to_your_pkl_preset)
 path_to_your_nxs_preset=
 pypty_params=pypty.utils.load_nexus_params(path_to_your_nxs_preset)
 ```
-3) Third option is to construct you custom preset as a dictionary from scratch (Please see the [guide](custom_presets.md) )
+3) A third option is to construct your custom preset as a dictionary from scratch (Please see the [guide](custom_presets.md) )
 
 ```python
 pypty_params={
@@ -137,7 +137,7 @@ pypty.utils.convert_to_nxs(output_folder, path_to_your_nexus_file)
 
 ## Reconstruction without an extra h5 file
 
-If you do not want to create an extra .h5 file (**not recommended**), you can specify the 4D-STEM data directly in the experimental paramers (before you join them with `pypty_params`). 
+If you do not want to create an extra .h5 file (**not recommended**), you can specify the 4D-STEM data directly in the experimental parameters (before you join them with `pypty_params`). 
 
 ```python
 experimental_params["dataset"]=dataset
@@ -147,7 +147,8 @@ Note than in this case the entry `data_path` will be ignored and you can leave t
 
 ## **__Iterative Ptychography from Virtual Detectors__**.
 
-If you want to perform a reconstruction from data compressed by virtual detectors, you first have to ensure that the array of detectors has shape `[N_detectors, k_Y, k_X]` and your data has shape `[Scan_Y, Scan_X, N_detectors]`. Then you attach these two arrays to experiemental paramers.
+If you want to perform a reconstruction from data compressed by virtual detectors, you first have to ensure that the array of detectors has shape `[N_detectors, k_Y, k_X]` and your data has shape `[Scan_Y, Scan_X, N_detectors]`. Then you attach these two arrays to experimental parameters.
+
 
 ```python
 experimental_params={
@@ -162,7 +163,7 @@ experimental_params={
    # ... Rest of your parameters.
 }
 ```
-Also, you may want to update your reconstrction settings. For Compressed data PyPty has following objecive function types:
+Also, you may want to update your reconstruction settings. For Compressed data PyPty has following objecive function types:
 
 |  Objective_name     |   Description    | 
 |---------------------|------------------|
@@ -171,7 +172,7 @@ Also, you may want to update your reconstrction settings. For Compressed data Py
 |    `poisson_compressed`               |     Poissonian noise model            |
 
 
-Then your have to specify `alogoritm` as one of these three options in `pypty_params`, e.g.:
+Then your must specify `alogoritm` as one of these three options in `pypty_params:
 ```python
 pypty_params={
         "algorithm":  gauss_compressed, 

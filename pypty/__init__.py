@@ -8,7 +8,7 @@ from pypty.fft import *
 from pypty.initialize import *
 from pypty.iterative import *
 from pypty.objective import *
-from pypty.multicore import *
+from pypty.multislice_core import *
 from pypty.tcbf import *
 from pypty.utils import *
 from pypty.se import *

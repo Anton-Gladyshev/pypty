@@ -20,7 +20,7 @@
     
     
       
-        <title>pypty.multicore - PyPty (python + ptychography)</title>
+        <title>pypty.multislice_core - PyPty (python + ptychography)</title>
       
     
     
@@ -76,7 +76,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#pyptymulticore" class="md-skip">
+        <a href="#pyptymultislice_core" class="md-skip">
           Skip to content
         </a>
       
@@ -111,7 +111,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              pypty.multicore
+              pypty.multislice_core
             
           </span>
         </div>
@@ -299,7 +299,28 @@
         
   
   <span class="md-ellipsis">
-    Breakdown of some examples
+    Examples for iterative ptychography
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../examples_direct.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Examples for direct methods
     
   </span>
   
@@ -351,10 +372,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" checked>
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" checked>
         
           
-          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
             
   
   <span class="md-ellipsis">
@@ -366,8 +387,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="true">
-          <label class="md-nav__title" for="__nav_5">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_6">
             <span class="md-nav__icon md-icon"></span>
             API Reference
           </label>
@@ -525,7 +546,7 @@
           
   
   <span class="md-ellipsis">
-    pypty.multicore
+    pypty.multislice_core
     
   </span>
   
@@ -533,11 +554,11 @@
           <span class="md-nav__icon md-icon"></span>
         </label>
       
-      <a href="multicore.html" class="md-nav__link md-nav__link--active">
+      <a href="multislice_core.html" class="md-nav__link md-nav__link--active">
         
   
   <span class="md-ellipsis">
-    pypty.multicore
+    pypty.multislice_core
     
   </span>
   
@@ -560,34 +581,16 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#pypty.multicore" class="md-nav__link">
+  <a href="#pypty.multislice_core" class="md-nav__link">
     <span class="md-ellipsis">
-      multicore
+      multislice_core
     </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#pypty.multicore.better_multislice" class="md-nav__link">
-    <span class="md-ellipsis">
-      better_multislice
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#pypty.multicore.better_multislice_grads" class="md-nav__link">
-    <span class="md-ellipsis">
-      better_multislice_grads
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#pypty.multicore.multislice" class="md-nav__link">
+  <a href="#pypty.multislice_core.multislice" class="md-nav__link">
     <span class="md-ellipsis">
       multislice
     </span>
@@ -596,7 +599,7 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#pypty.multicore.multislice_grads" class="md-nav__link">
+  <a href="#pypty.multislice_core.multislice_grads" class="md-nav__link">
     <span class="md-ellipsis">
       multislice_grads
     </span>
@@ -605,16 +608,25 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#pypty.multicore.scatteradd" class="md-nav__link">
+  <a href="#pypty.multislice_core.better_multislice" class="md-nav__link">
     <span class="md-ellipsis">
-      scatteradd
+      better_multislice
     </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#pypty.multicore.yoshida_multislice" class="md-nav__link">
+  <a href="#pypty.multislice_core.better_multislice_grads" class="md-nav__link">
+    <span class="md-ellipsis">
+      better_multislice_grads
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#pypty.multislice_core.yoshida_multislice" class="md-nav__link">
     <span class="md-ellipsis">
       yoshida_multislice
     </span>
@@ -623,9 +635,18 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#pypty.multicore.yoshida_multislice_grads" class="md-nav__link">
+  <a href="#pypty.multislice_core.yoshida_multislice_grads" class="md-nav__link">
     <span class="md-ellipsis">
       yoshida_multislice_grads
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#pypty.multislice_core.scatteradd" class="md-nav__link">
+    <span class="md-ellipsis">
+      scatteradd
     </span>
   </a>
   
@@ -762,34 +783,16 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#pypty.multicore" class="md-nav__link">
+  <a href="#pypty.multislice_core" class="md-nav__link">
     <span class="md-ellipsis">
-      multicore
+      multislice_core
     </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#pypty.multicore.better_multislice" class="md-nav__link">
-    <span class="md-ellipsis">
-      better_multislice
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#pypty.multicore.better_multislice_grads" class="md-nav__link">
-    <span class="md-ellipsis">
-      better_multislice_grads
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#pypty.multicore.multislice" class="md-nav__link">
+  <a href="#pypty.multislice_core.multislice" class="md-nav__link">
     <span class="md-ellipsis">
       multislice
     </span>
@@ -798,7 +801,7 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#pypty.multicore.multislice_grads" class="md-nav__link">
+  <a href="#pypty.multislice_core.multislice_grads" class="md-nav__link">
     <span class="md-ellipsis">
       multislice_grads
     </span>
@@ -807,16 +810,25 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#pypty.multicore.scatteradd" class="md-nav__link">
+  <a href="#pypty.multislice_core.better_multislice" class="md-nav__link">
     <span class="md-ellipsis">
-      scatteradd
+      better_multislice
     </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#pypty.multicore.yoshida_multislice" class="md-nav__link">
+  <a href="#pypty.multislice_core.better_multislice_grads" class="md-nav__link">
+    <span class="md-ellipsis">
+      better_multislice_grads
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#pypty.multislice_core.yoshida_multislice" class="md-nav__link">
     <span class="md-ellipsis">
       yoshida_multislice
     </span>
@@ -825,9 +837,18 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#pypty.multicore.yoshida_multislice_grads" class="md-nav__link">
+  <a href="#pypty.multislice_core.yoshida_multislice_grads" class="md-nav__link">
     <span class="md-ellipsis">
       yoshida_multislice_grads
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#pypty.multislice_core.scatteradd" class="md-nav__link">
+    <span class="md-ellipsis">
+      scatteradd
     </span>
   </a>
   
@@ -852,14 +873,14 @@
   
 
 
-<h1 id="pyptymulticore"><code>pypty.multicore</code><a class="headerlink" href="#pyptymulticore" title="Permanent link">&para;</a></h1>
+<h1 id="pyptymultislice_core"><code>pypty.multislice_core</code><a class="headerlink" href="#pyptymultislice_core" title="Permanent link">&para;</a></h1>
 
 
 <div class="doc doc-object doc-module">
 
 
 
-<a id="pypty.multicore"></a>
+<a id="pypty.multislice_core"></a>
     <div class="doc doc-contents first">
 
 
@@ -883,1022 +904,10 @@
 <div class="doc doc-object doc-function">
 
 
-<h3 id="pypty.multicore.better_multislice" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">better_multislice</span></code>
-
-<a href="#pypty.multicore.better_multislice" class="headerlink" title="Permanent link">&para;</a></h3>
-
-
-    <div class="doc doc-contents ">
-
-        <p>Simulate multislice wave propagation using an additive split-step method (5th order precision with respect to slice thickness).</p>
-
-
-<table>
-      <thead>
-        <tr>
-          <th><span class="doc-section-title">PARAMETER</span></th>
-          <th><span>DESCRIPTION</span></th>
-        </tr>
-      </thead>
-      <tbody>
-          <tr class="doc-section-item">
-            <td>
-                <code>full_probe</code>
-            </td>
-            <td class="doc-param-details">
-              <div class="doc-md-description">
-                <p>Probe wavefunction with shape [N_batch, y,x, modes]</p>
-              </div>
-              <p>
-                  <span class="doc-param-annotation">
-                    <b>TYPE:</b>
-                      <code><span title="ndarray">ndarray</span></code>
-                  </span>
-              </p>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                <code>this_obj_chopped</code>
-            </td>
-            <td class="doc-param-details">
-              <div class="doc-md-description">
-                <p>Object slices with shape [N_batch, y,x, z, modes].</p>
-              </div>
-              <p>
-                  <span class="doc-param-annotation">
-                    <b>TYPE:</b>
-                      <code><span title="ndarray">ndarray</span></code>
-                  </span>
-              </p>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                <code>num_slices</code>
-            </td>
-            <td class="doc-param-details">
-              <div class="doc-md-description">
-                <p>Number of object slices.</p>
-              </div>
-              <p>
-                  <span class="doc-param-annotation">
-                    <b>TYPE:</b>
-                      <code><span title="int">int</span></code>
-                  </span>
-              </p>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                <code>n_obj_modes</code>
-            </td>
-            <td class="doc-param-details">
-              <div class="doc-md-description">
-                <p>Number of object modes.</p>
-              </div>
-              <p>
-                  <span class="doc-param-annotation">
-                    <b>TYPE:</b>
-                      <code><span title="int">int</span></code>
-                  </span>
-              </p>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                <code>n_probe_modes</code>
-            </td>
-            <td class="doc-param-details">
-              <div class="doc-md-description">
-                <p>Number of probe modes.</p>
-              </div>
-              <p>
-                  <span class="doc-param-annotation">
-                    <b>TYPE:</b>
-                      <code><span title="int">int</span></code>
-                  </span>
-              </p>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                <code>this_distances</code>
-            </td>
-            <td class="doc-param-details">
-              <div class="doc-md-description">
-                <p>Slice thicknesses.</p>
-              </div>
-              <p>
-                  <span class="doc-param-annotation">
-                    <b>TYPE:</b>
-                      <code><span title="ndarray">ndarray</span></code>
-                  </span>
-              </p>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                <code>this_wavelength</code>
-            </td>
-            <td class="doc-param-details">
-              <div class="doc-md-description">
-                <p>Electron wavelength.</p>
-              </div>
-              <p>
-                  <span class="doc-param-annotation">
-                    <b>TYPE:</b>
-                      <code><span title="float">float</span></code>
-                  </span>
-              </p>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                <code>q2</code>
-            </td>
-            <td class="doc-param-details">
-              <div class="doc-md-description">
-                <p>Spatial frequency grids.</p>
-              </div>
-              <p>
-                  <span class="doc-param-annotation">
-                    <b>TYPE:</b>
-                      <code><span title="ndarray">ndarray</span></code>
-                  </span>
-              </p>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                <code>qx</code>
-            </td>
-            <td class="doc-param-details">
-              <div class="doc-md-description">
-                <p>Spatial frequency grids.</p>
-              </div>
-              <p>
-                  <span class="doc-param-annotation">
-                    <b>TYPE:</b>
-                      <code><span title="ndarray">ndarray</span></code>
-                  </span>
-              </p>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                <code>qy</code>
-            </td>
-            <td class="doc-param-details">
-              <div class="doc-md-description">
-                <p>Spatial frequency grids.</p>
-              </div>
-              <p>
-                  <span class="doc-param-annotation">
-                    <b>TYPE:</b>
-                      <code><span title="ndarray">ndarray</span></code>
-                  </span>
-              </p>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                <code>exclude_mask</code>
-            </td>
-            <td class="doc-param-details">
-              <div class="doc-md-description">
-                <p>Mask to exclude undesired frequencies.</p>
-              </div>
-              <p>
-                  <span class="doc-param-annotation">
-                    <b>TYPE:</b>
-                      <code><span title="ndarray">ndarray</span></code>
-                  </span>
-              </p>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                <code>is_single_dist</code>
-            </td>
-            <td class="doc-param-details">
-              <div class="doc-md-description">
-                <p>If True, use the same distance for all slices.</p>
-              </div>
-              <p>
-                  <span class="doc-param-annotation">
-                    <b>TYPE:</b>
-                      <code><span title="bool">bool</span></code>
-                  </span>
-              </p>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                <code>this_tan_x</code>
-            </td>
-            <td class="doc-param-details">
-              <div class="doc-md-description">
-                <p>Beam tilts with shape N_batch</p>
-              </div>
-              <p>
-                  <span class="doc-param-annotation">
-                    <b>TYPE:</b>
-                      <code><span title="ndarray">ndarray</span></code>
-                  </span>
-              </p>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                <code>this_tan_y</code>
-            </td>
-            <td class="doc-param-details">
-              <div class="doc-md-description">
-                <p>Beam tilts with shape N_batch</p>
-              </div>
-              <p>
-                  <span class="doc-param-annotation">
-                    <b>TYPE:</b>
-                      <code><span title="ndarray">ndarray</span></code>
-                  </span>
-              </p>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                <code>damping_cutoff_multislice</code>
-            </td>
-            <td class="doc-param-details">
-              <div class="doc-md-description">
-                <p>Damping frequency cutoff.</p>
-              </div>
-              <p>
-                  <span class="doc-param-annotation">
-                    <b>TYPE:</b>
-                      <code><span title="float">float</span></code>
-                  </span>
-              </p>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                <code>smooth_rolloff</code>
-            </td>
-            <td class="doc-param-details">
-              <div class="doc-md-description">
-                <p>Rolloff rate for the damping filter.</p>
-              </div>
-              <p>
-                  <span class="doc-param-annotation">
-                    <b>TYPE:</b>
-                      <code><span title="float">float</span></code>
-                  </span>
-              </p>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                <code>master_propagator_phase_space</code>
-            </td>
-            <td class="doc-param-details">
-              <div class="doc-md-description">
-                <p>Full propagator in Fourier space (optional).</p>
-              </div>
-              <p>
-                  <span class="doc-param-annotation">
-                    <b>TYPE:</b>
-                      <code><span title="ndarray">ndarray</span> or None</code>
-                  </span>
-              </p>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                <code>half_master_propagator_phase_space</code>
-            </td>
-            <td class="doc-param-details">
-              <div class="doc-md-description">
-                <p>Half-step propagator (optional).</p>
-              </div>
-              <p>
-                  <span class="doc-param-annotation">
-                    <b>TYPE:</b>
-                      <code><span title="ndarray">ndarray</span> or None</code>
-                  </span>
-              </p>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                <code>mask_clean</code>
-            </td>
-            <td class="doc-param-details">
-              <div class="doc-md-description">
-                <p>Clean propagation mask.</p>
-              </div>
-              <p>
-                  <span class="doc-param-annotation">
-                    <b>TYPE:</b>
-                      <code><span title="ndarray">ndarray</span></code>
-                  </span>
-              </p>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                <code>waves_multislice</code>
-            </td>
-            <td class="doc-param-details">
-              <div class="doc-md-description">
-                <p>This array contains interediate exit-waves</p>
-              </div>
-              <p>
-                  <span class="doc-param-annotation">
-                    <b>TYPE:</b>
-                      <code><span title="ndarray">ndarray</span></code>
-                  </span>
-              </p>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                <code>wave</code>
-            </td>
-            <td class="doc-param-details">
-              <div class="doc-md-description">
-                <p>This array contains final exit-wave</p>
-              </div>
-              <p>
-                  <span class="doc-param-annotation">
-                    <b>TYPE:</b>
-                      <code><span title="ndarray">ndarray</span></code>
-                  </span>
-              </p>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                <code>default_float</code>
-            </td>
-            <td class="doc-param-details">
-              <div class="doc-md-description">
-                <p>Numerical types.</p>
-              </div>
-              <p>
-                  <span class="doc-param-annotation">
-                    <b>TYPE:</b>
-                      <code><span title="dtype">dtype</span></code>
-                  </span>
-              </p>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                <code>default_complex</code>
-            </td>
-            <td class="doc-param-details">
-              <div class="doc-md-description">
-                <p>Numerical types.</p>
-              </div>
-              <p>
-                  <span class="doc-param-annotation">
-                    <b>TYPE:</b>
-                      <code><span title="dtype">dtype</span></code>
-                  </span>
-              </p>
-            </td>
-          </tr>
-      </tbody>
-    </table>
-
-
-<table>
-      <thead>
-        <tr>
-          <th><span class="doc-section-title">RETURNS</span></th>
-          <th><span>DESCRIPTION</span></th>
-        </tr>
-      </thead>
-      <tbody>
-          <tr class="doc-section-item">
-            <td>
-                <code>waves_multislice</code>
-            </td>
-            <td class="doc-returns-details">
-              <div class="doc-md-description">
-                <p>Multislice stack of propagated waves.</p>
-              </div>
-                <p>
-                  <span class="doc-returns-annotation">
-                    <b>TYPE:</b>
-                      <code><span title="ndarray">ndarray</span></code>
-                  </span>
-                </p>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                <code>wave</code>
-            </td>
-            <td class="doc-returns-details">
-              <div class="doc-md-description">
-                <p>Final exit wave.</p>
-              </div>
-                <p>
-                  <span class="doc-returns-annotation">
-                    <b>TYPE:</b>
-                      <code><span title="ndarray">ndarray</span></code>
-                  </span>
-                </p>
-            </td>
-          </tr>
-      </tbody>
-    </table>
-
-
-    </div>
-
-</div>
-
-<div class="doc doc-object doc-function">
-
-
-<h3 id="pypty.multicore.better_multislice_grads" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">better_multislice_grads</span></code>
-
-<a href="#pypty.multicore.better_multislice_grads" class="headerlink" title="Permanent link">&para;</a></h3>
-
-
-    <div class="doc doc-contents ">
-
-        <p>Compute gradients of object, probe, and tilts for the "better_multislice" wave propagation model.</p>
-
-
-<table>
-      <thead>
-        <tr>
-          <th><span class="doc-section-title">PARAMETER</span></th>
-          <th><span>DESCRIPTION</span></th>
-        </tr>
-      </thead>
-      <tbody>
-          <tr class="doc-section-item">
-            <td>
-                <code>dLoss_dP_out</code>
-            </td>
-            <td class="doc-param-details">
-              <div class="doc-md-description">
-                <p>Gradient of the loss with respect to the final exit wave.</p>
-              </div>
-              <p>
-                  <span class="doc-param-annotation">
-                    <b>TYPE:</b>
-                      <code><span title="ndarray">ndarray</span></code>
-                  </span>
-              </p>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                <code>waves_multislice</code>
-            </td>
-            <td class="doc-param-details">
-              <div class="doc-md-description">
-                <p>Stack of intermediate wavefields saved during the forward pass.</p>
-              </div>
-              <p>
-                  <span class="doc-param-annotation">
-                    <b>TYPE:</b>
-                      <code><span title="ndarray">ndarray</span></code>
-                  </span>
-              </p>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                <code>this_obj_chopped</code>
-            </td>
-            <td class="doc-param-details">
-              <div class="doc-md-description">
-                <p>The sliced object with shape [batch, y, x, z, modes].</p>
-              </div>
-              <p>
-                  <span class="doc-param-annotation">
-                    <b>TYPE:</b>
-                      <code><span title="ndarray">ndarray</span></code>
-                  </span>
-              </p>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                <code>object_grad</code>
-            </td>
-            <td class="doc-param-details">
-              <div class="doc-md-description">
-                <p>Gradient accumulator for the object slices.</p>
-              </div>
-              <p>
-                  <span class="doc-param-annotation">
-                    <b>TYPE:</b>
-                      <code><span title="ndarray">ndarray</span></code>
-                  </span>
-              </p>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                <code>tilts_grad</code>
-            </td>
-            <td class="doc-param-details">
-              <div class="doc-md-description">
-                <p>Gradient accumulator for the tilts.</p>
-              </div>
-              <p>
-                  <span class="doc-param-annotation">
-                    <b>TYPE:</b>
-                      <code><span title="ndarray">ndarray</span></code>
-                  </span>
-              </p>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                <code>is_single_dist</code>
-            </td>
-            <td class="doc-param-details">
-              <div class="doc-md-description">
-                <p>Whether all slices have the same thickness.</p>
-              </div>
-              <p>
-                  <span class="doc-param-annotation">
-                    <b>TYPE:</b>
-                      <code><span title="bool">bool</span></code>
-                  </span>
-              </p>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                <code>this_distances</code>
-            </td>
-            <td class="doc-param-details">
-              <div class="doc-md-description">
-                <p>Thickness per slice.</p>
-              </div>
-              <p>
-                  <span class="doc-param-annotation">
-                    <b>TYPE:</b>
-                      <code><span title="ndarray">ndarray</span></code>
-                  </span>
-              </p>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                <code>exclude_mask</code>
-            </td>
-            <td class="doc-param-details">
-              <div class="doc-md-description">
-                <p>Frequency mask used in propagation.</p>
-              </div>
-              <p>
-                  <span class="doc-param-annotation">
-                    <b>TYPE:</b>
-                      <code><span title="ndarray">ndarray</span></code>
-                  </span>
-              </p>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                <code>this_wavelength</code>
-            </td>
-            <td class="doc-param-details">
-              <div class="doc-md-description">
-                <p>Wavelength of the probe in Ångströms.</p>
-              </div>
-              <p>
-                  <span class="doc-param-annotation">
-                    <b>TYPE:</b>
-                      <code><span title="float">float</span></code>
-                  </span>
-              </p>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                <code>q2</code>
-            </td>
-            <td class="doc-param-details">
-              <div class="doc-md-description">
-                <p>Spatial frequency grids.</p>
-              </div>
-              <p>
-                  <span class="doc-param-annotation">
-                    <b>TYPE:</b>
-                      <code><span title="ndarray">ndarray</span></code>
-                  </span>
-              </p>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                <code>qx</code>
-            </td>
-            <td class="doc-param-details">
-              <div class="doc-md-description">
-                <p>Spatial frequency grids.</p>
-              </div>
-              <p>
-                  <span class="doc-param-annotation">
-                    <b>TYPE:</b>
-                      <code><span title="ndarray">ndarray</span></code>
-                  </span>
-              </p>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                <code>qy</code>
-            </td>
-            <td class="doc-param-details">
-              <div class="doc-md-description">
-                <p>Spatial frequency grids.</p>
-              </div>
-              <p>
-                  <span class="doc-param-annotation">
-                    <b>TYPE:</b>
-                      <code><span title="ndarray">ndarray</span></code>
-                  </span>
-              </p>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                <code>this_tan_x</code>
-            </td>
-            <td class="doc-param-details">
-              <div class="doc-md-description">
-                <p>Beam tilt values per batch.</p>
-              </div>
-              <p>
-                  <span class="doc-param-annotation">
-                    <b>TYPE:</b>
-                      <code><span title="float">float</span></code>
-                  </span>
-              </p>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                <code>this_tan_y</code>
-            </td>
-            <td class="doc-param-details">
-              <div class="doc-md-description">
-                <p>Beam tilt values per batch.</p>
-              </div>
-              <p>
-                  <span class="doc-param-annotation">
-                    <b>TYPE:</b>
-                      <code><span title="float">float</span></code>
-                  </span>
-              </p>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                <code>num_slices</code>
-            </td>
-            <td class="doc-param-details">
-              <div class="doc-md-description">
-                <p>Number of slices in the object.</p>
-              </div>
-              <p>
-                  <span class="doc-param-annotation">
-                    <b>TYPE:</b>
-                      <code><span title="int">int</span></code>
-                  </span>
-              </p>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                <code>n_probe_modes</code>
-            </td>
-            <td class="doc-param-details">
-              <div class="doc-md-description">
-                <p>Number of probe modes.</p>
-              </div>
-              <p>
-                  <span class="doc-param-annotation">
-                    <b>TYPE:</b>
-                      <code><span title="int">int</span></code>
-                  </span>
-              </p>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                <code>n_obj_modes</code>
-            </td>
-            <td class="doc-param-details">
-              <div class="doc-md-description">
-                <p>Number of object modes.</p>
-              </div>
-              <p>
-                  <span class="doc-param-annotation">
-                    <b>TYPE:</b>
-                      <code><span title="int">int</span></code>
-                  </span>
-              </p>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                <code>tiltind</code>
-            </td>
-            <td class="doc-param-details">
-              <div class="doc-md-description">
-                <p>Index for updating <code>tilts_grad</code>.</p>
-              </div>
-              <p>
-                  <span class="doc-param-annotation">
-                    <b>TYPE:</b>
-                      <code><span title="int">int</span></code>
-                  </span>
-              </p>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                <code>this_step_tilts</code>
-            </td>
-            <td class="doc-param-details">
-              <div class="doc-md-description">
-                <p>Whether to update tilts (0 = off).</p>
-              </div>
-              <p>
-                  <span class="doc-param-annotation">
-                    <b>TYPE:</b>
-                      <code><span title="int">int</span></code>
-                  </span>
-              </p>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                <code>master_propagator_phase_space</code>
-            </td>
-            <td class="doc-param-details">
-              <div class="doc-md-description">
-                <p>Full propagator for the current slice.</p>
-              </div>
-              <p>
-                  <span class="doc-param-annotation">
-                    <b>TYPE:</b>
-                      <code><span title="ndarray">ndarray</span></code>
-                  </span>
-              </p>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                <code>half_master_propagator_phase_space</code>
-            </td>
-            <td class="doc-param-details">
-              <div class="doc-md-description">
-                <p>Half-step propagator.</p>
-              </div>
-              <p>
-                  <span class="doc-param-annotation">
-                    <b>TYPE:</b>
-                      <code><span title="ndarray">ndarray</span></code>
-                  </span>
-              </p>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                <code>damping_cutoff_multislice</code>
-            </td>
-            <td class="doc-param-details">
-              <div class="doc-md-description">
-                <p>Cutoff for high frequencies in damping.</p>
-              </div>
-              <p>
-                  <span class="doc-param-annotation">
-                    <b>TYPE:</b>
-                      <code><span title="float">float</span></code>
-                  </span>
-              </p>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                <code>smooth_rolloff</code>
-            </td>
-            <td class="doc-param-details">
-              <div class="doc-md-description">
-                <p>Smoothing width for damping filter.</p>
-              </div>
-              <p>
-                  <span class="doc-param-annotation">
-                    <b>TYPE:</b>
-                      <code><span title="float">float</span></code>
-                  </span>
-              </p>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                <code>tilt_mode</code>
-            </td>
-            <td class="doc-param-details">
-              <div class="doc-md-description">
-                <p>Specifies which tilts to optimize.</p>
-              </div>
-              <p>
-                  <span class="doc-param-annotation">
-                    <b>TYPE:</b>
-                      <code><span title="int">int</span></code>
-                  </span>
-              </p>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                <code>compute_batch</code>
-            </td>
-            <td class="doc-param-details">
-              <div class="doc-md-description">
-                <p>Number of scan positions processed in batch.</p>
-              </div>
-              <p>
-                  <span class="doc-param-annotation">
-                    <b>TYPE:</b>
-                      <code><span title="int">int</span></code>
-                  </span>
-              </p>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                <code>mask_clean</code>
-            </td>
-            <td class="doc-param-details">
-              <div class="doc-md-description">
-                <p>FFT mask used to remove unstable frequencies.</p>
-              </div>
-              <p>
-                  <span class="doc-param-annotation">
-                    <b>TYPE:</b>
-                      <code><span title="ndarray">ndarray</span></code>
-                  </span>
-              </p>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                <code>masked_pixels_y</code>
-            </td>
-            <td class="doc-param-details">
-              <div class="doc-md-description">
-                <p>Indices to scatter object gradients into global coordinates.</p>
-              </div>
-              <p>
-                  <span class="doc-param-annotation">
-                    <b>TYPE:</b>
-                      <code><span title="ndarray">ndarray</span></code>
-                  </span>
-              </p>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                <code>masked_pixels_x</code>
-            </td>
-            <td class="doc-param-details">
-              <div class="doc-md-description">
-                <p>Indices to scatter object gradients into global coordinates.</p>
-              </div>
-              <p>
-                  <span class="doc-param-annotation">
-                    <b>TYPE:</b>
-                      <code><span title="ndarray">ndarray</span></code>
-                  </span>
-              </p>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                <code>default_float</code>
-            </td>
-            <td class="doc-param-details">
-              <div class="doc-md-description">
-                <p>Floating point precision.</p>
-              </div>
-              <p>
-                  <span class="doc-param-annotation">
-                    <b>TYPE:</b>
-                      <code><span title="dtype">dtype</span></code>
-                  </span>
-              </p>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                <code>default_complex</code>
-            </td>
-            <td class="doc-param-details">
-              <div class="doc-md-description">
-                <p>Complex precision.</p>
-              </div>
-              <p>
-                  <span class="doc-param-annotation">
-                    <b>TYPE:</b>
-                      <code><span title="dtype">dtype</span></code>
-                  </span>
-              </p>
-            </td>
-          </tr>
-      </tbody>
-    </table>
-
-
-<table>
-      <thead>
-        <tr>
-          <th><span class="doc-section-title">RETURNS</span></th>
-          <th><span>DESCRIPTION</span></th>
-        </tr>
-      </thead>
-      <tbody>
-          <tr class="doc-section-item">
-            <td>
-                <code>object_grad</code>
-            </td>
-            <td class="doc-returns-details">
-              <div class="doc-md-description">
-                <p>Updated gradient of the object slices.</p>
-              </div>
-                <p>
-                  <span class="doc-returns-annotation">
-                    <b>TYPE:</b>
-                      <code><span title="ndarray">ndarray</span></code>
-                  </span>
-                </p>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                <code>interm_probe_grad</code>
-            </td>
-            <td class="doc-returns-details">
-              <div class="doc-md-description">
-                <p>Gradient of the probe (summed over object modes).</p>
-              </div>
-                <p>
-                  <span class="doc-returns-annotation">
-                    <b>TYPE:</b>
-                      <code><span title="ndarray">ndarray</span></code>
-                  </span>
-                </p>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                <code>tilts_grad</code>
-            </td>
-            <td class="doc-returns-details">
-              <div class="doc-md-description">
-                <p>Updated tilt gradients.</p>
-              </div>
-                <p>
-                  <span class="doc-returns-annotation">
-                    <b>TYPE:</b>
-                      <code><span title="ndarray">ndarray</span></code>
-                  </span>
-                </p>
-            </td>
-          </tr>
-      </tbody>
-    </table>
-
-
-    </div>
-
-</div>
-
-<div class="doc doc-object doc-function">
-
-
-<h3 id="pypty.multicore.multislice" class="doc doc-heading">
+<h3 id="pypty.multislice_core.multislice" class="doc doc-heading">
             <code class="highlight language-python"><span class="n">multislice</span></code>
 
-<a href="#pypty.multicore.multislice" class="headerlink" title="Permanent link">&para;</a></h3>
+<a href="#pypty.multislice_core.multislice" class="headerlink" title="Permanent link">&para;</a></h3>
 
 
     <div class="doc doc-contents ">
@@ -2337,10 +1346,10 @@
 <div class="doc doc-object doc-function">
 
 
-<h3 id="pypty.multicore.multislice_grads" class="doc doc-heading">
+<h3 id="pypty.multislice_core.multislice_grads" class="doc doc-heading">
             <code class="highlight language-python"><span class="n">multislice_grads</span></code>
 
-<a href="#pypty.multicore.multislice_grads" class="headerlink" title="Permanent link">&para;</a></h3>
+<a href="#pypty.multislice_core.multislice_grads" class="headerlink" title="Permanent link">&para;</a></h3>
 
 
     <div class="doc doc-contents ">
@@ -2939,16 +1948,15 @@
 <div class="doc doc-object doc-function">
 
 
-<h3 id="pypty.multicore.scatteradd" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">scatteradd</span></code>
+<h3 id="pypty.multislice_core.better_multislice" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">better_multislice</span></code>
 
-<a href="#pypty.multicore.scatteradd" class="headerlink" title="Permanent link">&para;</a></h3>
+<a href="#pypty.multislice_core.better_multislice" class="headerlink" title="Permanent link">&para;</a></h3>
 
 
     <div class="doc doc-contents ">
 
-        <p>Adds batched object updates to their respective positions in the full object array.
-This wrapper is needed to support older CuPy versions.</p>
+        <p>Simulate multislice wave propagation using an additive split-step method (5th order precision with respect to slice thickness).</p>
 
 
 <table>
@@ -2961,11 +1969,11 @@ This wrapper is needed to support older CuPy versions.</p>
       <tbody>
           <tr class="doc-section-item">
             <td>
-                <code>full</code>
+                <code>full_probe</code>
             </td>
             <td class="doc-param-details">
               <div class="doc-md-description">
-                <p>Full object gradient array.</p>
+                <p>Probe wavefunction with shape [N_batch, y,x, modes]</p>
               </div>
               <p>
                   <span class="doc-param-annotation">
@@ -2977,11 +1985,11 @@ This wrapper is needed to support older CuPy versions.</p>
           </tr>
           <tr class="doc-section-item">
             <td>
-                <code>masky</code>
+                <code>this_obj_chopped</code>
             </td>
             <td class="doc-param-details">
               <div class="doc-md-description">
-                <p>Index array for the y-axis.</p>
+                <p>Object slices with shape [N_batch, y,x, z, modes].</p>
               </div>
               <p>
                   <span class="doc-param-annotation">
@@ -2993,11 +2001,59 @@ This wrapper is needed to support older CuPy versions.</p>
           </tr>
           <tr class="doc-section-item">
             <td>
-                <code>maskx</code>
+                <code>num_slices</code>
             </td>
             <td class="doc-param-details">
               <div class="doc-md-description">
-                <p>Index array for the x-axis.</p>
+                <p>Number of object slices.</p>
+              </div>
+              <p>
+                  <span class="doc-param-annotation">
+                    <b>TYPE:</b>
+                      <code><span title="int">int</span></code>
+                  </span>
+              </p>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>n_obj_modes</code>
+            </td>
+            <td class="doc-param-details">
+              <div class="doc-md-description">
+                <p>Number of object modes.</p>
+              </div>
+              <p>
+                  <span class="doc-param-annotation">
+                    <b>TYPE:</b>
+                      <code><span title="int">int</span></code>
+                  </span>
+              </p>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>n_probe_modes</code>
+            </td>
+            <td class="doc-param-details">
+              <div class="doc-md-description">
+                <p>Number of probe modes.</p>
+              </div>
+              <p>
+                  <span class="doc-param-annotation">
+                    <b>TYPE:</b>
+                      <code><span title="int">int</span></code>
+                  </span>
+              </p>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>this_distances</code>
+            </td>
+            <td class="doc-param-details">
+              <div class="doc-md-description">
+                <p>Slice thicknesses.</p>
               </div>
               <p>
                   <span class="doc-param-annotation">
@@ -3009,16 +2065,272 @@ This wrapper is needed to support older CuPy versions.</p>
           </tr>
           <tr class="doc-section-item">
             <td>
-                <code>chop</code>
+                <code>this_wavelength</code>
             </td>
             <td class="doc-param-details">
               <div class="doc-md-description">
-                <p>Batched gradients to scatter-add.</p>
+                <p>Electron wavelength.</p>
+              </div>
+              <p>
+                  <span class="doc-param-annotation">
+                    <b>TYPE:</b>
+                      <code><span title="float">float</span></code>
+                  </span>
+              </p>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>q2</code>
+            </td>
+            <td class="doc-param-details">
+              <div class="doc-md-description">
+                <p>Spatial frequency grids.</p>
               </div>
               <p>
                   <span class="doc-param-annotation">
                     <b>TYPE:</b>
                       <code><span title="ndarray">ndarray</span></code>
+                  </span>
+              </p>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>qx</code>
+            </td>
+            <td class="doc-param-details">
+              <div class="doc-md-description">
+                <p>Spatial frequency grids.</p>
+              </div>
+              <p>
+                  <span class="doc-param-annotation">
+                    <b>TYPE:</b>
+                      <code><span title="ndarray">ndarray</span></code>
+                  </span>
+              </p>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>qy</code>
+            </td>
+            <td class="doc-param-details">
+              <div class="doc-md-description">
+                <p>Spatial frequency grids.</p>
+              </div>
+              <p>
+                  <span class="doc-param-annotation">
+                    <b>TYPE:</b>
+                      <code><span title="ndarray">ndarray</span></code>
+                  </span>
+              </p>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>exclude_mask</code>
+            </td>
+            <td class="doc-param-details">
+              <div class="doc-md-description">
+                <p>Mask to exclude undesired frequencies.</p>
+              </div>
+              <p>
+                  <span class="doc-param-annotation">
+                    <b>TYPE:</b>
+                      <code><span title="ndarray">ndarray</span></code>
+                  </span>
+              </p>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>is_single_dist</code>
+            </td>
+            <td class="doc-param-details">
+              <div class="doc-md-description">
+                <p>If True, use the same distance for all slices.</p>
+              </div>
+              <p>
+                  <span class="doc-param-annotation">
+                    <b>TYPE:</b>
+                      <code><span title="bool">bool</span></code>
+                  </span>
+              </p>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>this_tan_x</code>
+            </td>
+            <td class="doc-param-details">
+              <div class="doc-md-description">
+                <p>Beam tilts with shape N_batch</p>
+              </div>
+              <p>
+                  <span class="doc-param-annotation">
+                    <b>TYPE:</b>
+                      <code><span title="ndarray">ndarray</span></code>
+                  </span>
+              </p>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>this_tan_y</code>
+            </td>
+            <td class="doc-param-details">
+              <div class="doc-md-description">
+                <p>Beam tilts with shape N_batch</p>
+              </div>
+              <p>
+                  <span class="doc-param-annotation">
+                    <b>TYPE:</b>
+                      <code><span title="ndarray">ndarray</span></code>
+                  </span>
+              </p>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>damping_cutoff_multislice</code>
+            </td>
+            <td class="doc-param-details">
+              <div class="doc-md-description">
+                <p>Damping frequency cutoff.</p>
+              </div>
+              <p>
+                  <span class="doc-param-annotation">
+                    <b>TYPE:</b>
+                      <code><span title="float">float</span></code>
+                  </span>
+              </p>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>smooth_rolloff</code>
+            </td>
+            <td class="doc-param-details">
+              <div class="doc-md-description">
+                <p>Rolloff rate for the damping filter.</p>
+              </div>
+              <p>
+                  <span class="doc-param-annotation">
+                    <b>TYPE:</b>
+                      <code><span title="float">float</span></code>
+                  </span>
+              </p>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>master_propagator_phase_space</code>
+            </td>
+            <td class="doc-param-details">
+              <div class="doc-md-description">
+                <p>Full propagator in Fourier space (optional).</p>
+              </div>
+              <p>
+                  <span class="doc-param-annotation">
+                    <b>TYPE:</b>
+                      <code><span title="ndarray">ndarray</span> or None</code>
+                  </span>
+              </p>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>half_master_propagator_phase_space</code>
+            </td>
+            <td class="doc-param-details">
+              <div class="doc-md-description">
+                <p>Half-step propagator (optional).</p>
+              </div>
+              <p>
+                  <span class="doc-param-annotation">
+                    <b>TYPE:</b>
+                      <code><span title="ndarray">ndarray</span> or None</code>
+                  </span>
+              </p>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>mask_clean</code>
+            </td>
+            <td class="doc-param-details">
+              <div class="doc-md-description">
+                <p>Clean propagation mask.</p>
+              </div>
+              <p>
+                  <span class="doc-param-annotation">
+                    <b>TYPE:</b>
+                      <code><span title="ndarray">ndarray</span></code>
+                  </span>
+              </p>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>waves_multislice</code>
+            </td>
+            <td class="doc-param-details">
+              <div class="doc-md-description">
+                <p>This array contains interediate exit-waves</p>
+              </div>
+              <p>
+                  <span class="doc-param-annotation">
+                    <b>TYPE:</b>
+                      <code><span title="ndarray">ndarray</span></code>
+                  </span>
+              </p>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>wave</code>
+            </td>
+            <td class="doc-param-details">
+              <div class="doc-md-description">
+                <p>This array contains final exit-wave</p>
+              </div>
+              <p>
+                  <span class="doc-param-annotation">
+                    <b>TYPE:</b>
+                      <code><span title="ndarray">ndarray</span></code>
+                  </span>
+              </p>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>default_float</code>
+            </td>
+            <td class="doc-param-details">
+              <div class="doc-md-description">
+                <p>Numerical types.</p>
+              </div>
+              <p>
+                  <span class="doc-param-annotation">
+                    <b>TYPE:</b>
+                      <code><span title="dtype">dtype</span></code>
+                  </span>
+              </p>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>default_complex</code>
+            </td>
+            <td class="doc-param-details">
+              <div class="doc-md-description">
+                <p>Numerical types.</p>
+              </div>
+              <p>
+                  <span class="doc-param-annotation">
+                    <b>TYPE:</b>
+                      <code><span title="dtype">dtype</span></code>
                   </span>
               </p>
             </td>
@@ -3037,14 +2349,34 @@ This wrapper is needed to support older CuPy versions.</p>
       <tbody>
           <tr class="doc-section-item">
             <td>
-                <span class="doc-returns-annotation">
-                    <code>None</code>
-                </span>
+                <code>waves_multislice</code>
             </td>
             <td class="doc-returns-details">
               <div class="doc-md-description">
-                
+                <p>Multislice stack of propagated waves.</p>
               </div>
+                <p>
+                  <span class="doc-returns-annotation">
+                    <b>TYPE:</b>
+                      <code><span title="ndarray">ndarray</span></code>
+                  </span>
+                </p>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>wave</code>
+            </td>
+            <td class="doc-returns-details">
+              <div class="doc-md-description">
+                <p>Final exit wave.</p>
+              </div>
+                <p>
+                  <span class="doc-returns-annotation">
+                    <b>TYPE:</b>
+                      <code><span title="ndarray">ndarray</span></code>
+                  </span>
+                </p>
             </td>
           </tr>
       </tbody>
@@ -3058,10 +2390,580 @@ This wrapper is needed to support older CuPy versions.</p>
 <div class="doc doc-object doc-function">
 
 
-<h3 id="pypty.multicore.yoshida_multislice" class="doc doc-heading">
+<h3 id="pypty.multislice_core.better_multislice_grads" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">better_multislice_grads</span></code>
+
+<a href="#pypty.multislice_core.better_multislice_grads" class="headerlink" title="Permanent link">&para;</a></h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Compute gradients of object, probe, and tilts for the "better_multislice" wave propagation model.</p>
+
+
+<table>
+      <thead>
+        <tr>
+          <th><span class="doc-section-title">PARAMETER</span></th>
+          <th><span>DESCRIPTION</span></th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>dLoss_dP_out</code>
+            </td>
+            <td class="doc-param-details">
+              <div class="doc-md-description">
+                <p>Gradient of the loss with respect to the final exit wave.</p>
+              </div>
+              <p>
+                  <span class="doc-param-annotation">
+                    <b>TYPE:</b>
+                      <code><span title="ndarray">ndarray</span></code>
+                  </span>
+              </p>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>waves_multislice</code>
+            </td>
+            <td class="doc-param-details">
+              <div class="doc-md-description">
+                <p>Stack of intermediate wavefields saved during the forward pass.</p>
+              </div>
+              <p>
+                  <span class="doc-param-annotation">
+                    <b>TYPE:</b>
+                      <code><span title="ndarray">ndarray</span></code>
+                  </span>
+              </p>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>this_obj_chopped</code>
+            </td>
+            <td class="doc-param-details">
+              <div class="doc-md-description">
+                <p>The sliced object with shape [batch, y, x, z, modes].</p>
+              </div>
+              <p>
+                  <span class="doc-param-annotation">
+                    <b>TYPE:</b>
+                      <code><span title="ndarray">ndarray</span></code>
+                  </span>
+              </p>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>object_grad</code>
+            </td>
+            <td class="doc-param-details">
+              <div class="doc-md-description">
+                <p>Gradient accumulator for the object slices.</p>
+              </div>
+              <p>
+                  <span class="doc-param-annotation">
+                    <b>TYPE:</b>
+                      <code><span title="ndarray">ndarray</span></code>
+                  </span>
+              </p>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>tilts_grad</code>
+            </td>
+            <td class="doc-param-details">
+              <div class="doc-md-description">
+                <p>Gradient accumulator for the tilts.</p>
+              </div>
+              <p>
+                  <span class="doc-param-annotation">
+                    <b>TYPE:</b>
+                      <code><span title="ndarray">ndarray</span></code>
+                  </span>
+              </p>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>is_single_dist</code>
+            </td>
+            <td class="doc-param-details">
+              <div class="doc-md-description">
+                <p>Whether all slices have the same thickness.</p>
+              </div>
+              <p>
+                  <span class="doc-param-annotation">
+                    <b>TYPE:</b>
+                      <code><span title="bool">bool</span></code>
+                  </span>
+              </p>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>this_distances</code>
+            </td>
+            <td class="doc-param-details">
+              <div class="doc-md-description">
+                <p>Thickness per slice.</p>
+              </div>
+              <p>
+                  <span class="doc-param-annotation">
+                    <b>TYPE:</b>
+                      <code><span title="ndarray">ndarray</span></code>
+                  </span>
+              </p>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>exclude_mask</code>
+            </td>
+            <td class="doc-param-details">
+              <div class="doc-md-description">
+                <p>Frequency mask used in propagation.</p>
+              </div>
+              <p>
+                  <span class="doc-param-annotation">
+                    <b>TYPE:</b>
+                      <code><span title="ndarray">ndarray</span></code>
+                  </span>
+              </p>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>this_wavelength</code>
+            </td>
+            <td class="doc-param-details">
+              <div class="doc-md-description">
+                <p>Wavelength of the probe in Ångströms.</p>
+              </div>
+              <p>
+                  <span class="doc-param-annotation">
+                    <b>TYPE:</b>
+                      <code><span title="float">float</span></code>
+                  </span>
+              </p>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>q2</code>
+            </td>
+            <td class="doc-param-details">
+              <div class="doc-md-description">
+                <p>Spatial frequency grids.</p>
+              </div>
+              <p>
+                  <span class="doc-param-annotation">
+                    <b>TYPE:</b>
+                      <code><span title="ndarray">ndarray</span></code>
+                  </span>
+              </p>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>qx</code>
+            </td>
+            <td class="doc-param-details">
+              <div class="doc-md-description">
+                <p>Spatial frequency grids.</p>
+              </div>
+              <p>
+                  <span class="doc-param-annotation">
+                    <b>TYPE:</b>
+                      <code><span title="ndarray">ndarray</span></code>
+                  </span>
+              </p>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>qy</code>
+            </td>
+            <td class="doc-param-details">
+              <div class="doc-md-description">
+                <p>Spatial frequency grids.</p>
+              </div>
+              <p>
+                  <span class="doc-param-annotation">
+                    <b>TYPE:</b>
+                      <code><span title="ndarray">ndarray</span></code>
+                  </span>
+              </p>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>this_tan_x</code>
+            </td>
+            <td class="doc-param-details">
+              <div class="doc-md-description">
+                <p>Beam tilt values per batch.</p>
+              </div>
+              <p>
+                  <span class="doc-param-annotation">
+                    <b>TYPE:</b>
+                      <code><span title="float">float</span></code>
+                  </span>
+              </p>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>this_tan_y</code>
+            </td>
+            <td class="doc-param-details">
+              <div class="doc-md-description">
+                <p>Beam tilt values per batch.</p>
+              </div>
+              <p>
+                  <span class="doc-param-annotation">
+                    <b>TYPE:</b>
+                      <code><span title="float">float</span></code>
+                  </span>
+              </p>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>num_slices</code>
+            </td>
+            <td class="doc-param-details">
+              <div class="doc-md-description">
+                <p>Number of slices in the object.</p>
+              </div>
+              <p>
+                  <span class="doc-param-annotation">
+                    <b>TYPE:</b>
+                      <code><span title="int">int</span></code>
+                  </span>
+              </p>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>n_probe_modes</code>
+            </td>
+            <td class="doc-param-details">
+              <div class="doc-md-description">
+                <p>Number of probe modes.</p>
+              </div>
+              <p>
+                  <span class="doc-param-annotation">
+                    <b>TYPE:</b>
+                      <code><span title="int">int</span></code>
+                  </span>
+              </p>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>n_obj_modes</code>
+            </td>
+            <td class="doc-param-details">
+              <div class="doc-md-description">
+                <p>Number of object modes.</p>
+              </div>
+              <p>
+                  <span class="doc-param-annotation">
+                    <b>TYPE:</b>
+                      <code><span title="int">int</span></code>
+                  </span>
+              </p>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>tiltind</code>
+            </td>
+            <td class="doc-param-details">
+              <div class="doc-md-description">
+                <p>Index for updating <code>tilts_grad</code>.</p>
+              </div>
+              <p>
+                  <span class="doc-param-annotation">
+                    <b>TYPE:</b>
+                      <code><span title="int">int</span></code>
+                  </span>
+              </p>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>this_step_tilts</code>
+            </td>
+            <td class="doc-param-details">
+              <div class="doc-md-description">
+                <p>Whether to update tilts (0 = off).</p>
+              </div>
+              <p>
+                  <span class="doc-param-annotation">
+                    <b>TYPE:</b>
+                      <code><span title="int">int</span></code>
+                  </span>
+              </p>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>master_propagator_phase_space</code>
+            </td>
+            <td class="doc-param-details">
+              <div class="doc-md-description">
+                <p>Full propagator for the current slice.</p>
+              </div>
+              <p>
+                  <span class="doc-param-annotation">
+                    <b>TYPE:</b>
+                      <code><span title="ndarray">ndarray</span></code>
+                  </span>
+              </p>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>half_master_propagator_phase_space</code>
+            </td>
+            <td class="doc-param-details">
+              <div class="doc-md-description">
+                <p>Half-step propagator.</p>
+              </div>
+              <p>
+                  <span class="doc-param-annotation">
+                    <b>TYPE:</b>
+                      <code><span title="ndarray">ndarray</span></code>
+                  </span>
+              </p>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>damping_cutoff_multislice</code>
+            </td>
+            <td class="doc-param-details">
+              <div class="doc-md-description">
+                <p>Cutoff for high frequencies in damping.</p>
+              </div>
+              <p>
+                  <span class="doc-param-annotation">
+                    <b>TYPE:</b>
+                      <code><span title="float">float</span></code>
+                  </span>
+              </p>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>smooth_rolloff</code>
+            </td>
+            <td class="doc-param-details">
+              <div class="doc-md-description">
+                <p>Smoothing width for damping filter.</p>
+              </div>
+              <p>
+                  <span class="doc-param-annotation">
+                    <b>TYPE:</b>
+                      <code><span title="float">float</span></code>
+                  </span>
+              </p>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>tilt_mode</code>
+            </td>
+            <td class="doc-param-details">
+              <div class="doc-md-description">
+                <p>Specifies which tilts to optimize.</p>
+              </div>
+              <p>
+                  <span class="doc-param-annotation">
+                    <b>TYPE:</b>
+                      <code><span title="int">int</span></code>
+                  </span>
+              </p>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>compute_batch</code>
+            </td>
+            <td class="doc-param-details">
+              <div class="doc-md-description">
+                <p>Number of scan positions processed in batch.</p>
+              </div>
+              <p>
+                  <span class="doc-param-annotation">
+                    <b>TYPE:</b>
+                      <code><span title="int">int</span></code>
+                  </span>
+              </p>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>mask_clean</code>
+            </td>
+            <td class="doc-param-details">
+              <div class="doc-md-description">
+                <p>FFT mask used to remove unstable frequencies.</p>
+              </div>
+              <p>
+                  <span class="doc-param-annotation">
+                    <b>TYPE:</b>
+                      <code><span title="ndarray">ndarray</span></code>
+                  </span>
+              </p>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>masked_pixels_y</code>
+            </td>
+            <td class="doc-param-details">
+              <div class="doc-md-description">
+                <p>Indices to scatter object gradients into global coordinates.</p>
+              </div>
+              <p>
+                  <span class="doc-param-annotation">
+                    <b>TYPE:</b>
+                      <code><span title="ndarray">ndarray</span></code>
+                  </span>
+              </p>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>masked_pixels_x</code>
+            </td>
+            <td class="doc-param-details">
+              <div class="doc-md-description">
+                <p>Indices to scatter object gradients into global coordinates.</p>
+              </div>
+              <p>
+                  <span class="doc-param-annotation">
+                    <b>TYPE:</b>
+                      <code><span title="ndarray">ndarray</span></code>
+                  </span>
+              </p>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>default_float</code>
+            </td>
+            <td class="doc-param-details">
+              <div class="doc-md-description">
+                <p>Floating point precision.</p>
+              </div>
+              <p>
+                  <span class="doc-param-annotation">
+                    <b>TYPE:</b>
+                      <code><span title="dtype">dtype</span></code>
+                  </span>
+              </p>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>default_complex</code>
+            </td>
+            <td class="doc-param-details">
+              <div class="doc-md-description">
+                <p>Complex precision.</p>
+              </div>
+              <p>
+                  <span class="doc-param-annotation">
+                    <b>TYPE:</b>
+                      <code><span title="dtype">dtype</span></code>
+                  </span>
+              </p>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+<table>
+      <thead>
+        <tr>
+          <th><span class="doc-section-title">RETURNS</span></th>
+          <th><span>DESCRIPTION</span></th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>object_grad</code>
+            </td>
+            <td class="doc-returns-details">
+              <div class="doc-md-description">
+                <p>Updated gradient of the object slices.</p>
+              </div>
+                <p>
+                  <span class="doc-returns-annotation">
+                    <b>TYPE:</b>
+                      <code><span title="ndarray">ndarray</span></code>
+                  </span>
+                </p>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>interm_probe_grad</code>
+            </td>
+            <td class="doc-returns-details">
+              <div class="doc-md-description">
+                <p>Gradient of the probe (summed over object modes).</p>
+              </div>
+                <p>
+                  <span class="doc-returns-annotation">
+                    <b>TYPE:</b>
+                      <code><span title="ndarray">ndarray</span></code>
+                  </span>
+                </p>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>tilts_grad</code>
+            </td>
+            <td class="doc-returns-details">
+              <div class="doc-md-description">
+                <p>Updated tilt gradients.</p>
+              </div>
+                <p>
+                  <span class="doc-returns-annotation">
+                    <b>TYPE:</b>
+                      <code><span title="ndarray">ndarray</span></code>
+                  </span>
+                </p>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="pypty.multislice_core.yoshida_multislice" class="doc doc-heading">
             <code class="highlight language-python"><span class="n">yoshida_multislice</span></code>
 
-<a href="#pypty.multicore.yoshida_multislice" class="headerlink" title="Permanent link">&para;</a></h3>
+<a href="#pypty.multislice_core.yoshida_multislice" class="headerlink" title="Permanent link">&para;</a></h3>
 
 
     <div class="doc doc-contents ">
@@ -3500,10 +3402,10 @@ This wrapper is needed to support older CuPy versions.</p>
 <div class="doc doc-object doc-function">
 
 
-<h3 id="pypty.multicore.yoshida_multislice_grads" class="doc doc-heading">
+<h3 id="pypty.multislice_core.yoshida_multislice_grads" class="doc doc-heading">
             <code class="highlight language-python"><span class="n">yoshida_multislice_grads</span></code>
 
-<a href="#pypty.multicore.yoshida_multislice_grads" class="headerlink" title="Permanent link">&para;</a></h3>
+<a href="#pypty.multislice_core.yoshida_multislice_grads" class="headerlink" title="Permanent link">&para;</a></h3>
 
 
     <div class="doc doc-contents ">
@@ -4057,6 +3959,125 @@ This wrapper is needed to support older CuPy versions.</p>
                       <code><span title="ndarray">ndarray</span></code>
                   </span>
                 </p>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="pypty.multislice_core.scatteradd" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">scatteradd</span></code>
+
+<a href="#pypty.multislice_core.scatteradd" class="headerlink" title="Permanent link">&para;</a></h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Adds batched object updates to their respective positions in the full object array.
+This wrapper is needed to support older CuPy versions.</p>
+
+
+<table>
+      <thead>
+        <tr>
+          <th><span class="doc-section-title">PARAMETER</span></th>
+          <th><span>DESCRIPTION</span></th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>full</code>
+            </td>
+            <td class="doc-param-details">
+              <div class="doc-md-description">
+                <p>Full object gradient array.</p>
+              </div>
+              <p>
+                  <span class="doc-param-annotation">
+                    <b>TYPE:</b>
+                      <code><span title="ndarray">ndarray</span></code>
+                  </span>
+              </p>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>masky</code>
+            </td>
+            <td class="doc-param-details">
+              <div class="doc-md-description">
+                <p>Index array for the y-axis.</p>
+              </div>
+              <p>
+                  <span class="doc-param-annotation">
+                    <b>TYPE:</b>
+                      <code><span title="ndarray">ndarray</span></code>
+                  </span>
+              </p>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>maskx</code>
+            </td>
+            <td class="doc-param-details">
+              <div class="doc-md-description">
+                <p>Index array for the x-axis.</p>
+              </div>
+              <p>
+                  <span class="doc-param-annotation">
+                    <b>TYPE:</b>
+                      <code><span title="ndarray">ndarray</span></code>
+                  </span>
+              </p>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>chop</code>
+            </td>
+            <td class="doc-param-details">
+              <div class="doc-md-description">
+                <p>Batched gradients to scatter-add.</p>
+              </div>
+              <p>
+                  <span class="doc-param-annotation">
+                    <b>TYPE:</b>
+                      <code><span title="ndarray">ndarray</span></code>
+                  </span>
+              </p>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+<table>
+      <thead>
+        <tr>
+          <th><span class="doc-section-title">RETURNS</span></th>
+          <th><span>DESCRIPTION</span></th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <span class="doc-returns-annotation">
+                    <code>None</code>
+                </span>
+            </td>
+            <td class="doc-returns-details">
+              <div class="doc-md-description">
+                
+              </div>
             </td>
           </tr>
       </tbody>

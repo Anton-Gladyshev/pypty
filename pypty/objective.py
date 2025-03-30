@@ -9,7 +9,7 @@ except:
 
 from pypty import fft as pyptyfft
 from pypty import utils as pyptyutils
-from pypty import multicore as pyptymultislice
+from pypty import multislice_core as pyptymultislice
 
 
 

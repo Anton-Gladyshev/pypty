@@ -31,14 +31,9 @@ def run(pypty_params):
     ----------
     pypty_params : dict
         Dictionary containing calibrated parameters, including paths and settings for data processing.
-        
-    Returns
-    -------
-    None
-    
     Notes
     -----
-    pypty_params dictionary can be constructed from a predefined preset and a given dataset via append_exp_params() function. Otherwise one can create the  pypty_params dictionary by hand. For more info about creating pypty_params from scratch please reffer to https://github.com/Anton-Gladyshev/pypty/tree/main (there is a .md file lisitng all possible entries). Otherwise contact Anton Gladyshev directly.
+    pypty_params dictionary can be constructed from a predefined preset and a given dataset via append_exp_params() function. Full list of expected entries can be found in the documentation,
     """
     global obj, probe, pool, pinned_pool, positions, positions_correction, tilts, tilts_correction, beam_current,aberrations_array, history_bfgs
     obj, probe, positions, positions_correction, tilts, tilts_correction, static_background, aberrations_array, beam_current = None, None, None, None, None, None,None, None, None
@@ -216,7 +211,7 @@ def run(pypty_params):
     estimate_aperture_based_on_binary=params.get('estimate_aperture_based_on_binary', False)
     beam_ctf=params.get('beam_ctf', None)
     mean_pattern=params.get('mean_pattern',None)
-    params["pypty_version"]="2.0"
+    params['pypty_version']="2.1"
     ############################### done with params, starts other things ###################################
     ### get the data
     if not(masks is None):

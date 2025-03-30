@@ -37,9 +37,6 @@ def wdd(pypty_params, eps_wiener=1e-3, thresh=None, save=0):
     -------
     deconvolved_object : ndarray
         2D deconvolved complex object.
-    reconstructed_beam : ndarray
-        2D reconstructed complex beam.
-
     Notes
     -----
     Make sure `pypty_params` includes all necessary paths and data arrays prior
@@ -225,11 +222,6 @@ def wdd(pypty_params, eps_wiener=1e-3, thresh=None, save=0):
         o2=o.get()
     except:
         o2=o
-    try:
-        probe2=probe.get()
-    except:
-        probe2=probe
     if save:
         np.save(pypty_params["output_folder"]+"wdd/object.npy", o2)
-        np.save(pypty_params["output_folder"]+"wdd/probe.npy", probe2)
-    return o2, probe2
+    return o2

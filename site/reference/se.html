@@ -299,7 +299,28 @@
         
   
   <span class="md-ellipsis">
-    Breakdown of some examples
+    Examples for iterative ptychography
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../examples_direct.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Examples for direct methods
     
   </span>
   
@@ -351,10 +372,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" checked>
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" checked>
         
           
-          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
             
   
   <span class="md-ellipsis">
@@ -366,8 +387,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="true">
-          <label class="md-nav__title" for="__nav_5">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_6">
             <span class="md-nav__icon md-icon"></span>
             API Reference
           </label>
@@ -512,11 +533,11 @@
   
   
     <li class="md-nav__item">
-      <a href="multicore.html" class="md-nav__link">
+      <a href="multislice_core.html" class="md-nav__link">
         
   
   <span class="md-ellipsis">
-    pypty.multicore
+    pypty.multislice_core
     
   </span>
   
@@ -635,18 +656,9 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#pypty.se.compensate_pattern_drift" class="md-nav__link">
+  <a href="#pypty.se.getvirtualhaadf" class="md-nav__link">
     <span class="md-ellipsis">
-      compensate_pattern_drift
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#pypty.se.create_binned_dataset" class="md-nav__link">
-    <span class="md-ellipsis">
-      create_binned_dataset
+      getvirtualhaadf
     </span>
   </a>
   
@@ -662,18 +674,27 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#pypty.se.get_virtual_annular_detector" class="md-nav__link">
+  <a href="#pypty.se.create_binned_dataset" class="md-nav__link">
     <span class="md-ellipsis">
-      get_virtual_annular_detector
+      create_binned_dataset
     </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#pypty.se.getvirtualhaadf" class="md-nav__link">
+  <a href="#pypty.se.compensate_pattern_drift" class="md-nav__link">
     <span class="md-ellipsis">
-      getvirtualhaadf
+      compensate_pattern_drift
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#pypty.se.get_virtual_annular_detector" class="md-nav__link">
+    <span class="md-ellipsis">
+      get_virtual_annular_detector
     </span>
   </a>
   
@@ -753,18 +774,9 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#pypty.se.compensate_pattern_drift" class="md-nav__link">
+  <a href="#pypty.se.getvirtualhaadf" class="md-nav__link">
     <span class="md-ellipsis">
-      compensate_pattern_drift
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#pypty.se.create_binned_dataset" class="md-nav__link">
-    <span class="md-ellipsis">
-      create_binned_dataset
+      getvirtualhaadf
     </span>
   </a>
   
@@ -780,18 +792,27 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#pypty.se.get_virtual_annular_detector" class="md-nav__link">
+  <a href="#pypty.se.create_binned_dataset" class="md-nav__link">
     <span class="md-ellipsis">
-      get_virtual_annular_detector
+      create_binned_dataset
     </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#pypty.se.getvirtualhaadf" class="md-nav__link">
+  <a href="#pypty.se.compensate_pattern_drift" class="md-nav__link">
     <span class="md-ellipsis">
-      getvirtualhaadf
+      compensate_pattern_drift
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#pypty.se.get_virtual_annular_detector" class="md-nav__link">
+    <span class="md-ellipsis">
+      get_virtual_annular_detector
     </span>
   </a>
   
@@ -847,15 +868,15 @@
 <div class="doc doc-object doc-function">
 
 
-<h3 id="pypty.se.compensate_pattern_drift" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">compensate_pattern_drift</span></code>
+<h3 id="pypty.se.getvirtualhaadf" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">getvirtualhaadf</span></code>
 
-<a href="#pypty.se.compensate_pattern_drift" class="headerlink" title="Permanent link">&para;</a></h3>
+<a href="#pypty.se.getvirtualhaadf" class="headerlink" title="Permanent link">&para;</a></h3>
 
 
     <div class="doc doc-contents ">
 
-        <p>Compensate for drift in diffraction patterns via phase correlation.</p>
+        <p>Compute a virtual HAADF image from a 4D-STEM dataset.</p>
 
 
 <table>
@@ -868,32 +889,36 @@
       <tbody>
           <tr class="doc-section-item">
             <td>
-                <code>aperture</code>
+                <code>pypty_params</code>
             </td>
             <td class="doc-param-details">
               <div class="doc-md-description">
-                <p>The binary aperture mask used for phase correlation.</p>
+                <p>Dictionary containing parameters including data path, scan size, plotting option, and output folder.</p>
               </div>
               <p>
                   <span class="doc-param-annotation">
                     <b>TYPE:</b>
-                      <code><span title="ndarray">ndarray</span></code>
+                      <code><span title="dict">dict</span></code>
                   </span>
               </p>
             </td>
           </tr>
           <tr class="doc-section-item">
             <td>
-                <code>patterns</code>
+                <code>save</code>
             </td>
             <td class="doc-param-details">
               <div class="doc-md-description">
-                <p>The diffraction patterns to be compensated for drift.</p>
+                <p>Whether to save the resulting HAADF image as a .npy file. Default is True.</p>
               </div>
               <p>
                   <span class="doc-param-annotation">
                     <b>TYPE:</b>
-                      <code><span title="ndarray">ndarray</span></code>
+                      <code><span title="bool">bool</span></code>
+                  </span>
+                  <span class="doc-param-default">
+                    <b>DEFAULT:</b>
+                      <code>True</code>
                   </span>
               </p>
             </td>
@@ -912,16 +937,90 @@
       <tbody>
           <tr class="doc-section-item">
             <td>
-                <code>patterns</code>
+                <code>haadf</code>
             </td>
             <td class="doc-returns-details">
               <div class="doc-md-description">
-                <p>The compensated diffraction patterns.</p>
+                <p>The computed virtual HAADF image.</p>
               </div>
                 <p>
                   <span class="doc-returns-annotation">
                     <b>TYPE:</b>
                       <code><span title="ndarray">ndarray</span></code>
+                  </span>
+                </p>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="pypty.se.get_aperture" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">get_aperture</span></code>
+
+<a href="#pypty.se.get_aperture" class="headerlink" title="Permanent link">&para;</a></h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Generate a binary aperture mask based on the mean diffraction pattern.</p>
+
+
+<table>
+      <thead>
+        <tr>
+          <th><span class="doc-section-title">PARAMETER</span></th>
+          <th><span>DESCRIPTION</span></th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>params</code>
+            </td>
+            <td class="doc-param-details">
+              <div class="doc-md-description">
+                <p>Dictionary containing parameters including data path, data padding, plotting option, and bright threshold.</p>
+              </div>
+              <p>
+                  <span class="doc-param-annotation">
+                    <b>TYPE:</b>
+                      <code><span title="dict">dict</span></code>
+                  </span>
+              </p>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+<table>
+      <thead>
+        <tr>
+          <th><span class="doc-section-title">RETURNS</span></th>
+          <th><span>DESCRIPTION</span></th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>params</code>
+            </td>
+            <td class="doc-returns-details">
+              <div class="doc-md-description">
+                <p>Updated parameters dictionary containing the generated aperture mask.</p>
+              </div>
+                <p>
+                  <span class="doc-returns-annotation">
+                    <b>TYPE:</b>
+                      <code><span title="dict">dict</span></code>
                   </span>
                 </p>
             </td>
@@ -1015,15 +1114,15 @@
 <div class="doc doc-object doc-function">
 
 
-<h3 id="pypty.se.get_aperture" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">get_aperture</span></code>
+<h3 id="pypty.se.compensate_pattern_drift" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">compensate_pattern_drift</span></code>
 
-<a href="#pypty.se.get_aperture" class="headerlink" title="Permanent link">&para;</a></h3>
+<a href="#pypty.se.compensate_pattern_drift" class="headerlink" title="Permanent link">&para;</a></h3>
 
 
     <div class="doc doc-contents ">
 
-        <p>Generate a binary aperture mask based on the mean diffraction pattern.</p>
+        <p>Compensate for drift in diffraction patterns via phase correlation.</p>
 
 
 <table>
@@ -1036,16 +1135,32 @@
       <tbody>
           <tr class="doc-section-item">
             <td>
-                <code>params</code>
+                <code>aperture</code>
             </td>
             <td class="doc-param-details">
               <div class="doc-md-description">
-                <p>Dictionary containing parameters including data path, data padding, plotting option, and bright threshold.</p>
+                <p>The binary aperture mask used for phase correlation.</p>
               </div>
               <p>
                   <span class="doc-param-annotation">
                     <b>TYPE:</b>
-                      <code><span title="dict">dict</span></code>
+                      <code><span title="ndarray">ndarray</span></code>
+                  </span>
+              </p>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>patterns</code>
+            </td>
+            <td class="doc-param-details">
+              <div class="doc-md-description">
+                <p>The diffraction patterns to be compensated for drift.</p>
+              </div>
+              <p>
+                  <span class="doc-param-annotation">
+                    <b>TYPE:</b>
+                      <code><span title="ndarray">ndarray</span></code>
                   </span>
               </p>
             </td>
@@ -1064,16 +1179,16 @@
       <tbody>
           <tr class="doc-section-item">
             <td>
-                <code>params</code>
+                <code>patterns</code>
             </td>
             <td class="doc-returns-details">
               <div class="doc-md-description">
-                <p>Updated parameters dictionary containing the generated aperture mask.</p>
+                <p>The compensated diffraction patterns.</p>
               </div>
                 <p>
                   <span class="doc-returns-annotation">
                     <b>TYPE:</b>
-                      <code><span title="dict">dict</span></code>
+                      <code><span title="ndarray">ndarray</span></code>
                   </span>
                 </p>
             </td>
@@ -1243,100 +1358,6 @@
             <td class="doc-returns-details">
               <div class="doc-md-description">
                 <p>The computed virtual detector signal.</p>
-              </div>
-                <p>
-                  <span class="doc-returns-annotation">
-                    <b>TYPE:</b>
-                      <code><span title="ndarray">ndarray</span></code>
-                  </span>
-                </p>
-            </td>
-          </tr>
-      </tbody>
-    </table>
-
-
-    </div>
-
-</div>
-
-<div class="doc doc-object doc-function">
-
-
-<h3 id="pypty.se.getvirtualhaadf" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">getvirtualhaadf</span></code>
-
-<a href="#pypty.se.getvirtualhaadf" class="headerlink" title="Permanent link">&para;</a></h3>
-
-
-    <div class="doc doc-contents ">
-
-        <p>Compute a virtual HAADF image from a 4D-STEM dataset.</p>
-
-
-<table>
-      <thead>
-        <tr>
-          <th><span class="doc-section-title">PARAMETER</span></th>
-          <th><span>DESCRIPTION</span></th>
-        </tr>
-      </thead>
-      <tbody>
-          <tr class="doc-section-item">
-            <td>
-                <code>pypty_params</code>
-            </td>
-            <td class="doc-param-details">
-              <div class="doc-md-description">
-                <p>Dictionary containing parameters including data path, scan size, plotting option, and output folder.</p>
-              </div>
-              <p>
-                  <span class="doc-param-annotation">
-                    <b>TYPE:</b>
-                      <code><span title="dict">dict</span></code>
-                  </span>
-              </p>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                <code>save</code>
-            </td>
-            <td class="doc-param-details">
-              <div class="doc-md-description">
-                <p>Whether to save the resulting HAADF image as a .npy file. Default is True.</p>
-              </div>
-              <p>
-                  <span class="doc-param-annotation">
-                    <b>TYPE:</b>
-                      <code><span title="bool">bool</span></code>
-                  </span>
-                  <span class="doc-param-default">
-                    <b>DEFAULT:</b>
-                      <code>True</code>
-                  </span>
-              </p>
-            </td>
-          </tr>
-      </tbody>
-    </table>
-
-
-<table>
-      <thead>
-        <tr>
-          <th><span class="doc-section-title">RETURNS</span></th>
-          <th><span>DESCRIPTION</span></th>
-        </tr>
-      </thead>
-      <tbody>
-          <tr class="doc-section-item">
-            <td>
-                <code>haadf</code>
-            </td>
-            <td class="doc-returns-details">
-              <div class="doc-md-description">
-                <p>The computed virtual HAADF image.</p>
               </div>
                 <p>
                   <span class="doc-returns-annotation">
