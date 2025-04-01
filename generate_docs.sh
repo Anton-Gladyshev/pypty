@@ -2,6 +2,7 @@
 
 # Install necessary dependencies
 pip install --upgrade mkdocs-literate-nav myst-parser
+pip install mkdocs-jupyter
 
 # Serve docs locally and open browser automatically
 mkdocs serve &

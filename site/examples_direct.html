@@ -16,7 +16,7 @@
       
       
       <link rel="icon" href="assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.9">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.11">
     
     
       
@@ -35,8 +35,6 @@
     
     
       
-        <script src="https://unpkg.com/iframe-worker/shim"></script>
-      
     
     
       
@@ -49,6 +47,10 @@
     
     
       <link rel="stylesheet" href="assets/_mkdocstrings.css">
+    
+      <link rel="stylesheet" href="css/print-site.css">
+    
+      <link rel="stylesheet" href="css/print-site-material.css">
     
     <script>__md_scope=new URL(".",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
@@ -149,11 +151,13 @@
     
     
     
-      <label class="md-header__button md-icon" for="__search">
-        
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
-      </label>
-      <div class="md-search" data-md-component="search" role="dialog">
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
   <label class="md-search__overlay" for="__search"></label>
   <div class="md-search__inner" role="search">
     <form class="md-search__form" name="search">
@@ -185,6 +189,7 @@
     </div>
   </div>
 </div>
+      
     
     
       <div class="md-header__source">
@@ -256,6 +261,7 @@
       <a href="index.html" class="md-nav__link">
         
   
+  
   <span class="md-ellipsis">
     Home
     
@@ -277,6 +283,7 @@
       <a href="experiment.html" class="md-nav__link">
         
   
+  
   <span class="md-ellipsis">
     Description of the experiment
     
@@ -297,6 +304,7 @@
     <li class="md-nav__item">
       <a href="example_breakdown.html" class="md-nav__link">
         
+  
   
   <span class="md-ellipsis">
     Examples for iterative ptychography
@@ -328,6 +336,7 @@
         <label class="md-nav__link md-nav__link--active" for="__toc">
           
   
+  
   <span class="md-ellipsis">
     Examples for direct methods
     
@@ -339,6 +348,7 @@
       
       <a href="examples_direct.html" class="md-nav__link md-nav__link--active">
         
+  
   
   <span class="md-ellipsis">
     Examples for direct methods
@@ -364,36 +374,36 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#dpc-reconstruction" class="md-nav__link">
+  <a href="#differential-phase-contrast-dpc" class="md-nav__link">
     <span class="md-ellipsis">
-      DPC Reconstruction
+      Differential Phase Contrast (DPC)
     </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#tcbf-reconstructions" class="md-nav__link">
+  <a href="#tilt-corrected-bright-field-tcbf" class="md-nav__link">
     <span class="md-ellipsis">
-      tcBF reconstructions
+      Tilt-Corrected Bright Field (tcBF)
     </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#wdd-ptychography" class="md-nav__link">
+  <a href="#wigner-distribution-deconvolution-wdd" class="md-nav__link">
     <span class="md-ellipsis">
-      WDD Ptychography
+      Wigner Distribution Deconvolution (WDD)
     </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#using-direct-methods-for-creation-of-initial-guess" class="md-nav__link">
+  <a href="#using-direct-methods-for-initial-guesses" class="md-nav__link">
     <span class="md-ellipsis">
-      Using direct methods for creation of initial guess
+      Using Direct Methods for Initial Guesses
     </span>
   </a>
   
@@ -417,8 +427,31 @@
       <a href="custom_presets.html" class="md-nav__link">
         
   
+  
   <span class="md-ellipsis">
     Guide for creating custom presets
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="example_full.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Notebook / example pipeline
     
   </span>
   
@@ -437,6 +470,7 @@
     
     
     
+    
       
         
         
@@ -449,11 +483,12 @@
         
           
         
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6" >
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_7" >
         
           
-          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="">
             
+  
   
   <span class="md-ellipsis">
     API Reference
@@ -464,8 +499,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_6">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
             <span class="md-nav__icon md-icon"></span>
             API Reference
           </label>
@@ -480,6 +515,7 @@
     <li class="md-nav__item">
       <a href="reference/initialize.html" class="md-nav__link">
         
+  
   
   <span class="md-ellipsis">
     pypty.initialize
@@ -503,6 +539,7 @@
       <a href="reference/dpc.html" class="md-nav__link">
         
   
+  
   <span class="md-ellipsis">
     pypty.dpc
     
@@ -524,6 +561,7 @@
     <li class="md-nav__item">
       <a href="reference/tcbf.html" class="md-nav__link">
         
+  
   
   <span class="md-ellipsis">
     pypty.tcbf
@@ -547,6 +585,7 @@
       <a href="reference/direct.html" class="md-nav__link">
         
   
+  
   <span class="md-ellipsis">
     pypty.direct
     
@@ -568,6 +607,7 @@
     <li class="md-nav__item">
       <a href="reference/iterative.html" class="md-nav__link">
         
+  
   
   <span class="md-ellipsis">
     pypty.iterative
@@ -591,6 +631,7 @@
       <a href="reference/objective.html" class="md-nav__link">
         
   
+  
   <span class="md-ellipsis">
     pypty.objective
     
@@ -612,6 +653,7 @@
     <li class="md-nav__item">
       <a href="reference/multislice_core.html" class="md-nav__link">
         
+  
   
   <span class="md-ellipsis">
     pypty.multislice_core
@@ -635,6 +677,7 @@
       <a href="reference/fft.html" class="md-nav__link">
         
   
+  
   <span class="md-ellipsis">
     pypty.fft
     
@@ -656,6 +699,7 @@
     <li class="md-nav__item">
       <a href="reference/utils.html" class="md-nav__link">
         
+  
   
   <span class="md-ellipsis">
     pypty.utils
@@ -679,6 +723,7 @@
       <a href="reference/se.html" class="md-nav__link">
         
   
+  
   <span class="md-ellipsis">
     pypty.se
     
@@ -700,6 +745,7 @@
     <li class="md-nav__item">
       <a href="reference/vaa.html" class="md-nav__link">
         
+  
   
   <span class="md-ellipsis">
     pypty.vaa
@@ -747,36 +793,36 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#dpc-reconstruction" class="md-nav__link">
+  <a href="#differential-phase-contrast-dpc" class="md-nav__link">
     <span class="md-ellipsis">
-      DPC Reconstruction
+      Differential Phase Contrast (DPC)
     </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#tcbf-reconstructions" class="md-nav__link">
+  <a href="#tilt-corrected-bright-field-tcbf" class="md-nav__link">
     <span class="md-ellipsis">
-      tcBF reconstructions
+      Tilt-Corrected Bright Field (tcBF)
     </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#wdd-ptychography" class="md-nav__link">
+  <a href="#wigner-distribution-deconvolution-wdd" class="md-nav__link">
     <span class="md-ellipsis">
-      WDD Ptychography
+      Wigner Distribution Deconvolution (WDD)
     </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#using-direct-methods-for-creation-of-initial-guess" class="md-nav__link">
+  <a href="#using-direct-methods-for-initial-guesses" class="md-nav__link">
     <span class="md-ellipsis">
-      Using direct methods for creation of initial guess
+      Using Direct Methods for Initial Guesses
     </span>
   </a>
   
@@ -801,80 +847,80 @@
   
 
 
-<h1 id="examples-for-direct-methods"><strong><strong>Examples for direct methods</strong></strong><a class="headerlink" href="#examples-for-direct-methods" title="Permanent link">&para;</a></h1>
-<p>PyPty also offers a set of direct reconstruction methods applicable to 4D-STEM data:</p>
-<p>1) <a href="reference/dpc.html">Differential Phase Contrast</a></p>
-<p>2) <a href="reference/tcbf.html">Tilt-Corrected Bright Field</a></p>
-<p>3) <a href="reference/direct.html">Direct Ptychography</a></p>
-<p>Here I will give some usage examples for these methods. First, you need to create a callibrated <code>pypty_params</code> dictionary (for more info see <a href="example_breakdown.html">desciption of experiment</a>, <a href="example_breakdown.html">examples for iterative ptychography</a> and <a href="reference/initialize.html">API reference</a>). </p>
-<p>I will assume that you have constructed <code>experimental_params</code>.</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="kn">import</span><span class="w"> </span><span class="nn">pypty</span>
-<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
-<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
-<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>
-<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="n">pypty_params</span><span class="o">=</span><span class="n">pypty</span><span class="o">.</span><span class="n">initialize</span><span class="o">.</span><span class="n">append_exp_params</span><span class="p">(</span><span class="n">experimental_params</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+<h1 id="examples-for-direct-methods"><strong><em>Examples for direct methods</em></strong><a class="headerlink" href="#examples-for-direct-methods" title="Permanent link">&para;</a></h1>
+<p>This page presents example usage of PyPty’s direct reconstruction methods: Differential Phase Contrast (DPC), Tilt-Corrected Bright Field (tcBF), and Wigner Distribution Deconvolution (WDD). These methods are used when a direct (non-iterative) reconstruction is preferred or as preprocessing for iterative methods.</p>
+<hr />
+<h2 id="differential-phase-contrast-dpc">Differential Phase Contrast (DPC)<a class="headerlink" href="#differential-phase-contrast-dpc" title="Permanent link">&para;</a></h2>
+<p>PyPty is supplied with two functions for differential phase contrast. Both of them aim so solve a Poisson equation, i.e. to reconstruct a phase from its laplacian, gradient of the COM vector field. The first method, based on the Fast Fourier Transform (FFT), reconstructs the phase efficiently and can be executed as follows (including visualization using matplotlib)</p>
+<p><div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">dpc_phase</span><span class="p">,</span> <span class="n">pypty_params</span><span class="o">=</span> <span class="n">pypty</span><span class="o">.</span><span class="n">dpc</span><span class="o">.</span><span class="n">fft_based_dpc</span><span class="p">(</span><span class="n">pypty_params</span><span class="p">,</span> <span class="n">hpass</span><span class="o">=</span><span class="mf">1e-1</span><span class="p">,</span> <span class="n">lpass</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">dpc_phase</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s2">&quot;gray&quot;</span><span class="p">)</span>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;DPC Phase (FFT-based)&quot;</span><span class="p">)</span>
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="n">plt</span><span class="o">.</span><span class="n">colorbar</span><span class="p">()</span>
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </code></pre></div>
-<h2 id="dpc-reconstruction"><strong><strong>DPC Reconstruction</strong></strong><a class="headerlink" href="#dpc-reconstruction" title="Permanent link">&para;</a></h2>
-<p>PyPty is supplied with two functions for differenttial phase contrast. Both of them aim so solve a Poisson equation, i.e. to reconstruct a phase from its laplacian, gradient of the COM vector field. First method is based on FFT and can be executed like this (including visualisation from matplotlib):</p>
-<p><div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="n">dpc_phase</span><span class="p">,</span> <span class="n">pypty_params</span><span class="o">=</span> <span class="n">pypty</span><span class="o">.</span><span class="n">dpc</span><span class="o">.</span><span class="n">fft_based_dpc</span><span class="p">(</span><span class="n">pypty_params</span><span class="p">,</span> <span class="n">hpass</span><span class="o">=</span><span class="mf">1e-1</span><span class="p">,</span> <span class="n">lpass</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
-<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>
-<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">dpc_phase</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s2">&quot;gray&quot;</span><span class="p">)</span>
-<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;WDD Phase&quot;</span><span class="p">)</span>
-<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="n">plt</span><span class="o">.</span><span class="n">colorbar</span><span class="p">()</span>
-<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
-</code></pre></div>
-Note that fft-based DPC returns both phase and parameter dictionary as it stores the calculated COM vector field (and the angle between real and reciprocal spaces). If these two quantites are not in <code>pypty_params</code>, it attempts to automatically calculate them.</p>
+Note that fft-based DPC returns both phase and parameter dictionary as it stores the calculated COM vector field (and the angle between real and reciprocal spaces). If these two quantities are not in <code>pypty_params</code>, it attempts to automatically calculate them.</p>
 <p>Second method is iterative and accounts for non-periodic boundary conditions:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="n">dpc_phase</span><span class="o">=</span><span class="n">pypty</span><span class="o">.</span><span class="n">dpc</span><span class="o">.</span><span class="n">iterative_dpc</span><span class="p">(</span><span class="n">pypty_params</span><span class="p">,</span> <span class="n">num_iterations</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">beta</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">hpass</span><span class="o">=</span><span class="mf">1e-1</span><span class="p">,</span> <span class="n">lpass</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">step_size</span><span class="o">=</span><span class="mf">0.1</span><span class="p">)</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="n">dpc_phase</span><span class="o">=</span><span class="n">pypty</span><span class="o">.</span><span class="n">dpc</span><span class="o">.</span><span class="n">iterative_dpc</span><span class="p">(</span><span class="n">pypty_params</span><span class="p">,</span> <span class="n">num_iterations</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">beta</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">hpass</span><span class="o">=</span><span class="mf">1e-1</span><span class="p">,</span> <span class="n">lpass</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">step_size</span><span class="o">=</span><span class="mf">0.1</span><span class="p">)</span>
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">dpc_phase</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s2">&quot;gray&quot;</span><span class="p">)</span>
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;DPC Phase (iterative)&quot;</span><span class="p">)</span>
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="n">plt</span><span class="o">.</span><span class="n">colorbar</span><span class="p">()</span>
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </code></pre></div>
 <p>Please see the <a href="reference/dpc.html">module</a> description for detailed description of the parameters. </p>
-<h2 id="tcbf-reconstructions"><strong><strong>tcBF reconstructions</strong></strong><a class="headerlink" href="#tcbf-reconstructions" title="Permanent link">&para;</a></h2>
-<p>In PyPty framework tcBF is done in two steps. First one aims to fit the aberrations of the beam and rotation angle between real and reciprocal spaces by creating an unupsampled tcBF image via <code>run_tcbf_alignment</code>:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>pypty_params=pypty.tcbf.run_tcbf_alignment(
-<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>        pypty_params,
-<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>        binning_for_fit=np.tile([5], 30), 
-<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>        optimize_angle=True,
-<a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a>
-<a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a>        cross_corr_type=&quot;abs&quot;,
-<a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a>        refine_box_dim=5,
-<a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a>        upsample=10,
-<a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a>        cancel_large_shifts=0.9,
-<a id="__codelineno-3-10" name="__codelineno-3-10" href="#__codelineno-3-10"></a>        reference_type=&quot;bf&quot;,
-<a id="__codelineno-3-11" name="__codelineno-3-11" href="#__codelineno-3-11"></a>        tol_ctf=1e-8
-<a id="__codelineno-3-12" name="__codelineno-3-12" href="#__codelineno-3-12"></a>        )
+<hr />
+<h2 id="tilt-corrected-bright-field-tcbf">Tilt-Corrected Bright Field (tcBF)<a class="headerlink" href="#tilt-corrected-bright-field-tcbf" title="Permanent link">&para;</a></h2>
+<p>In PyPty framework tcBF is done in two steps. First one aims to fit the aberrations of the beam and rotation angle between real and reciprocal spaces by creating an <strong>unupsampled</strong> tcBF image via <code>run_tcbf_alignment</code>:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="n">pypty_params</span><span class="o">=</span><span class="n">pypty</span><span class="o">.</span><span class="n">tcbf</span><span class="o">.</span><span class="n">run_tcbf_alignment</span><span class="p">(</span>
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>        <span class="n">pypty_params</span><span class="p">,</span>
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>        <span class="n">binning_for_fit</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">([</span><span class="mi">5</span><span class="p">],</span> <span class="mi">30</span><span class="p">),</span> 
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>        <span class="n">optimize_angle</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>
+<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>        <span class="n">cross_corr_type</span><span class="o">=</span><span class="s2">&quot;abs&quot;</span><span class="p">,</span>
+<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a>        <span class="n">refine_box_dim</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+<a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a>        <span class="n">upsample</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+<a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a>        <span class="n">cancel_large_shifts</span><span class="o">=</span><span class="mf">0.9</span><span class="p">,</span>
+<a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a>        <span class="n">reference_type</span><span class="o">=</span><span class="s2">&quot;bf&quot;</span><span class="p">,</span>
+<a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a>        <span class="n">tol_ctf</span><span class="o">=</span><span class="mf">1e-8</span>
+<a id="__codelineno-2-12" name="__codelineno-2-12" href="#__codelineno-2-12"></a>        <span class="p">)</span>
 </code></pre></div>
-<p>Note that you have to play with binning values and cross-correlation parameters to get an optimal result. Also, fitted rotation angle typically has a +- pi ambiguity, so if your defocus value comes out with a sign different from the experiement, I suggest to rerun the reconstruction.</p>
-<p>A second tcBF function assumes that you already did an alignment and performs an upsampled reconsturction:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="n">tcbf_image</span><span class="p">,</span><span class="n">tcbf_px_size</span> <span class="o">=</span> <span class="n">pypty</span><span class="o">.</span><span class="n">tcbf</span><span class="o">.</span><span class="n">upsampled_tcbf</span><span class="p">(</span><span class="n">pypty_params</span><span class="p">,</span> <span class="n">upsample</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
-<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>                                    <span class="n">pad</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">default_float</span><span class="o">=</span><span class="mi">32</span><span class="p">,</span><span class="n">round_shifts</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>                                    
-<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">tcbf_image</span><span class="p">,</span>  <span class="n">cmap</span><span class="o">=</span><span class="s2">&quot;gray&quot;</span><span class="p">)</span>
+<p>Note that you have to play with binning values and cross-correlation parameters to get an optimal result. Also, fitted rotation angle typically has a +- pi ambiguity, so if your defocus value comes out with a sign different from the experiment, I suggest to rerun the reconstruction.</p>
+<p>A second tcBF function assumes that you already did an alignment and performs an upsampled reconstruction:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="n">tcbf_image</span><span class="p">,</span><span class="n">tcbf_px_size</span> <span class="o">=</span> <span class="n">pypty</span><span class="o">.</span><span class="n">tcbf</span><span class="o">.</span><span class="n">upsampled_tcbf</span><span class="p">(</span><span class="n">pypty_params</span><span class="p">,</span> <span class="n">upsample</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>                                    <span class="n">pad</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">default_float</span><span class="o">=</span><span class="mi">32</span><span class="p">,</span><span class="n">round_shifts</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>                                    
+<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">tcbf_image</span><span class="p">,</span>  <span class="n">cmap</span><span class="o">=</span><span class="s2">&quot;gray&quot;</span><span class="p">)</span>
+<a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;tcBF image (x3 upsampling)&quot;</span><span class="p">)</span>
+<a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a><span class="n">plt</span><span class="o">.</span><span class="n">colorbar</span><span class="p">()</span>
+<a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a><span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</code></pre></div>
+<hr />
+<h2 id="wigner-distribution-deconvolution-wdd">Wigner Distribution Deconvolution (WDD)<a class="headerlink" href="#wigner-distribution-deconvolution-wdd" title="Permanent link">&para;</a></h2>
+<p>The last direct reconstruction method is Wigner distribution deconvolution (WDD). It is a direct method that reconstructs the object's complex wavefunction by deconvolving the measured intensity distribution with the known probe. WDD requires a calibrated <code>pypty_params</code>dictionary containing rotation angle, scan steps and a complex beam (or a set of aberrations). A simple usage example is</p>
+<p><div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="n">obj_wdd</span><span class="o">=</span><span class="n">pypty</span><span class="o">.</span><span class="n">direct</span><span class="o">.</span><span class="n">wdd</span><span class="p">(</span><span class="n">pypty_params</span><span class="p">,</span>  <span class="n">eps_wiener</span><span class="o">=</span><span class="mf">1e-3</span><span class="p">)</span>
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>
+<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">angle</span><span class="p">(</span><span class="n">obj_wdd</span><span class="p">),</span> <span class="n">cmap</span><span class="o">=</span><span class="s2">&quot;gray&quot;</span><span class="p">)</span>
+<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;WDD Phase&quot;</span><span class="p">)</span>
 <a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a><span class="n">plt</span><span class="o">.</span><span class="n">colorbar</span><span class="p">()</span>
 <a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a><span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </code></pre></div>
-<h2 id="wdd-ptychography"><strong><strong>WDD Ptychography</strong></strong><a class="headerlink" href="#wdd-ptychography" title="Permanent link">&para;</a></h2>
-<p>The last direct reconstruction method is Wigner distribution deconvolution.  It requeires a callibrated <code>pypty_params</code>dictionary containing rotation angle, scan steps and a complex beam (or a set of aberrations). A simple usage example is</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="n">obj_wdd</span><span class="o">=</span><span class="n">pypty</span><span class="o">.</span><span class="n">direct</span><span class="o">.</span><span class="n">wdd</span><span class="p">(</span><span class="n">pypty_params</span><span class="p">,</span>  <span class="n">eps_wiener</span><span class="o">=</span><span class="mf">1e-3</span><span class="p">)</span>
-<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>
-<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">angle</span><span class="p">(</span><span class="n">obj_wdd</span><span class="p">),</span> <span class="n">cmap</span><span class="o">=</span><span class="s2">&quot;gray&quot;</span><span class="p">)</span>
-<a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;WDD Phase&quot;</span><span class="p">)</span>
-<a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a><span class="n">plt</span><span class="o">.</span><span class="n">colorbar</span><span class="p">()</span>
-<a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a><span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+The parameter <code>eps_wiener</code> serves as a regularization term (high-pass filter) to stabilize the deconvolution, preventing division by zero.</p>
+<hr />
+<h2 id="using-direct-methods-for-initial-guesses">Using Direct Methods for Initial Guesses<a class="headerlink" href="#using-direct-methods-for-initial-guesses" title="Permanent link">&para;</a></h2>
+<p><a href="reference/initialize.html">pypty.initialize</a> module is supplied with a function <code>get_ptycho_obj_from_scan</code> that can be used to create complex transmission function based on a measurement sampled at the scan points, this can be a DPC or WDD phase. Usage example is:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="n">pypty_params</span> <span class="o">=</span>  <span class="n">pypty</span><span class="o">.</span><span class="n">initialize</span><span class="o">.</span><span class="n">get_ptycho_obj_from_scan</span><span class="p">(</span><span class="n">pypty_params</span><span class="p">,</span> <span class="n">array_phase</span><span class="o">=</span><span class="n">dpc_phase</span><span class="p">,</span> <span class="n">array_abs</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
 </code></pre></div>
-<h2 id="using-direct-methods-for-creation-of-initial-guess"><strong><strong>Using direct methods for creation of initial guess</strong></strong><a class="headerlink" href="#using-direct-methods-for-creation-of-initial-guess" title="Permanent link">&para;</a></h2>
-<p><a href="reference/initialize.html">pypty.initialize</a> module is supplied with a functon <code>get_ptycho_obj_from_scan</code> that can be used to create complex transmission function based on a mesurement sampled at the scan points, this can be a DPC or WDD phase. Usage example is:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="n">pypty_params</span> <span class="o">=</span>  <span class="n">pypty</span><span class="o">.</span><span class="n">initialize</span><span class="o">.</span><span class="n">get_ptycho_obj_from_scan</span><span class="p">(</span><span class="n">pypty_params</span><span class="p">,</span> <span class="n">array_phase</span><span class="o">=</span><span class="n">dpc_phase</span><span class="p">,</span> <span class="n">array_abs</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
-</code></pre></div>
-<p>If you have an array on a grid with finer sampling than the actual scan grid of your reconstruction, you may first create an upsampled grid in the image coordinates and use the array for intial guess like this:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="n">image</span> <span class="o">=</span> <span class="c1">## your upsampled image</span>
-<a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a><span class="n">image_pixel_size</span> <span class="o">=</span> <span class="c1">## pixel size of your image</span>
-<a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a><span class="n">left_zero_of_scan_grid</span> <span class="o">=</span> <span class="c1"># how many pixels of the image are from left of the scan</span>
-<a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a><span class="n">top_zero_of_scan_grid</span>  <span class="o">=</span> <span class="c1"># how many pixels of the image are from top of the scan</span>
-<a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a><span class="n">scan_array_A</span><span class="o">=</span><span class="n">pypty</span><span class="o">.</span><span class="n">initialize</span><span class="o">.</span><span class="n">get_grid_for_upsampled_image</span><span class="p">(</span><span class="n">pypty_params</span><span class="p">,</span> <span class="n">image</span><span class="p">,</span> <span class="n">image_pixel_size</span><span class="o">=</span><span class="n">image_pixel_size</span><span class="p">,</span> <span class="n">left_zero_of_scan_grid</span><span class="o">=</span><span class="n">left_zero_of_scan_grid</span><span class="p">,</span> <span class="n">top_zero_of_scan_grid</span><span class="o">=</span><span class="n">top_zero_of_scan_grid</span><span class="p">)</span>
-<a id="__codelineno-7-6" name="__codelineno-7-6" href="#__codelineno-7-6"></a>
-<a id="__codelineno-7-7" name="__codelineno-7-7" href="#__codelineno-7-7"></a><span class="n">pypty_params</span> <span class="o">=</span>  <span class="n">pypty</span><span class="o">.</span><span class="n">initialize</span><span class="o">.</span><span class="n">get_ptycho_obj_from_scan</span><span class="p">(</span><span class="n">pypty_params</span><span class="p">,</span> <span class="n">array_phase</span><span class="o">=</span><span class="n">image</span><span class="p">,</span> <span class="n">array_abs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">scan_array_A</span><span class="o">=</span><span class="n">scan_array_A</span><span class="p">)</span>
+<p>If you have an array on a grid with finer sampling than the actual scan grid of your reconstruction, you may first create an upsampled grid in the image coordinates and use the array for initial guess like this:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="n">image</span> <span class="o">=</span> <span class="c1">## your upsampled image</span>
+<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="n">image_pixel_size</span> <span class="o">=</span> <span class="c1">## pixel size of your image</span>
+<a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a><span class="n">left_zero_of_scan_grid</span> <span class="o">=</span> <span class="c1"># how many pixels of the image are from left of the scan</span>
+<a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a><span class="n">top_zero_of_scan_grid</span>  <span class="o">=</span> <span class="c1"># how many pixels of the image are from top of the scan</span>
+<a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a><span class="n">scan_array_A</span><span class="o">=</span><span class="n">pypty</span><span class="o">.</span><span class="n">initialize</span><span class="o">.</span><span class="n">get_grid_for_upsampled_image</span><span class="p">(</span><span class="n">pypty_params</span><span class="p">,</span> <span class="n">image</span><span class="p">,</span> <span class="n">image_pixel_size</span><span class="o">=</span><span class="n">image_pixel_size</span><span class="p">,</span> <span class="n">left_zero_of_scan_grid</span><span class="o">=</span><span class="n">left_zero_of_scan_grid</span><span class="p">,</span> <span class="n">top_zero_of_scan_grid</span><span class="o">=</span><span class="n">top_zero_of_scan_grid</span><span class="p">)</span>
+<a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a>
+<a id="__codelineno-6-7" name="__codelineno-6-7" href="#__codelineno-6-7"></a><span class="n">pypty_params</span> <span class="o">=</span>  <span class="n">pypty</span><span class="o">.</span><span class="n">initialize</span><span class="o">.</span><span class="n">get_ptycho_obj_from_scan</span><span class="p">(</span><span class="n">pypty_params</span><span class="p">,</span> <span class="n">array_phase</span><span class="o">=</span><span class="n">image</span><span class="p">,</span> <span class="n">array_abs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">scan_array_A</span><span class="o">=</span><span class="n">scan_array_A</span><span class="p">)</span>
 </code></pre></div>
 <p>You can also manually specify the initial guess by providing keys like <code>"obj"</code>, <code>"probe"</code> or <code>"positions"</code>, for more see <a href="custom_presets.html">Guide for creating custom presets</a>.</p>
+<p>These direct methods are essential tools in PyPty for rapid insight and as a starting point for more advanced reconstructions. You can combine them with iterative pipelines by injecting results into the initialization phase.</p>
 
 
 
@@ -923,10 +969,14 @@ Note that fft-based DPC returns both phase and parameter dictionary as it stores
     </div>
     
     
-    <script id="__config" type="application/json">{"base": ".", "features": ["navigation.expand", "navigation.sections", "content.code.annotate", "content.tabs.link"], "search": "assets/javascripts/workers/search.f8cc74c7.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+      
+      <script id="__config" type="application/json">{"base": ".", "features": ["navigation.expand", "navigation.sections", "content.code.annotate", "content.tabs.link"], "search": "assets/javascripts/workers/search.f8cc74c7.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
       <script src="assets/javascripts/bundle.c8b220af.min.js"></script>
+      
+        <script src="js/print-site.js"></script>
       
     
   </body>

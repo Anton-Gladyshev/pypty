@@ -14,7 +14,7 @@
       
       
       <link rel="icon" href="assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.9">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.11">
     
     
       
@@ -33,8 +33,6 @@
     
     
       
-        <script src="https://unpkg.com/iframe-worker/shim"></script>
-      
     
     
       
@@ -47,6 +45,10 @@
     
     
       <link rel="stylesheet" href="assets/_mkdocstrings.css">
+    
+      <link rel="stylesheet" href="css/print-site.css">
+    
+      <link rel="stylesheet" href="css/print-site-material.css">
     
     <script>__md_scope=new URL(".",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
@@ -147,11 +149,13 @@
     
     
     
-      <label class="md-header__button md-icon" for="__search">
-        
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
-      </label>
-      <div class="md-search" data-md-component="search" role="dialog">
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
   <label class="md-search__overlay" for="__search"></label>
   <div class="md-search__inner" role="search">
     <form class="md-search__form" name="search">
@@ -183,6 +187,7 @@
     </div>
   </div>
 </div>
+      
     
     
       <div class="md-header__source">
@@ -260,8 +265,22 @@
         
       
       
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    Home
+    
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
       <a href="index.html" class="md-nav__link md-nav__link--active">
         
+  
   
   <span class="md-ellipsis">
     Home
@@ -270,6 +289,256 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#installation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Installation
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Installation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#gpu-installation" class="md-nav__link">
+    <span class="md-ellipsis">
+      GPU Installation
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cpu-installation" class="md-nav__link">
+    <span class="md-ellipsis">
+      CPU Installation
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#about-this-code" class="md-nav__link">
+    <span class="md-ellipsis">
+      About this Code
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="About this Code">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#main-purpose" class="md-nav__link">
+    <span class="md-ellipsis">
+      Main Purpose
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#logic" class="md-nav__link">
+    <span class="md-ellipsis">
+      Logic
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#input-format" class="md-nav__link">
+    <span class="md-ellipsis">
+      Input Format
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#output-format" class="md-nav__link">
+    <span class="md-ellipsis">
+      Output Format
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#examples" class="md-nav__link">
+    <span class="md-ellipsis">
+      Examples
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#relevant-literature" class="md-nav__link">
+    <span class="md-ellipsis">
+      Relevant Literature
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Relevant Literature">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#multi-slice-formalism-and-the-nn-style-approach" class="md-nav__link">
+    <span class="md-ellipsis">
+      Multi-slice formalism and the NN-style approach
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#error-metrics" class="md-nav__link">
+    <span class="md-ellipsis">
+      Error metrics:
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Error metrics:">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#lsq" class="md-nav__link">
+    <span class="md-ellipsis">
+      LSQ:
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#maximum-likelihood-ml" class="md-nav__link">
+    <span class="md-ellipsis">
+      Maximum Likelihood (ML):
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#compressed-lsq" class="md-nav__link">
+    <span class="md-ellipsis">
+      Compressed LSQ:
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsq_sqrt-and-lsq_sqrt2" class="md-nav__link">
+    <span class="md-ellipsis">
+      lsq_sqrt and lsq_sqrt2:
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mixed-state-formalism" class="md-nav__link">
+    <span class="md-ellipsis">
+      Mixed state formalism:
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#near-field-imaging" class="md-nav__link">
+    <span class="md-ellipsis">
+      Near-field imaging
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tilted-propagator" class="md-nav__link">
+    <span class="md-ellipsis">
+      Tilted propagator:
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#regularization-constaints" class="md-nav__link">
+    <span class="md-ellipsis">
+      Regularization constaints:
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#linesearch" class="md-nav__link">
+    <span class="md-ellipsis">
+      Linesearch
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bfgs-algotithm" class="md-nav__link">
+    <span class="md-ellipsis">
+      BFGS algotithm
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#complex-derivatives" class="md-nav__link">
+    <span class="md-ellipsis">
+      Complex derivatives
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
       
     </li>
   
@@ -284,6 +553,7 @@
     <li class="md-nav__item">
       <a href="experiment.html" class="md-nav__link">
         
+  
   
   <span class="md-ellipsis">
     Description of the experiment
@@ -306,6 +576,7 @@
       <a href="example_breakdown.html" class="md-nav__link">
         
   
+  
   <span class="md-ellipsis">
     Examples for iterative ptychography
     
@@ -326,6 +597,7 @@
     <li class="md-nav__item">
       <a href="examples_direct.html" class="md-nav__link">
         
+  
   
   <span class="md-ellipsis">
     Examples for direct methods
@@ -348,8 +620,31 @@
       <a href="custom_presets.html" class="md-nav__link">
         
   
+  
   <span class="md-ellipsis">
     Guide for creating custom presets
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="example_full.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Notebook / example pipeline
     
   </span>
   
@@ -368,6 +663,7 @@
     
     
     
+    
       
         
         
@@ -380,11 +676,12 @@
         
           
         
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6" >
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_7" >
         
           
-          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="">
             
+  
   
   <span class="md-ellipsis">
     API Reference
@@ -395,8 +692,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_6">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
             <span class="md-nav__icon md-icon"></span>
             API Reference
           </label>
@@ -411,6 +708,7 @@
     <li class="md-nav__item">
       <a href="reference/initialize.html" class="md-nav__link">
         
+  
   
   <span class="md-ellipsis">
     pypty.initialize
@@ -434,6 +732,7 @@
       <a href="reference/dpc.html" class="md-nav__link">
         
   
+  
   <span class="md-ellipsis">
     pypty.dpc
     
@@ -455,6 +754,7 @@
     <li class="md-nav__item">
       <a href="reference/tcbf.html" class="md-nav__link">
         
+  
   
   <span class="md-ellipsis">
     pypty.tcbf
@@ -478,6 +778,7 @@
       <a href="reference/direct.html" class="md-nav__link">
         
   
+  
   <span class="md-ellipsis">
     pypty.direct
     
@@ -499,6 +800,7 @@
     <li class="md-nav__item">
       <a href="reference/iterative.html" class="md-nav__link">
         
+  
   
   <span class="md-ellipsis">
     pypty.iterative
@@ -522,6 +824,7 @@
       <a href="reference/objective.html" class="md-nav__link">
         
   
+  
   <span class="md-ellipsis">
     pypty.objective
     
@@ -543,6 +846,7 @@
     <li class="md-nav__item">
       <a href="reference/multislice_core.html" class="md-nav__link">
         
+  
   
   <span class="md-ellipsis">
     pypty.multislice_core
@@ -566,6 +870,7 @@
       <a href="reference/fft.html" class="md-nav__link">
         
   
+  
   <span class="md-ellipsis">
     pypty.fft
     
@@ -587,6 +892,7 @@
     <li class="md-nav__item">
       <a href="reference/utils.html" class="md-nav__link">
         
+  
   
   <span class="md-ellipsis">
     pypty.utils
@@ -610,6 +916,7 @@
       <a href="reference/se.html" class="md-nav__link">
         
   
+  
   <span class="md-ellipsis">
     pypty.se
     
@@ -631,6 +938,7 @@
     <li class="md-nav__item">
       <a href="reference/vaa.html" class="md-nav__link">
         
+  
   
   <span class="md-ellipsis">
     pypty.vaa
@@ -671,6 +979,245 @@
     
   
   
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#installation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Installation
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Installation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#gpu-installation" class="md-nav__link">
+    <span class="md-ellipsis">
+      GPU Installation
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cpu-installation" class="md-nav__link">
+    <span class="md-ellipsis">
+      CPU Installation
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#about-this-code" class="md-nav__link">
+    <span class="md-ellipsis">
+      About this Code
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="About this Code">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#main-purpose" class="md-nav__link">
+    <span class="md-ellipsis">
+      Main Purpose
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#logic" class="md-nav__link">
+    <span class="md-ellipsis">
+      Logic
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#input-format" class="md-nav__link">
+    <span class="md-ellipsis">
+      Input Format
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#output-format" class="md-nav__link">
+    <span class="md-ellipsis">
+      Output Format
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#examples" class="md-nav__link">
+    <span class="md-ellipsis">
+      Examples
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#relevant-literature" class="md-nav__link">
+    <span class="md-ellipsis">
+      Relevant Literature
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Relevant Literature">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#multi-slice-formalism-and-the-nn-style-approach" class="md-nav__link">
+    <span class="md-ellipsis">
+      Multi-slice formalism and the NN-style approach
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#error-metrics" class="md-nav__link">
+    <span class="md-ellipsis">
+      Error metrics:
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Error metrics:">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#lsq" class="md-nav__link">
+    <span class="md-ellipsis">
+      LSQ:
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#maximum-likelihood-ml" class="md-nav__link">
+    <span class="md-ellipsis">
+      Maximum Likelihood (ML):
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#compressed-lsq" class="md-nav__link">
+    <span class="md-ellipsis">
+      Compressed LSQ:
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsq_sqrt-and-lsq_sqrt2" class="md-nav__link">
+    <span class="md-ellipsis">
+      lsq_sqrt and lsq_sqrt2:
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mixed-state-formalism" class="md-nav__link">
+    <span class="md-ellipsis">
+      Mixed state formalism:
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#near-field-imaging" class="md-nav__link">
+    <span class="md-ellipsis">
+      Near-field imaging
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tilted-propagator" class="md-nav__link">
+    <span class="md-ellipsis">
+      Tilted propagator:
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#regularization-constaints" class="md-nav__link">
+    <span class="md-ellipsis">
+      Regularization constaints:
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#linesearch" class="md-nav__link">
+    <span class="md-ellipsis">
+      Linesearch
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bfgs-algotithm" class="md-nav__link">
+    <span class="md-ellipsis">
+      BFGS algotithm
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#complex-derivatives" class="md-nav__link">
+    <span class="md-ellipsis">
+      Complex derivatives
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
 </nav>
                   </div>
                 </div>
@@ -689,11 +1236,19 @@
 
 
 <h1 id="overview"><strong><em>Overview</em></strong><a class="headerlink" href="#overview" title="Permanent link">&para;</a></h1>
-<p>PyPty is a <strong>phase retrieval</strong> code that can be applied to <strong>near-field or far-field imaging</strong> in <strong>TEM/STEM</strong>. It can be applied to do <strong>iterative ptychography</strong>, <strong>direct ptychography</strong> (Wigner distribution deconsvolution), <strong>differential phase contrast</strong>, <strong>tilt-corrected bright field</strong>, <strong>focal series reconstructions</strong> and <strong>LARBED reconstructions</strong>.</p>
-<p>The code is written by Anton Gladyshev (AG SEM, Physics Department, Humboldt-Universität zu Berlin). </p>
-<h1 id="installation"><strong><em>Installation</em></strong><a class="headerlink" href="#installation" title="Permanent link">&para;</a></h1>
-<h2 id="setting-up-the-python-environment-and-installing-pypty">Setting Up the Python Environment and Installing PyPty<a class="headerlink" href="#setting-up-the-python-environment-and-installing-pypty" title="Permanent link">&para;</a></h2>
-<p>To create a proper Python environment and install PyPty, you can use <strong>conda</strong>, <strong>mamba</strong>, or <strong>micromamba</strong>. With <strong>conda</strong>, use:</p>
+<p><strong>PyPty</strong> is a <strong>phase retrieval</strong> library for <strong>near-field</strong> and <strong>far-field imaging</strong> in <strong>TEM/STEM</strong>. It supports:</p>
+<ul>
+<li><strong>Iterative ptychography</strong></li>
+<li><strong>Direct ptychography</strong> (Wigner Distribution Deconvolution)</li>
+<li><strong>Differential phase contrast (DPC)</strong></li>
+<li><strong>Tilt-corrected bright field (tcBF)</strong></li>
+<li><strong>Focal series reconstructions</strong></li>
+<li><strong>LARBED reconstructions</strong></li>
+</ul>
+<p>Developed by Anton Gladyshev (AG SEM, Physics Department, Humboldt-Universität zu Berlin).</p>
+<hr />
+<h2 id="installation"><strong><em>Installation</em></strong><a class="headerlink" href="#installation" title="Permanent link">&para;</a></h2>
+<p>To create a suitable Python environment for PyPty, you can use <strong>conda</strong>, <strong>mamba</strong>, or <strong>micromamba</strong>. Below are installation instructions using <code>conda</code>.</p>
 <h3 id="gpu-installation">GPU Installation<a class="headerlink" href="#gpu-installation" title="Permanent link">&para;</a></h3>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>git<span class="w"> </span>clone<span class="w"> </span>git@github.com:Anton-Gladyshev/pypty.git
 <a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="nb">cd</span><span class="w"> </span>pypty
@@ -708,44 +1263,88 @@
 <a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>conda<span class="w"> </span>activate<span class="w"> </span>pypty
 <a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>pip<span class="w"> </span>install<span class="w"> </span>.
 </code></pre></div>
-<h1 id="examples"><strong><em>Examples</em></strong><a class="headerlink" href="#examples" title="Permanent link">&para;</a></h1>
+<h2 id="about-this-code">About this Code<a class="headerlink" href="#about-this-code" title="Permanent link">&para;</a></h2>
+<h3 id="main-purpose">Main Purpose<a class="headerlink" href="#main-purpose" title="Permanent link">&para;</a></h3>
+<p>The primary function of PyPty is <strong>gradient-based phase reconstruction</strong> from far-field intensities. This is handled via <a href="reference/iterative.html"><code>pypty.iterative.run()</code></a>. Most other functions are designed to simplify usage of this core function.</p>
+<p>A complete list of required arguments for <code>pypty.iterative.run()</code> is available in the <a href="custom_presets.html">custom presets guide</a>.</p>
+<h3 id="logic">Logic<a class="headerlink" href="#logic" title="Permanent link">&para;</a></h3>
+<p>Most PyPty functions accept a single input dictionary called <code>pypty_params</code>, which typically includes both experimental and reconstruction settings. These experimental parameters are often defined separately in a dictionary called <code>experimental_params</code> (see <a href="experiment.html">experiment description</a>).</p>
+<p>Once you’ve created a valid <code>pypty_params</code> for one experiment, you can reuse it for others by simply <a href="example_breakdown.html">"attaching"</a> new experimental parameters.</p>
+<p>PyPty also supports various <a href="examples_direct.html">direct methods</a> and tools for <a href="reference/initialize.html">initialization</a>.</p>
 <hr />
-<p>The examples will be provided in the <code>examples</code> folder. To to configure a <strong>completely custom preset</strong>, please reffer to the next section.</p>
-<h1 id="relevant-literature">Relevant Literature<a class="headerlink" href="#relevant-literature" title="Permanent link">&para;</a></h1>
+<h2 id="input-format">Input Format<a class="headerlink" href="#input-format" title="Permanent link">&para;</a></h2>
+<p>PyPty primarily operates on <code>.h5</code> files and provides tools to convert from NumPy. The <code>.h5</code> file should contain a dataset named <code>"data"</code> with a 3D array: one scan axis and two detector axes.</p>
+<p>PyPty also accepts 4D Nion-style NumPy arrays (with accompanying JSON metadata).</p>
+<hr />
+<h2 id="output-format">Output Format<a class="headerlink" href="#output-format" title="Permanent link">&para;</a></h2>
+<p>By default, PyPty saves all output as <code>.npy</code> files inside an <code>output_folder</code>. The folder structure may look like this:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>output_folder
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>├── cg.npy                              **overwritable checkpoint for scan grid**
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>├── cp.npy                              **overwritable checkpoint for probe**
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>├── co.npy                              **overwritable checkpoint for object**
+<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>├── checkpoint_obj_epoch_N.npy          **checkpoint for object at epoch N**
+<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>├── checkpoint_probe_epoch_N.npy        **checkpoint for probe at epoch N**
+<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a>├── checkpoint_positions_epoch_N.npy    **checkpoint for scan grid at epoch N**
+<a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a>├── params.pkl                          **parameter file of your reconstruction**
+<a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a>├── loss.csv                            **.csv log-file**
+<a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a>├── tcbf                                **folder  with tcBF results**
+<a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a>│   ├── tcbf_image_upsampling_5.npy     **upsampled tcBF image_**
+<a id="__codelineno-2-12" name="__codelineno-2-12" href="#__codelineno-2-12"></a>│   ├── tcbf_image_N.png                **intermediate tcBF image at iteration N in .png format**
+<a id="__codelineno-2-13" name="__codelineno-2-13" href="#__codelineno-2-13"></a>│   ├── estimated_shifts_N.npy          **Fitted shifts at iteration N in .npy format**
+<a id="__codelineno-2-14" name="__codelineno-2-14" href="#__codelineno-2-14"></a>│   ├── aberrations_N.npy               **Fitted aberrations (in Angstrom) at iteration N in .npy format**
+<a id="__codelineno-2-15" name="__codelineno-2-15" href="#__codelineno-2-15"></a>│   ├── PL_angle_deg.npy                **array constaining fitted rotation angles at all iterations in .npy format**
+<a id="__codelineno-2-16" name="__codelineno-2-16" href="#__codelineno-2-16"></a>│   ├── aberrations_A.npy               **2d array constaining fitted aberrations at all iterations in .npy format**
+<a id="__codelineno-2-17" name="__codelineno-2-17" href="#__codelineno-2-17"></a>└── dpc                                 **folder  with DPC results**
+<a id="__codelineno-2-18" name="__codelineno-2-18" href="#__codelineno-2-18"></a>│   ├── idpc.npy                        **fft-based dpc phase**
+<a id="__codelineno-2-19" name="__codelineno-2-19" href="#__codelineno-2-19"></a>│   ├── iterative_dpc.npy               **DPC phase (iterative reconstruction)**
+<a id="__codelineno-2-20" name="__codelineno-2-20" href="#__codelineno-2-20"></a>└── wdd                                 **folder  with WDD results**
+<a id="__codelineno-2-21" name="__codelineno-2-21" href="#__codelineno-2-21"></a>    ├── object.npy                      **complex object (WDD ptychography)**
+</code></pre></div>
+<p>You can also convert an output folder into single Nexus <code>.nxs</code> file via <a href="reference/utils.html">pypty.utils.convert_to_nxs()</a> function.</p>
+<h2 id="examples">Examples<a class="headerlink" href="#examples" title="Permanent link">&para;</a></h2>
+<p>Example workflows are available in the <code>examples</code> folder on GitHub.</p>
+<p>For a quick start, check out the following:</p>
+<ul>
+<li><a href="example_full.html">Full Jupyter Notebook Example</a> — A complete pipeline example</li>
+<li><a href="example_breakdown.html">Step-by-Step Breakdown</a> — Explains key functions and logic</li>
+<li><a href="examples_direct.html">Direct Methods</a> — For Wigner distribution and other direct approaches</li>
+<li><a href="custom_presets.html">Custom Presets Guide</a> — For advanced setups</li>
+</ul>
+<h2 id="relevant-literature"><strong><em>Relevant Literature</em></strong><a class="headerlink" href="#relevant-literature" title="Permanent link">&para;</a></h2>
 <p>If you have any questions after reading this guide, the following papers, books and links might explain the working principle of the code:</p>
-<h2 id="multi-slice-formalism-and-the-nn-style-approach">Multi-slice formalism and the NN-style approach<a class="headerlink" href="#multi-slice-formalism-and-the-nn-style-approach" title="Permanent link">&para;</a></h2>
+<h3 id="multi-slice-formalism-and-the-nn-style-approach">Multi-slice formalism and the NN-style approach<a class="headerlink" href="#multi-slice-formalism-and-the-nn-style-approach" title="Permanent link">&para;</a></h3>
 <p>1) Earl J. Kirkland. Advanced Computing  in Electron Microscopy </p>
 <p>2) W. Van den Broek and C. Koch. General framework for quantitative three-dimensional reconstruction from arbitrary detection geometries in TEM </p>
 <p>3) W. Van den Broek and C. Koch. Method for Retrieval of the Three-Dimensional Object Potential by Inversion of Dynamical Electron Scattering </p>
-<h2 id="error-metrics">Error metrics:<a class="headerlink" href="#error-metrics" title="Permanent link">&para;</a></h2>
-<h3 id="lsq">LSQ:<a class="headerlink" href="#lsq" title="Permanent link">&para;</a></h3>
+<h3 id="error-metrics">Error metrics:<a class="headerlink" href="#error-metrics" title="Permanent link">&para;</a></h3>
+<h4 id="lsq">LSQ:<a class="headerlink" href="#lsq" title="Permanent link">&para;</a></h4>
 <p>4) M. Schloz et al. Overcoming information reduced data and experimentally uncertain parameters in ptychography with regularized optimization </p>
 <p>5) M. Du et al. Adorym: a multi-platform generic X-ray image reconstruction framework based on automatic differentiation </p>
-<h3 id="maximum-likelihood-ml">Maximum Likelihood (ML):<a class="headerlink" href="#maximum-likelihood-ml" title="Permanent link">&para;</a></h3>
+<h4 id="maximum-likelihood-ml">Maximum Likelihood (ML):<a class="headerlink" href="#maximum-likelihood-ml" title="Permanent link">&para;</a></h4>
 <p>6) P. Thibault and M. Guizar-Sicairos. Maximum-likelihood refinement for coherent diffractive imaging </p>
-<h3 id="compressed-lsq">Compressed LSQ:<a class="headerlink" href="#compressed-lsq" title="Permanent link">&para;</a></h3>
+<h4 id="compressed-lsq">Compressed LSQ:<a class="headerlink" href="#compressed-lsq" title="Permanent link">&para;</a></h4>
 <p>7) A. Gladyshev et al. Lossy Compression of Electron Diffraction Patterns for Ptychography via Change of Basis</p>
-<h3 id="lsq_sqrt-and-lsq_sqrt2">lsq_sqrt and lsq_sqrt2:<a class="headerlink" href="#lsq_sqrt-and-lsq_sqrt2" title="Permanent link">&para;</a></h3>
+<h4 id="lsq_sqrt-and-lsq_sqrt2">lsq_sqrt and lsq_sqrt2:<a class="headerlink" href="#lsq_sqrt-and-lsq_sqrt2" title="Permanent link">&para;</a></h4>
 <p>8) P. Godard et al. (2012). Noise models for low counting rate coherent diffraction imaging</p>
-<h2 id="mixed-state-formalism">Mixed state formalism:<a class="headerlink" href="#mixed-state-formalism" title="Permanent link">&para;</a></h2>
+<h3 id="mixed-state-formalism">Mixed state formalism:<a class="headerlink" href="#mixed-state-formalism" title="Permanent link">&para;</a></h3>
 <p>9) P Thibault &amp; A.Menzel Reconstructing state mixtures from diffraction measurements— Flux-preserving formalism (for near-field imaging)</p>
-<h2 id="near-field-imaging">Near-field imaging<a class="headerlink" href="#near-field-imaging" title="Permanent link">&para;</a></h2>
+<h3 id="near-field-imaging">Near-field imaging<a class="headerlink" href="#near-field-imaging" title="Permanent link">&para;</a></h3>
 <p>10) C. Koch A flux-preserving non-linear inline holography reconstruction algorithm for partially coherent electrons</p>
-<h2 id="tilted-propagator">Tilted propagator:<a class="headerlink" href="#tilted-propagator" title="Permanent link">&para;</a></h2>
+<h3 id="tilted-propagator">Tilted propagator:<a class="headerlink" href="#tilted-propagator" title="Permanent link">&para;</a></h3>
 <p>11) Earl J. Kirkland. Advanced Computing  in Electron Microscopy </p>
 <p>12) H. She, J. Cui and R. Yu. Deep sub-angstrom resolution imaging by electron ptychography with misorientation correction</p>
-<h2 id="regularization-constaints">Regularization constaints:<a class="headerlink" href="#regularization-constaints" title="Permanent link">&para;</a></h2>
+<h3 id="regularization-constaints">Regularization constaints:<a class="headerlink" href="#regularization-constaints" title="Permanent link">&para;</a></h3>
 <p>13) M. Schloz et al. Overcoming information reduced data and experimentally uncertain parameters in ptychography with regularized optimization </p>
 <p>14) A. Gladyshev et al. Lossy Compression of Electron Diffraction Patterns for Ptychography via Change of Basis</p>
-<h2 id="linesearch">Linesearch<a class="headerlink" href="#linesearch" title="Permanent link">&para;</a></h2>
+<h3 id="linesearch">Linesearch<a class="headerlink" href="#linesearch" title="Permanent link">&para;</a></h3>
 <p>15) L. Armijo (1966). Minimization of functions having Lipschitz continuous first partial derivatives
 16) P. Wolfe (1969). Convergence Conditions for Ascent Methods</p>
-<h2 id="bfgs-algotithm">BFGS algotithm<a class="headerlink" href="#bfgs-algotithm" title="Permanent link">&para;</a></h2>
+<h3 id="bfgs-algotithm">BFGS algotithm<a class="headerlink" href="#bfgs-algotithm" title="Permanent link">&para;</a></h3>
 <p>17) C. G. Broyden (1970). The convergence of a class of double-rank minimization algorithms</p>
 <p>18) R. Fletcher   (1970). A New Approach to Variable Metric Algorithms</p>
 <p>19) D. Goldfarb (1970). A Family of Variable Metric Updates Derived by Variational Means</p>
 <p>20) D. F. Shanno (1970). Conditioning of quasi-Newton methods for function minimization</p>
-<h2 id="complex-derivatives">Complex derivatives<a class="headerlink" href="#complex-derivatives" title="Permanent link">&para;</a></h2>
+<h3 id="complex-derivatives">Complex derivatives<a class="headerlink" href="#complex-derivatives" title="Permanent link">&para;</a></h3>
 <p>21) W. Wirtinger (1927). Zur formalen theorie der funktionen von mehr komplexen veränderlichen. </p>
 
 
@@ -795,10 +1394,14 @@
     </div>
     
     
-    <script id="__config" type="application/json">{"base": ".", "features": ["navigation.expand", "navigation.sections", "content.code.annotate", "content.tabs.link"], "search": "assets/javascripts/workers/search.f8cc74c7.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+      
+      <script id="__config" type="application/json">{"base": ".", "features": ["navigation.expand", "navigation.sections", "content.code.annotate", "content.tabs.link"], "search": "assets/javascripts/workers/search.f8cc74c7.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
       <script src="assets/javascripts/bundle.c8b220af.min.js"></script>
+      
+        <script src="js/print-site.js"></script>
       
     
   </body>

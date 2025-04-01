@@ -1,16 +1,24 @@
 # **_PyPty Parameters for Creating Custom Presets_**
+
 ---
 
-All functions in PyPty work dictionary describing your preset. We tend to name it `pypty_params`.
-The main function of PyPty package providing an iterative ptychographic reconsturction is launched via `run()` functon from  [pypty.iterative](reference/iterative.md)  module. It takes a single argument- `pypty_params`.
+In PyPty, all functions operate using a dictionary that defines your reconstruction setup. This dictionary is typically named `pypty_params`.
 
-For an easy preset configuration, please refer to the `pypty.initialize` module. It allows easy creation of all arrays. However, for a non-trivial experiment please follow this guide to create your own dictionary and fill in the requiered entries.
+The core function for running iterative ptychographic reconstruction is [`pypty.iterative.run()`](reference/iterative.md), which accepts `pypty_params` as its single argument.
 
-## Lambda-type in PyPty
-Before starting this guide, one important usage case must be discussed.
-PyPty is an iterative algorithm and, as you will see, it requires a number of input parameters. Some of these parameters can be specified in an iteration-dependent fashion using a lambda function. This function should take a single input argument and return the desired value for a given epoch.
+For simple setups, we recommend using the [`pypty.initialize`](reference/initialize.md) module, which helps generate common parameters and arrays automatically. However, for more complex or custom experiments, this guide explains how to construct your own `pypty_params` dictionary manually.
 
-For example, if you want to apply `smart_memory` parameter every 10 epochs, you can set `smart_memory` in `pypty_params` dictionary as:
+---
+
+## Lambda-Type Parameters in PyPty
+
+Before diving into parameter details, it's important to understand a special type of input PyPty supports: **lambda-type parameters**.
+
+Because PyPty is iterative, some parameters can be adjusted depending on the current epoch. To do this, use a lambda function that takes the current epoch number as input and returns a value dynamically.
+
+### Example
+
+To apply the `smart_memory` flag only every 10 epochs, set it like this:
 
 ```python
 smart_memory: lambda x: x % 10 == 0;
@@ -22,8 +30,17 @@ The parameters that can be written in this way are marked as `pypty_lambda` **ty
 smart_memory: "lambda x: x % 10 == 0";
 ```
 
-We do not recommend applying constraints every n epochs, as PyPty’s BFGS algorithm attempts to construct a Hessian matrix, and such modifications can disrupt this process.
-As a general rule of thumb, we suggest configuring lambda functions so that once an optimization parameter is activated, it maintains a consistent value throughout execution.
+> ⚠️ **Important Note on Lambda Usage**  
+> We do not recommend toggling constraints or critical parameters every few epochs. Doing so can interfere with PyPty’s BFGS optimizer, which builds a Hessian matrix based on parameter continuity. Sudden changes can disrupt convergence and lead to suboptimal results.
+
+Instead, design lambda functions so that once a parameter is activated, it **remains consistently enabled** for the rest of the reconstruction. This ensures smooth optimization behavior and compatibility with the underlying solver.
+
+For example, to enable a parameter starting at epoch 20 and keep it active afterward:
+
+```python
+"atv_weight": lambda x: 1e-3*(x >= 20)
+```
+This pattern is ideal for turning on advanced features or constraints after an initialization period without destabilizing the optimization.
 
 
 ## Full list of paramerers for pypty.iterative.run()

@@ -1,19 +1,20 @@
-# **__Breakdown of Examples for Iterative Ptychography__**
+# **_Breakdown of Examples for Iterative Ptychography_**
 
-Here, I will provide a detailed breakdown of the example. To start a Pypty-Reconstruction you should construct a python script. And import all libraries
+This section provides a detailed breakdown of an iterative ptychography reconstruction using PyPty. To get started, create a Python script and import the necessary libraries:
 
 ```python
 import numpy as np
 import pypty
-print("PyPty version: ", pypty.__version__)
+# NumPy is used for minor preprocessing, while all major operations are handled by PyPty.
+print("PyPty version: ", pypty._version_)
 ```
 We will need numpy to do some small preprocessing outside of pypty, but the major steps will be done with pypty functions.
 
-## **__Normal 4D-STEM iterative ptychography__**.
+## **_Normal 4D-STEM iterative ptychography_**.
 
 In this section I will go through the steps required to do a ptychographic reconstruction from normal 4D-STEM data (far-field).
 
-### **__Creation of Calibrated Data__**
+### **_Creation of Calibrated Data_**
 
 In a first step we want to create and center a 4D-STEM dataset (in h5 format). PyPty can also accept raw numpy-arrays, but it's better to do this preprocessing step.
 ```python
@@ -28,10 +29,9 @@ pypty.initialize.create_pypty_data(path_raw, path_h5, swap_axes=False,
                     crop_right=None, crop_top=None, crop_bottom=None, normalize=False, exist_ok=1)
 ```
 
-### **__Experimental parameters__**
+### **_Experimental parameters_**
 
-PyPty accepts .json metadata from Nion microscopes, but you can also specify all entries yourself. Here I create a dictionary `experimental_params` with relevant parameters (Please see the [description](experiment.md) for further details.
-)
+PyPty accepts .json metadata from Nion microscopes, but you can also specify all entries yourself. Here I create a dictionary `experimental_params` with relevant parameters. See the [experiment description](experiment.md) for further details.
 
 ```python
 path_json="" ## I will leave this string like this and specify everything by hand.
@@ -77,10 +77,10 @@ experimental_params={
     }
 ```
 
-### **__Loading a reconstruction preset__**
+### **_Loading a reconstruction preset_**
 
  
-The parameters for iterative ptychography are also contained in a dictionary, i tend to call it `pypty_params`. 
+Parameters for iterative ptychography are stored in a dictionary typically named `pypty_params`. 
 
 1) Such presets are typically stored as .pkl data and you can load them via a function in `utils` module
 
@@ -108,7 +108,7 @@ pypty_params={
 ```python
 pypty_params=None
 ```
-### **__Joining a preset with experimental parameters__**
+### **_Joining a preset with experimental parameters_**
 
 Once you have a preset, you can add experimental data to it.
 
@@ -116,7 +116,7 @@ Once you have a preset, you can add experimental data to it.
 ```python
 pypty_params=pypty.initialize.append_exp_params(experimental_params, pypty_params)
 ```
-### Starting Ptychography
+### **_Starting Ptychography_**
 
 This is done with a single function and single argument, `pypty_params`:
 
@@ -125,7 +125,7 @@ pypty.iterative.run(pypty_params)
 ```
 
 
-## **__Saving your Results as one Nexus file__**
+## **_Saving your Results as one Nexus file_**
 
 Once your reconstruction is done, you will find a bunch of files in the `output_folder`. You can stack them into one big nexus file via a single function. You can also select where the .nxs file will be saved via
 `path_to_your_nexus_file`
@@ -145,15 +145,15 @@ experimental_params["dataset"]=dataset
 Note than in this case the entry `data_path` will be ignored and you can leave this field empty. The dataset itself can be either 4D or 3D (with 2 scan axes merged into one).
 
 
-## **__Iterative Ptychography from Virtual Detectors__**.
+## Iterative Ptychography from Virtual Detectors
 
 If you want to perform a reconstruction from data compressed by virtual detectors, you first have to ensure that the array of detectors has shape `[N_detectors, k_Y, k_X]` and your data has shape `[Scan_Y, Scan_X, N_detectors]`. Then you attach these two arrays to experimental parameters.
 
 
 ```python
 experimental_params={
-    `dataset`: compressed_data,
-    `masks`: virtual_detector_array,
+    "dataset": compressed_data,
+    "masks": virtual_detector_array,
     
     
     ###  In this case you must specify one of the following two parameters
@@ -163,7 +163,7 @@ experimental_params={
    # ... Rest of your parameters.
 }
 ```
-Also, you may want to update your reconstruction settings. For Compressed data PyPty has following objecive function types:
+Also, you may want to update your reconstruction settings. For Compressed data PyPty has following objective function types:
 
 |  Objective_name     |   Description    | 
 |---------------------|------------------|
@@ -172,7 +172,7 @@ Also, you may want to update your reconstruction settings. For Compressed data P
 |    `poisson_compressed`               |     Poissonian noise model            |
 
 
-Then your must specify `alogoritm` as one of these three options in `pypty_params:
+Then you must specify `algorithm` as one of these three options in `pypty_params`:
 ```python
 pypty_params={
         "algorithm":  gauss_compressed, 
@@ -180,5 +180,3 @@ pypty_params={
         }
 ```
 Then you can launch ptychography with the same [pypty.iterative.run](reference/iterative.md) function.
-
-    

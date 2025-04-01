@@ -23,6 +23,8 @@ theme:
     - navigation.sections
     - content.code.annotate
     - content.tabs.link  # linkable tabs
+    
+    
 repo_url: https://github.com/Anton-Gladyshev/pypty
 markdown_extensions:
   - toc:
@@ -45,7 +47,9 @@ markdown_extensions:
 
 
 plugins:
-  - offline
+  - mkdocs-jupyter
+  - print-site
+ # - offline
   - search
   - autorefs
   - mkdocstrings:
@@ -65,7 +69,7 @@ plugins:
             show_signature: false
             separate_signature: false
             docstring_style: numpy
-
+use_directory_urls: false
 
 
 nav:
@@ -74,6 +78,7 @@ nav:
   - Examples for iterative ptychography: example_breakdown.md
   - Examples for direct methods: examples_direct.md
   - Guide for creating custom presets: custom_presets.md
+  - Example Pipeline: example_full.ipynb
   - API Reference:
     - pypty.initialize: reference/initialize.md
     - pypty.dpc: reference/dpc.md

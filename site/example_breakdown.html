@@ -16,7 +16,7 @@
       
       
       <link rel="icon" href="assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.9">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.11">
     
     
       
@@ -35,8 +35,6 @@
     
     
       
-        <script src="https://unpkg.com/iframe-worker/shim"></script>
-      
     
     
       
@@ -49,6 +47,10 @@
     
     
       <link rel="stylesheet" href="assets/_mkdocstrings.css">
+    
+      <link rel="stylesheet" href="css/print-site.css">
+    
+      <link rel="stylesheet" href="css/print-site-material.css">
     
     <script>__md_scope=new URL(".",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
@@ -149,11 +151,13 @@
     
     
     
-      <label class="md-header__button md-icon" for="__search">
-        
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
-      </label>
-      <div class="md-search" data-md-component="search" role="dialog">
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
   <label class="md-search__overlay" for="__search"></label>
   <div class="md-search__inner" role="search">
     <form class="md-search__form" name="search">
@@ -185,6 +189,7 @@
     </div>
   </div>
 </div>
+      
     
     
       <div class="md-header__source">
@@ -256,6 +261,7 @@
       <a href="index.html" class="md-nav__link">
         
   
+  
   <span class="md-ellipsis">
     Home
     
@@ -276,6 +282,7 @@
     <li class="md-nav__item">
       <a href="experiment.html" class="md-nav__link">
         
+  
   
   <span class="md-ellipsis">
     Description of the experiment
@@ -307,6 +314,7 @@
         <label class="md-nav__link md-nav__link--active" for="__toc">
           
   
+  
   <span class="md-ellipsis">
     Examples for iterative ptychography
     
@@ -318,6 +326,7 @@
       
       <a href="example_breakdown.html" class="md-nav__link md-nav__link--active">
         
+  
   
   <span class="md-ellipsis">
     Examples for iterative ptychography
@@ -353,9 +362,9 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#creation-of-callibrated-data" class="md-nav__link">
+  <a href="#creation-of-calibrated-data" class="md-nav__link">
     <span class="md-ellipsis">
-      Creation of Callibrated Data
+      Creation of Calibrated Data
     </span>
   </a>
   
@@ -371,9 +380,9 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#loading-a-recostructon-preset" class="md-nav__link">
+  <a href="#loading-a-reconstruction-preset" class="md-nav__link">
     <span class="md-ellipsis">
-      Loading a recostructon preset
+      Loading a reconstruction preset
     </span>
   </a>
   
@@ -423,7 +432,7 @@
         <li class="md-nav__item">
   <a href="#iterative-ptychography-from-virtual-detectors" class="md-nav__link">
     <span class="md-ellipsis">
-      Iterative Ptychography from Virtual Detectors.
+      Iterative Ptychography from Virtual Detectors
     </span>
   </a>
   
@@ -447,6 +456,7 @@
       <a href="examples_direct.html" class="md-nav__link">
         
   
+  
   <span class="md-ellipsis">
     Examples for direct methods
     
@@ -468,8 +478,31 @@
       <a href="custom_presets.html" class="md-nav__link">
         
   
+  
   <span class="md-ellipsis">
     Guide for creating custom presets
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="example_full.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Notebook / example pipeline
     
   </span>
   
@@ -488,6 +521,7 @@
     
     
     
+    
       
         
         
@@ -500,11 +534,12 @@
         
           
         
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6" >
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_7" >
         
           
-          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="">
             
+  
   
   <span class="md-ellipsis">
     API Reference
@@ -515,8 +550,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_6">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
             <span class="md-nav__icon md-icon"></span>
             API Reference
           </label>
@@ -531,6 +566,7 @@
     <li class="md-nav__item">
       <a href="reference/initialize.html" class="md-nav__link">
         
+  
   
   <span class="md-ellipsis">
     pypty.initialize
@@ -554,6 +590,7 @@
       <a href="reference/dpc.html" class="md-nav__link">
         
   
+  
   <span class="md-ellipsis">
     pypty.dpc
     
@@ -575,6 +612,7 @@
     <li class="md-nav__item">
       <a href="reference/tcbf.html" class="md-nav__link">
         
+  
   
   <span class="md-ellipsis">
     pypty.tcbf
@@ -598,6 +636,7 @@
       <a href="reference/direct.html" class="md-nav__link">
         
   
+  
   <span class="md-ellipsis">
     pypty.direct
     
@@ -619,6 +658,7 @@
     <li class="md-nav__item">
       <a href="reference/iterative.html" class="md-nav__link">
         
+  
   
   <span class="md-ellipsis">
     pypty.iterative
@@ -642,6 +682,7 @@
       <a href="reference/objective.html" class="md-nav__link">
         
   
+  
   <span class="md-ellipsis">
     pypty.objective
     
@@ -663,6 +704,7 @@
     <li class="md-nav__item">
       <a href="reference/multislice_core.html" class="md-nav__link">
         
+  
   
   <span class="md-ellipsis">
     pypty.multislice_core
@@ -686,6 +728,7 @@
       <a href="reference/fft.html" class="md-nav__link">
         
   
+  
   <span class="md-ellipsis">
     pypty.fft
     
@@ -707,6 +750,7 @@
     <li class="md-nav__item">
       <a href="reference/utils.html" class="md-nav__link">
         
+  
   
   <span class="md-ellipsis">
     pypty.utils
@@ -730,6 +774,7 @@
       <a href="reference/se.html" class="md-nav__link">
         
   
+  
   <span class="md-ellipsis">
     pypty.se
     
@@ -751,6 +796,7 @@
     <li class="md-nav__item">
       <a href="reference/vaa.html" class="md-nav__link">
         
+  
   
   <span class="md-ellipsis">
     pypty.vaa
@@ -808,9 +854,9 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#creation-of-callibrated-data" class="md-nav__link">
+  <a href="#creation-of-calibrated-data" class="md-nav__link">
     <span class="md-ellipsis">
-      Creation of Callibrated Data
+      Creation of Calibrated Data
     </span>
   </a>
   
@@ -826,9 +872,9 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#loading-a-recostructon-preset" class="md-nav__link">
+  <a href="#loading-a-reconstruction-preset" class="md-nav__link">
     <span class="md-ellipsis">
-      Loading a recostructon preset
+      Loading a reconstruction preset
     </span>
   </a>
   
@@ -878,7 +924,7 @@
         <li class="md-nav__item">
   <a href="#iterative-ptychography-from-virtual-detectors" class="md-nav__link">
     <span class="md-ellipsis">
-      Iterative Ptychography from Virtual Detectors.
+      Iterative Ptychography from Virtual Detectors
     </span>
   </a>
   
@@ -903,16 +949,17 @@
   
 
 
-<h1 id="breakdown-of-examples-for-iterative-ptychography"><strong><strong>Breakdown of Examples for Iterative Ptychography</strong></strong><a class="headerlink" href="#breakdown-of-examples-for-iterative-ptychography" title="Permanent link">&para;</a></h1>
-<p>Here i will try to do an example breakdown. To start a Pypty-Reconstruction you should construct a python script. And import all libraries</p>
+<h1 id="breakdown-of-examples-for-iterative-ptychography"><strong><em>Breakdown of Examples for Iterative Ptychography</em></strong><a class="headerlink" href="#breakdown-of-examples-for-iterative-ptychography" title="Permanent link">&para;</a></h1>
+<p>This section provides a detailed breakdown of an iterative ptychography reconstruction using PyPty. To get started, create a Python script and import the necessary libraries:</p>
 <p><div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="kn">import</span><span class="w"> </span><span class="nn">pypty</span>
-<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;PyPty version: &quot;</span><span class="p">,</span> <span class="n">pypty</span><span class="o">.</span><span class="n">__version__</span><span class="p">)</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="c1"># NumPy is used for minor preprocessing, while all major operations are handled by PyPty.</span>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;PyPty version: &quot;</span><span class="p">,</span> <span class="n">pypty</span><span class="o">.</span><span class="n">_version_</span><span class="p">)</span>
 </code></pre></div>
 We will need numpy to do some small preprocessing outside of pypty, but the major steps will be done with pypty functions.</p>
-<h2 id="normal-4d-stem-iterative-ptychography"><strong><strong>Normal 4D-STEM iterative ptychography</strong></strong>.<a class="headerlink" href="#normal-4d-stem-iterative-ptychography" title="Permanent link">&para;</a></h2>
+<h2 id="normal-4d-stem-iterative-ptychography"><strong><em>Normal 4D-STEM iterative ptychography</em></strong>.<a class="headerlink" href="#normal-4d-stem-iterative-ptychography" title="Permanent link">&para;</a></h2>
 <p>In this section I will go through the steps required to do a ptychographic reconstruction from normal 4D-STEM data (far-field).</p>
-<h3 id="creation-of-callibrated-data">Creation of Callibrated Data<a class="headerlink" href="#creation-of-callibrated-data" title="Permanent link">&para;</a></h3>
+<h3 id="creation-of-calibrated-data"><strong><em>Creation of Calibrated Data</em></strong><a class="headerlink" href="#creation-of-calibrated-data" title="Permanent link">&para;</a></h3>
 <p>In a first step we want to create and center a 4D-STEM dataset (in h5 format). PyPty can also accept raw numpy-arrays, but it's better to do this preprocessing step.
 <div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="n">path</span> <span class="o">=</span> <span class="n">path_to_your_data</span>
 <a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="n">name</span> <span class="o">=</span> <span class="n">name</span> <span class="n">of</span> <span class="n">your</span> <span class="n">dataset</span>
@@ -924,9 +971,8 @@ We will need numpy to do some small preprocessing outside of pypty, but the majo
 <a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a>                    <span class="n">comx</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">comy</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="nb">bin</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">crop_left</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
 <a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a>                    <span class="n">crop_right</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">crop_top</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">crop_bottom</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">normalize</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
 </code></pre></div></p>
-<h3 id="experimental-parameters"><strong><strong>Experimental parameters</strong></strong><a class="headerlink" href="#experimental-parameters" title="Permanent link">&para;</a></h3>
-<p>PyPty accepts .json metadata from Nion microscopes, but you can also specify all entries yourself. Here I create a dictionary <code>experimental_params</code> with relevant parameters (Please see the <a href="experiment.html">description</a> for further details.
-)</p>
+<h3 id="experimental-parameters"><strong><em>Experimental parameters</em></strong><a class="headerlink" href="#experimental-parameters" title="Permanent link">&para;</a></h3>
+<p>PyPty accepts .json metadata from Nion microscopes, but you can also specify all entries yourself. Here I create a dictionary <code>experimental_params</code> with relevant parameters. See the <a href="experiment.html">experiment description</a> for further details.</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="n">path_json</span><span class="o">=</span><span class="s2">&quot;&quot;</span> <span class="c1">## I will leave this string like this and specify everything by hand.</span>
 <a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="n">output_folder</span><span class="o">=</span><span class="n">your_output_folder</span>
 <a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>
@@ -969,8 +1015,8 @@ We will need numpy to do some small preprocessing outside of pypty, but the majo
 <a id="__codelineno-2-40" name="__codelineno-2-40" href="#__codelineno-2-40"></a>    
 <a id="__codelineno-2-41" name="__codelineno-2-41" href="#__codelineno-2-41"></a>    <span class="p">}</span>
 </code></pre></div>
-<h3 id="loading-a-recostructon-preset"><strong><strong>Loading a recostructon preset</strong></strong><a class="headerlink" href="#loading-a-recostructon-preset" title="Permanent link">&para;</a></h3>
-<p>The parameters for iterative ptychography are also contained in a dictionary, i tend to call it <code>pypty_params</code>. </p>
+<h3 id="loading-a-reconstruction-preset"><strong><em>Loading a reconstruction preset</em></strong><a class="headerlink" href="#loading-a-reconstruction-preset" title="Permanent link">&para;</a></h3>
+<p>Parameters for iterative ptychography are stored in a dictionary typically named <code>pypty_params</code>. </p>
 <p>1) Such presets are typically stored as .pkl data and you can load them via a function in <code>utils</code> module</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="n">path_to_your_pkl_preset</span><span class="o">=</span>
 <a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="n">pypty_params</span><span class="o">=</span><span class="n">pypty</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">load_preset</span><span class="p">(</span><span class="n">path_to_your_pkl_preset</span><span class="p">)</span>
@@ -979,7 +1025,7 @@ We will need numpy to do some small preprocessing outside of pypty, but the majo
 <p><div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="n">path_to_your_nxs_preset</span><span class="o">=</span>
 <a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="n">pypty_params</span><span class="o">=</span><span class="n">pypty</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">load_nexus_params</span><span class="p">(</span><span class="n">path_to_your_nxs_preset</span><span class="p">)</span>
 </code></pre></div>
-3) Third option is to construct you custom preset as a dictionary from scratch (Please see the <a href="custom_presets.html">guide</a> )</p>
+3) A third option is to construct your custom preset as a dictionary from scratch (Please see the <a href="custom_presets.html">guide</a> )</p>
 <p><div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="n">pypty_params</span><span class="o">=</span><span class="p">{</span>
 <a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>    <span class="s2">&quot;your_entry&quot;</span><span class="p">:</span> <span class="n">something</span><span class="p">,</span>
 <a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>    <span class="o">...</span>
@@ -988,29 +1034,29 @@ We will need numpy to do some small preprocessing outside of pypty, but the majo
 4) Finally, you can specify it as <code>None</code>, then you will have a standard preset</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="n">pypty_params</span><span class="o">=</span><span class="kc">None</span>
 </code></pre></div>
-<h3 id="joining-a-preset-with-experimental-parameters"><strong><strong>Joining a preset with experimental parameters</strong></strong><a class="headerlink" href="#joining-a-preset-with-experimental-parameters" title="Permanent link">&para;</a></h3>
+<h3 id="joining-a-preset-with-experimental-parameters"><strong><em>Joining a preset with experimental parameters</em></strong><a class="headerlink" href="#joining-a-preset-with-experimental-parameters" title="Permanent link">&para;</a></h3>
 <p>Once you have a preset, you can add experimental data to it.</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="n">pypty_params</span><span class="o">=</span><span class="n">pypty</span><span class="o">.</span><span class="n">initialize</span><span class="o">.</span><span class="n">append_exp_params</span><span class="p">(</span><span class="n">experimental_params</span><span class="p">,</span> <span class="n">pypty_params</span><span class="p">)</span>
 </code></pre></div>
-<h3 id="starting-ptychography">Starting Ptychography<a class="headerlink" href="#starting-ptychography" title="Permanent link">&para;</a></h3>
+<h3 id="starting-ptychography"><strong><em>Starting Ptychography</em></strong><a class="headerlink" href="#starting-ptychography" title="Permanent link">&para;</a></h3>
 <p>This is done with a single function and single argument, <code>pypty_params</code>:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="n">pypty</span><span class="o">.</span><span class="n">iterative</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">pypty_params</span><span class="p">)</span>
 </code></pre></div>
-<h2 id="saving-your-results-as-one-nexus-file"><strong><strong>Saving your Results as one Nexus file</strong></strong><a class="headerlink" href="#saving-your-results-as-one-nexus-file" title="Permanent link">&para;</a></h2>
+<h2 id="saving-your-results-as-one-nexus-file"><strong><em>Saving your Results as one Nexus file</em></strong><a class="headerlink" href="#saving-your-results-as-one-nexus-file" title="Permanent link">&para;</a></h2>
 <p>Once your reconstruction is done, you will find a bunch of files in the <code>output_folder</code>. You can stack them into one big nexus file via a single function. You can also select where the .nxs file will be saved via
 <code>path_to_your_nexus_file</code></p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="n">pypty</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">convert_to_nxs</span><span class="p">(</span><span class="n">output_folder</span><span class="p">,</span> <span class="n">path_to_your_nexus_file</span><span class="p">)</span>
 </code></pre></div>
 <h2 id="reconstruction-without-an-extra-h5-file">Reconstruction without an extra h5 file<a class="headerlink" href="#reconstruction-without-an-extra-h5-file" title="Permanent link">&para;</a></h2>
-<p>If you do not want to create an extra .h5 file (<strong>not recommended</strong>), you can specify the 4D-STEM data directly in the experimental paramers (before you join them with <code>pypty_params</code>). </p>
+<p>If you do not want to create an extra .h5 file (<strong>not recommended</strong>), you can specify the 4D-STEM data directly in the experimental parameters (before you join them with <code>pypty_params</code>). </p>
 <p><div class="highlight"><pre><span></span><code><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="n">experimental_params</span><span class="p">[</span><span class="s2">&quot;dataset&quot;</span><span class="p">]</span><span class="o">=</span><span class="n">dataset</span>
 </code></pre></div>
 Note than in this case the entry <code>data_path</code> will be ignored and you can leave this field empty. The dataset itself can be either 4D or 3D (with 2 scan axes merged into one).</p>
-<h2 id="iterative-ptychography-from-virtual-detectors"><strong><strong>Iterative Ptychography from Virtual Detectors</strong></strong>.<a class="headerlink" href="#iterative-ptychography-from-virtual-detectors" title="Permanent link">&para;</a></h2>
-<p>If you want to perform a reconstruction from data compressed by virtual detectors, you first have to ensure that the array of detectors has shape <code>[N_detectors, k_Y, k_X]</code> and your data has shape <code>[Scan_Y, Scan_X, N_detectors]</code>. Then you attach these two arrays to experiemental paramers.</p>
+<h2 id="iterative-ptychography-from-virtual-detectors">Iterative Ptychography from Virtual Detectors<a class="headerlink" href="#iterative-ptychography-from-virtual-detectors" title="Permanent link">&para;</a></h2>
+<p>If you want to perform a reconstruction from data compressed by virtual detectors, you first have to ensure that the array of detectors has shape <code>[N_detectors, k_Y, k_X]</code> and your data has shape <code>[Scan_Y, Scan_X, N_detectors]</code>. Then you attach these two arrays to experimental parameters.</p>
 <p><div class="highlight"><pre><span></span><code><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="n">experimental_params</span><span class="o">=</span><span class="p">{</span>
-<a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a>    <span class="err">`</span><span class="n">dataset</span><span class="err">`</span><span class="p">:</span> <span class="n">compressed_data</span><span class="p">,</span>
-<a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a>    <span class="err">`</span><span class="n">masks</span><span class="err">`</span><span class="p">:</span> <span class="n">virtual_detector_array</span><span class="p">,</span>
+<a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a>    <span class="s2">&quot;dataset&quot;</span><span class="p">:</span> <span class="n">compressed_data</span><span class="p">,</span>
+<a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a>    <span class="s2">&quot;masks&quot;</span><span class="p">:</span> <span class="n">virtual_detector_array</span><span class="p">,</span>
 <a id="__codelineno-11-4" name="__codelineno-11-4" href="#__codelineno-11-4"></a>    
 <a id="__codelineno-11-5" name="__codelineno-11-5" href="#__codelineno-11-5"></a>    
 <a id="__codelineno-11-6" name="__codelineno-11-6" href="#__codelineno-11-6"></a>    <span class="c1">###  In this case you must specify one of the following two parameters</span>
@@ -1020,7 +1066,7 @@ Note than in this case the entry <code>data_path</code> will be ignored and you 
 <a id="__codelineno-11-10" name="__codelineno-11-10" href="#__codelineno-11-10"></a>   <span class="c1"># ... Rest of your parameters.</span>
 <a id="__codelineno-11-11" name="__codelineno-11-11" href="#__codelineno-11-11"></a><span class="p">}</span>
 </code></pre></div>
-Also, you may want to update your reconstrction settings. For Compressed data PyPty has following objecive function types:</p>
+Also, you may want to update your reconstruction settings. For Compressed data PyPty has following objective function types:</p>
 <table>
 <thead>
 <tr>
@@ -1043,7 +1089,7 @@ Also, you may want to update your reconstrction settings. For Compressed data Py
 </tr>
 </tbody>
 </table>
-<p>Then your have to specify <code>alogoritm</code> as one of these three options in <code>pypty_params</code>, e.g.:
+<p>Then you must specify <code>algorithm</code> as one of these three options in <code>pypty_params</code>:
 <div class="highlight"><pre><span></span><code><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a><span class="n">pypty_params</span><span class="o">=</span><span class="p">{</span>
 <a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a>        <span class="s2">&quot;algorithm&quot;</span><span class="p">:</span>  <span class="n">gauss_compressed</span><span class="p">,</span> 
 <a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a>        <span class="c1">#... Rest of your parameters</span>
@@ -1098,10 +1144,14 @@ Then you can launch ptychography with the same <a href="reference/iterative.html
     </div>
     
     
-    <script id="__config" type="application/json">{"base": ".", "features": ["navigation.expand", "navigation.sections", "content.code.annotate", "content.tabs.link"], "search": "assets/javascripts/workers/search.f8cc74c7.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+      
+      <script id="__config" type="application/json">{"base": ".", "features": ["navigation.expand", "navigation.sections", "content.code.annotate", "content.tabs.link"], "search": "assets/javascripts/workers/search.f8cc74c7.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
       <script src="assets/javascripts/bundle.c8b220af.min.js"></script>
+      
+        <script src="js/print-site.js"></script>
       
     
   </body>

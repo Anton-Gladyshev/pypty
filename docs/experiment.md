@@ -1,7 +1,17 @@
-# **__Expected keys for experimental parameters__**
+# **_Getting started with the `initialize` Module_**
 
-PyPty is supplied with an inialize module (see [API reference](reference/initialize.md)). It allows to create a calibrated dataset and a pypty-preset from scratch. 
-To do it, you usually need to summarize experimental parameters in one dictionary. I tend to call call it `experimental_params` and it should contain the following keys:
+PyPty comes with an `initialize` module (see the [API Reference](reference/initialize.md)), which is designed specifically for **far-field ptychography**.
+
+This module makes it easy to:
+
+- Create a **calibrated dataset**
+- Generate a **PyPty preset** from scratch
+
+If your experimental setup involves additional complexity or non-standard conditions, please refer to the [Custom Preset Guide](custom_presets.md) for more flexible configuration.
+
+However, if your setup fits the typical **far-field ptychography** case, you can summarize all key experimental parameters in a single Python dictionary. For clarity, we usually refer to this as `experimental_params`.
+
+The dictionary should contain the following keys:
 
 
 ## **Essential Data Paths**
