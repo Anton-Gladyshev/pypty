@@ -36,18 +36,18 @@ pip install .
 
 # **_Examples_**
 
-The examples will be provided in the `examples` folder. To to configure a **completely custom preset**, please reffer to the next section.
+The examples will be provided in the [examples folder](examples). To to configure a **completely custom reconstruction**, please reffer to the documentation.
  
 
 
 # **_Documentation_**
 
-Documentation can be generated localy via 
+Documentation website can be generated localy via 
 
 ```bash
 bash generate_docs.sh
 ```
 
-or launched in browser with file `site/index.html`
+or accessed as a single [.pdf file](full_documentation.pdf).
 
 
