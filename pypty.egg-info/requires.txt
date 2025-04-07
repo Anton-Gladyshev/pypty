@@ -1,0 +1,9 @@
+numpy
+h5py
+matplotlib
+scipy
+scikit-image
+tqdm
+
+[gpu]
+cupy
