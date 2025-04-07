@@ -684,6 +684,7 @@ def loss_and_direction(this_obj, full_probe, this_pos_array, this_pos_correction
         probe_reg_term, reg_probe_grad = compute_probe_constraint(full_probe, aperture_mask, probe_reg_weight, True)
         if print_flag==4:
             sys.stdout.write("\nWith weight %.3e, Probe recprocal-space constaint is %.2e %% of the main loss"%(probe_reg_weight, probe_reg_term*100/loss_print_copy));
+        print("Debug:", reg_probe_grad.shape, probe_grad.shape, aperture_mask.shape, full_probe.shape)
         loss+=probe_reg_term
         probe_grad+=reg_probe_grad
         constraint_contributions.append(probe_reg_term)
