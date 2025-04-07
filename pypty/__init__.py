@@ -1,7 +1,6 @@
 from __future__ import (absolute_import, division, print_function,unicode_literals)
 
 __version__ = "2.1"
-version = "2.1"
 from pypty.direct import *
 from pypty.dpc import *
 from pypty.fft import *
