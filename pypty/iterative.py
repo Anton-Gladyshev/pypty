@@ -387,7 +387,9 @@ def bfgs_update(algorithm_type, this_slice_distances, this_step_probe, this_step
     is_single_tilt=(tilts.shape[0]==1)
     is_single_pos=(positions.shape[0]==1)
     multiple_scenarios=len(probe.shape)==4
+    clean_grad_ap=False
     if probe_reg_weight==xp.inf:
+        clean_grad_ap=True
         probe_reg_weight=0
         if type(aperture_mask)==xp.ndarray:
             probe=pyptyutils.fourier_clean(probe, mask=aperture_mask, default_float=default_float)
@@ -423,6 +425,11 @@ def bfgs_update(algorithm_type, this_slice_distances, this_step_probe, this_step
             
     if empty_hist:
         total_loss, this_sse, this_object_grad, this_probe_grad, this_pos_grad, this_tilts_grad, static_background_grad, this_grad_aberrations_array, this_beam_current_grad, constraint_contributions = pyptyloss_and_direction.loss_and_direction(obj, probe, positions, positions_correction, tilts, tilts_correction, this_slice_distances,  measured_array,  algorithm_type, this_wavelength, update_probe, update_obj, update_pos_correction, update_tilts, masks, pixel_size_x_A, pixel_size_y_A, recon_type, Cs, defocus_array, alpha_near_field, damping_cutoff_multislice, smooth_rolloff_loss, propmethod, this_chopped_sequence, load_one_by_one, data_multiplier, data_pad, phase_plate_in_h5, this_loss_weight, data_bin, data_shift_vector, upsample_pattern, static_background, update_static_background, tilt_mode, aberration_marker, probe_marker, aberrations_array, compute_batch, phase_only_obj, beam_current, update_beam_current, update_aberrations_array, default_float, default_complex, xp, is_first_epoch, scan_size,fast_axis_reg_weight_positions, slow_axis_reg_weight_positions, slow_axis_reg_weight_tilts, current_deformation_reg_weight_positions, current_deformation_reg_weight_tilts, fast_axis_reg_weight_tilts, aperture_mask, probe_reg_weight, current_window_weight, current_window, phase_norm_weight, abs_norm_weight, atv_weight, atv_q, atv_p, mixed_variance_weight, mixed_variance_sigma, smart_memory, print_flag) #get the loss and derivatives
+        if clean_grad_ap:
+            if type(aperture_mask)==xp.ndarray:
+                this_probe_grad=pyptyutils.fourier_clean(this_probe_grad, mask=aperture_mask, default_float=default_float)
+            else:
+                this_probe_grad=pyptyutils.fourier_clean(this_probe_grad, cutoff=aperture_mask, default_float=default_float)
         if smart_memory:
             try:
                 if remove_fft_cache:
@@ -465,6 +472,11 @@ def bfgs_update(algorithm_type, this_slice_distances, this_step_probe, this_step
         history_bfgs["empty_hist"]=False
     else: ### HERE we have a start to construct the BFGS update
         total_loss, this_sse, this_object_grad, this_probe_grad, this_pos_grad, this_tilts_grad, static_background_grad, this_grad_aberrations_array, this_beam_current_grad, constraint_contributions=history_bfgs["prev_loss"], history_bfgs["prev_sse"], history_bfgs["obj_grad"], history_bfgs["probe_grad"], history_bfgs["pos_grad"], history_bfgs["tilt_grad"], history_bfgs["static_background_grad"], history_bfgs["aberrations_grad"], history_bfgs["beam_current_grad"], history_bfgs["constraint_contributions"]
+        if clean_grad_ap:
+            if type(aperture_mask)==xp.ndarray:
+                this_probe_grad=pyptyutils.fourier_clean(this_probe_grad, mask=aperture_mask, default_float=default_float)
+            else:
+                this_probe_grad=pyptyutils.fourier_clean(this_probe_grad, cutoff=aperture_mask, default_float=default_float)
         rhos_hist=history_bfgs["rho_hist"]
         alphas=[]
         this_obj_update=1*this_object_grad if update_obj else 0
@@ -653,6 +665,12 @@ def bfgs_update(algorithm_type, this_slice_distances, this_step_probe, this_step
         new_aberrations_array=aberrations_array+actual_step*this_aberrations_array_update if update_aberrations_array else aberrations_array
         new_beam_current=beam_current+actual_step*this_beam_current_update if update_beam_current else beam_current
         new_total_loss, new_sse, new_object_grad, new_probe_grad, new_pos_grad, new_tilts_grad, new_static_background_grad, new_grad_aberrations_array, new_beam_current_grad, new_constraint_contributions = pyptyloss_and_direction.loss_and_direction(new_obj, new_probe, positions, new_positions_correction, tilts, new_tilts_correction, this_slice_distances,  measured_array,  algorithm_type, this_wavelength, update_probe, update_obj, update_pos_correction, update_tilts, masks, pixel_size_x_A, pixel_size_y_A, recon_type, Cs, defocus_array, alpha_near_field, damping_cutoff_multislice, smooth_rolloff_loss, propmethod, this_chopped_sequence, load_one_by_one, data_multiplier, data_pad, phase_plate_in_h5, this_loss_weight, data_bin, data_shift_vector, upsample_pattern, new_static_background, update_static_background, tilt_mode, aberration_marker, probe_marker, new_aberrations_array, compute_batch, phase_only_obj, new_beam_current, update_beam_current, update_aberrations_array, default_float, default_complex, xp, is_first_epoch, scan_size,fast_axis_reg_weight_positions,slow_axis_reg_weight_positions, slow_axis_reg_weight_tilts, current_deformation_reg_weight_positions, current_deformation_reg_weight_tilts, fast_axis_reg_weight_tilts, aperture_mask, probe_reg_weight, current_window_weight, current_window, phase_norm_weight, abs_norm_weight, atv_weight, atv_q, atv_p, mixed_variance_weight, mixed_variance_sigma, smart_memory, print_flag)
+        if clean_grad_ap:
+            if type(aperture_mask)==xp.ndarray:
+                new_probe_grad=pyptyutils.fourier_clean(new_probe_grad, mask=aperture_mask, default_float=default_float)
+            else:
+                new_probe_grad=pyptyutils.fourier_clean(new_probe_grad, cutoff=aperture_mask, default_float=default_float)
+        
         if smart_memory:
             try:
                 if remove_fft_cache:
