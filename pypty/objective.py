@@ -11,12 +11,12 @@ from pypty import fft as pyptyfft
 from pypty import utils as pyptyutils
 from pypty import multislice_core as pyptymultislice
 
-
+import os
 
 
 half_master_propagator_phase_space, master_propagator_phase_space, q2, qx, qy, exclude_mask, x_real_grid_tilt, y_real_grid_tilt, shift_probe_mask_x, shift_probe_mask_y, exclude_mask_ishift, probe_runx, probe_runy, yx_real_grid_tilt, shift_probe_mask_yx, aberrations_polynomials=None, None,None, None,None, None,None, None, None, None, None, None,None,None,None,None
 def loss_and_direction(this_obj, full_probe, this_pos_array, this_pos_correction, this_tilt_array, this_tilts_correction, this_distances,  measured_array,  algorithm_type, this_wavelength, this_step_probe, this_step_obj, this_step_pos_correction, this_step_tilts, masks, pixel_size_x_A, pixel_size_y_A, recon_type, Cs, defocus_array, alpha_near_field, damping_cutoff_multislice, smooth_rolloff, propmethod, this_chopped_sequence, load_one_by_one, data_multiplier, data_pad, phase_plate_in_h5, this_loss_weight, data_bin, data_shift_vector, upsample_pattern, static_background, this_step_static_background, tilt_mode, aberration_marker, probe_marker, aberrations_array, compute_batch, phase_only_obj, beam_current, this_beam_current_step, this_step_aberrations_array, default_float, default_complex, xp, is_first_epoch,
-                       scan_size,fast_axis_reg_weight_positions,slow_axis_reg_weight_positions, slow_axis_reg_weight_tilts, current_deformation_reg_weight_positions, current_deformation_reg_weight_tilts, fast_axis_reg_weight_tilts, aperture_mask, probe_reg_weight, current_window_weight, current_window, phase_norm_weight, abs_norm_weight, atv_weight, atv_q, atv_p, mixed_variance_weight, mixed_variance_sigma, smart_memory, print_flag):
+                       scan_size,fast_axis_reg_weight_positions,slow_axis_reg_weight_positions, slow_axis_reg_weight_tilts, current_deformation_reg_weight_positions, current_deformation_reg_weight_tilts, fast_axis_reg_weight_tilts, aperture_mask, probe_reg_weight, current_window_weight, current_window, phase_norm_weight, abs_norm_weight, atv_weight, atv_q, atv_p, mixed_variance_weight, mixed_variance_sigma, smart_memory, print_flag, data_simulation_flag):
     """
     Compute the total loss and gradients for ptychographic reconstruction.
 
@@ -197,6 +197,7 @@ def loss_and_direction(this_obj, full_probe, this_pos_array, this_pos_correction
     if 'compressed' in algorithm_type:
         masks_len=masks.shape[0] #int
     pattern_number, loss, sse, fourier_probe_grad=len(this_chopped_sequence),0,0, None
+    
     ###prepare loss, sse and arrays for grads of object, probe, positions and tilts
     object_grad, probe_grad, pos_grad, tilts_grad = cp.zeros_like(this_obj), cp.zeros_like(full_probe), cp.zeros_like(this_pos_correction), cp.zeros_like(this_tilt_array) ### this runs very fast
     static_background_grad= cp.zeros_like(static_background) if type(static_background)==cp.ndarray else 0
@@ -204,6 +205,13 @@ def loss_and_direction(this_obj, full_probe, this_pos_array, this_pos_correction
     aberrations_array_grad=cp.zeros_like(aberrations_array) if not(aberrations_array is None) else 0
     
     this_ps, is_single_tilt, is_single_pos, is_single_dist, num_slices, n_obj_modes, n_probe_modes, is_single_defocus, multiple_scenarios, fluctuating_current_flag = full_probe.shape[0], (this_tilt_array.shape[0]==1), (this_pos_array.shape[0]==1), (this_distances.shape[0]==1), this_obj.shape[2], this_obj.shape[3], full_probe.shape[2], False, not(probe_marker is None) and len(full_probe.shape)==4, not(beam_current is None)
+    
+    if data_simulation_flag:
+        if os.path.isfile(data_simulation_flag):
+            data_simulation_flag=False
+        else:
+            sim_patterns=cp.zeros((pattern_number, this_ps, this_ps), dtype=cp.float32)
+    
     if xp!=np and load_one_by_one:
         stream1=cp.cuda.Stream(non_blocking=True)
         ms0, ms1, ms2=measured_array.shape
@@ -427,6 +435,8 @@ def loss_and_direction(this_obj, full_probe, this_pos_array, this_pos_correction
         if recon_type=="near_field" and alpha_near_field>0: ## the correction to a coherent case
             E_near_field_not_coherent_correction=(cp.exp(-q2*(3.14152654*alpha_near_field*defocus_near_field)**2))[ None,:,:]
             this_pattern=cp.real(pyptyfft.ifft2(pyptyfft.fft2(this_pattern, axes=(1,2))*E_near_field_not_coherent_correction, axes=(1,2)))
+        if data_simulation_flag:
+            sim_patterns[tcs]=this_pattern
         if upsample_pattern!=1:
             this_pattern=pyptyutils.downsample_something_3d(this_pattern, upsample_pattern, xp)
         if static_background_is_there:
@@ -611,10 +621,8 @@ def loss_and_direction(this_obj, full_probe, this_pos_array, this_pos_correction
                             else:
                                 probe_grad+=cp.sum(interm_probe_grad,0)
     loss*=this_loss_weight
-   # end_gpu.record()
-   # end_gpu.synchronize()
-   # t_gpu = cp.cuda.get_elapsed_time(start_gpu, end_gpu)
-   # print("\n", t_gpu)
+    if data_simulation_flag:
+        np.save(data_simulation_flag, sim_patterns.get())
     constraint_contributions=[]
     loss_print_copy=1*loss;
     this_pos_array=this_pos_array[:,:,0]
@@ -840,7 +848,7 @@ def charge_flip(a, delta_phase = 0.03, delta_abs = 0.14, beta_phase = -0.95, bet
     phase=cp.angle(a)
     absorption=-cp.log(cp.abs(a)+1e-10)
     def fftconvolve(a,b):
-        return cp.fft.fftshift(cp.fft.ifftn(cp.fft.fftn(a) * cp.fft.fftn(b))).real
+        return pyptyfft.fftshift(pyptyfft.ifftn(cp.fft.fftn(a) * pyptyfft.fftn(b))).real
     def richardson_lucy(image, psf, tolerance):
         result = cp.copy(image)
         count, doflag, prev_estimate=0, True, None
@@ -1371,17 +1379,9 @@ def compute_mixed_object_variance_constraint(this_obj, weight, sigma, return_dir
             for j in range(this_obj.shape[3]):
                 this_obj_blur[:,:,i,j]=pyptyfft.fft2(this_obj[:,:,i,j])
                 this_obj_blur[:,:,i,j]*=mask
-        try:
-            cp.fft.config.clear_plan_cache()
-        except:
-            pass
         for i in range(this_obj.shape[2]):
             for j in range(this_obj.shape[3]):
                 this_obj_blur[:,:,i,j]=pyptyfft.ifft2(this_obj_blur[:,:,i,j])
-        try:
-            cp.fft.config.clear_plan_cache()
-        except:
-            pass
     else:
         this_obj_blur=pyptyfft.ifft2(pyptyfft.fft2(this_obj, axes=(0,1))*mask[:,:,None,None], axes=(0,1))
     n_states=this_obj.shape[-1]
@@ -1395,17 +1395,9 @@ def compute_mixed_object_variance_constraint(this_obj, weight, sigma, return_dir
             for i in range(this_obj.shape[2]):
                 for j in range(this_obj.shape[3]):
                     mean_obj[:,:,i,j]=pyptyfft.fft2(mean_obj[:,:,i,j])*mask
-            try:
-                cp.fft.config.clear_plan_cache()
-            except:
-                pass
             for i in range(this_obj.shape[2]):
                 for j in range(this_obj.shape[3]):
                     mean_obj[:,:,i,j]=pyptyfft.ifft2(mean_obj[:,:,i,j])
-            try:
-                cp.fft.config.clear_plan_cache()
-            except:
-                pass
         else:
             mean_obj=pyptyfft.ifft2(pyptyfft.fft2(mean_obj, axes=(0,1))*mask[:,:,None,None], axes=(0,1)) ## I am not dumb, the above disaster should be less memory hungry than this beauty
     else:
