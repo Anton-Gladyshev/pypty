@@ -210,7 +210,7 @@ def loss_and_direction(this_obj, full_probe, this_pos_array, this_pos_correction
         if os.path.isfile(data_simulation_flag):
             data_simulation_flag=False
         else:
-            sim_patterns=cp.zeros((pattern_number, this_ps, this_ps), dtype=cp.float32)
+            sim_patterns=cp.zeros((pattern_number, this_ps-2*data_pad, this_ps-2*data_pad), dtype=cp.float32)
     
     if xp!=np and load_one_by_one:
         stream1=cp.cuda.Stream(non_blocking=True)
@@ -436,7 +436,7 @@ def loss_and_direction(this_obj, full_probe, this_pos_array, this_pos_correction
             E_near_field_not_coherent_correction=(cp.exp(-q2*(3.14152654*alpha_near_field*defocus_near_field)**2))[ None,:,:]
             this_pattern=cp.real(pyptyfft.ifft2(pyptyfft.fft2(this_pattern, axes=(1,2))*E_near_field_not_coherent_correction, axes=(1,2)))
         if data_simulation_flag:
-            sim_patterns[tcs]=this_pattern
+            sim_patterns[tcs]=this_pattern[:,data_pad:-data_pad, data_pad:-data_pad]
         if upsample_pattern!=1:
             this_pattern=pyptyutils.downsample_something_3d(this_pattern, upsample_pattern, xp)
         if static_background_is_there:
