@@ -207,10 +207,7 @@ def loss_and_direction(this_obj, full_probe, this_pos_array, this_pos_correction
     this_ps, is_single_tilt, is_single_pos, is_single_dist, num_slices, n_obj_modes, n_probe_modes, is_single_defocus, multiple_scenarios, fluctuating_current_flag = full_probe.shape[0], (this_tilt_array.shape[0]==1), (this_pos_array.shape[0]==1), (this_distances.shape[0]==1), this_obj.shape[2], this_obj.shape[3], full_probe.shape[2], False, not(probe_marker is None) and len(full_probe.shape)==4, not(beam_current is None)
     
     if data_simulation_flag:
-        if os.path.isfile(data_simulation_flag):
-            data_simulation_flag=False
-        else:
-            sim_patterns=cp.zeros((pattern_number, this_ps-2*data_pad, this_ps-2*data_pad), dtype=cp.float32)
+        sim_patterns=cp.zeros((pattern_number, this_ps-2*data_pad, this_ps-2*data_pad), dtype=cp.float64)
     
     if xp!=np and load_one_by_one:
         stream1=cp.cuda.Stream(non_blocking=True)
