@@ -1161,7 +1161,7 @@ def create_static_background_from_nothing(static_background, probe, damping_cuto
             static_background=static_background.astype(default_float)
     return static_background
     
-def create_probe_from_nothing(probe, data_pad, mean_pattern, aperture_mask, tilt_mode, tilts, dataset, estimate_aperture_based_on_binary, pixel_size_x_A, acc_voltage, data_multiplier, masks, data_shift_vector, data_bin, upsample_pattern, default_complex_cpu, print_flag, algorithm, measured_data_shape, n_obj_modes, probe_marker, recon_type, defocus_array, Cs):
+def create_probe_from_nothing(probe, data_pad, mean_pattern, aperture_mask, tilt_mode, tilts, dataset, estimate_aperture_based_on_binary, pixel_size_x_A, acc_voltage, data_multiplier, masks, data_shift_vector, data_bin, upsample_pattern, default_complex_cpu, print_flag, algorithm, measured_data_shape, n_obj_modes, probe_marker, recon_type, defocus_array, Cs, force_rescale):
     """
     Generate an initial probe guess when no valid probe is provided.
     
@@ -1299,21 +1299,21 @@ def create_probe_from_nothing(probe, data_pad, mean_pattern, aperture_mask, tilt
             probe=padprobetodatafarfield(probe, measured_data_shape, data_pad, upsample_pattern)
         else:
             probe=padprobetodatanearfield(probe, measured_data_shape, data_pad, upsample_pattern)
+    if force_rescale:
+        if recon_type=="far_field":
+            probe_counts_must = np.sum(dataset[:1000])/((dataset[:1000]).shape[0] * probe.shape[0] * probe.shape[1])
+        else:
+            probe_counts_must = np.sum(dataset[:1000])/((dataset[:1000]).shape[0])
         
-    if recon_type=="far_field":
-        probe_counts_must = np.sum(dataset[:1000])/((dataset[:1000]).shape[0] * probe.shape[0] * probe.shape[1])
-    else:
-        probe_counts_must = np.sum(dataset[:1000])/((dataset[:1000]).shape[0])
-    
-    if len(probe.shape)==3:
-        probe_counts=np.sum(np.abs(probe)**2)/probe.shape[2]
-        rescale=np.sqrt(np.abs(probe_counts_must/probe_counts))
-        probe*=rescale
-    else:
-        for indsc in range(probe.shape[3]):
-            probe_counts=np.sum(np.abs(probe[:,:,:,indsc])**2)
-            rescale=np.sqrt(probe_counts_must/probe_counts)
-            probe[:,:,:,indsc]=probe[:,:,:,indsc]*rescale
+        if len(probe.shape)==3:
+            probe_counts=np.sum(np.abs(probe)**2)/probe.shape[2]
+            rescale=np.sqrt(np.abs(probe_counts_must/probe_counts))
+            probe*=rescale
+        else:
+            for indsc in range(probe.shape[3]):
+                probe_counts=np.sum(np.abs(probe[:,:,:,indsc])**2)
+                rescale=np.sqrt(probe_counts_must/probe_counts)
+                probe[:,:,:,indsc]=probe[:,:,:,indsc]*rescale
     if not(probe_marker is None) and len(probe.shape)==3:
         probe_scenarios=np.max(probe_marker)+1
         probe=np.tile(np.expand_dims(probe,-1), probe_scenarios)

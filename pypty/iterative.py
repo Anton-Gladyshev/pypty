@@ -202,6 +202,7 @@ def run(pypty_params):
     restart_from_vacuum=params.get('restart_from_vacuum', False)
     reset_positions=params.get('reset_positions', False)
     ### beam initialisation
+    force_rescale=params.get('force_rescale', True)
     n_hermite_probe_modes=params.get('n_hermite_probe_modes', None)
     defocus_spread_modes=params.get('defocus_spread_modes', None)
     aberrations = params.get('aberrations', None)
@@ -233,7 +234,7 @@ def run(pypty_params):
         dataset=np.array(dataset).astype(force_dataset_dtype)
         
     measured_data_shape=dataset.shape
-    probe=pyptyutils.create_probe_from_nothing(probe, data_pad, mean_pattern, aperture_mask, tilt_mode, tilts, dataset, estimate_aperture_based_on_binary, pixel_size_x_A, acc_voltage, data_multiplier, masks, data_shift_vector, data_bin, upsample_pattern, default_complex_cpu, print_flag, algorithm, measured_data_shape, obj.shape[-1], probe_marker, recon_type, defocus_array, Cs) ### create probe from nothing
+    probe=pyptyutils.create_probe_from_nothing(probe, data_pad, mean_pattern, aperture_mask, tilt_mode, tilts, dataset, estimate_aperture_based_on_binary, pixel_size_x_A, acc_voltage, data_multiplier, masks, data_shift_vector, data_bin, upsample_pattern, default_complex_cpu, print_flag, algorithm, measured_data_shape, obj.shape[-1], probe_marker, recon_type, defocus_array, Cs, force_rescale) ### create probe from nothing
     static_background=pyptyutils.create_static_background_from_nothing(static_background, probe, damping_cutoff_multislice,data_pad,upsample_pattern,  default_float_cpu, recon_type) ## initializing static background
     obj, positions, t, sequence, wavelength, positions_correction, tilts_correction, aperture_mask = pyptyutils.prepare_main_loop_params(algorithm,probe, obj,positions,tilts, measured_data_shape, acc_voltage, allow_subPixel_shift, sequence, use_full_FOV, print_flag, default_float_cpu, default_complex_cpu, default_int_cpu, probe_constraint_mask, aperture_mask, extra_space_on_side_px)  # now the we will initilize the object in this function (create from nothing if needed and pad an existing one if needed)
     try:
