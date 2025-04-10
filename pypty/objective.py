@@ -683,7 +683,7 @@ def loss_and_direction(this_obj, full_probe, this_pos_array, this_pos_correction
         loss+=l1_reg_term
         object_grad+=l1_object_grad
         constraint_contributions.append(l1_reg_term)
-        del grad_mask,l1_reg_term,l1_object_grad # forget about it
+        del l1_reg_term,l1_object_grad # forget about it
     else:
         constraint_contributions.append(0)
     if abs_norm_weight!=0: # l_1 norm of the absorp. potential
@@ -693,7 +693,7 @@ def loss_and_direction(this_obj, full_probe, this_pos_array, this_pos_correction
         loss+=l1_reg_term
         object_grad+=l1_object_grad
         constraint_contributions.append(l1_reg_term)
-        del grad_mask,l1_reg_term,l1_object_grad # forget about it
+        del l1_reg_term,l1_object_grad # forget about it
     else:
         constraint_contributions.append(0)
     ######
