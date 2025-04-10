@@ -676,16 +676,15 @@ def loss_and_direction(this_obj, full_probe, this_pos_array, this_pos_correction
     else:
         constraint_contributions.append(0)
     #######
-    if phase_norm_weight!=0: # l_1 norm of the potential
+    if phase_norm_weight!=0 or abs_norm_weight!=0: # l_1 norm of the potential
         grad_mask=pyptyutils.generate_mask_for_grad_from_pos(this_obj.shape[1], this_obj.shape[0], this_pos_array, full_probe.shape[1],full_probe.shape[0], 0)
-        l1_reg_term, l1_object_grad=compute_full_l1_constraint(this_obj, 0, phase_norm_weight, grad_mask, True, smart_memory)
+        l1_reg_term, l1_object_grad=compute_full_l1_constraint(this_obj, abs_norm_weight, phase_norm_weight, grad_mask, True, smart_memory)
         if print_flag==4:
             sys.stdout.write("\nWith abs weight of %.3e and phase weight of %.3e, l1 constaint is %.2e %% of the main loss"%(abs_norm_weight, phase_norm_weight, l1_reg_term*100/loss_print_copy));
         loss+=l1_reg_term
         object_grad+=l1_object_grad
         constraint_contributions.append(l1_reg_term)
         del grad_mask,l1_reg_term,l1_object_grad # forget about it
-       
     else:
         constraint_contributions.append(0)
     ######
