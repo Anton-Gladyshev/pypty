@@ -1029,8 +1029,8 @@ def save_updated_arrays(output_folder, epoch,current_probe_step, current_probe_p
     if save_loss_log:
         with open(output_folder+"loss.csv", mode='a', newline='') as loss_list:
             if save_loss_log==2:
-                fieldnames=["epoch", "time / s", "loss", "sse", "initial step", "matching step", "N linesearch iterations",
-                "dir. derivative", "new dir. derivative", "F-axis postions reg.", "Deformation positons reg.", "Deformation tilts reg.", "F-axis tilts reg.", "l1 object reg.", "Q-space probe reg.", "R-space probe reg.", "TV object reg.", "V-object reg.", "S-axis postions reg", "S-axis tilts reg", "Free GiB", "Total GiB", "Warnings"]
+                fieldnames=["epoch", "time / s", "loss", "sse", "initial step", "matching step", "N linesearch iterations", "dir. derivative", "new dir. derivative", "F-axis postions reg.", "Deformation positons reg.", "Deformation tilts reg.", "F-axis tilts reg.", "l1 object reg. (phase)","l1 object reg. (abs)", "Q-space probe reg.", "R-space probe reg.", "TV object reg.", "V-object reg.", "S-axis postions reg", "S-axis tilts reg", "Free GiB", "Total GiB", "Warnings"]
+
             else:
                 fieldnames=["epoch", "time / s", "loss", "sse", "initial step", "matching step", "N linesearch iterations",
                 "dir. derivative", "new dir. derivative", "Constraints contribution", "Free GiB", "Total GiB", "Warnings"]
@@ -1055,13 +1055,14 @@ def save_updated_arrays(output_folder, epoch,current_probe_step, current_probe_p
                                 "Deformation positons reg.": constraint_contributions[1],
                                 "Deformation tilts reg.": constraint_contributions[2],
                                 "F-axis tilts reg.": constraint_contributions[3],
-                                "l1 object reg.": constraint_contributions[4],
-                                "Q-space probe reg.": constraint_contributions[5],
-                                "R-space probe reg.": constraint_contributions[6],
-                                "TV object reg.": constraint_contributions[7],
-                                "V-object reg.": constraint_contributions[8],
-                                "S-axis postions reg": constraint_contributions[9],
-                                "S-axis tilts reg": constraint_contributions[10],
+                                "l1 object reg. (phase)": constraint_contributions[4],
+                                "l1 object reg. (abs)": constraint_contributions[5],
+                                "Q-space probe reg.": constraint_contributions[6],
+                                "R-space probe reg.": constraint_contributions[7],
+                                "TV object reg.": constraint_contributions[8],
+                                "V-object reg.": constraint_contributions[9],
+                                "S-axis postions reg": constraint_contributions[10],
+                                "S-axis tilts reg": constraint_contributions[11],
                                 "Free GiB":  free_mem_device,
                                 "Total GiB": total_mem_device,
                                 "Warnings": warnings,
@@ -1592,8 +1593,7 @@ def prepare_saving_stuff(output_folder, save_loss_log, epoch_prev):
     if save_loss_log and epoch_prev==0:
         os.system("touch "+output_folder+"loss.csv")
         if save_loss_log==2:
-            fieldnames=["epoch", "time / s", "loss", "sse", "initial step", "matching step", "N linesearch iterations",
-                "dir. derivative", "new dir. derivative", "F-axis postions reg.", "Deformation positons reg.", "Deformation tilts reg.", "F-axis tilts reg.", "l1 object reg.", "Q-space probe reg.", "R-space probe reg.", "TV object reg.", "V-object reg.", "S-axis postions reg", "S-axis tilts reg", "Free GiB", "Total GiB", "Warnings"]
+            fieldnames=["epoch", "time / s", "loss", "sse", "initial step", "matching step", "N linesearch iterations", "dir. derivative", "new dir. derivative", "F-axis postions reg.", "Deformation positons reg.", "Deformation tilts reg.", "F-axis tilts reg.", "l1 object reg. (phase)","l1 object reg. (abs)", "Q-space probe reg.", "R-space probe reg.", "TV object reg.", "V-object reg.", "S-axis postions reg", "S-axis tilts reg", "Free GiB", "Total GiB", "Warnings"]
         else:
             fieldnames=["epoch", "time / s", "loss", "sse", "initial step", "matching step", "N linesearch iterations",
                 "dir. derivative", "new dir. derivative", "Constraints contribution", "Free GiB", "Total GiB", "Warnings"]

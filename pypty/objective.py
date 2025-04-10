@@ -676,11 +676,20 @@ def loss_and_direction(this_obj, full_probe, this_pos_array, this_pos_correction
     else:
         constraint_contributions.append(0)
     #######
-    if phase_norm_weight!=0 or abs_norm_weight!=0: # l_1 norm of the potential
-        grad_mask=pyptyutils.generate_mask_for_grad_from_pos(this_obj.shape[1], this_obj.shape[0], this_pos_array, full_probe.shape[1],full_probe.shape[0], 0)
-        l1_reg_term, l1_object_grad=compute_full_l1_constraint(this_obj, abs_norm_weight, phase_norm_weight, grad_mask, True, smart_memory)
+    if phase_norm_weight!=0: # l_1 norm of the potential
+        l1_reg_term, l1_object_grad=compute_full_l1_constraint(this_obj, 0, phase_norm_weight, None, True, smart_memory)
         if print_flag==4:
-            sys.stdout.write("\nWith abs weight of %.3e and phase weight of %.3e, l1 constaint is %.2e %% of the main loss"%(abs_norm_weight, phase_norm_weight, l1_reg_term*100/loss_print_copy));
+            sys.stdout.write("\nWith phase weight of %.3e l1 constaint is %.2e %% of the main loss"%(phase_norm_weight, l1_reg_term*100/loss_print_copy));
+        loss+=l1_reg_term
+        object_grad+=l1_object_grad
+        constraint_contributions.append(l1_reg_term)
+        del grad_mask,l1_reg_term,l1_object_grad # forget about it
+    else:
+        constraint_contributions.append(0)
+    if abs_norm_weight!=0: # l_1 norm of the absorp. potential
+        l1_reg_term, l1_object_grad=compute_full_l1_constraint(this_obj, abs_norm_weight, 0, None, True, smart_memory)
+        if print_flag==4:
+            sys.stdout.write("\nWith abs weight of %.3e l1 constaint (abs) is %.2e %% of the main loss"%(abs_norm_weight, l1_reg_term*100/loss_print_copy));
         loss+=l1_reg_term
         object_grad+=l1_object_grad
         constraint_contributions.append(l1_reg_term)
@@ -1157,12 +1166,12 @@ def compute_full_l1_constraint(object, abs_norm_weight, phase_norm_weight, grad_
     else:
         grad=None
     if phase_norm_weight>0:
-        this_potential=cp.angle(object)*grad_mask[:,:,None,None]
+        this_potential=cp.angle(object)#*grad_mask[:,:,None,None]
         reg_term+=phase_norm_weight*cp.sum(cp.abs(this_potential))
         if return_direction:
             grad+=1j*phase_norm_weight*cp.sign(this_potential)
     if abs_norm_weight>0:
-        this_abs_potential=cp.log(cp.abs(object))*grad_mask[:,:,None,None] # actually a negative of it, but its irrelevant for us!
+        this_abs_potential=cp.log(cp.abs(object))#*grad_mask[:,:,None,None] # actually a negative of it, but its irrelevant for us!
         reg_term+=abs_norm_weight*cp.sum(cp.abs(this_abs_potential))
         if return_direction:
             grad+=abs_norm_weight*cp.sign(this_abs_potential)
