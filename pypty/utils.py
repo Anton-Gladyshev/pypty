@@ -1458,7 +1458,7 @@ def apply_probe_modulation(probe, extra_probe_defocus, acc_voltage, pixel_size_x
     return probe.astype(default_complex)
 
 
-def prepare_main_loop_params(algorithm,probe, obj,positions,tilts, measured_data_shape, acc_voltage,allow_subPixel_shift=True, sequence=None, use_full_FOV=False, print_flag=0, default_float_cpu=np.float64, default_complex_cpu=np.complex128, default_int_cpu=np.int64, probe_constraint_mask=None, aperture_mask=None, extra_space_on_side_px=0):
+def prepare_main_loop_params(algorithm,probe, obj,positions,tilts, measured_data_shape, acc_voltage,allow_subPixel_shift=True, sequence=None, use_full_FOV=False, print_flag=0, default_float_cpu=np.float64, default_complex_cpu=np.complex128, default_int_cpu=np.int64, probe_constraint_mask=None, aperture_mask=None, extra_space_on_side_px=0, ignore_positions=False):
     """
     Prepare main loop parameters for reconstruction.
     
@@ -1530,12 +1530,15 @@ def prepare_main_loop_params(algorithm,probe, obj,positions,tilts, measured_data
         full_sequence=sequence(0)
     except:
         full_sequence=sequence
-    if use_full_FOV:
-        positions[:,0]-=np.min(positions[:,0])
-        positions[:,1]-=np.min(positions[:,1])
+    if ignore_positions:
+        extra_space_on_side_px=0
     else:
-        positions[full_sequence,0]-=np.min(positions[full_sequence,0])
-        positions[full_sequence,1]-=np.min(positions[full_sequence,1])
+        if use_full_FOV:
+            positions[:,0]-=np.min(positions[:,0])
+            positions[:,1]-=np.min(positions[:,1])
+        else:
+            positions[full_sequence,0]-=np.min(positions[full_sequence,0])
+            positions[full_sequence,1]-=np.min(positions[full_sequence,1])
     positions+=extra_space_on_side_px
     if extra_space_on_side_px>0:
         obj=np.vstack((np.max(np.abs(obj))*np.ones((extra_space_on_side_px,obj.shape[1], obj.shape[2],obj.shape[3]), dtype=default_complex_cpu), obj ))
