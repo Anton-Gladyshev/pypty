@@ -112,6 +112,7 @@ def run(pypty_params):
     allow_subPixel_shift = params.get('allow_subPixel_shift', True)
     dynamically_resize_yx_object=params.get('dynamically_resize_yx_object', False)
     extra_space_on_side_px= int(params.get('extra_space_on_side_px', 0))
+    ignore_positions = params.get('ignore_positions', False)
     
     ## Bandwidth limitation
     damping_cutoff_multislice = default_float_cpu(params.get('damping_cutoff_multislice', 2/3))
@@ -236,7 +237,7 @@ def run(pypty_params):
     measured_data_shape=dataset.shape
     probe=pyptyutils.create_probe_from_nothing(probe, data_pad, mean_pattern, aperture_mask, tilt_mode, tilts, dataset, estimate_aperture_based_on_binary, pixel_size_x_A, acc_voltage, data_multiplier, masks, data_shift_vector, data_bin, upsample_pattern, default_complex_cpu, print_flag, algorithm, measured_data_shape, obj.shape[-1], probe_marker, recon_type, defocus_array, Cs, force_rescale) ### create probe from nothing
     static_background=pyptyutils.create_static_background_from_nothing(static_background, probe, damping_cutoff_multislice,data_pad,upsample_pattern,  default_float_cpu, recon_type) ## initializing static background
-    obj, positions, t, sequence, wavelength, positions_correction, tilts_correction, aperture_mask = pyptyutils.prepare_main_loop_params(algorithm,probe, obj,positions,tilts, measured_data_shape, acc_voltage, allow_subPixel_shift, sequence, use_full_FOV, print_flag, default_float_cpu, default_complex_cpu, default_int_cpu, probe_constraint_mask, aperture_mask, extra_space_on_side_px)  # now the we will initilize the object in this function (create from nothing if needed and pad an existing one if needed)
+    obj, positions, t, sequence, wavelength, positions_correction, tilts_correction, aperture_mask = pyptyutils.prepare_main_loop_params(algorithm,probe, obj,positions,tilts, measured_data_shape, acc_voltage, allow_subPixel_shift, sequence, use_full_FOV, print_flag, default_float_cpu, default_complex_cpu, default_int_cpu, probe_constraint_mask, aperture_mask, extra_space_on_side_px, ignore_positions)  # now the we will initilize the object in this function (create from nothing if needed and pad an existing one if needed)
     try:
         obj, probe, positions,positions_correction, tilts, tilts_correction, masks, defocus_array, slice_distances, aperture_mask, dataset, static_background, aberrations_array, beam_current=pyptyutils.try_to_gpu(obj, probe, positions,positions_correction, tilts, tilts_correction, masks, defocus_array, slice_distances, aperture_mask, dataset, load_one_by_one, static_background, aberrations_array, beam_current, default_float, default_complex, default_int, xp) ##Convert numpy arrays to cupy arrays
     except:
