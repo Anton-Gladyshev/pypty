@@ -1029,7 +1029,7 @@ def save_updated_arrays(output_folder, epoch,current_probe_step, current_probe_p
     if save_loss_log:
         with open(output_folder+"loss.csv", mode='a', newline='') as loss_list:
             if save_loss_log==2:
-                fieldnames=["epoch", "time / s", "loss", "sse", "initial step", "matching step", "N linesearch iterations", "dir. derivative", "new dir. derivative", "F-axis postions reg.", "Deformation positons reg.", "Deformation tilts reg.", "F-axis tilts reg.", "l1 object reg. (phase)","l1 object reg. (abs)", "Q-space probe reg.", "R-space probe reg.", "TV object reg.", "V-object reg.", "S-axis postions reg", "S-axis tilts reg", "Free GiB", "Total GiB", "Warnings"]
+                fieldnames=["epoch", "time / s", "loss", "sse", "initial step", "matching step", "N linesearch iterations", "dir. derivative", "new dir. derivative", "F-axis postions reg.", "Deformation positons reg.", "Deformation tilts reg.", "F-axis tilts reg.", "l1 object reg. (phase)","l1 object reg. (abs)", "Q-space probe reg.", "R-space probe reg.", "TV object reg.", "V-object reg.", "MW-object reg.",  "S-axis postions reg", "S-axis tilts reg", "Free GiB", "Total GiB", "Warnings"]
 
             else:
                 fieldnames=["epoch", "time / s", "loss", "sse", "initial step", "matching step", "N linesearch iterations",
@@ -1061,8 +1061,9 @@ def save_updated_arrays(output_folder, epoch,current_probe_step, current_probe_p
                                 "R-space probe reg.": constraint_contributions[7],
                                 "TV object reg.": constraint_contributions[8],
                                 "V-object reg.": constraint_contributions[9],
-                                "S-axis postions reg": constraint_contributions[10],
-                                "S-axis tilts reg": constraint_contributions[11],
+                                "MW-object reg.": constraint_contributions[10],
+                                "S-axis postions reg": constraint_contributions[11],
+                                "S-axis tilts reg": constraint_contributions[12],
                                 "Free GiB":  free_mem_device,
                                 "Total GiB": total_mem_device,
                                 "Warnings": warnings,
@@ -1162,7 +1163,7 @@ def create_static_background_from_nothing(static_background, probe, damping_cuto
             static_background=static_background.astype(default_float)
     return static_background
     
-def create_probe_from_nothing(probe, data_pad, mean_pattern, aperture_mask, tilt_mode, tilts, dataset, estimate_aperture_based_on_binary, pixel_size_x_A, acc_voltage, data_multiplier, masks, data_shift_vector, data_bin, upsample_pattern, default_complex_cpu, print_flag, algorithm, measured_data_shape, n_obj_modes, probe_marker, recon_type, defocus_array, Cs, force_rescale):
+def create_probe_from_nothing(probe, data_pad, mean_pattern, aperture_mask, tilt_mode, tilts, dataset, estimate_aperture_based_on_binary, pixel_size_x_A, acc_voltage, data_multiplier, masks, data_shift_vector, data_bin, upsample_pattern, default_complex_cpu, print_flag, algorithm, measured_data_shape, n_obj_modes, probe_marker, recon_type, defocus_array, Cs, skip_preprocessing):
     """
     Generate an initial probe guess when no valid probe is provided.
     
@@ -1596,7 +1597,7 @@ def prepare_saving_stuff(output_folder, save_loss_log, epoch_prev):
     if save_loss_log and epoch_prev==0:
         os.system("touch "+output_folder+"loss.csv")
         if save_loss_log==2:
-            fieldnames=["epoch", "time / s", "loss", "sse", "initial step", "matching step", "N linesearch iterations", "dir. derivative", "new dir. derivative", "F-axis postions reg.", "Deformation positons reg.", "Deformation tilts reg.", "F-axis tilts reg.", "l1 object reg. (phase)","l1 object reg. (abs)", "Q-space probe reg.", "R-space probe reg.", "TV object reg.", "V-object reg.", "S-axis postions reg", "S-axis tilts reg", "Free GiB", "Total GiB", "Warnings"]
+            fieldnames=["epoch", "time / s", "loss", "sse", "initial step", "matching step", "N linesearch iterations", "dir. derivative", "new dir. derivative", "F-axis postions reg.", "Deformation positons reg.", "Deformation tilts reg.", "F-axis tilts reg.", "l1 object reg. (phase)","l1 object reg. (abs)", "Q-space probe reg.", "R-space probe reg.", "TV object reg.", "V-object reg.", "MW-object reg.",  "S-axis postions reg", "S-axis tilts reg", "Free GiB", "Total GiB", "Warnings"]
         else:
             fieldnames=["epoch", "time / s", "loss", "sse", "initial step", "matching step", "N linesearch iterations",
                 "dir. derivative", "new dir. derivative", "Constraints contribution", "Free GiB", "Total GiB", "Warnings"]

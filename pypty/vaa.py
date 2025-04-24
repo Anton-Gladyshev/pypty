@@ -326,12 +326,11 @@ def outputlog_plots(loss_path, skip_first=0, plot_time=True):
         for d in data:
             dat.append(d)
     dat=(np.array(dat)[1+skip_first:, :-1]).astype(float)
-    
     if dat.shape[1]==12:
         fieldnames=["epoch", "time / s", "loss", "sse", "initial step", "matching step", "N linesearch iterations",
                 "dir. derivative", "new dir. derivative", "Constraints contribution", "Free GiB", "Total GiB", "Warnings"]
     else:
-        fieldnames=["epoch", "time / s", "loss", "sse", "initial step", "matching step", "N linesearch iterations", "dir. derivative", "new dir. derivative", "F-axis postions reg.", "Deformation positons reg.", "Deformation tilts reg.", "F-axis tilts reg.", "l1 object reg. (phase)","l1 object reg. (abs)", "Q-space probe reg.", "R-space probe reg.", "TV object reg.", "V-object reg.", "S-axis postions reg", "S-axis tilts reg", "Free GiB", "Total GiB", "Warnings"]
+        fieldnames=["epoch", "time / s", "loss", "sse", "initial step", "matching step", "N linesearch iterations", "dir. derivative", "new dir. derivative", "F-axis postions reg.", "Deformation positons reg.", "Deformation tilts reg.", "F-axis tilts reg.", "l1 object reg. (phase)","l1 object reg. (abs)", "Q-space probe reg.", "R-space probe reg.", "TV object reg.", "V-object reg.", "MW-object reg.",  "S-axis postions reg", "S-axis tilts reg", "Free GiB", "Total GiB", "Warnings"]
     epoch=dat[:,0]
     time=dat [:,1] / 3600
     def forward(x):

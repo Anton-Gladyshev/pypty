@@ -16,7 +16,7 @@ import os
 
 half_master_propagator_phase_space, master_propagator_phase_space, q2, qx, qy, exclude_mask, x_real_grid_tilt, y_real_grid_tilt, shift_probe_mask_x, shift_probe_mask_y, exclude_mask_ishift, probe_runx, probe_runy, yx_real_grid_tilt, shift_probe_mask_yx, aberrations_polynomials=None, None,None, None,None, None,None, None, None, None, None, None,None,None,None,None
 def loss_and_direction(this_obj, full_probe, this_pos_array, this_pos_correction, this_tilt_array, this_tilts_correction, this_distances,  measured_array,  algorithm_type, this_wavelength, this_step_probe, this_step_obj, this_step_pos_correction, this_step_tilts, masks, pixel_size_x_A, pixel_size_y_A, recon_type, Cs, defocus_array, alpha_near_field, damping_cutoff_multislice, smooth_rolloff, propmethod, this_chopped_sequence, load_one_by_one, data_multiplier, data_pad, phase_plate_in_h5, this_loss_weight, data_bin, data_shift_vector, upsample_pattern, static_background, this_step_static_background, tilt_mode, aberration_marker, probe_marker, aberrations_array, compute_batch, phase_only_obj, beam_current, this_beam_current_step, this_step_aberrations_array, default_float, default_complex, xp, is_first_epoch,
-                       scan_size,fast_axis_reg_weight_positions,slow_axis_reg_weight_positions, slow_axis_reg_weight_tilts, current_deformation_reg_weight_positions, current_deformation_reg_weight_tilts, fast_axis_reg_weight_tilts, aperture_mask, probe_reg_weight, current_window_weight, current_window, phase_norm_weight, abs_norm_weight, atv_weight, atv_q, atv_p, mixed_variance_weight, mixed_variance_sigma, smart_memory, print_flag, data_simulation_flag):
+                       scan_size,fast_axis_reg_weight_positions,slow_axis_reg_weight_positions, slow_axis_reg_weight_tilts, current_deformation_reg_weight_positions, current_deformation_reg_weight_tilts, fast_axis_reg_weight_tilts, aperture_mask, probe_reg_weight, current_window_weight, current_window, phase_norm_weight, abs_norm_weight, atv_weight, atv_q, atv_p, mixed_variance_weight, mixed_variance_sigma, wedge_mu, beta_wedge, smart_memory, print_flag, data_simulation_flag):
     """
     Compute the total loss and gradients for ptychographic reconstruction.
 
@@ -564,9 +564,9 @@ def loss_and_direction(this_obj, full_probe, this_pos_array, this_pos_correction
                     shift_mask_grad=cp.conjugate(this_probe_fourier)*fourier_probe_grad
                     sh = -2/(this_probe_fourier.shape[1]*this_probe_fourier.shape[2]) ## -1 for conj, 2 for real-grad shape for ifft
                     if n_probe_modes==1:
-                        sh_grad=sh*cp.sum(cp.real(shift_probe_mask_yx[:,:,:,:]*shift_mask_grad[:,None,:,:,0]), (2,3), dtype=default_float)#.astype(default_float)
+                        sh_grad = sh*cp.sum(cp.real(shift_probe_mask_yx[:,:,:,:]*shift_mask_grad[:,None,:,:,0]), (2,3), dtype=default_float)#.astype(default_float)
                     else:
-                        sh_grad= sh*cp.sum(cp.real(shift_probe_mask_yx[:,:,:,:,None]*shift_mask_grad[:,None,:,:,:]), (2,3,4), dtype=default_float)#.astype(default_float)
+                        sh_grad = sh*cp.sum(cp.real(shift_probe_mask_yx[:,:,:,:,None]*shift_mask_grad[:,None,:,:,:]), (2,3,4), dtype=default_float)#.astype(default_float)
                     if is_single_pos:
                         sh_grad=cp.sum(sh_grad, 0)
                         pos_grad[posind,:]+=sh_grad
@@ -743,6 +743,17 @@ def loss_and_direction(this_obj, full_probe, this_pos_array, this_pos_correction
     else:
         constraint_contributions.append(0)
     #######
+    if wedge_mu!=0:
+        mw_reg_term,mw_reg_grad = compute_missing_wedge_constraint(obj, pixel_size_x_A, pixel_size_y_A, this_distances, beta_wedge, wedge_mu)
+        if print_flag==4:
+            sys.stdout.write("\nWith weight %.3e, Missing wedge constaint is %.2e %% of the main loss"%(wedge_mu, mw_reg_term*100/loss_print_copy))
+        loss+=mw_reg_term
+        object_grad+=mw_reg_grad
+        constraint_contributions.append(mw_reg_term)
+        del mw_reg_term, mw_reg_grad # forget about it
+    else:
+        constraint_contributions.append(0)
+    ########
     if this_step_pos_correction and slow_axis_reg_weight_positions!=0:
         something=this_pos_array+this_pos_correction
         ind_loss, reg_grad=compute_slow_axis_constraint_on_grid(something, scan_size, slow_axis_reg_weight_positions)
@@ -1317,7 +1328,7 @@ def compute_atv_constraint(obj, atv_weight, atv_q, atv_p, pixel_size_x_A, pixel_
     return reg_term, dR_dTerm
 
 
-def compute_missing_wedge_constraint(obj, px_size_x_A, px_size_y_A, slice_distance, beta_wedge, wegde_mu):
+def compute_missing_wedge_constraint(obj, px_size_x_A, px_size_y_A, slice_distance, beta_wedge, wedge_mu):
     """
     Enforce missing wedge constraint in 3D reciprocal space.
 
@@ -1333,9 +1344,8 @@ def compute_missing_wedge_constraint(obj, px_size_x_A, px_size_y_A, slice_distan
         Slice spacing (Å).
     beta_wedge : float
         Cone sharpness.
-    wegde_mu : float
+    wedge_mu : float
         Regularization weight.
-
     Returns
     -------
     loss_term : float
@@ -1347,11 +1357,16 @@ def compute_missing_wedge_constraint(obj, px_size_x_A, px_size_y_A, slice_distan
     qy=pyptyfft.fftfreq(obj.shape[0],px_size_y_A)
     qz=pyptyfft.fftfreq(obj.shape[2],slice_distance)
     qx,qy,qz=cp.meshgrid(qx,qy,qz)
-    weight=0.63661977236*cp.arctan((beta_wedge**2)*(qz**2)/(1e-20+qx**2+qy**2))
-    fft_times_weight=pyptyfft.fftn(obj, axes=(0,1,2))*weight[:,:,:,None]
-    loss_term=wegde_mu*cp.sum(cp.abs(fft_times_weight)**2)
-    grad_obj=wegde_mu*pyptyfft.ifftn(fft_times_weight*weight[:,:,:,None], axes=(0,1,2))*fft_times_weight.shape[0]*fft_times_weight.shape[1]*fft_times_weight.shape[2]
-    return loss_term, grad_obj
+    qr=qx**2+qy**2
+    qr[qr==0]=1
+    weight=(beta_wedge**2)*(qz**2)/qr
+    weight=(wedge_mu*0.63661977236)*cp.arctan(weight)
+    fft_object_3d=pyptyfft.fftn(obj, axes=(0,1,2))
+    loss_term= cp.sum( (cp.abs(fft_object_3d)**2) * weight[:,:,:,None] )
+    weight*=fft_object_3d.shape[0]*fft_object_3d.shape[1]*fft_object_3d.shape[2]
+    fft_object_3d = pyptyfft.ifftn(fft_object_3d * weight[:,:,:,None], axes=(0,1,2))
+    del weight
+    return loss_term, fft_object_3d
     
 def compute_mixed_object_variance_constraint(this_obj, weight, sigma, return_direction, smart_memory):
     """
