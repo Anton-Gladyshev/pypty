@@ -744,7 +744,7 @@ def loss_and_direction(this_obj, full_probe, this_pos_array, this_pos_correction
         constraint_contributions.append(0)
     #######
     if wedge_mu!=0:
-        mw_reg_term,mw_reg_grad = compute_missing_wedge_constraint(obj, pixel_size_x_A, pixel_size_y_A, this_distances, beta_wedge, wedge_mu)
+        mw_reg_term,mw_reg_grad = compute_missing_wedge_constraint(this_obj, pixel_size_x_A, pixel_size_y_A, this_distances, beta_wedge, wedge_mu)
         if print_flag==4:
             sys.stdout.write("\nWith weight %.3e, Missing wedge constaint is %.2e %% of the main loss"%(wedge_mu, mw_reg_term*100/loss_print_copy))
         loss+=mw_reg_term
