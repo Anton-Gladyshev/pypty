@@ -1301,7 +1301,7 @@ def create_probe_from_nothing(probe, data_pad, mean_pattern, aperture_mask, tilt
             probe=padprobetodatafarfield(probe, measured_data_shape, data_pad, upsample_pattern)
         else:
             probe=padprobetodatanearfield(probe, measured_data_shape, data_pad, upsample_pattern)
-    if force_rescale:
+    if skip_preprocessing:
         if recon_type=="far_field":
             probe_counts_must = np.sum(dataset[:1000])/((dataset[:1000]).shape[0] * probe.shape[0] * probe.shape[1])
         else:
