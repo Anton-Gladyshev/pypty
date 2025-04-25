@@ -1069,7 +1069,7 @@ def save_updated_arrays(output_folder, epoch,current_probe_step, current_probe_p
                                 "Warnings": warnings,
                                 })
             else:
-                for dumbi1 in range(11):
+                for dumbi1 in range(len(constraint_contributions)):
                     try:
                         constraint_contributions[dumbi1]=constraint_contributions[dumbi1].get()
                     except:
