@@ -316,7 +316,7 @@ def run(pypty_params):
             print("positions_corrected")
             current_restart_from_vacuum=True
             current_reset_positions=False
-            update_probe_pos = lambda x: (x>= epoch+10)
+            update_probe_pos = lambda x: (x>= epoch+20)
         if current_restart_from_vacuum:
             obj=xp.ones_like(obj)
             reset_bfgs_history()
