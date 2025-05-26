@@ -10,7 +10,7 @@ setup(name="pypty",
         "matplotlib",
         "scipy",
         "scikit-image",
-        "tqdm"
+        "tqdm",
     ],
     extras_require={
         "gpu": ["cupy"],
