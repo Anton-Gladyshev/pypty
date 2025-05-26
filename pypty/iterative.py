@@ -311,7 +311,7 @@ def run(pypty_params):
             full_sequence=sequence(epoch)
         except:
             full_sequence=sequence
-        if current_puzzle_positions:
+        if current_puzzle_positions and epoch>0:
             positions =pyptyutils.iterative_scan_position_correction(positions,scan_size)
             print("positions_corrected")
             current_restart_from_vacuum=True
