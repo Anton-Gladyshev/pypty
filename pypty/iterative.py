@@ -203,8 +203,8 @@ def run(pypty_params):
     fancy_sigma=params.get('fancy_sigma', None)
     restart_from_vacuum=params.get('restart_from_vacuum', False)
     reset_positions=params.get('reset_positions', False)
-    ## added for puzzeling
-    puzzle_positions=params.get('puzzel_positions', None) 
+    ## added for puzzleing
+    puzzle_positions=params.get('puzzle_positions', None) 
     ### beam initialisation
     n_hermite_probe_modes=params.get('n_hermite_probe_modes', None)
     defocus_spread_modes=params.get('defocus_spread_modes', None)
@@ -316,6 +316,7 @@ def run(pypty_params):
             print("positions_corrected")
             current_restart_from_vacuum=True
             current_reset_positions=False
+            update_probe_pos = lambda x: (x>= epoch+10)
         if current_restart_from_vacuum:
             obj=xp.ones_like(obj)
             reset_bfgs_history()
