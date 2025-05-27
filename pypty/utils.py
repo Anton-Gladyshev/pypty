@@ -2450,10 +2450,15 @@ def segment_regions_from_image(image: np.ndarray, threshold: float = 0.2, sigma:
     return new_label_map, num_regions, edge_mask
 
 
+import numpy as np
+from scipy.optimize import minimize
+from collections import defaultdict
+
 def optimize_2d_block_shifts(points: np.ndarray):
     """
     Optimize shifts for each block (label) such that the distances between adjacent points
-    (based on 2D scan grid) are as uniform as possible.
+    (based on 2D scan grid) are as uniform as possible. Points with label == 0 are ignored
+    in optimization but preserved in output.
 
     Parameters:
         points (np.ndarray): (N, 5) array with columns [x, y, i, j, label]
@@ -2463,16 +2468,23 @@ def optimize_2d_block_shifts(points: np.ndarray):
         block_shifts (dict): label -> (dx, dy)
     """
     x, y, i, j, label = points[:, 0], points[:, 1], points[:, 2].astype(int), points[:, 3].astype(int), points[:, 4].astype(int)
-    unique_labels = np.unique(label)
+
+    # Step 1: Filter valid (label ≠ 0) points
+    valid_mask = label != 0
+    valid_points = points[valid_mask]
+    xv, yv = valid_points[:, 0], valid_points[:, 1]
+    iv, jv, lv = valid_points[:, 2].astype(int), valid_points[:, 3].astype(int), valid_points[:, 4].astype(int)
+
+    unique_labels = np.unique(lv)
     label_to_idx = {l: idx for idx, l in enumerate(unique_labels)}
     idx_to_label = {idx: l for l, idx in label_to_idx.items()}
     num_blocks = len(unique_labels)
 
-    point_map = {(ii, jj): k for k, (ii, jj) in enumerate(zip(i, j))}
-
+    # Neighbor mapping
+    point_map = {(ii, jj): k for k, (ii, jj) in enumerate(zip(iv, jv))}
     neighbor_pairs = []
-    for k in range(len(points)):
-        ii, jj = i[k], j[k]
+    for k in range(len(valid_points)):
+        ii, jj = iv[k], jv[k]
         for di, dj in [(0, 1), (1, 0)]:
             neighbor_key = (ii + di, jj + dj)
             if neighbor_key in point_map:
@@ -2480,142 +2492,107 @@ def optimize_2d_block_shifts(points: np.ndarray):
 
     shift_init = np.ones((num_blocks, 2)).flatten()
 
-    def mean_dis(shifts_flat): ## mean distance
+    def mean_dis(shifts_flat):
         shifts = shifts_flat.reshape((num_blocks, 2))
         distances = []
         for k1, k2 in neighbor_pairs:
-            l1, l2 = label[k1], label[k2]
+            l1, l2 = lv[k1], lv[k2]
             s1, s2 = shifts[label_to_idx[l1]], shifts[label_to_idx[l2]]
-            p1 = np.array([x[k1], y[k1]]) + s1
-            p2 = np.array([x[k2], y[k2]]) + s2
+            p1 = np.array([xv[k1], yv[k1]]) + s1
+            p2 = np.array([xv[k2], yv[k2]]) + s2
             distances.append(np.linalg.norm(p1 - p2))
-        distances = np.array(distances)
         return np.var(distances)
+
     def fast_axis(shifts_flat):
         shifts = shifts_flat.reshape((num_blocks, 2))
-        total_loss = 0.0
-
-        # Step 1: Apply shifts to all points
-        shifted_coords = np.zeros((len(points), 2))
-        for k in range(len(points)):
-            l = label[k]
+        shifted_coords = np.zeros((len(valid_points), 2))
+        for k in range(len(valid_points)):
+            l = lv[k]
             dx, dy = shifts[label_to_idx[l]]
-            shifted_coords[k] = np.array([x[k] + dx, y[k] + dy])
-        # print(shifted_coords.shape)
-        shifted_coords = shifted_coords.reshape(i.max(), j.max(),shifted_coords.shape[-1])
+            shifted_coords[k] = np.array([xv[k] + dx, yv[k] + dy])
+        try:
+            grid = shifted_coords.reshape(iv.max() + 1, jv.max() + 1, 2)
+        except:
+            return 1e9
+        x_roll_p1 = np.roll(grid, 1, axis=1)
+        x_roll_m1 = np.roll(grid, -1, axis=1)
+        laplace = x_roll_p1 + x_roll_m1 - 2 * grid
+        laplace[:, 0] = 0
+        laplace[:, -1] = 0
+        return (laplace ** 2).sum()
 
-        x_roll_p1=np.roll(shifted_coords,  1, axis=1)
-        x_roll_m1=np.roll(shifted_coords, -1, axis=1)
-        laplace=x_roll_p1+x_roll_m1 -2*shifted_coords
-        laplace[:, 0]=0
-        laplace[:,-1]=0
-        # plt.imshow(laplace[:,:,1])
-        # plt.show()
-
-        return (laplace[:,:]**2).sum()
     def fast_loss(shifts_flat):
         shifts = shifts_flat.reshape((num_blocks, 2))
-        total_loss = 0.0
-
-        # Apply shifts
-        shifted_coords = np.zeros((len(points), 2))
-        for k in range(len(points)):
-            l = label[k]
+        shifted_coords = np.zeros((len(valid_points), 2))
+        for k in range(len(valid_points)):
+            l = lv[k]
             dx, dy = shifts[label_to_idx[l]]
-            shifted_coords[k] = np.array([x[k] + dx, y[k] + dy])
+            shifted_coords[k] = np.array([xv[k] + dx, yv[k] + dy])
 
-        # Group by global column index j
-        from collections import defaultdict
         columns = defaultdict(list)
-        for k in range(len(points)):
-            columns[j[k]].append((i[k], shifted_coords[k]))  # (scan row, shifted position)
+        for k in range(len(valid_points)):
+            columns[jv[k]].append((iv[k], shifted_coords[k]))  # (row i, position)
 
-        # Evaluate loss per column
+        total_loss = 0.0
         for jj, ij_pts in columns.items():
             if len(ij_pts) < 2:
                 continue
-
-            ij_pts_sorted = sorted(ij_pts, key=lambda t: t[0])  # sort by i
+            ij_pts_sorted = sorted(ij_pts, key=lambda t: t[0])
             pts = np.array([p for _, p in ij_pts_sorted])
-
-            # Fit line using SVD (PCA style)
             mean = pts.mean(axis=0)
             U, S, Vt = np.linalg.svd(pts - mean)
             direction = Vt[0]
             projections = (pts - mean) @ direction
-
-            # 1. Line alignment loss
             residuals = pts - (mean + np.outer(projections, direction))
-            alignment_loss = np.sum(np.linalg.norm(residuals, axis=1)**2)
-
-            # 2. Ordering penalty (projection must be increasing along i)
+            alignment_loss = np.sum(np.linalg.norm(residuals, axis=1) ** 2)
             diffs = np.diff(projections)
-            ordering_penalty = np.sum(np.maximum(0, -diffs)**2)
-
+            ordering_penalty = np.sum(np.maximum(0, -diffs) ** 2)
             total_loss += alignment_loss + ordering_penalty
-        return(total_loss)
+        return total_loss
+
     def slow_loss(shifts_flat):
         shifts = shifts_flat.reshape((num_blocks, 2))
-        total_loss = 0.0
-
-        # Apply shifts to all points
-        shifted_coords = np.zeros((len(points), 2))
-        for k in range(len(points)):
-            l = label[k]
+        shifted_coords = np.zeros((len(valid_points), 2))
+        for k in range(len(valid_points)):
+            l = lv[k]
             dx, dy = shifts[label_to_idx[l]]
-            shifted_coords[k] = np.array([x[k] + dx, y[k] + dy])
+            shifted_coords[k] = np.array([xv[k] + dx, yv[k] + dy])
 
-        from collections import defaultdict
         rows = defaultdict(list)
+        for k in range(len(valid_points)):
+            rows[iv[k]].append((jv[k], shifted_coords[k]))  # (column j, position)
 
-        # Group by row index i
-        for k in range(len(points)):
-            rows[i[k]].append((j[k], shifted_coords[k]))  # (column j, position)
-
-        # Evaluate each row independently
+        total_loss = 0.0
         for ii, ji_pts in rows.items():
             if len(ji_pts) < 2:
                 continue
-
-            # Sort by scan column index j
             ji_pts_sorted = sorted(ji_pts, key=lambda t: t[0])
             pts = np.array([p for _, p in ji_pts_sorted])
-
-            # Fit line via SVD
             mean = pts.mean(axis=0)
             U, S, Vt = np.linalg.svd(pts - mean)
             direction = Vt[0]
             projections = (pts - mean) @ direction
-
-            # 1. Alignment loss (distance to best-fit line)
             residuals = pts - (mean + np.outer(projections, direction))
             alignment_loss = np.sum(np.linalg.norm(residuals, axis=1) ** 2)
-
-            # 2. Monotonicity penalty: enforce projection along direction increases with j
             ordering_penalty = np.sum(np.maximum(0, -np.diff(projections)) ** 2)
-
             total_loss += alignment_loss + ordering_penalty
-
         return total_loss
 
-        return total_loss
     def objective(shifts_flat):
-        # return fast_axis(shifts_flat)+mean_dis(shifts_flat)
-        return fast_loss(shifts_flat)+fast_axis(shifts_flat)+slow_loss(shifts_flat)
-    
+        return 0.1 * fast_axis(shifts_flat) + fast_loss(shifts_flat) + slow_loss(shifts_flat) + 0.1 * mean_dis(shifts_flat)
+
     result = minimize(objective, shift_init, method='Powell')
-    # print(result)
     optimal_shifts = result.x.reshape((num_blocks, 2))
 
     shifted_points = points.copy()
-    for k in range(len(points)):
-        l = label[k]
+    for idx_valid, idx_global in enumerate(np.where(valid_mask)[0]):
+        l = label[idx_global]
         dx, dy = optimal_shifts[label_to_idx[l]]
-        shifted_points[k, 0] += dx
-        shifted_points[k, 1] += dy
+        shifted_points[idx_global, 0] += dx
+        shifted_points[idx_global, 1] += dy
 
     block_shifts = {idx_to_label[idx]: tuple(shift) for idx, shift in enumerate(optimal_shifts)}
-    return shifted_points[:,:], block_shifts
+    return shifted_points, block_shifts
 
 def single_scan_position_correction(points,scan_size,sigma=0.4):
     """
@@ -2658,6 +2635,14 @@ def iterative_scan_position_correction(points,scan_size,sigma=0.3):
     Returns:
         shifted_points (np.ndarray): (N, 2) array with corrected scan positions.
     """
+    try:
+        points = points.get()  # Convert CuPy array to NumPy if needed
+    except:
+        pass
+    try:
+        scan_size = scan_size.get()  # Convert CuPy array to NumPy if needed
+    except:
+        pass
     num_region_old = 0
     num_region = 1
     while num_region_old != num_region:

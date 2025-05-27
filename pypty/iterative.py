@@ -288,7 +288,7 @@ def run(pypty_params):
     t0=time.time()
     is_first_epoch=True ## Just a flag that will enable recomputing of propagation- & shift- meshgrids
     constratins_prev, prev_steps_sum=0,0
-    if not(reset_positions is None): initial_postions, initial_postions_correction=1*positions, 1*positions_correction
+    if not(reset_positions is None ): initial_postions, initial_postions_correction=1*positions, 1*positions_correction
     for epoch in range(epoch_prev,epoch_max,1):
         current_data_simulation_flag, current_reset_positions, current_restart_from_vacuum, this_reset_history_flag, this_smart_memory, current_wolfe_c1_constant,current_wolfe_c2_constant, current_window_weight, current_hist_length, current_deformation_reg_weight_tilts, current_deformation_reg_weight_positions, current_slow_axis_reg_weight_positions, current_slow_axis_reg_weight_tilts, current_fast_axis_reg_weight_positions,current_fast_axis_reg_weight_tilts, current_update_step_bfgs, current_apply_gaussian_filter_amplitude, current_apply_gaussian_filter, current_keep_probe_states_orthogonal, current_loss_weight, current_phase_norm_weight, current_abs_norm_weight, current_probe_reg_constraint_weight, current_do_charge_flip, current_atv_weight, current_wedge_mu, current_beta_wedge, current_tune_only_probe_phase, current_mixed_variance_weight,current_mixed_variance_sigma, current_phase_only_obj, current_tune_only_probe_abs, current_dynamically_resize_yx_object, current_beam_current_step, current_probe_step, current_obj_step, current_probe_pos_step, current_tilts_step, current_static_background_step, current_aberrations_array_step,current_puzzle_positions =               pyptyutils.get_value_for_epoch([data_simulation_flag, reset_positions, restart_from_vacuum, reset_history_flag, smart_memory, wolfe_c1_constant,wolfe_c2_constant, window_weight, hist_length, deformation_reg_weight_tilts, deformation_reg_weight_positions, slow_axis_reg_weight_positions, slow_axis_reg_weight_tilts, fast_axis_reg_weight_positions,fast_axis_reg_weight_tilts, update_step_bfgs, apply_gaussian_filter_amplitude, apply_gaussian_filter, keep_probe_states_orthogonal, loss_weight, phase_norm_weight, abs_norm_weight, probe_reg_constraint_weight, do_charge_flip, atv_weight, wedge_mu, beta_wedge, tune_only_probe_phase, mixed_variance_weight,mixed_variance_sigma, phase_only_obj, tune_only_probe_abs, dynamically_resize_yx_object, update_beam_current, update_probe, update_obj, update_probe_pos, update_tilts, update_static_background, update_aberrations_array,puzzle_positions], epoch, default_float_cpu) ## here we get the values of constraints for this epoch
         warnings=""
@@ -311,18 +311,33 @@ def run(pypty_params):
             full_sequence=sequence(epoch)
         except:
             full_sequence=sequence
-        if current_puzzle_positions and epoch>0:
-            positions =pyptyutils.iterative_scan_position_correction(positions,scan_size)
-            print("positions_corrected")
+        if current_puzzle_positions and current_probe_pos_step:
+            current_probe_pos_step=False
+            full_positions = positions+ positions_correction
+            import matplotlib.pyplot as plt
+            plt.scatter(full_positions.get()[:,1], full_positions.get()[:,0], s=1, c='b', marker='o', label="Full positions")
+            positions_puzzled =pyptyutils.iterative_scan_position_correction(full_positions,scan_size)
+            if allow_subPixel_shift:
+                positions_correction=(positions_puzzled-np.round(positions_puzzled).astype(default_int_cpu)).astype(default_float_cpu)
+            else:
+                positions_correction=np.zeros_like(positions_puzzled).astype(default_float_cpu).astype(default_int_cpu)
+            positions=np.round(positions_puzzled).astype(default_int_cpu)
+            plt.scatter((positions+positions_correction)[:,1], (positions+positions_correction)[:,0], s=1, c='r', marker='o', label="Puzzled positions")
+            plt.legend()
+            plt.show()
+            positions=cp.asarray(positions).astype(default_int)
+            positions_correction=cp.asarray(positions_correction).astype(default_float_cpu)
+            del(positions_puzzled)
+            print("positions_puzzeled")
             current_restart_from_vacuum=True
             current_reset_positions=False
-            update_probe_pos = lambda x: (x>= epoch+20)
+            update_probe_pos = lambda x, a = epoch: (x>= a+20)
         if current_restart_from_vacuum:
             obj=xp.ones_like(obj)
             reset_bfgs_history()
         if current_reset_positions:
             positions           =   1*initial_postions
-            postions_correction =   1*initial_postions_correction
+            positions_correction =   1*initial_postions_correction
         count, save_flag=0, False ## count for measurements
         if save_checkpoints_every_epoch: save_flag= epoch%save_checkpoints_every_epoch==0;
         if current_window_weight>0:
