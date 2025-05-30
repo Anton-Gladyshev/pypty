@@ -20,7 +20,6 @@ from pypty import fft as pyptyfft
 import h5py
 import datetime
 from scipy import ndimage
-from scipy.ndimage import distance_transform_edt
 from scipy.ndimage import label
 from skimage.filters import gaussian
 from skimage.measure import label
@@ -30,9 +29,7 @@ from scipy.ndimage import binary_dilation
 from skimage.morphology import binary_closing,disk
 from scipy.optimize import minimize
 from collections import defaultdict
-from scipy.interpolate import griddata
-from scipy.ndimage import gaussian_filter
-from scipy.stats import entropy
+# from scipy.stats import entropy
  
 sys.setrecursionlimit(10000)
 
@@ -2453,7 +2450,7 @@ def segment_regions_from_image(image: np.ndarray, threshold: float = 0.2, sigma:
 
 
 
-def interpolate_label0_points(points: np.ndarray, method='linear', fallback='nearest'):
+def interpolate_label0_points(points: np.ndarray, method='linear', fallback='cubic'):
     """
     Interpolate x, y for label == 0 points using (i, j) grid coordinates.
     If primary interpolation fails (e.g. NaNs), use fallback method.
@@ -2629,14 +2626,16 @@ def position_puzzling(points,scan_size,sigma=0.4,score_threshold=1.2):
         shifted_points (np.ndarray): (N, 5) array with corrected scan positions and labels.
     """
     if isinstance(points, cp.ndarray):
-        points = cp.asnumpy(points)
-    x = points[:,0].reshape(scan_size)
-    y = points[:,1].reshape(scan_size)
+        points_np = cp.asnumpy(points.copy())
+    else:
+        ppoints_np = points.copy()
+    x = points_np[:,0].reshape(scan_size)
+    y = points_np[:,1].reshape(scan_size)
     laplacex = ndimage.laplace(x)
     laplacey = ndimage.laplace(y)
     laplace = np.sqrt(laplacex**2 + laplacey**2)
-    # Step 1: Smooth Laplace to reduce noise
-    laplace_smooth = gaussian_filter(laplace, sigma=sigma)
+
+
 
     # Step 2: Compute score based on normalized variance
     variance = np.var(laplace)
@@ -2645,27 +2644,33 @@ def position_puzzling(points,scan_size,sigma=0.4,score_threshold=1.2):
     #  # Step 3: Compute entropy of absolute Laplace (structure complexity)
     # hist, _ = np.histogram(np.abs(laplace).ravel(), bins=100, density=True)
     # ent = entropy(hist + 1e-12)  # avoid log(0)
+    puzzling_worked = False
     if score>1 :
         mask = (laplace-laplace.min())/(laplace.max()-laplace.min())
         labeled_regions, num_regions, edge_mask = segment_regions_from_image(mask, threshold=mask.mean(), sigma=sigma, dilation_size=1)
         if num_regions < 2:
-            shifted_points = points.copy()
             print(f"{num_regions} segmentations found,no need to puzzle,score is {score}")
         else:
+            puzzling_worked = True
             x = np.linspace(1,scan_size[1],scan_size[1])
             y = np.linspace(1,scan_size[0],scan_size[0])
             X,Y = np.meshgrid(x,y)
             X = X.reshape(-1)
             Y = Y.reshape(-1)
             points_new = np.zeros((X.shape[0],5))
-            points_new[:,0] = points[:,0]
-            points_new[:,1] = points[:,1]
+            points_new[:,0] = points_np[:,0]
+            points_new[:,1] = points_np[:,1]
             points_new[:,2] = X[:]
             points_new[:,3] = Y[:]
             points_new[:,4] = labeled_regions.reshape(-1)[:]
             shifted_points,block_shifts = optimize_2d_block_shifts(points_new)
+            import matplotlib.pyplot as plt
+            plt.scatter(points_new[:,1], points_new[:,0], s=1, c='b', marker='o', label="Full positions")
+            plt.scatter(shifted_points[:,1], shifted_points[:,0], s=1, c='r', marker='x', label="Shifted positions")
+            plt.legend()
+            plt.show()
+            points_np = shifted_points[:,:2]
             print(f"{num_regions} segmentations found,start to puzzle,score is {score}")
     else:
-        shifted_points = points.copy()
         print(f"no segmentation found, using original points,score is {score}")
-    return shifted_points[:,:2]
+    return puzzling_worked,points_np
