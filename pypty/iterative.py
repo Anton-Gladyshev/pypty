@@ -316,7 +316,7 @@ def run(pypty_params):
             full_positions = positions+ positions_correction
             import matplotlib.pyplot as plt
             plt.scatter(full_positions.get()[:,1], full_positions.get()[:,0], s=1, c='b', marker='o', label="Full positions")
-            positions_puzzled =pyptyutils.iterative_scan_position_correction(full_positions,scan_size)
+            positions_puzzled =pyptyutils.position_puzzling(full_positions,scan_size)
             if allow_subPixel_shift:
                 positions_correction=(positions_puzzled-np.round(positions_puzzled).astype(default_int_cpu)).astype(default_float_cpu)
             else:
