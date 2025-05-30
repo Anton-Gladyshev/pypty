@@ -315,11 +315,12 @@ def run(pypty_params):
             current_probe_pos_step=False
             full_positions = positions+ positions_correction
             puzzling_worked,positions_puzzled =pyptyutils.position_puzzling(full_positions,scan_size)
-            if allow_subPixel_shift:
-                positions_correction=(positions_puzzled-np.round(positions_puzzled).astype(default_int_cpu)).astype(default_float_cpu)
-            else:
-                positions_correction=np.zeros_like(positions_puzzled).astype(default_float_cpu).astype(default_int_cpu)
             if puzzling_worked:
+                if allow_subPixel_shift:
+                    positions_correction=(positions_puzzled-np.round(positions_puzzled).astype(default_int_cpu)).astype(default_float_cpu)
+                else:
+                    positions_correction=np.zeros_like(positions_puzzled).astype(default_float_cpu).astype(default_int_cpu)
+                
                 positions=np.round(positions_puzzled).astype(default_int_cpu)
                 positions=cp.asarray(positions).astype(default_int)
                 positions_correction=cp.asarray(positions_correction).astype(default_float_cpu)
@@ -328,6 +329,9 @@ def run(pypty_params):
                 current_restart_from_vacuum=True
                 current_reset_positions=False
                 update_probe_pos = lambda x, a = epoch: (x>= a+20)
+            # positions_correction=cp.asarray(positions_correction).astype(default_float_cpu)
+            # positions=cp.asarray(positions).astype(default_int_cpu)
+
         if current_restart_from_vacuum:
             obj=xp.ones_like(obj)
             reset_bfgs_history()
