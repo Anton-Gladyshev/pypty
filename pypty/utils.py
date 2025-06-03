@@ -2068,7 +2068,20 @@ def save_params(params_path, params, strip_dataset_from_params):
         pickle.dump(params_pkl, file)
     del params_pkl
 
-
+def get_changed_params(list_hyperparams, keys_hyperparams, path_params, warnings, print_flag):
+    new_params=load_params(path_params)
+    new_params=string_params_to_usefull_params(new_params)
+    for indd in range(len(list_hyperparams)):
+        hpa=list_hyperparams[indd]
+        key=keys_hyperparams[indd]
+        value=new_params.get(key, "plh")
+        if value!="plh":
+            list_hyperparams[indd]=value
+    warnings+="Hyperparameter were changed manually!\n"
+    if print_flag:
+        sys.stdout.write("\nWARNING! Hyperparameter changed manually!")
+        sys.stdout.flush()
+    return list_hyperparams, warnings
 
 def phase_cross_corr_align(im_ref_fft, im_2_fft, refine_box_dim, upsample, x_real, y_real, shift_y=None, shift_x=None):
     """
