@@ -297,7 +297,7 @@ def run(pypty_params):
         
         change_time=os.path.getmtime(path_params)
         if change_time!=t_params:
-            list_hyperparams, warnings=pyptyutils.get_changed_params(list_hyperparams,keys_hyperparams, path_params, warnings, print_flag)
+            list_hyperparams, warnings=pyptyutils.detect_changed_params(list_hyperparams,keys_hyperparams, path_params, warnings, print_flag)
             t_params=change_time
             
         current_propmethod, current_data_simulation_flag, current_reset_positions, current_restart_from_vacuum, this_reset_history_flag, this_smart_memory, current_wolfe_c1_constant,current_wolfe_c2_constant, current_window_weight, current_hist_length, current_deformation_reg_weight_tilts, current_deformation_reg_weight_positions, current_slow_axis_reg_weight_positions, current_slow_axis_reg_weight_tilts, current_fast_axis_reg_weight_positions,current_fast_axis_reg_weight_tilts, current_update_step_bfgs, current_apply_gaussian_filter_amplitude, current_apply_gaussian_filter, current_keep_probe_states_orthogonal, current_loss_weight, current_phase_norm_weight, current_abs_norm_weight, current_probe_reg_constraint_weight, current_do_charge_flip, current_atv_weight, current_wedge_mu, current_beta_wedge, current_tune_only_probe_phase, current_mixed_variance_weight,current_mixed_variance_sigma, current_phase_only_obj, current_tune_only_probe_abs, current_dynamically_resize_yx_object, current_beam_current_step, current_probe_step, current_obj_step, current_probe_pos_step, current_tilts_step, current_static_background_step, current_aberrations_array_step =               pyptyutils.get_value_for_epoch(list_hyperparams, epoch, default_float_cpu) ## here we get the values of constraints for this epoch

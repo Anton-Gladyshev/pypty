@@ -2068,7 +2068,13 @@ def save_params(params_path, params, strip_dataset_from_params):
         pickle.dump(params_pkl, file)
     del params_pkl
 
-def get_changed_params(list_hyperparams, keys_hyperparams, path_params, warnings, print_flag):
+def change_params(path_params, key, new_value):
+    params=load_params(path_params)
+    params[key]=new_value
+    save_params(params)
+
+
+def detect_changed_params(list_hyperparams, keys_hyperparams, path_params, warnings, print_flag):
     new_params=load_params(path_params)
     new_params=string_params_to_usefull_params(new_params)
     for indd in range(len(list_hyperparams)):
