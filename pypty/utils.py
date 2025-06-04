@@ -2068,11 +2068,11 @@ def save_params(params_path, params, strip_dataset_from_params):
         pickle.dump(params_pkl, file)
     del params_pkl
 
-def change_params(path_params, key, new_value):
+def change_params(path_params, keys, new_values):
     params=load_params(path_params)
     if type(key)!=list:
-        keys=[key]
-        new_values=[new_value]
+        keys=[keys]
+        new_values=[new_values]
     for k in range(len(key)):
         ke, nv=keys[k], new_values[k]
         print("Changing Parameter %s value from %s to %s!"%(ke, params.get(ke, "None"), nv))
