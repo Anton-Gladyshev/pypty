@@ -2073,7 +2073,7 @@ def change_params(path_params, keys, new_values):
     if type(keys)!=list:
         keys=[keys]
         new_values=[new_values]
-    for k in range(len(key)):
+    for k in range(len(keys)):
         ke, nv=keys[k], new_values[k]
         print("Changing Parameter %s value from %s to %s!"%(ke, params.get(ke, "None"), nv))
         params[ke]=nv
