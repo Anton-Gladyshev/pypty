@@ -2070,7 +2070,7 @@ def save_params(params_path, params, strip_dataset_from_params):
 
 def change_params(path_params, key, new_value):
     params=load_params(path_params)
-    print("Changing Parameter %s value from %s was %s!"%(key, params.get(key, "None"), new_value))
+    print("Changing Parameter %s value from %s to %s!"%(key, params.get(key, "None"), new_value))
     params[key]=new_value
     save_params(path_params, params, False)
 
