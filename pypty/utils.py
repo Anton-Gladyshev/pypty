@@ -2070,8 +2070,13 @@ def save_params(params_path, params, strip_dataset_from_params):
 
 def change_params(path_params, key, new_value):
     params=load_params(path_params)
-    print("Changing Parameter %s value from %s to %s!"%(key, params.get(key, "None"), new_value))
-    params[key]=new_value
+    if type(key)!=list:
+        keys=[key]
+        new_values=[new_value]
+    for k in range(len(key)):
+        ke, nv=keys[k], new_values[k]
+        print("Changing Parameter %s value from %s to %s!"%(ke, params.get(ke, "None"), nv))
+        params[ke]=nv
     save_params(path_params, params, False)
 
 
