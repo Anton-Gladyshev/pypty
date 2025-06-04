@@ -2070,7 +2070,7 @@ def save_params(params_path, params, strip_dataset_from_params):
 
 def change_params(path_params, keys, new_values):
     params=load_params(path_params)
-    if type(key)!=list:
+    if type(keys)!=list:
         keys=[keys]
         new_values=[new_values]
     for k in range(len(key)):
