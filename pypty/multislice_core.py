@@ -681,10 +681,8 @@ def wide_beam_multislice(full_probe, this_obj_chopped, num_slices, n_obj_modes, 
     return waves_multislice, wave
 
 def wide_beam_multislice_grads(dLoss_dP_out, waves_multislice, this_obj_chopped, object_grad, tilts_grad, is_single_dist,this_distances, exclude_mask, this_wavelength, q2, qx, this_tan_x, qy, this_tan_y, num_slices, n_obj_modes,tiltind, master_propagator_phase_space, this_step_tilts, damping_cutoff_multislice, smooth_rolloff, tilt_mode,  compute_batch, mask_clean, this_step_probe, this_step_obj, this_step_pos_correction, masked_pixels_y, masked_pixels_x, default_float, default_complex, helper_flag_4, wide_beam_coeffs):
-    
     this_obj_chopped=cp.conjugate(this_obj_chopped)
     sub_grads=cp.zeros_like(waves_multislice[:,:,:, 0, :, :,:])
-
     for i_update in range(num_slices-1,-1,-1): #backward propagation
         sub_grads[:,:,:, :, :,0]=dLoss_dP_out
         if is_single_dist:
@@ -704,9 +702,7 @@ def wide_beam_multislice_grads(dLoss_dP_out, waves_multislice, this_obj_chopped,
             wide_beam_coeffs[6]=(-21/512)*pizl**5-(1/1024)*pizl**4 + (1j/768)*pizl**3 - 1/720
             wide_beam_coeffs[7]=(33j/1024)*pizl**6-1j/5040
             wide_beam_coeffs[8]=(-429j/16384)*pizl**7-(25/8192)*pizl**6 + (1/6144)*pizl**4 + 1/(40320)
-                
-            
-            
+
         for ind_wb in range(len(wide_beam_coeffs)-1):
             g_0=sub_grads[:,:,:, :, :,ind_wb]*this_obj_chopped[:, :,:, i_update:i_update+1, :]
             g_0=(pyptyfft.fft2(sub_grads[:,:,:, :, :,ind_wb], axes=(1,2))*propagator_phase_space + pyptyfft.fft2(g_0, axes=(1,2)))*cp.expand_dims(mask_clean, (-1,-2))
