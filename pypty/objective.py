@@ -424,7 +424,7 @@ def loss_and_direction(this_obj, full_probe, this_pos_array, this_pos_correction
                     master_propagator_phase_space=cp.expand_dims(master_propagator_phase_space,(-1,-2))
                 else:
                     master_propagator_phase_space,half_master_propagator_phase_space=None,None
-                waves_multislice, this_exit_wave = wide_beam_multislice(this_probe, this_obj_chopped, num_slices, n_obj_modes, n_probe_modes, this_distances, this_wavelength, q2, qx, qy, exclude_mask, is_single_dist, this_tan_x_inside,this_tan_y_inside, damping_cutoff_multislice, smooth_rolloff, master_propagator_phase_space,  None, exclude_mask_ishift, waves_multislice, this_exit_wave, default_float, default_complex, wide_beam_coeffs)
+                waves_multislice, this_exit_wave = pyptymultislice.wide_beam_multislice(this_probe, this_obj_chopped, num_slices, n_obj_modes, n_probe_modes, this_distances, this_wavelength, q2, qx, qy, exclude_mask, is_single_dist, this_tan_x_inside,this_tan_y_inside, damping_cutoff_multislice, smooth_rolloff, master_propagator_phase_space,  None, exclude_mask_ishift, waves_multislice, this_exit_wave, default_float, default_complex, wide_beam_coeffs)
             else:
                 if propmethod=="better_multislice":
                     if is_single_dist and not(individual_propagator_flag):
