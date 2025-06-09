@@ -676,7 +676,7 @@ def wide_beam_multislice(full_probe, this_obj_chopped, num_slices, n_obj_modes, 
             wave_1=(pyptyfft.fft2(wave, axes=(1,2))*propagator_phase_space + pyptyfft.fft2(wave_0, axes=(1,2)))*cp.expand_dims(mask_clean, (-1,-2))
             wave=pyptyfft.ifft2(wave_1,axes=(1,2))
             waves_multislice[:,:,:, ind_multislice, :, :,ind_wb+1]=1*wave ## save last wave
-        wave=cp.sum(wide_beam_coeffs[None,None,None, None, None, None,:]*waves_multislice[:,:,:, ind_multislice, :, :,:], axis=-1)
+        wave=cp.sum(wide_beam_coeffs[None,None,None, None, None,:]*waves_multislice[:,:,:, ind_multislice, :, :,:], axis=-1)
     cp.conjugate(waves_multislice, out=waves_multislice)
     return waves_multislice, wave
 
@@ -684,7 +684,7 @@ def wide_beam_multislice_grads(dLoss_dP_out, waves_multislice, this_obj_chopped,
     this_obj_chopped=cp.conjugate(this_obj_chopped)
     sub_grads=cp.zeros_like(waves_multislice[:,:,:, 0, :, :,:])
     for i_update in range(num_slices-1,-1,-1): #backward propagation
-        print(dLoss_dP_out.shape, sub_grads.shape)
+        
         sub_grads[:,:,:, :, :, 0]=dLoss_dP_out
        
         if is_single_dist:
