@@ -704,12 +704,12 @@ def wide_beam_multislice_grads(dLoss_dP_out, waves_multislice, this_obj_chopped,
             wide_beam_coeffs[8]=(-429j/16384)*pizl**7-(25/8192)*pizl**6 + (1/6144)*pizl**4 + 1/(40320)
 
         for ind_wb in range(len(wide_beam_coeffs)-1):
-            g_0=sub_grads[:,:,:, :, :,ind_wb]*this_obj_chopped[:, :,:, i_update:i_update+1, :]
+            g_0=sub_grads[:,:,:, :,ind_wb]*this_obj_chopped[:, :,:, i_update:i_update+1, :]
             g_0=(pyptyfft.fft2(sub_grads[:,:,:, :, :,ind_wb], axes=(1,2))*propagator_phase_space + pyptyfft.fft2(g_0, axes=(1,2)))*cp.expand_dims(mask_clean, (-1,-2))
             g_0=pyptyfft.ifft2(g_0,axes=(1,2))
-            sub_grads[:,:,:, :, :,ind_wb+1]=1*g_0
+            sub_grads[:,:,:, :, ind_wb+1]=1*g_0
         
-        dLoss_dP_out=cp.sum(cp.conjugate(wide_beam_coeffs)[None,None,None, None, None, None,:]*sub_grads, axis=-1)
+        dLoss_dP_out=cp.sum(cp.conjugate(wide_beam_coeffs)[None,None,None, None,:]*sub_grads, axis=-1)
         dLoss_dS=cp.zeros_like(this_obj_chopped)
         for n in range(1,len(wide_beam_coeffs)):
             for nprime in range(0, n):
