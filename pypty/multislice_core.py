@@ -684,7 +684,7 @@ def wide_beam_multislice_grads(dLoss_dP_out, waves_multislice, this_obj_chopped,
     this_obj_chopped=cp.conjugate(this_obj_chopped)
     sub_grads=cp.zeros_like(waves_multislice[:,:,:, 0, :, :,:])
     for i_update in range(num_slices-1,-1,-1): #backward propagation
-        sub_grads[:,:,:, :,0]=dLoss_dP_out
+        sub_grads[:,:,:, :, :, 0]=dLoss_dP_out
         if is_single_dist:
             prop_distance=this_distances[0]
             propagator_phase_space=cp.conjugate(master_propagator_phase_space)
@@ -704,23 +704,23 @@ def wide_beam_multislice_grads(dLoss_dP_out, waves_multislice, this_obj_chopped,
             wide_beam_coeffs[8]=(-429j/16384)*pizl**7-(25/8192)*pizl**6 + (1/6144)*pizl**4 + 1/(40320)
 
         for ind_wb in range(len(wide_beam_coeffs)-1):
-            g_0=sub_grads[:,:,:, :,ind_wb]*this_obj_chopped[:, :,:, i_update:i_update+1, :]
+            g_0=sub_grads[:,:,:, :,:, ind_wb]*this_obj_chopped[:, :,:, i_update:i_update+1, :]
             g_0=(pyptyfft.fft2(sub_grads[:,:,:, :, :,ind_wb], axes=(1,2))*propagator_phase_space + pyptyfft.fft2(g_0, axes=(1,2)))*cp.expand_dims(mask_clean, (-1,-2))
             g_0=pyptyfft.ifft2(g_0,axes=(1,2))
-            sub_grads[:,:,:, :, ind_wb+1]=1*g_0
+            sub_grads[:,:,:, :, :, ind_wb+1]=1*g_0
         
-        dLoss_dP_out=cp.sum(cp.conjugate(wide_beam_coeffs)[None,None,None, None,:]*sub_grads, axis=-1)
+        dLoss_dP_out=cp.sum(cp.conjugate(wide_beam_coeffs)[None,None, None,None, None,:]*sub_grads, axis=-1)
         dLoss_dS=cp.zeros_like(this_obj_chopped)
         for n in range(1,len(wide_beam_coeffs)):
             for nprime in range(0, n):
-                dLoss_dS+=cp.conjugate(wide_beam_coeffs[n])*cp.conjugate(waves_multislice[:,:,:, i_update:i_update+1, :, :,nprime])*sub_grads[:,:,:, :, :,n-nprime-1]
+                dLoss_dS+=cp.conjugate(wide_beam_coeffs[n])*cp.conjugate(waves_multislice[:,:,:, i_update, :, :,nprime])*sub_grads[:,:,:, :,:, n-nprime-1]
         if this_step_tilts>0 and (tilt_mode==0 or tilt_mode==3 or tilt_mode==4):
             sh=12.566370614359172*prop_distance/(waves_multislice.shape[1]*waves_multislice.shape[2])
             dLoss_dPropagator=cp.fft.fft2(dLoss_dS, axes=(0,1))
             tilts_grad[tiltind,3]+=sh*cp.sum(cp.real(dLoss_dPropagator*qx), (1,2))
             tilts_grad[tiltind,2]+=sh*cp.sum(cp.real(dLoss_dPropagator*qy), (1,2))
             dLoss_dP_out=pyptyfft.ifft2(dLoss_dP_out, axes=(1,2), overwrite_x=True) #  x1 cutoff
-        waves_multislice[:,:,:, i_update:i_update+1, :, :,0]=dLoss_dS
+        waves_multislice[:,:,:, i_update, :, :,0]=dLoss_dS
     if this_step_obj>0:
         if waves_multislice.shape[-3]==1:
             this_grad=waves_multislice[:,:,:,:,0,:,0] #just  one probe mode, x2 cutoff
