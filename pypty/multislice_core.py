@@ -684,9 +684,8 @@ def wide_beam_multislice_grads(dLoss_dP_out, waves_multislice, this_obj_chopped,
     this_obj_chopped=cp.conjugate(this_obj_chopped)
     sub_grads=cp.zeros_like(waves_multislice[:,:,:, 0, :, :,:])
     for i_update in range(num_slices-1,-1,-1): #backward propagation
-        
         sub_grads[:,:,:, :, :, 0]=dLoss_dP_out
-       
+        print(dLoss_dP_out.shape, sub_grads.shape)
         if is_single_dist:
             prop_distance=this_distances[0]
             propagator_phase_space=cp.conjugate(master_propagator_phase_space)
