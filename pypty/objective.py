@@ -221,7 +221,7 @@ def loss_and_direction(this_obj, full_probe, this_pos_array, this_pos_correction
         probe_runx,probe_runy=cp.meshgrid(cp.arange(this_ps, dtype=int),cp.arange(this_ps, dtype=int), indexing="xy")
         probe_runx,probe_runy=probe_runx[None,:,:],probe_runy[None,:,:]
     if propmethod=="wide_beam":
-        object=cp.angle(object)-1j*cp.log(cp.abs(object))
+        this_obj=cp.angle(this_obj)-1j*cp.log(cp.abs(this_obj))
     
     if exclude_mask is None:
         q2, qx, qy, exclude_mask, exclude_mask_ishift = pyptyutils.create_spatial_frequencies(pixel_size_x_A, pixel_size_y_A, this_ps, damping_cutoff_multislice, smooth_rolloff, default_float)     # create some arrays with spatial frequencies. Many of them are actually idential (or almost idential, so i will later clean this mess). In any case, the code is currently optimized to create them only once (when configured properly)
@@ -657,8 +657,8 @@ def loss_and_direction(this_obj, full_probe, this_pos_array, this_pos_correction
     if data_simulation_flag:
         np.save(data_simulation_flag, sim_patterns.get())
     if propmethod=="wide_beam":
-        object=cp.exp(1j*object)
-        object_grad*=1/cp.conjugate(object)
+        this_obj=cp.exp(1j*this_obj)
+        object_grad*=1/cp.conjugate(this_obj)
     constraint_contributions=[]
     loss_print_copy=1*loss;
     this_pos_array=this_pos_array[:,:,0]
