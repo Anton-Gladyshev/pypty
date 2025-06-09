@@ -712,7 +712,6 @@ def wide_beam_multislice_grads(dLoss_dP_out, waves_multislice, this_obj_chopped,
         
         dLoss_dP_out=cp.sum(cp.conjugate(wide_beam_coeffs)[None,None, None,None, None,:]*sub_grads, axis=-1)
         dLoss_dS=cp.zeros_like(dLoss_dP_out)
-        print(dLoss_dP_out.shape, sub_grads.shape, waves_multislice.shape, dLoss_dS.shape)
         for n in range(1,len(wide_beam_coeffs)):
             for nprime in range(0, n):
                 dLoss_dS+=cp.conjugate(wide_beam_coeffs[n])*cp.conjugate(waves_multislice[:,:,:, i_update, :, :,nprime])*sub_grads[:,:,:, :,:, n-nprime-1]
