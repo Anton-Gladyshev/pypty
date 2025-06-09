@@ -685,7 +685,7 @@ def wide_beam_multislice_grads(dLoss_dP_out, waves_multislice, this_obj_chopped,
     sub_grads=cp.zeros_like(waves_multislice[:,:,:, 0, :, :,:])
     for i_update in range(num_slices-1,-1,-1): #backward propagation
         sub_grads[:,:,:, :, :, 0]=dLoss_dP_out
-        print(dLoss_dP_out.shape, sub_grads.shape)
+        
         if is_single_dist:
             prop_distance=this_distances[0]
             propagator_phase_space=cp.conjugate(master_propagator_phase_space)
@@ -711,10 +711,12 @@ def wide_beam_multislice_grads(dLoss_dP_out, waves_multislice, this_obj_chopped,
             sub_grads[:,:,:, :, :, ind_wb+1]=1*g_0
         
         dLoss_dP_out=cp.sum(cp.conjugate(wide_beam_coeffs)[None,None, None,None, None,:]*sub_grads, axis=-1)
-        dLoss_dS=cp.zeros_like(this_obj_chopped)
+        dLoss_dS=cp.zeros_like(dLoss_dP_out)
+        print(dLoss_dP_out.shape, sub_grads.shape, waves_multislice.shape, dLoss_dS.shape)
         for n in range(1,len(wide_beam_coeffs)):
             for nprime in range(0, n):
                 dLoss_dS+=cp.conjugate(wide_beam_coeffs[n])*cp.conjugate(waves_multislice[:,:,:, i_update, :, :,nprime])*sub_grads[:,:,:, :,:, n-nprime-1]
+
         if this_step_tilts>0 and (tilt_mode==0 or tilt_mode==3 or tilt_mode==4):
             sh=12.566370614359172*prop_distance/(waves_multislice.shape[1]*waves_multislice.shape[2])
             dLoss_dPropagator=cp.fft.fft2(dLoss_dS, axes=(0,1))
