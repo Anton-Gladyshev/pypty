@@ -1542,8 +1542,8 @@ def prepare_main_loop_params(algorithm,probe, obj,positions,tilts, measured_data
             positions[full_sequence,1]-=np.min(positions[full_sequence,1])
     positions+=extra_space_on_side_px
     if extra_space_on_side_px>0:
-        obj=np.vstack((np.max(np.abs(obj))*np.ones((extra_space_on_side_px,obj.shape[1], obj.shape[2],obj.shape[3]), dtype=default_complex_cpu), obj ))
-        obj=np.hstack((np.max(np.abs(obj))*np.ones((obj.shape[0],extra_space_on_side_px, obj.shape[2],obj.shape[3]), dtype=default_complex_cpu), obj))
+        obj=np.vstack((np.mean(obj)*np.ones((extra_space_on_side_px,obj.shape[1], obj.shape[2],obj.shape[3]), dtype=default_complex_cpu), obj ))
+        obj=np.hstack((np.mean(obj)*np.ones((obj.shape[0],extra_space_on_side_px, obj.shape[2],obj.shape[3]), dtype=default_complex_cpu), obj))
     tilts_correction=np.zeros_like(tilts)
     if allow_subPixel_shift:
         full_pos_correction=(positions-np.round(positions).astype(default_int_cpu)).astype(default_float_cpu)
