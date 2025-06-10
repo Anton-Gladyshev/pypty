@@ -655,7 +655,7 @@ def wide_beam_multislice(full_probe, this_obj_chopped, num_slices, n_obj_modes, 
     else:
         wave=cp.repeat(full_probe[:,:,:,:,None], n_obj_modes, axis=-1)
     for ind_multislice in range(0,num_slices,1):
-        waves_multislice[:,:,:, ind_multislice, :, :,0]=wave ## save ind_wb wave
+        waves_multislice[:,:,:, ind_multislice, :, :,0]=wave ## save first wave
         if is_single_dist:
             propagator_phase_space=master_propagator_phase_space
         else:
@@ -670,12 +670,10 @@ def wide_beam_multislice(full_probe, this_obj_chopped, num_slices, n_obj_modes, 
             wide_beam_coeffs[6]=(-21/512)*pizl**5-(1/1024)*pizl**4 + (1j/768)*pizl**3 - 1/720
             wide_beam_coeffs[7]=(33j/1024)*pizl**6-1j/5040
             wide_beam_coeffs[8]=(-429j/16384)*pizl**7-(25/8192)*pizl**6 + (1/6144)*pizl**4 + 1/(40320)
-            
         for ind_wb in range(8):
             wave_0=wave*this_obj_chopped[:, :,:, ind_multislice:ind_multislice+1, :] # the slice dimension became a singular dimension of the probe modes, x2 cutoff
-            wave_1=(pyptyfft.fft2(wave, axes=(1,2))*propagator_phase_space + pyptyfft.fft2(wave_0, axes=(1,2)))*cp.expand_dims(mask_clean, (-1,-2))
-            wave=pyptyfft.ifft2(wave_1,axes=(1,2))
-            waves_multislice[:,:,:, ind_multislice, :, :,ind_wb+1]=1*wave ## save last wave
+            wave = pyptyfft.ifft2((pyptyfft.fft2(wave, axes=(1,2))*propagator_phase_space + pyptyfft.fft2(wave_0, axes=(1,2)))*cp.expand_dims(mask_clean, (-1,-2)),axes=(1,2))
+            waves_multislice[:,:,:, ind_multislice, :, :,ind_wb+1] = 1 * wave ## save ind_wb wave
         wave=cp.sum(wide_beam_coeffs[None,None,None, None, None,:]*waves_multislice[:,:,:, ind_multislice, :, :,:], axis=-1)
     cp.conjugate(waves_multislice, out=waves_multislice)
     return waves_multislice, wave
@@ -685,13 +683,12 @@ def wide_beam_multislice_grads(dLoss_dP_out, waves_multislice, this_obj_chopped,
     sub_grads=cp.zeros_like(waves_multislice[:,:,:, 0, :, :,:])
     for i_update in range(num_slices-1,-1,-1): #backward propagation
         sub_grads[:,:,:, :, :, 0]=dLoss_dP_out
-        
         if is_single_dist:
             prop_distance=this_distances[0]
-            propagator_phase_space=cp.conjugate(master_propagator_phase_space)
+            propagator_phase_space=master_propagator_phase_space
         else:
             prop_distance=this_distances[i_update-1]
-            propagator_phase_space=(3.141592654*prop_distance*(this_wavelength*q2+2*(qx*this_tan_x+qy*this_tan_y)))*mask_clean
+            propagator_phase_space=(-3.141592654*prop_distance*(this_wavelength*q2+2*(qx*this_tan_x+qy*this_tan_y)))*mask_clean
             propagator_phase_space=cp.expand_dims(propagator_phase_space,(-1,-2)) ## expanding
             wide_beam_coeffs=cp.ones(9, dtype=default_complex)
             pizl=this_wavelength/(3.141592654*this_distances[i_update])
@@ -703,19 +700,19 @@ def wide_beam_multislice_grads(dLoss_dP_out, waves_multislice, this_obj_chopped,
             wide_beam_coeffs[6]=(-21/512)*pizl**5-(1/1024)*pizl**4 + (1j/768)*pizl**3 - 1/720
             wide_beam_coeffs[7]=(33j/1024)*pizl**6-1j/5040
             wide_beam_coeffs[8]=(-429j/16384)*pizl**7-(25/8192)*pizl**6 + (1/6144)*pizl**4 + 1/(40320)
-
+        ## Precompute helper-gradients
         for ind_wb in range(len(wide_beam_coeffs)-1):
-            g_0=sub_grads[:,:,:, :,:, ind_wb]*this_obj_chopped[:, :,:, i_update:i_update+1, :]
-            g_0=(pyptyfft.fft2(sub_grads[:,:,:, :, :,ind_wb], axes=(1,2))*propagator_phase_space + pyptyfft.fft2(g_0, axes=(1,2)))*cp.expand_dims(mask_clean, (-1,-2))
-            g_0=pyptyfft.ifft2(g_0,axes=(1,2))
+            g_0= sub_grads[:,:,:, :,:, ind_wb]*this_obj_chopped[:, :,:, i_update:i_update+1, :]
+            g_0=pyptyfft.ifft2((pyptyfft.fft2(sub_grads[:,:,:, :, :,ind_wb], axes=(1,2))*propagator_phase_space + pyptyfft.fft2(g_0, axes=(1,2)))*cp.expand_dims(mask_clean, (-1,-2)),axes=(1,2))
             sub_grads[:,:,:, :, :, ind_wb+1]=1*g_0
-        
+        ## Gradient of incomming wave
         dLoss_dP_out=cp.sum(cp.conjugate(wide_beam_coeffs)[None,None, None,None, None,:]*sub_grads, axis=-1)
+        ## Gradient of Slice-operator
         dLoss_dS=cp.zeros_like(dLoss_dP_out)
         for n in range(1,len(wide_beam_coeffs)):
             for nprime in range(0, n):
                 dLoss_dS+=cp.conjugate(wide_beam_coeffs[n])*cp.conjugate(waves_multislice[:,:,:, i_update, :, :,nprime])*sub_grads[:,:,:, :,:, n-nprime-1]
-
+        ## Not really implemented yet, but still here: tilting in wide-beam regime
         if this_step_tilts>0 and (tilt_mode==0 or tilt_mode==3 or tilt_mode==4):
             sh=12.566370614359172*prop_distance/(waves_multislice.shape[1]*waves_multislice.shape[2])
             dLoss_dPropagator=cp.fft.fft2(dLoss_dS, axes=(0,1))
