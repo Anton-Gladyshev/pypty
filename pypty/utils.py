@@ -30,6 +30,8 @@ from skimage.morphology import binary_closing,disk
 from scipy.optimize import minimize
 from collections import defaultdict
 # from scipy.stats import entropy
+from scipy.ndimage import map_coordinates
+
  
 sys.setrecursionlimit(10000)
 
@@ -2450,7 +2452,7 @@ def segment_regions_from_image(image: np.ndarray, threshold: float = 0.2, sigma:
 
 
 
-def interpolate_label0_points(points: np.ndarray, method='linear', fallback='cubic'):
+def interpolate_label0_points(points: np.ndarray, method='linear', fallback='nearest'):
     """
     Interpolate x, y for label == 0 points using (i, j) grid coordinates.
     If primary interpolation fails (e.g. NaNs), use fallback method.
@@ -2628,7 +2630,12 @@ def position_puzzling(points,scan_size,sigma=0.4,score_threshold=1.2):
     if isinstance(points, cp.ndarray):
         points_np = cp.asnumpy(points.copy())
     else:
-        ppoints_np = points.copy()
+        points_np = points.copy()
+    print(points_np.shape)
+    print(points_np)
+    import matplotlib.pyplot as plt
+    plt.scatter(points_np[:,1], points_np[:,0], s=1, c='b', marker='o', label="Original positions")
+    plt.show()
     x = points_np[:,0].reshape(scan_size)
     y = points_np[:,1].reshape(scan_size)
     laplacex = ndimage.laplace(x)
@@ -2648,7 +2655,7 @@ def position_puzzling(points,scan_size,sigma=0.4,score_threshold=1.2):
     if score>1 :
         mask = (laplace-laplace.min())/(laplace.max()-laplace.min())
         labeled_regions, num_regions, edge_mask = segment_regions_from_image(mask, threshold=mask.mean(), sigma=sigma, dilation_size=1)
-        if num_regions < 2:
+        if num_regions < 1:
             print(f"{num_regions} segmentations found,no need to puzzle,score is {score}")
         else:
             puzzling_worked = True
@@ -2674,3 +2681,37 @@ def position_puzzling(points,scan_size,sigma=0.4,score_threshold=1.2):
     else:
         print(f"no segmentation found, using original points,score is {score}")
     return puzzling_worked,points_np
+
+
+def fit_vector_field(x, y, u, v, Xi,Yi,method='nearest'):
+    x,y,u,v=x.flatten(),y.flatten(),u.flatten(),v.flatten()
+    Ui = griddata((x, y), u, (Xi, Yi), method=method, fill_value=0)
+    Vi = griddata((x, y), v, (Xi, Yi), method=method, fill_value=0)
+    return Ui, Vi
+def warp_image(image, vector_field, order=1):
+    U, V = vector_field
+    rows, cols = np.indices(image.shape[:2])
+    rows_flatten, cols_flatten = rows.flatten(), cols.flatten()
+    warped_rows = rows_flatten + U.flatten()
+    warped_cols = cols_flatten + V.flatten()
+    warped_image = map_coordinates(image, (warped_rows, warped_cols), order=order, mode='nearest')
+    warped_image = warped_image.reshape(image.shape)
+    return warped_image
+def intorplate_puzzled_obj(array,pos_old,pos_new,order=1,method = 'linear'):
+    if isinstance(array, cp.ndarray):
+        array = cp.asnumpy(array)
+    if isinstance(pos_old, cp.ndarray):
+        pos_old = cp.asnumpy(pos_old)
+    if isinstance(pos_new, cp.ndarray):
+        pos_new = cp.asnumpy(pos_new)
+    Xi=np.arange(array.shape[0])
+    Yi=np.arange(array.shape[1])
+    Xi, Yi=np.meshgrid(Xi,Yi)
+    out=np.copy(array)
+    U, V=fit_vector_field(pos_old[:,0],pos_old[:,1],pos_new[:,0]-pos_old[:,0],pos_new[:,1]-pos_old[:,1],Xi,Yi)
+    for i_slices in range(array.shape[2]):
+        for i_modes in range(0,array.shape[3]):
+            print(1)
+            warped_image=warp_image(array[:,:,i_slices,i_modes], (U, V), order=order)
+            out[:,:,i_slices, i_modes]=warped_image
+    return out
