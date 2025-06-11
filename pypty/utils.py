@@ -2655,7 +2655,7 @@ def position_puzzling(points,scan_size,sigma=0.4,score_threshold=1.2):
     if score>1 :
         mask = (laplace-laplace.min())/(laplace.max()-laplace.min())
         labeled_regions, num_regions, edge_mask = segment_regions_from_image(mask, threshold=mask.mean(), sigma=sigma, dilation_size=1)
-        if num_regions < 1:
+        if num_regions < 2:
             print(f"{num_regions} segmentations found,no need to puzzle,score is {score}")
         else:
             puzzling_worked = True
