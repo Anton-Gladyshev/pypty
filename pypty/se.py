@@ -336,12 +336,12 @@ def unwarp_im(warp_im, ab, method="linear"):
         g = np.exp(np.reshape(g, (gshape[-2], gshape[-1]))-offset)*area_mag
     else:
         if len(gshape)==4:
-            for i in range(gshape[0]):
+            for i in tqdm(range(gshape[0])):
                 for j in range(gshape[1]):
                     gij=spip.interpn( uv_g, g[i,j], uv_i, method=method, bounds_error=False, fill_value=np.log(offset))
                     g[i,j] = np.exp(np.reshape(gij, (gshape[-2], gshape[-1]))-offset)*area_mag
         elif len(gshape)==3:
-            for i in range(gshape[0]):
+            for i in tqdm(range(gshape[0])):
                 gij=spip.interpn( uv_g, g[i], uv_i, method=method, bounds_error=False, fill_value=np.log(offset))
                 g[i] = np.exp(np.reshape(gij, (gshape[-2], gshape[-1]))-offset)*area_mag
     return g
