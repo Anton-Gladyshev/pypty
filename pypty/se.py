@@ -205,6 +205,43 @@ def get_virtual_annular_detector(pypty_params, inner_rad=0, outer_rad=1, save=Fa
         np.save(pypty_params["output_folder"]+"/virtual_signal_i_%.2f_o_%.2f.npy"%(inner_rad, outer_rad), signal)
     return signal
 
+def coordinate_transformation_2d(xy, ab):
+    """
+    Define the mapping function that will be passed to scipy.ndimage.geometric_transform
+
+    Originally written by Wouter Van den Broek.
+    """
+    # Transforms from xy to uv
+    xy = np.asarray(xy)
+    tmp = xy.shape
+    if tmp[0] == 2:
+        xy = np.transpose(xy)
+    tmp = np.asarray(ab.shape)
+    if tmp[0] == 3:
+        trafo_flag = 0  # linear
+    if tmp[0] == 6:
+        trafo_flag = 1  # quadratic
+    if tmp[0] == 10:
+        trafo_flag = 2  # cubic
+
+    x = np.ravel(xy[:, 0])
+    y = np.ravel(xy[:, 1])
+
+    a = ab[:, 0]
+    u = a[0] + a[1] * x + a[2] * y
+    b = ab[:, 1]
+    v = b[0] + b[1] * x + b[2] * y
+    if trafo_flag > 0:
+        u += a[3] * x * y + a[4] * x ** 2 + a[5] * y ** 2
+        v += b[3] * x * y + b[4] * x ** 2 + b[5] * y ** 2
+    if trafo_flag > 1:
+        u += a[6] * x ** 2 * y + a[7] * x * y ** 2 + a[8] * x ** 3 + a[9] * y ** 3
+        v += b[6] * x ** 2 * y + b[7] * x * y ** 2 + b[8] * x ** 3 + b[9] * y ** 3
+
+    uv = np.transpose([u, v])
+    uv = np.asarray(uv)
+
+    return uv
 
 def find_ab(x, y, u, v):
     """
