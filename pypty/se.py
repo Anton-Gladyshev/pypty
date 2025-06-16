@@ -291,16 +291,11 @@ def find_ab(x, y, u, v):
     return ab
 
 
-def unwarp_im(warp_im, ab, method="linear", plot_flag=False, fig_num=900, test=False):
+def unwarp_im(warp_im, ab, method="linear"):
     """
     Originally written by Wouter Van den Broek.
     This takes in a warped image, and a transformation matrix (ab), and outputs a tuple of two images. The first image has the illumination corrected, the second only does the geometric distortions, not the illumination correction
     """
-    if test is True:
-        warp_im = np.zeros_like(warp_im)
-        warp_im[warp_im.shape[0] // 2 :, : warp_im.shape[1] // 2] = 1
-        warp_im[: warp_im.shape[0] // 2, warp_im.shape[1] // 2 :] = 2
-        warp_im[warp_im.shape[0] // 2 :, warp_im.shape[1] // 2 :] = 3
 
     # Read the warped image
     g = 1* warp_im
@@ -319,30 +314,36 @@ def unwarp_im(warp_im, ab, method="linear", plot_flag=False, fig_num=900, test=F
     sc = np.sqrt(coordinate_transformation_2d_areamag(np.zeros((1, 2)), ab))
 
     # Coordinates in xy-space
-    x_tmp = np.linspace(-0.5, 0.5, g.shape[0]) * (g.shape[0] - 1) / sc
-    y_tmp = np.linspace(-0.5, 0.5, g.shape[1]) * (g.shape[1] - 1) / sc
+    x_tmp = np.linspace(-0.5, 0.5, g.shape[-2]) * (g.shape[-2] - 1) / sc
+    y_tmp = np.linspace(-0.5, 0.5, g.shape[-1]) * (g.shape[-1] - 1) / sc
     [x_tmp, y_tmp] = np.meshgrid(x_tmp, y_tmp, indexing="ij")
     x_tmp = np.ravel(x_tmp)
     y_tmp = np.ravel(y_tmp)
 
     # Transform those to uv-space
     uv_i = coordinate_transformation_2d((x_tmp, y_tmp), ab)
-
-    # Do the unwarping
-    g = spip.interpn(
-        uv_g, g, uv_i, method=method, bounds_error=False, fill_value=np.log(offset)
-    )
-    g = np.reshape(g, (gshape[0], gshape[1]))
-
-    # undo the logarithms
-    g = np.exp(g) - offset
-
-    area_mag = coordinate_transformation_2d_areamag((x_tmp, y_tmp), ab)
-    area_mag = np.reshape(area_mag, (gshape[0], gshape[1]))
-    tmp = area_mag[int(round(g.shape[0] / 2)), int(round(g.shape[1] / 2))]
-    area_mag = area_mag / tmp  # Area magnification in the middle is 1 now
     
-    g *= area_mag
+    # Area magnification in the middle is 1 now
+    area_mag = coordinate_transformation_2d_areamag((x_tmp, y_tmp), ab)
+    area_mag = np.reshape(area_mag, (gshape[-2], gshape[-1]))
+    tmp = area_mag[int(round(gshape[-2] / 2)), int(round(gshape[-1] / 2))]
+    area_mag = area_mag / tmp
+    # Do the unwarping
+    if len(gshape)==2:
+        g = spip.interpn(
+            uv_g, g, uv_i, method=method, bounds_error=False, fill_value=np.log(offset)
+        )
+        g = np.exp(np.reshape(g, (gshape[-2], gshape[-1]))-offset)*area_mag
+    else:
+        if len(gshape)==4:
+            for i in range(gshape[0]):
+                for j in range(gshape[1]):
+                    gij=spip.interpn( uv_g, g[i,j], uv_i, method=method, bounds_error=False, fill_value=np.log(offset))
+                    g[i,j] = np.exp(np.reshape(gij, (gshape[-2], gshape[-1]))-offset)*area_mag
+        elif len(gshape)==3:
+            for i in range(gshape[0]):
+                gij=spip.interpn( uv_g, g[i], uv_i, method=method, bounds_error=False, fill_value=np.log(offset))
+                g[i] = np.exp(np.reshape(gij, (gshape[-2], gshape[-1]))-offset)*area_mag
     return g
 
 
