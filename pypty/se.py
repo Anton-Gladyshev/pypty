@@ -204,3 +204,127 @@ def get_virtual_annular_detector(pypty_params, inner_rad=0, outer_rad=1, save=Fa
     if save:
         np.save(pypty_params["output_folder"]+"/virtual_signal_i_%.2f_o_%.2f.npy"%(inner_rad, outer_rad), signal)
     return signal
+
+
+
+
+def unwarp_im(warp_im, ab, method="linear", plot_flag=False, fig_num=900, test=False):
+    """
+    Originally written by Wouter Van den Broek.
+    This takes in a warped image, and a transformation matrix (ab), and outputs a tuple of two images. The first image has the illumination corrected, the second only does the geometric distortions, not the illumination correction
+    """
+    if test is True:
+        warp_im = np.zeros_like(warp_im)
+        warp_im[warp_im.shape[0] // 2 :, : warp_im.shape[1] // 2] = 1
+        warp_im[: warp_im.shape[0] // 2, warp_im.shape[1] // 2 :] = 2
+        warp_im[warp_im.shape[0] // 2 :, warp_im.shape[1] // 2 :] = 3
+
+    # Read the warped image
+    g = 1* warp_im
+    gshape=g.shape
+    offset = 2
+    assert np.all(g >= 0), "Values are below 0"
+    g = np.log(g + offset)
+
+    # Start the unwarping
+    # coordinates of the warped image in uv-space
+    u_g = np.arange(g.shape[0])
+    v_g = np.arange(g.shape[1])
+    uv_g = (u_g, v_g)
+
+    # The mean scaling, probed over many different directions
+    sc = np.sqrt(coordinate_transformation_2d_areamag(np.zeros((1, 2)), ab))
+
+    # Coordinates in xy-space
+    x_tmp = np.linspace(-0.5, 0.5, g.shape[0]) * (g.shape[0] - 1) / sc
+    y_tmp = np.linspace(-0.5, 0.5, g.shape[1]) * (g.shape[1] - 1) / sc
+    [x_tmp, y_tmp] = np.meshgrid(x_tmp, y_tmp, indexing="ij")
+    x_tmp = np.ravel(x_tmp)
+    y_tmp = np.ravel(y_tmp)
+
+    # Transform those to uv-space
+    uv_i = coordinate_transformation_2d((x_tmp, y_tmp), ab)
+
+    # Do the unwarping
+    g = spip.interpn(
+        uv_g, g, uv_i, method=method, bounds_error=False, fill_value=np.log(offset)
+    )
+    g = np.reshape(g, (gshape[0], gshape[1]))
+
+    # undo the logarithms
+    g = np.exp(g) - offset
+
+    area_mag = coordinate_transformation_2d_areamag((x_tmp, y_tmp), ab)
+    area_mag = np.reshape(area_mag, (gshape[0], gshape[1]))
+    tmp = area_mag[int(round(g.shape[0] / 2)), int(round(g.shape[1] / 2))]
+    area_mag = area_mag / tmp  # Area magnification in the middle is 1 now
+    
+    g *= area_mag
+    return g
+
+
+def coordinate_transformation_2d_areamag(xy, ab):
+    """
+    Define the local area magnification of the mapping function
+
+    Originally written by Wouter Van den Broek
+    """
+    # Transforms from xy to uv
+    xy = np.asarray(xy)
+    tmp = xy.shape
+    if tmp[0] == 2:
+        xy = np.transpose(xy)
+    tmp = np.asarray(ab.shape)
+    if tmp[0] == 3:
+        trafo_flag = 0  # linear
+    if tmp[0] == 6:
+        trafo_flag = 1  # quadratic
+    if tmp[0] == 10:
+        trafo_flag = 2  # cubic
+
+    x = np.ravel(xy[:, 0])
+    y = np.ravel(xy[:, 1])
+
+    a = ab[:, 0]
+    b = ab[:, 1]
+
+    # Derivative of u wrt x
+    duv_dxy = a[1]
+    if trafo_flag > 0:
+        duv_dxy += a[3] * y + 2 * a[4] * x
+    if trafo_flag > 1:
+        duv_dxy += 2 * a[6] * x * y + a[7] * y ** 2 + 3 * a[8] * x ** 2
+    mag_tmp = duv_dxy
+
+    # Derivative of v wrt y
+    duv_dxy = b[2]
+    if trafo_flag > 0:
+        duv_dxy += b[3] * x + 2 * b[5] * y
+    if trafo_flag > 1:
+        duv_dxy += b[6] * x ** 2 + 2 * b[7] * x * y + 3 * b[9] * y ** 2
+    mag_tmp *= duv_dxy
+
+    # Derivative of u wrt y
+    duv_dxy = a[2]
+    if trafo_flag > 0:
+        duv_dxy += a[3] * x + 2 * a[5] * y
+    if trafo_flag > 1:
+        duv_dxy += a[6] * x ** 2 + 2 * a[7] * x * y + 3 * a[9] * y ** 2
+    mag = duv_dxy
+
+    # Derivative of v wrt x
+    duv_dxy = b[1]
+    if trafo_flag > 0:
+        duv_dxy += b[3] * y + 2 * b[4] * x
+    if trafo_flag > 1:
+        duv_dxy += 2 * b[6] * x * y + b[7] * y ** 2 + 3 * b[8] * x ** 2
+    mag *= duv_dxy
+
+    mag_tmp -= mag
+    mag = np.absolute(mag_tmp)
+    mag = np.asarray(mag)
+
+    return mag
+
+
+
