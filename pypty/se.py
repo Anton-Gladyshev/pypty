@@ -206,6 +206,42 @@ def get_virtual_annular_detector(pypty_params, inner_rad=0, outer_rad=1, save=Fa
     return signal
 
 
+def find_ab(x, y, u, v):
+    """
+    Find the transformation matrix moving from x and y to u and v. Originally written by Wouter Van den Broek.
+    """
+
+    trafo_flag = 2  # A cubic transformation
+    no_params = 10  # number of parameters to estimate
+
+    if trafo_flag == -1:
+        print("Not enough valid calibration images: QUITING.")
+        quit()
+    if trafo_flag == 0:
+        print("Calculating and correcting a LINEAR distortion model")
+    if trafo_flag == 1:
+        print("Calculating and correcting a QUADRATIC distortion model")
+    if trafo_flag == 2:
+        print("Calculating and correcting a CUBIC distortion model")
+
+    A = np.ones((x.shape[0], no_params))
+    A[:, 1] = x
+    A[:, 2] = y
+    if trafo_flag > 0:
+        A[:, 3] = x * y
+        A[:, 4] = x ** 2
+        A[:, 5] = y ** 2
+    if trafo_flag > 1:
+        A[:, 6] = (x ** 2) * y
+        A[:, 7] = x * (y ** 2)
+        A[:, 8] = x ** 3
+        A[:, 9] = y ** 3
+
+    tmp = np.dot(np.transpose(A), A)
+    ab = np.linalg.solve(tmp, np.dot(np.transpose(A), np.transpose([u, v])))
+
+    print(ab)
+    return ab
 
 
 def unwarp_im(warp_im, ab, method="linear", plot_flag=False, fig_num=900, test=False):
