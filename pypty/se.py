@@ -306,8 +306,8 @@ def unwarp_im(warp_im, ab, method="linear"):
 
     # Start the unwarping
     # coordinates of the warped image in uv-space
-    u_g = np.arange(g.shape[0])
-    v_g = np.arange(g.shape[1])
+    u_g = np.arange(gshape[-2])
+    v_g = np.arange(gshape[-1])
     uv_g = (u_g, v_g)
 
     # The mean scaling, probed over many different directions
@@ -330,8 +330,7 @@ def unwarp_im(warp_im, ab, method="linear"):
     area_mag = area_mag / tmp
     # Do the unwarping
     if len(gshape)==2:
-        g = spip.interpn(
-            uv_g, g, uv_i, method=method, bounds_error=False, fill_value=np.log(offset)
+        g = spip.interpn(uv_g, g, uv_i, method=method, bounds_error=False, fill_value=np.log(offset)
         )
         g = np.exp(np.reshape(g, (gshape[-2], gshape[-1]))-offset)*area_mag
     else:
