@@ -202,6 +202,10 @@ def append_exp_params(experimental_params, pypty_params=None):
         
         num_slices - integer, number of slices, default is 1.
         
+        num_obj_modes - integer, number of object modes, default is None (single mode)
+                
+        obj_phase_sigma - float, random noise std. used for for object initialization. default is 0
+        
         plot - boolean Flag, default is True 
         
         print_flag - integer. Default is 1. If 0 nothing will be printed. 1 prints only thelatest state of the computation, 2 prints every state as a separate line. 3 prints the linesearch progress in iterative optimization. 4 prints everything that 3 does and if constraints are applied, it prints how they contribute so that a user can configure the weights properly.
@@ -241,8 +245,10 @@ def append_exp_params(experimental_params, pypty_params=None):
     PLRotation_deg=experimental_params.get("PLRotation_deg", "auto")
     flip_ky=experimental_params.get("flip_ky", False)
     
-    total_thickness=experimental_params.get("total_thickness", 1)
-    num_slices=experimental_params.get("num_slices", 1)
+    total_thickness = experimental_params.get("total_thickness", 1)
+    num_slices = experimental_params.get("num_slices", 1)
+    num_obj_modes = experimental_params.get("num_obj_modes", None)
+    obj_phase_sigma = experimental_params.get("obj_phase_sigma", 1)
     
     plot=experimental_params.get("plot", False)
     print_flag=experimental_params.get("print_flag", True)
@@ -389,12 +395,20 @@ def append_exp_params(experimental_params, pypty_params=None):
     if print_flag:
         sys.stdout.write("\nPixel size after padding: %.2e Å"%new_pixel_size)
     aperture=np.pad(aperture, data_pad, mode="constant", constant_values=0)
+    
+    if num_obj_modes is None:
+        obj_guess=np.ones((1,1,num_slices,1), dtype=np.complex128)
+    else:
+        shapey=int(np.ceil(np.max(positions[:,0])+aperture.shape[0]- np.min(positions[:,0])))
+        shapex=int(np.ceil(np.max(positions[:,1])+aperture.shape[1]- np.min(positions[:,1])))
+        obj_guess=np.exp(1j*obj_phase_sigma*(np.random.rand(shapey,shapex, num_slices,num_obj_modes)))
+        
     if pypty_params is None:
         pypty_params={
         'data_path': path_data_h5,
         'output_folder': output_folder,
         'positions': positions,
-        'obj': np.ones((1,1,num_slices,1), dtype=np.complex128),
+        'obj': obj_guess,
         'acc_voltage': acc_voltage,
         'slice_distances': np.array([total_thickness/num_slices]),
         'pixel_size_x_A': new_pixel_size,
