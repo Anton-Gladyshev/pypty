@@ -2631,11 +2631,6 @@ def position_puzzling(points,scan_size,sigma=0.4,score_threshold=1.2):
         points_np = cp.asnumpy(points.copy())
     else:
         points_np = points.copy()
-    print(points_np.shape)
-    print(points_np)
-    import matplotlib.pyplot as plt
-    plt.scatter(points_np[:,1], points_np[:,0], s=1, c='b', marker='o', label="Original positions")
-    plt.show()
     x = points_np[:,0].reshape(scan_size)
     y = points_np[:,1].reshape(scan_size)
     laplacex = ndimage.laplace(x)
@@ -2652,7 +2647,7 @@ def position_puzzling(points,scan_size,sigma=0.4,score_threshold=1.2):
     # hist, _ = np.histogram(np.abs(laplace).ravel(), bins=100, density=True)
     # ent = entropy(hist + 1e-12)  # avoid log(0)
     puzzling_worked = False
-    if score>1 :
+    if score>score_threshold :
         mask = (laplace-laplace.min())/(laplace.max()-laplace.min())
         labeled_regions, num_regions, edge_mask = segment_regions_from_image(mask, threshold=mask.mean(), sigma=sigma, dilation_size=1)
         if num_regions < 2:
