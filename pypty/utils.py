@@ -1554,8 +1554,8 @@ def prepare_main_loop_params(algorithm,probe, obj,positions,tilts, measured_data
             positions[full_sequence,1]-=np.min(positions[full_sequence,1])
     positions+=extra_space_on_side_px
     if extra_space_on_side_px>0:
-        obj=np.vstack((np.max(np.abs(obj))*np.ones((extra_space_on_side_px,obj.shape[1], obj.shape[2],obj.shape[3]), dtype=default_complex_cpu), obj ))
-        obj=np.hstack((np.max(np.abs(obj))*np.ones((obj.shape[0],extra_space_on_side_px, obj.shape[2],obj.shape[3]), dtype=default_complex_cpu), obj))
+        obj=np.vstack((np.mean(obj)*np.ones((extra_space_on_side_px,obj.shape[1], obj.shape[2],obj.shape[3]), dtype=default_complex_cpu), obj ))
+        obj=np.hstack((np.mean(obj)*np.ones((obj.shape[0],extra_space_on_side_px, obj.shape[2],obj.shape[3]), dtype=default_complex_cpu), obj))
     tilts_correction=np.zeros_like(tilts)
     if allow_subPixel_shift:
         full_pos_correction=(positions-np.round(positions).astype(default_int_cpu)).astype(default_float_cpu)
@@ -2080,7 +2080,32 @@ def save_params(params_path, params, strip_dataset_from_params):
         pickle.dump(params_pkl, file)
     del params_pkl
 
+def change_params(path_params, keys, new_values):
+    params=load_params(path_params)
+    if type(keys)!=list:
+        keys=[keys]
+        new_values=[new_values]
+    for k in range(len(keys)):
+        ke, nv=keys[k], new_values[k]
+        print("Changing Parameter %s value from %s to %s!"%(ke, params.get(ke, "None"), nv))
+        params[ke]=nv
+    save_params(path_params, params, False)
 
+
+def detect_changed_params(list_hyperparams, keys_hyperparams, path_params, warnings, print_flag):
+    new_params=load_params(path_params)
+    new_params=string_params_to_usefull_params(new_params)
+    for indd in range(len(list_hyperparams)):
+        hpa=list_hyperparams[indd]
+        key=keys_hyperparams[indd]
+        value=new_params.get(key, "plh")
+        if value!="plh":
+            list_hyperparams[indd]=value
+    warnings+="Hyperparameter were changed manually!\n"
+    if print_flag:
+        sys.stdout.write("\nWARNING! Hyperparameter changed manually!")
+        sys.stdout.flush()
+    return list_hyperparams, warnings
 
 def phase_cross_corr_align(im_ref_fft, im_2_fft, refine_box_dim, upsample, x_real, y_real, shift_y=None, shift_x=None):
     """

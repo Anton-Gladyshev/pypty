@@ -220,6 +220,9 @@ def loss_and_direction(this_obj, full_probe, this_pos_array, this_pos_correction
     if probe_runx is None:
         probe_runx,probe_runy=cp.meshgrid(cp.arange(this_ps, dtype=int),cp.arange(this_ps, dtype=int), indexing="xy")
         probe_runx,probe_runy=probe_runx[None,:,:],probe_runy[None,:,:]
+    if propmethod=="wide_beam":
+        this_obj=cp.angle(this_obj)-1j*cp.log(cp.abs(this_obj))
+    
     if exclude_mask is None:
         q2, qx, qy, exclude_mask, exclude_mask_ishift = pyptyutils.create_spatial_frequencies(pixel_size_x_A, pixel_size_y_A, this_ps, damping_cutoff_multislice, smooth_rolloff, default_float)     # create some arrays with spatial frequencies. Many of them are actually idential (or almost idential, so i will later clean this mess). In any case, the code is currently optimized to create them only once (when configured properly)
         qx,qy,q2, exclude_mask, exclude_mask_ishift=qx[None,:,:],qy[None,:,:],q2[None,:,:], exclude_mask[None,:,:], exclude_mask_ishift[None,:,:]
@@ -234,7 +237,7 @@ def loss_and_direction(this_obj, full_probe, this_pos_array, this_pos_correction
         shift_probe_mask_x=shift_probe_mask_x*exclude_mask_ishift
         shift_probe_mask_y=shift_probe_mask_y*exclude_mask_ishift
         shift_probe_mask_yx=cp.stack((shift_probe_mask_y, shift_probe_mask_x), axis=1) #(1, 2, y, x)
-    is_multislice = num_slices>1 or propmethod=="better_multislice" or propmethod=="yoshida"
+    is_multislice = num_slices>1 or propmethod=="better_multislice" or propmethod=="yoshida" or propmethod=="wide_beam"
     is_single_defocus = recon_type=="far_field" or defocus_array.shape[0]==1
     helper_flag_1= this_step_probe or this_beam_current_step
     helper_flag_2= helper_flag_1 or this_step_aberrations_array
@@ -257,6 +260,7 @@ def loss_and_direction(this_obj, full_probe, this_pos_array, this_pos_correction
         matrix_phase_plates= (len(phase_plate_data.shape)==3)
     else:
         phase_plate_active=False
+    wide_beam_coeffs=None
     if not(individual_propagator_flag) and is_single_dist and is_multislice and (master_propagator_phase_space is None):
         this_tilt=(this_tilt_array+this_tilts_correction)[0,:]
         this_tan_y_inside=this_tilt[2]
@@ -273,9 +277,25 @@ def loss_and_direction(this_obj, full_probe, this_pos_array, this_pos_correction
             master_propagator_phase_space=cp.exp(-3.141592654j*this_distances[0]*(this_wavelength*q2+2*(qx*this_tan_x_inside+qy*this_tan_y_inside)))*exclude_mask_ishift
             master_propagator_phase_space=cp.expand_dims(master_propagator_phase_space,(-1,-2)) ### probe modes
             half_master_propagator_phase_space=None
+        if propmethod=="wide_beam":
+            master_propagator_phase_space=(-3.141592654*this_distances[0]*(this_wavelength*q2+2*(qx*this_tan_x_inside+qy*this_tan_y_inside)))*exclude_mask_ishift
+            master_propagator_phase_space=cp.expand_dims(master_propagator_phase_space,(-1,-2)) ### probe modes
+            half_master_propagator_phase_space=None
     else:
         master_propagator_phase_space=None
         half_master_propagator_phase_space=None
+    if propmethod=="wide_beam" and is_single_dist:
+        wide_beam_coeffs=cp.ones(9, dtype=default_complex)
+        pizl=this_wavelength/(3.141592654*this_distances[0])
+        wide_beam_coeffs[1]=1j
+        wide_beam_coeffs[2]=-0.25j*pizl-0.5
+        wide_beam_coeffs[3]=0.125j*pizl**2-1j/6
+        wide_beam_coeffs[4]=(-5j/64)*pizl**3 -(1/32)*pizl**2+1/24
+        wide_beam_coeffs[5]=(7j/128)*pizl**4 + 1j/120
+        wide_beam_coeffs[6]=(-21/512)*pizl**5-(1/1024)*pizl**4 + (1j/768)*pizl**3 - 1/720
+        wide_beam_coeffs[7]=(33j/1024)*pizl**6-1j/5040
+        wide_beam_coeffs[8]=(-429j/16384)*pizl**7-(25/8192)*pizl**6 + (1/6144)*pizl**4 + 1/(40320)
+        
     this_tilt_array=(this_tilt_array+this_tilts_correction)[:,:,None, None]
     this_pos_array=this_pos_array[:,:,None]
     if type(static_background)==cp.ndarray:
@@ -289,10 +309,13 @@ def loss_and_direction(this_obj, full_probe, this_pos_array, this_pos_correction
     if propmethod=="multislice":
         waves_multislice = cp.empty((sh0, this_ps,this_ps,num_slices,n_probe_modes,n_obj_modes, 2), dtype=default_complex)
     else:
-        if propmethod=="yoshida":
-            waves_multislice = cp.empty((sh0, this_ps,this_ps,num_slices,n_probe_modes,n_obj_modes, 7), dtype=default_complex)
+        if propmethod=="wide_beam":
+            waves_multislice = cp.empty((sh0, this_ps,this_ps,num_slices,n_probe_modes,n_obj_modes, 9), dtype=default_complex)
         else:
-            waves_multislice = cp.empty((sh0, this_ps,this_ps,num_slices,n_probe_modes,n_obj_modes, 10), dtype=default_complex)
+            if propmethod=="yoshida":
+                waves_multislice = cp.empty((sh0, this_ps,this_ps,num_slices,n_probe_modes,n_obj_modes, 7), dtype=default_complex)
+            else:
+                waves_multislice = cp.empty((sh0, this_ps,this_ps,num_slices,n_probe_modes,n_obj_modes, 10), dtype=default_complex)
     this_exit_wave           = cp.empty((sh0, this_ps,this_ps,         n_probe_modes,n_obj_modes   ), dtype=default_complex)
     if multiple_scenarios:
         full_probe=cp.moveaxis(full_probe,3,0)
@@ -395,18 +418,26 @@ def loss_and_direction(this_obj, full_probe, this_pos_array, this_pos_correction
                 master_propagator_phase_space,half_master_propagator_phase_space=None,None
             waves_multislice, this_exit_wave=pyptymultislice.multislice(this_probe, this_obj_chopped, num_slices, n_obj_modes, n_probe_modes, this_distances, this_wavelength, q2, qx, qy, exclude_mask, is_single_dist, this_tan_x_inside,this_tan_y_inside, damping_cutoff_multislice, smooth_rolloff, master_propagator_phase_space,  None, exclude_mask_ishift, waves_multislice, this_exit_wave, default_float, default_complex)
         else:
-            if propmethod=="better_multislice":
+            if propmethod=="wide_beam":
                 if is_single_dist and not(individual_propagator_flag):
-                    half_master_propagator_phase_space=cp.exp(-3.141592654j*0.5*this_distances[0]*(this_wavelength*q2+2*(qx*this_tan_x_inside+qy*this_tan_y_inside)))*exclude_mask_ishift
-                    half_master_propagator_phase_space=cp.expand_dims(half_master_propagator_phase_space,(-1,-2))
-                    master_propagator_phase_space=half_master_propagator_phase_space**2
-                waves_multislice, this_exit_wave=pyptymultislice.better_multislice(this_probe, this_obj_chopped, num_slices, n_obj_modes, n_probe_modes, this_distances, this_wavelength, q2, qx, qy, exclude_mask, is_single_dist, this_tan_x_inside,this_tan_y_inside, damping_cutoff_multislice, smooth_rolloff, master_propagator_phase_space,  half_master_propagator_phase_space, exclude_mask_ishift, waves_multislice,this_exit_wave, default_float, default_complex)
-            elif propmethod=="yoshida":
-                if is_single_dist and not(individual_propagator_flag):
-                    sigma_yoshida=(2+2**(-1/3)+2**(1/3))/3
-                    half_master_propagator_phase_space=cp.expand_dims(cp.exp(-3.141592654j*(sigma_yoshida)*this_distances[0]*(this_wavelength*q2+2*(qx*this_tan_x_inside+qy*this_tan_y_inside)))*exclude_mask_ishift,(-1,-2))
-                    master_propagator_phase_space=cp.expand_dims(cp.exp(-3.141592654j*(1-2*sigma_yoshida)*this_distances[0]*(this_wavelength*q2+2*(qx*this_tan_x_inside+qy*this_tan_y_inside)))*exclude_mask_ishift,(-1,-2))
-                waves_multislice, this_exit_wave=pyptymultislice.yoshida_multislice(this_probe, this_obj_chopped, num_slices, n_obj_modes, n_probe_modes, this_distances, this_wavelength, q2, qx, qy, exclude_mask, is_single_dist, this_tan_x_inside,this_tan_y_inside, damping_cutoff_multislice, smooth_rolloff, master_propagator_phase_space,  half_master_propagator_phase_space, exclude_mask_ishift, waves_multislice,this_exit_wave, default_float, default_complex)
+                    master_propagator_phase_space=(-3.141592654*this_distances[0]*(this_wavelength*q2+2*(qx*this_tan_x_inside+qy*this_tan_y_inside)))*exclude_mask_ishift
+                    master_propagator_phase_space=cp.expand_dims(master_propagator_phase_space,(-1,-2))
+                else:
+                    master_propagator_phase_space,half_master_propagator_phase_space=None,None
+                waves_multislice, this_exit_wave = pyptymultislice.wide_beam_multislice(this_probe, this_obj_chopped, num_slices, n_obj_modes, n_probe_modes, this_distances, this_wavelength, q2, qx, qy, exclude_mask, is_single_dist, this_tan_x_inside,this_tan_y_inside, damping_cutoff_multislice, smooth_rolloff, master_propagator_phase_space,  None, exclude_mask_ishift, waves_multislice, this_exit_wave, default_float, default_complex, wide_beam_coeffs)
+            else:
+                if propmethod=="better_multislice":
+                    if is_single_dist and not(individual_propagator_flag):
+                        half_master_propagator_phase_space=cp.exp(-3.141592654j*0.5*this_distances[0]*(this_wavelength*q2+2*(qx*this_tan_x_inside+qy*this_tan_y_inside)))*exclude_mask_ishift
+                        half_master_propagator_phase_space=cp.expand_dims(half_master_propagator_phase_space,(-1,-2))
+                        master_propagator_phase_space=half_master_propagator_phase_space**2
+                    waves_multislice, this_exit_wave=pyptymultislice.better_multislice(this_probe, this_obj_chopped, num_slices, n_obj_modes, n_probe_modes, this_distances, this_wavelength, q2, qx, qy, exclude_mask, is_single_dist, this_tan_x_inside,this_tan_y_inside, damping_cutoff_multislice, smooth_rolloff, master_propagator_phase_space,  half_master_propagator_phase_space, exclude_mask_ishift, waves_multislice,this_exit_wave, default_float, default_complex)
+                elif propmethod=="yoshida":
+                    if is_single_dist and not(individual_propagator_flag):
+                        sigma_yoshida=(2+2**(-1/3)+2**(1/3))/3
+                        half_master_propagator_phase_space=cp.expand_dims(cp.exp(-3.141592654j*(sigma_yoshida)*this_distances[0]*(this_wavelength*q2+2*(qx*this_tan_x_inside+qy*this_tan_y_inside)))*exclude_mask_ishift,(-1,-2))
+                        master_propagator_phase_space=cp.expand_dims(cp.exp(-3.141592654j*(1-2*sigma_yoshida)*this_distances[0]*(this_wavelength*q2+2*(qx*this_tan_x_inside+qy*this_tan_y_inside)))*exclude_mask_ishift,(-1,-2))
+                    waves_multislice, this_exit_wave=pyptymultislice.yoshida_multislice(this_probe, this_obj_chopped, num_slices, n_obj_modes, n_probe_modes, this_distances, this_wavelength, q2, qx, qy, exclude_mask, is_single_dist, this_tan_x_inside,this_tan_y_inside, damping_cutoff_multislice, smooth_rolloff, master_propagator_phase_space,  half_master_propagator_phase_space, exclude_mask_ishift, waves_multislice,this_exit_wave, default_float, default_complex)
                 
         if tilt_mode==1 or tilt_mode>=3: ## after if tilt mode is 1, 3 or 4
             tilting_mask_real_space_after=cp.exp(x_real_grid_tilt*this_tan_x_after+y_real_grid_tilt*this_tan_y_after)[:,:,:,:, None]
@@ -552,10 +583,13 @@ def loss_and_direction(this_obj, full_probe, this_pos_array, this_pos_correction
         if propmethod=="multislice":
             object_grad, interm_probe_grad, tilts_grad = pyptymultislice.multislice_grads(dLoss_dP_out, waves_multislice, this_obj_chopped, object_grad, tilts_grad, is_single_dist,this_distances, exclude_mask, this_wavelength, q2, qx, this_tan_x_inside, qy, this_tan_y_inside, num_slices, n_obj_modes,tiltind, master_propagator_phase_space, this_step_tilts, damping_cutoff_multislice, smooth_rolloff, tilt_mode,  compute_batch, exclude_mask_ishift, this_step_probe, this_step_obj, this_step_pos_correction, masked_pixels_y, masked_pixels_x, default_float, default_complex, helper_flag_4)
         else:
-            if propmethod=="better_multislice":
-                object_grad,  interm_probe_grad, tilts_grad = pyptymultislice.better_multislice_grads(dLoss_dP_out, waves_multislice, this_obj_chopped, object_grad, tilts_grad, is_single_dist, this_distances, exclude_mask, this_wavelength, q2, qx, this_tan_x_inside, qy, this_tan_y_inside, num_slices, n_probe_modes, n_obj_modes,tiltind, this_step_tilts,  master_propagator_phase_space, half_master_propagator_phase_space, damping_cutoff_multislice, smooth_rolloff, tilt_mode,  compute_batch, exclude_mask_ishift, masked_pixels_y, masked_pixels_x, default_float, default_complex)
-            if propmethod=="yoshida":
-                object_grad, interm_probe_grad, tilts_grad = pyptymultislice.yoshida_multislice_grads(dLoss_dP_out, waves_multislice, this_obj_chopped, object_grad, tilts_grad, is_single_dist, this_distances, exclude_mask, this_wavelength, q2, qx, this_tan_x_inside, qy, this_tan_y_inside, num_slices, n_probe_modes, n_obj_modes,tiltind, this_step_tilts,  master_propagator_phase_space, half_master_propagator_phase_space, damping_cutoff_multislice, smooth_rolloff, tilt_mode,  compute_batch, exclude_mask_ishift, masked_pixels_y, masked_pixels_x, default_float, default_complex)
+            if propmethod=="wide_beam":
+                object_grad, interm_probe_grad, tilts_grad = pyptymultislice.wide_beam_multislice_grads(dLoss_dP_out, waves_multislice, this_obj_chopped, object_grad, tilts_grad, is_single_dist,this_distances, exclude_mask, this_wavelength, q2, qx, this_tan_x_inside, qy, this_tan_y_inside, num_slices, n_obj_modes,tiltind, master_propagator_phase_space, this_step_tilts, damping_cutoff_multislice, smooth_rolloff, tilt_mode,  compute_batch, exclude_mask_ishift, this_step_probe, this_step_obj, this_step_pos_correction, masked_pixels_y, masked_pixels_x, default_float, default_complex, helper_flag_4, wide_beam_coeffs)
+            else:
+                if propmethod=="better_multislice":
+                    object_grad,  interm_probe_grad, tilts_grad = pyptymultislice.better_multislice_grads(dLoss_dP_out, waves_multislice, this_obj_chopped, object_grad, tilts_grad, is_single_dist, this_distances, exclude_mask, this_wavelength, q2, qx, this_tan_x_inside, qy, this_tan_y_inside, num_slices, n_probe_modes, n_obj_modes,tiltind, this_step_tilts,  master_propagator_phase_space, half_master_propagator_phase_space, damping_cutoff_multislice, smooth_rolloff, tilt_mode,  compute_batch, exclude_mask_ishift, masked_pixels_y, masked_pixels_x, default_float, default_complex)
+                if propmethod=="yoshida":
+                    object_grad, interm_probe_grad, tilts_grad = pyptymultislice.yoshida_multislice_grads(dLoss_dP_out, waves_multislice, this_obj_chopped, object_grad, tilts_grad, is_single_dist, this_distances, exclude_mask, this_wavelength, q2, qx, this_tan_x_inside, qy, this_tan_y_inside, num_slices, n_probe_modes, n_obj_modes,tiltind, this_step_tilts,  master_propagator_phase_space, half_master_propagator_phase_space, damping_cutoff_multislice, smooth_rolloff, tilt_mode,  compute_batch, exclude_mask_ishift, masked_pixels_y, masked_pixels_x, default_float, default_complex)
         if helper_flag_4:
             fourier_probe_grad=None
             if probe_shift_flag:
@@ -622,6 +656,9 @@ def loss_and_direction(this_obj, full_probe, this_pos_array, this_pos_correction
     loss*=this_loss_weight
     if data_simulation_flag:
         np.save(data_simulation_flag, sim_patterns.get())
+    if propmethod=="wide_beam":
+        this_obj=cp.exp(1j*this_obj)
+        object_grad*=1/cp.conjugate(this_obj)
     constraint_contributions=[]
     loss_print_copy=1*loss;
     this_pos_array=this_pos_array[:,:,0]

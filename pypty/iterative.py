@@ -77,7 +77,9 @@ def run(pypty_params):
 
     pyptyutils.prepare_saving_stuff(output_folder, save_loss_log, epoch_prev)
     if output_folder[-1]!="/": output_folder+="/";
-    pyptyutils.save_params(output_folder+"params.pkl", params, strip_dataset_from_params) ### save the params
+    path_params=output_folder+"params.pkl"
+    pyptyutils.save_params(path_params, params, strip_dataset_from_params) ### save the params
+    t_params=os.path.getctime(path_params)
     pyptyutils.print_pypty_header(data_path, output_folder, save_loss_log)
     params=pyptyutils.string_params_to_usefull_params(params) ### here we want to convert some possible strings that may look like 'lambda x: x>1' into real functions
     save_checkpoints_every_epoch = params.get('save_checkpoints_every_epoch', False)
@@ -288,10 +290,20 @@ def run(pypty_params):
     t0=time.time()
     is_first_epoch=True ## Just a flag that will enable recomputing of propagation- & shift- meshgrids
     constratins_prev, prev_steps_sum=0,0
-    if not(reset_positions is None ): initial_postions, initial_postions_correction=1*positions, 1*positions_correction
+    if not(reset_positions is None): initial_postions, initial_postions_correction=1*positions, 1*positions_correction
+    list_hyperparams=[propmethod, data_simulation_flag, reset_positions, restart_from_vacuum, reset_history_flag, smart_memory, wolfe_c1_constant,wolfe_c2_constant, window_weight, hist_length, deformation_reg_weight_tilts, deformation_reg_weight_positions, slow_axis_reg_weight_positions, slow_axis_reg_weight_tilts, fast_axis_reg_weight_positions,fast_axis_reg_weight_tilts, update_step_bfgs, apply_gaussian_filter_amplitude, apply_gaussian_filter, keep_probe_states_orthogonal, loss_weight, phase_norm_weight, abs_norm_weight, probe_reg_constraint_weight, do_charge_flip, atv_weight, wedge_mu, beta_wedge, tune_only_probe_phase, mixed_variance_weight,mixed_variance_sigma, phase_only_obj, tune_only_probe_abs, dynamically_resize_yx_object, update_beam_current, update_probe, update_obj, update_probe_pos, update_tilts, update_static_background, update_aberrations_array, puzzle_positions]
+    keys_hyperparams=["propmethod", "data_simulation_flag", "reset_positions", "restart_from_vacuum", "reset_history_flag", "smart_memory", "wolfe_c1_constant","wolfe_c2_constant", "window_weight", "hist_length", "deformation_reg_weight_tilts", "deformation_reg_weight_positions", "slow_axis_reg_weight_positions", "slow_axis_reg_weight_tilts", "fast_axis_reg_weight_positions","fast_axis_reg_weight_tilts", "update_step_bfgs", "apply_gaussian_filter_amplitude", "apply_gaussian_filter", "keep_probe_states_orthogonal", "loss_weight", "phase_norm_weight", "abs_norm_weight", "probe_reg_constraint_weight", "do_charge_flip", "atv_weight", "wedge_mu", "beta_wedge", "tune_only_probe_phase", "mixed_variance_weight","mixed_variance_sigma", "phase_only_obj", "tune_only_probe_abs", "dynamically_resize_yx_object", "update_beam_current", "update_probe", "update_obj", "update_probe_pos", "update_tilts", "update_static_background", "update_aberrations_array", "puzzle_positions"]
+    
     for epoch in range(epoch_prev,epoch_max,1):
-        current_data_simulation_flag, current_reset_positions, current_restart_from_vacuum, this_reset_history_flag, this_smart_memory, current_wolfe_c1_constant,current_wolfe_c2_constant, current_window_weight, current_hist_length, current_deformation_reg_weight_tilts, current_deformation_reg_weight_positions, current_slow_axis_reg_weight_positions, current_slow_axis_reg_weight_tilts, current_fast_axis_reg_weight_positions,current_fast_axis_reg_weight_tilts, current_update_step_bfgs, current_apply_gaussian_filter_amplitude, current_apply_gaussian_filter, current_keep_probe_states_orthogonal, current_loss_weight, current_phase_norm_weight, current_abs_norm_weight, current_probe_reg_constraint_weight, current_do_charge_flip, current_atv_weight, current_wedge_mu, current_beta_wedge, current_tune_only_probe_phase, current_mixed_variance_weight,current_mixed_variance_sigma, current_phase_only_obj, current_tune_only_probe_abs, current_dynamically_resize_yx_object, current_beam_current_step, current_probe_step, current_obj_step, current_probe_pos_step, current_tilts_step, current_static_background_step, current_aberrations_array_step,current_puzzle_positions =               pyptyutils.get_value_for_epoch([data_simulation_flag, reset_positions, restart_from_vacuum, reset_history_flag, smart_memory, wolfe_c1_constant,wolfe_c2_constant, window_weight, hist_length, deformation_reg_weight_tilts, deformation_reg_weight_positions, slow_axis_reg_weight_positions, slow_axis_reg_weight_tilts, fast_axis_reg_weight_positions,fast_axis_reg_weight_tilts, update_step_bfgs, apply_gaussian_filter_amplitude, apply_gaussian_filter, keep_probe_states_orthogonal, loss_weight, phase_norm_weight, abs_norm_weight, probe_reg_constraint_weight, do_charge_flip, atv_weight, wedge_mu, beta_wedge, tune_only_probe_phase, mixed_variance_weight,mixed_variance_sigma, phase_only_obj, tune_only_probe_abs, dynamically_resize_yx_object, update_beam_current, update_probe, update_obj, update_probe_pos, update_tilts, update_static_background, update_aberrations_array,puzzle_positions], epoch, default_float_cpu) ## here we get the values of constraints for this epoch
         warnings=""
+        
+        change_time=os.path.getmtime(path_params)
+        if change_time!=t_params:
+            list_hyperparams, warnings=pyptyutils.detect_changed_params(list_hyperparams,keys_hyperparams, path_params, warnings, print_flag)
+            t_params=change_time
+            
+        current_propmethod, current_data_simulation_flag, current_reset_positions, current_restart_from_vacuum, this_reset_history_flag, this_smart_memory, current_wolfe_c1_constant,current_wolfe_c2_constant, current_window_weight, current_hist_length, current_deformation_reg_weight_tilts, current_deformation_reg_weight_positions, current_slow_axis_reg_weight_positions, current_slow_axis_reg_weight_tilts, current_fast_axis_reg_weight_positions,current_fast_axis_reg_weight_tilts, current_update_step_bfgs, current_apply_gaussian_filter_amplitude, current_apply_gaussian_filter, current_keep_probe_states_orthogonal, current_loss_weight, current_phase_norm_weight, current_abs_norm_weight, current_probe_reg_constraint_weight, current_do_charge_flip, current_atv_weight, current_wedge_mu, current_beta_wedge, current_tune_only_probe_phase, current_mixed_variance_weight,current_mixed_variance_sigma, current_phase_only_obj, current_tune_only_probe_abs, current_dynamically_resize_yx_object, current_beam_current_step, current_probe_step, current_obj_step, current_probe_pos_step, current_tilts_step, current_static_background_step, current_aberrations_array_step, current_puzzle_positions =               pyptyutils.get_value_for_epoch(list_hyperparams, epoch, default_float_cpu) ## here we get the values of constraints for this epoch
+        
         if current_loss_weight=="mean": current_loss_weight=1/measured_data_shape[0];
         if current_loss_weight=="mean_full": current_loss_weight=1/np.prod(measured_data_shape);
         constratins_new, new_steps_sum=0,0
@@ -328,7 +340,7 @@ def run(pypty_params):
             this_window=None
         if current_beam_current_step: beam_current=pyptyutils.try_to_initialize_beam_current(beam_current,measured_data_shape, default_float, xp);
         full_sequence=np.sort(np.array(full_sequence))
-        current_loss, current_sse, constraint_contributions, actual_step, count_linesearch, d_value, new_d_value, warnings =  bfgs_update(algorithm, slice_distances, current_probe_step, current_obj_step, current_probe_pos_step,current_tilts_step, dataset, wavelength, masks, pixel_size_x_A, pixel_size_y_A, current_phase_norm_weight, current_abs_norm_weight, min_step, current_probe_reg_constraint_weight,aperture_mask, recon_type, defocus_array, Cs, alpha_near_field, damping_cutoff_multislice, smooth_rolloff, update_extra_cut,  current_keep_probe_states_orthogonal, current_do_charge_flip,cf_delta_phase, cf_delta_abs, cf_beta_phase, cf_beta_abs, current_phase_only_obj, current_wedge_mu, current_beta_wedge, current_wolfe_c1_constant, current_wolfe_c2_constant, current_atv_weight, atv_q, atv_p, current_tune_only_probe_phase, propmethod, full_sequence, load_one_by_one, data_multiplier,data_pad, phase_plate_in_h5, print_flag, current_loss_weight, max_count, reduce_factor, optimism, current_mixed_variance_weight, current_mixed_variance_sigma, data_bin, data_shift_vector, this_smart_memory, default_float, default_complex, default_int, upsample_pattern, current_static_background_step, tilt_mode, fancy_sigma, current_tune_only_probe_abs, aberration_marker, current_aberrations_array_step, probe_marker, compute_batch, this_window, current_window_weight, current_dynamically_resize_yx_object, lazy_clean, current_apply_gaussian_filter, current_apply_gaussian_filter_amplitude, current_beam_current_step, xp, remove_fft_cache, is_first_epoch, current_hist_length, current_update_step_bfgs, current_fast_axis_reg_weight_positions, current_fast_axis_reg_weight_tilts, current_slow_axis_reg_weight_positions, current_slow_axis_reg_weight_tilts, scan_size, current_deformation_reg_weight_positions, current_deformation_reg_weight_tilts, warnings, current_data_simulation_flag,current_puzzle_positions,allow_subPixel_shift) ## update
+        current_loss, current_sse, constraint_contributions, actual_step, count_linesearch, d_value, new_d_value, warnings =  bfgs_update(algorithm, slice_distances, current_probe_step, current_obj_step, current_probe_pos_step,current_tilts_step, dataset, wavelength, masks, pixel_size_x_A, pixel_size_y_A, current_phase_norm_weight, current_abs_norm_weight, min_step, current_probe_reg_constraint_weight,aperture_mask, recon_type, defocus_array, Cs, alpha_near_field, damping_cutoff_multislice, smooth_rolloff, update_extra_cut,  current_keep_probe_states_orthogonal, current_do_charge_flip,cf_delta_phase, cf_delta_abs, cf_beta_phase, cf_beta_abs, current_phase_only_obj, current_wedge_mu, current_beta_wedge, current_wolfe_c1_constant, current_wolfe_c2_constant, current_atv_weight, atv_q, atv_p, current_tune_only_probe_phase, current_propmethod, full_sequence, load_one_by_one, data_multiplier,data_pad, phase_plate_in_h5, print_flag, current_loss_weight, max_count, reduce_factor, optimism, current_mixed_variance_weight, current_mixed_variance_sigma, data_bin, data_shift_vector, this_smart_memory, default_float, default_complex, default_int, upsample_pattern, current_static_background_step, tilt_mode, fancy_sigma, current_tune_only_probe_abs, aberration_marker, current_aberrations_array_step, probe_marker, compute_batch, this_window, current_window_weight, current_dynamically_resize_yx_object, lazy_clean, current_apply_gaussian_filter, current_apply_gaussian_filter_amplitude, current_beam_current_step, xp, remove_fft_cache, is_first_epoch, current_hist_length, current_update_step_bfgs, current_fast_axis_reg_weight_positions, current_fast_axis_reg_weight_tilts, current_slow_axis_reg_weight_positions, current_slow_axis_reg_weight_tilts, scan_size, current_deformation_reg_weight_positions, current_deformation_reg_weight_tilts, warnings, current_data_simulation_flag, current_puzzle_positions) ## update
         is_first_epoch=False
         pyptyutils.print_recon_state(t0, algorithm, epoch, current_loss, current_sse, current_obj_step, current_probe_step,current_probe_pos_step,current_tilts_step, current_static_background_step, current_aberrations_array_step, current_beam_current_step, current_hist_length, print_flag)
         if save_inter_checkpoints!=0:
@@ -348,7 +360,7 @@ def run(pypty_params):
 
 
 
-def bfgs_update(algorithm_type, this_slice_distances, this_step_probe, this_step_obj, this_step_pos_correction, this_step_tilts, measured_array, this_wavelength, masks, pixel_size_x_A, pixel_size_y_A, phase_norm_weight, abs_norm_weight, stepsize_threshold_low, probe_reg_weight, aperture_mask, recon_type, defocus_array, Cs, alpha_near_field, damping_cutoff_multislice, smooth_rolloff, update_extra_cut, keep_probe_states_orthogonal, do_charge_flip, cf_delta_phase, cf_delta_abs, cf_beta_phase, cf_beta_abs, phase_only_obj, wedge_mu, beta_wedge, wolfe_c1_constant, wolfe_c2_constant, atv_weight, atv_q, atv_p, tune_only_probe_phase, propmethod, this_chopped_sequence, load_one_by_one, data_multiplier,data_pad, phase_plate_in_h5, print_flag, this_loss_weight, max_count, reduce_factor, optimism, mixed_variance_weight, mixed_variance_sigma, data_bin, data_shift_vector, smart_memory, default_float, default_complex, default_int, upsample_pattern, this_step_static_background, tilt_mode, fancy_sigma, tune_only_probe_abs, aberration_marker, this_step_aberrations_array, probe_marker, compute_batch, current_window, current_window_weight, dynamically_resize_yx_object, lazy_clean, current_gaussian_filter, current_apply_gaussian_filter_amplitude, this_beam_current_step, xp, remove_fft_cache, is_first_epoch, hist_length, actual_step, fast_axis_reg_weight_positions, fast_axis_reg_weight_tilts, slow_axis_reg_weight_positions, slow_axis_reg_weight_tilts,  scan_size, current_deformation_reg_weight_positions, current_deformation_reg_weight_tilts, warnings, data_simulation_flag,pos_puzzling,allow_subPixel_shift):
+def bfgs_update(algorithm_type, this_slice_distances, this_step_probe, this_step_obj, this_step_pos_correction, this_step_tilts, measured_array, this_wavelength, masks, pixel_size_x_A, pixel_size_y_A, phase_norm_weight, abs_norm_weight, stepsize_threshold_low, probe_reg_weight, aperture_mask, recon_type, defocus_array, Cs, alpha_near_field, damping_cutoff_multislice, smooth_rolloff, update_extra_cut, keep_probe_states_orthogonal, do_charge_flip, cf_delta_phase, cf_delta_abs, cf_beta_phase, cf_beta_abs, phase_only_obj, wedge_mu, beta_wedge, wolfe_c1_constant, wolfe_c2_constant, atv_weight, atv_q, atv_p, tune_only_probe_phase, propmethod, this_chopped_sequence, load_one_by_one, data_multiplier,data_pad, phase_plate_in_h5, print_flag, this_loss_weight, max_count, reduce_factor, optimism, mixed_variance_weight, mixed_variance_sigma, data_bin, data_shift_vector, smart_memory, default_float, default_complex, default_int, upsample_pattern, this_step_static_background, tilt_mode, fancy_sigma, tune_only_probe_abs, aberration_marker, this_step_aberrations_array, probe_marker, compute_batch, current_window, current_window_weight, dynamically_resize_yx_object, lazy_clean, current_gaussian_filter, current_apply_gaussian_filter_amplitude, this_beam_current_step, xp, remove_fft_cache, is_first_epoch, hist_length, actual_step, fast_axis_reg_weight_positions, fast_axis_reg_weight_tilts, slow_axis_reg_weight_positions, slow_axis_reg_weight_tilts,  scan_size, current_deformation_reg_weight_positions, current_deformation_reg_weight_tilts, warnings, data_simulation_flag,pos_puzzling):
     """
     This is one of the core functions of PyPty. It performs updates of all active reconstruction parameters (object, probe, positions, tilts, etc.) via l-BFGS algorithm.
 
@@ -918,27 +930,20 @@ def bfgs_update(algorithm_type, this_slice_distances, this_step_probe, this_step
     aberrations_array=1*new_aberrations_array if update_aberrations_array else aberrations_array
     beam_current=1*new_beam_current if update_beam_current else beam_current
     static_background= new_static_background if update_static_background else static_background
-    if pos_puzzling and update_pos_correction:
+    if pos_puzzling and update_pos_correction: ### check if grid is split into multiple chunks and correct it if it is.
         full_positions = positions+ positions_correction
         puzzling_worked,positions_puzzled =pyptyutils.position_puzzling(full_positions,scan_size)
         if puzzling_worked:
             obj = pyptyutils.intorplate_puzzled_obj(obj,full_positions,positions_puzzled,order=1,method = 'cubic')
             obj = cp.asarray(obj).astype(default_complex)
-            if allow_subPixel_shift:
-                positions_correction=(positions_puzzled-np.round(positions_puzzled))
-            else:
-                positions_correction=np.zeros_like(positions_puzzled)
-            
-            positions=np.round(positions_puzzled).astype(default_int)
+            positions_correction=(positions_puzzled-np.round(positions_puzzled))
             reset_bfgs_history()
-
-            positions=cp.asarray(positions).astype(default_int)
+            positions=cp.round(cp.asarray(positions)).astype(default_int)
             positions_correction=cp.asarray(positions_correction).astype(default_float)
             del(positions_puzzled)
-            print("positions_puzzeled")
-
-    
-
+            if print_flag: 
+              sys.stdout.write("\nWARNING: Detected positions puzzeling! Correcting the positions chunks!")
+              warnings+="\nWARNING: Detected positions puzzeling! Correcting the positions chunks!"    
     return total_loss, this_sse, constraint_contributions, actual_step, count, d_value, new_d_value, warnings
 
 

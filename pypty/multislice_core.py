@@ -597,10 +597,10 @@ def yoshida_multislice_grads(dLoss_dP_out, waves_multislice, this_obj_chopped, o
     for i_update in range(num_slices-1,-1,-1):
         if not(is_single_dist):
             prop_distance=this_distances[i_update]
-            propagator_phase_space_1=cp.expand_dims(cp.exp(3.141592653j*sigma_yoshida*this_distances[ind_multislice]*(this_wavelength*q2+2*(qx*this_tan_x+qy*this_tan_y)))*mask_clean,(-1,-2))
-            propagator_phase_space_2=cp.expand_dims(cp.exp(3.141592653j*(1-2*sigma_yoshida)*this_distances[ind_multislice]*(this_wavelength*q2+2*(qx*this_tan_x+qy*this_tan_y)))*mask_clean,(-1,-2))
+            propagator_phase_space_1=cp.expand_dims(cp.exp(3.141592653j*sigma_yoshida*this_distances[i_update]*(this_wavelength*q2+2*(qx*this_tan_x+qy*this_tan_y)))*mask_clean,(-1,-2))
+            propagator_phase_space_2=cp.expand_dims(cp.exp(3.141592653j*(1-2*sigma_yoshida)*this_distances[i_update]*(this_wavelength*q2+2*(qx*this_tan_x+qy*this_tan_y)))*mask_clean,(-1,-2))
         ## get the  object and half of the object (conjugated)
-        transmission_func_0=cp.conjugate(cp.expand_dims(this_obj_chopped[:, :,:, i_update, :], 3))
+        transmission_func_0=cp.conjugate(this_obj_chopped[:, :,:, i_update:i_update+1, :])
         transmission_func_2=transmission_func_0**(0.5-sigma_yoshida/2)
         transmission_func_1=transmission_func_0**(sigma_yoshida/2)
         transmission_func_3=transmission_func_0**(0.5*sigma_yoshida-1)
@@ -647,6 +647,97 @@ def yoshida_multislice_grads(dLoss_dP_out, waves_multislice, this_obj_chopped, o
             tilts_grad[tiltind,2]+=-12.566370614359172*prop_distance*cp.imag(cp.sum(dLoss_dPropagator*qy))/sh
     interm_probe_grad=cp.sum(dLoss_dP_out,-1) ## sum over the object modes
     return object_grad,  interm_probe_grad, tilts_grad
+
+
+def wide_beam_multislice(full_probe, this_obj_chopped, num_slices, n_obj_modes, n_probe_modes, this_distances, this_wavelength, q2, qx, qy, exclude_mask, is_single_dist, this_tan_x,this_tan_y, damping_cutoff_multislice, smooth_rolloff, master_propagator_phase_space,  half_master_propagator_phase_space, mask_clean, waves_multislice, wave, default_float, default_complex, wide_beam_coeffs):
+    if n_obj_modes==1:
+        wave=full_probe[:,:,:,:,None]
+    else:
+        wave=cp.repeat(full_probe[:,:,:,:,None], n_obj_modes, axis=-1)
+    for ind_multislice in range(0,num_slices,1):
+        waves_multislice[:,:,:, ind_multislice, :, :,0]=wave ## save first wave
+        if is_single_dist:
+            propagator_phase_space=master_propagator_phase_space
+        else:
+            propagator_phase_space=cp.expand_dims((-3.141592654*this_distances[ind_multislice]*(this_wavelength*q2+2*(qx*this_tan_x+qy*this_tan_y))*mask_clean),(-1,-2))
+            wide_beam_coeffs=cp.ones(9, dtype=default_complex)
+            pizl=this_wavelength/(3.141592654*this_distances[ind_multislice])
+            wide_beam_coeffs[1]=1j
+            wide_beam_coeffs[2]=-0.25j*pizl-0.5
+            wide_beam_coeffs[3]=0.125j*pizl**2-1j/6
+            wide_beam_coeffs[4]=(-5j/64)*pizl**3 -(1/32)*pizl**2+1/24
+            wide_beam_coeffs[5]=(7j/128)*pizl**4 + 1j/120
+            wide_beam_coeffs[6]=(-21/512)*pizl**5-(1/1024)*pizl**4 + (1j/768)*pizl**3 - 1/720
+            wide_beam_coeffs[7]=(33j/1024)*pizl**6-1j/5040
+            wide_beam_coeffs[8]=(-429j/16384)*pizl**7-(25/8192)*pizl**6 + (1/6144)*pizl**4 + 1/(40320)
+        for ind_wb in range(8):
+            wave_0=wave*this_obj_chopped[:, :,:, ind_multislice:ind_multislice+1, :] # the slice dimension became a singular dimension of the probe modes, x2 cutoff
+            wave = pyptyfft.ifft2((pyptyfft.fft2(wave, axes=(1,2))*propagator_phase_space + pyptyfft.fft2(wave_0, axes=(1,2)))*cp.expand_dims(mask_clean, (-1,-2)),axes=(1,2))
+            waves_multislice[:,:,:, ind_multislice, :, :,ind_wb+1] = 1 * wave ## save ind_wb wave
+        wave=cp.sum(wide_beam_coeffs[None,None,None, None, None,:]*waves_multislice[:,:,:, ind_multislice, :, :,:], axis=-1)
+    cp.conjugate(waves_multislice, out=waves_multislice)
+    return waves_multislice, wave
+
+def wide_beam_multislice_grads(dLoss_dP_out, waves_multislice, this_obj_chopped, object_grad, tilts_grad, is_single_dist,this_distances, exclude_mask, this_wavelength, q2, qx, this_tan_x, qy, this_tan_y, num_slices, n_obj_modes,tiltind, master_propagator_phase_space, this_step_tilts, damping_cutoff_multislice, smooth_rolloff, tilt_mode,  compute_batch, mask_clean, this_step_probe, this_step_obj, this_step_pos_correction, masked_pixels_y, masked_pixels_x, default_float, default_complex, helper_flag_4, wide_beam_coeffs):
+    this_obj_chopped=cp.conjugate(this_obj_chopped)
+    sub_grads=cp.zeros_like(waves_multislice[:,:,:, 0, :, :,:])
+    for i_update in range(num_slices-1,-1,-1): #backward propagation
+        sub_grads[:,:,:, :, :, 0]=dLoss_dP_out
+        if is_single_dist:
+            prop_distance=this_distances[0]
+            propagator_phase_space=master_propagator_phase_space
+        else:
+            prop_distance=this_distances[i_update-1]
+            propagator_phase_space=(-3.141592654*prop_distance*(this_wavelength*q2+2*(qx*this_tan_x+qy*this_tan_y)))*mask_clean
+            propagator_phase_space=cp.expand_dims(propagator_phase_space,(-1,-2)) ## expanding
+            wide_beam_coeffs=cp.ones(9, dtype=default_complex)
+            pizl=this_wavelength/(3.141592654*this_distances[i_update])
+            wide_beam_coeffs[1]=1j
+            wide_beam_coeffs[2]=-0.25j*pizl-0.5
+            wide_beam_coeffs[3]=0.125j*pizl**2-1j/6
+            wide_beam_coeffs[4]=(-5j/64)*pizl**3 -(1/32)*pizl**2+1/24
+            wide_beam_coeffs[5]=(7j/128)*pizl**4 + 1j/120
+            wide_beam_coeffs[6]=(-21/512)*pizl**5-(1/1024)*pizl**4 + (1j/768)*pizl**3 - 1/720
+            wide_beam_coeffs[7]=(33j/1024)*pizl**6-1j/5040
+            wide_beam_coeffs[8]=(-429j/16384)*pizl**7-(25/8192)*pizl**6 + (1/6144)*pizl**4 + 1/(40320)
+        ## Precompute helper-gradients
+        for ind_wb in range(len(wide_beam_coeffs)-1):
+            g_0= sub_grads[:,:,:, :,:, ind_wb]*this_obj_chopped[:, :,:, i_update:i_update+1, :]
+            g_0=pyptyfft.ifft2((pyptyfft.fft2(sub_grads[:,:,:, :, :,ind_wb], axes=(1,2))*propagator_phase_space + pyptyfft.fft2(g_0, axes=(1,2)))*cp.expand_dims(mask_clean, (-1,-2)),axes=(1,2))
+            sub_grads[:,:,:, :, :, ind_wb+1]=1*g_0
+        ## Gradient of incomming wave
+        dLoss_dP_out=cp.sum(cp.conjugate(wide_beam_coeffs)[None,None, None,None, None,:]*sub_grads, axis=-1)
+        ## Gradient of Slice-operator
+        dLoss_dS=cp.zeros_like(dLoss_dP_out)
+        for n in range(1,len(wide_beam_coeffs)):
+            for nprime in range(0, n):
+                dLoss_dS+=cp.conjugate(wide_beam_coeffs[n])*cp.conjugate(waves_multislice[:,:,:, i_update, :, :,nprime])*sub_grads[:,:,:, :,:, n-nprime-1]
+        ## Not really implemented yet, but still here: tilting in wide-beam regime
+        if this_step_tilts>0 and (tilt_mode==0 or tilt_mode==3 or tilt_mode==4):
+            sh=12.566370614359172*prop_distance/(waves_multislice.shape[1]*waves_multislice.shape[2])
+            dLoss_dPropagator=cp.fft.fft2(dLoss_dS, axes=(0,1))
+            tilts_grad[tiltind,3]+=sh*cp.sum(cp.real(dLoss_dPropagator*qx), (1,2))
+            tilts_grad[tiltind,2]+=sh*cp.sum(cp.real(dLoss_dPropagator*qy), (1,2))
+            dLoss_dP_out=pyptyfft.ifft2(dLoss_dP_out, axes=(1,2), overwrite_x=True) #  x1 cutoff
+        waves_multislice[:,:,:, i_update, :, :,0]=dLoss_dS
+    if this_step_obj>0:
+        if waves_multislice.shape[-3]==1:
+            this_grad=waves_multislice[:,:,:,:,0,:,0] #just  one probe mode, x2 cutoff
+        else:
+            this_grad=cp.sum(waves_multislice[:,:,:,:,:,:,0], -2) #sum over all probe modes, x2 cutoff
+        this_grad=pyptyfft.fft2(this_grad, (1,2), overwrite_x=True)
+        this_grad*=mask_clean[:,:,:,None,None]
+        this_grad=pyptyfft.ifft2(this_grad, (1,2), overwrite_x=True)
+        scatteradd(object_grad, masked_pixels_y, masked_pixels_x, this_grad)
+    if helper_flag_4:
+        if waves_multislice.shape[-2]==1:
+            interm_probe_grad=dLoss_dP_out[:,:,:,:,0]
+        else:
+            interm_probe_grad=cp.sum(dLoss_dP_out,-1) ## sum over obj modes
+    else:
+        interm_probe_grad=None
+    return object_grad,  interm_probe_grad, tilts_grad
+    
 
 
 
