@@ -1,0 +1,3 @@
+# `pypty.tcbf`
+
+::: pypty.tcbf

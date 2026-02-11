@@ -1,0 +1,3 @@
+# `pypty.fft`
+
+::: pypty.fft

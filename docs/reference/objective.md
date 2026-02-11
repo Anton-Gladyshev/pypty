@@ -1,0 +1,3 @@
+# `pypty.objective`
+
+::: pypty.objective

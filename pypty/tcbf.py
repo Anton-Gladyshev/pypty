@@ -1,0 +1,1468 @@
+import numpy as np
+import sys
+import os
+import h5py
+import matplotlib.pyplot as plt
+from scipy.optimize import least_squares
+from scipy.interpolate import griddata, RectBivariateSpline
+from scipy.ndimage import rotate, binary_closing
+from scipy.ndimage import convolve as sncon
+from tqdm import tqdm
+try:
+    import cupy as cp
+    cpu_mode=False
+except:
+    import numpy as cp
+    cpu_mode=True
+    
+from pypty import fft as pyptyfft
+from pypty import utils as pyptyutils
+
+def run_tcbf_alignment(params, binning_for_fit=[8],
+                        save=True, optimize_angle=True,  aberrations=None, n_aberrations_to_fit=12,
+                        reference_type="bf",
+                        ctf_sign_flip=False,
+                        refine_box_dim=10, upsample=3,
+                        cross_corr_type="phase", cancel_large_shifts=None,
+                        pattern_blur_width=None,
+                        scan_pad=None, aperture=None, subscan_region=None,
+                        compensate_lowfreq_drift=False, append_lowfreq_shifts_to_params=True,
+                        interpolate_scan_factor=1,
+                        binning_cross_corr=1, phase_cross_corr_formula=False,
+                        f_scale_lsq=1,x_scale_lsq=1, loss_lsq="linear", tol_ctf=1e-8):
+    """Align and fit the beam contrast transfer function (CTF) using 4D-STEM data.
+
+    This function estimates beam aberrations by aligning individual pixel images using 
+    cross-correlation and fitting a CTF model. It supports iterative fitting with various 
+    binning levels and options for low-frequency drift compensation.
+
+
+    Parameters
+    ----------
+    params:
+        Dictionary containing PyPTY experimental and reconstruction settings.
+    binning_for_fit : list
+        List (for integers) of binning factors for each iteration of the CTF fit.
+    save : bool, optional
+        Whether to save intermediate tcBF images and shift estimates.
+    optimize_angle : bool
+        Whether to include probe rotation angle in the fit. 
+    aberrations : list
+        Initial guess for aberrations. If None, n_aberrations_to_fit zeros will be used.
+    n_aberrations_to_fit : int
+        Number of aberrations to fit if no initial guess is provided.
+    reference_type : string
+        Reference used for cross-correlation ("bf" or "zero").
+    ctf_sign_flip: bool
+        Boolean flag, helps to align the images.
+    refine_box_dim : int
+        Radius (in pixels) of the interpolation box for sub-pixel shift refinement.
+    upsample : int, optional
+        Factor for refining cross-correlation to estimate sub-pixel shifts.
+    cross_corr_type : str
+        Type of cross-correlation to use ("phase" or "classical").
+    cancel_large_shifts : float
+        Threshold (0–1) to ignore large shift outliers in the fit.
+    pattern_blur_width : int
+        Radius for optional circular blur mask applied to patterns.
+    scan_pad : int
+        Number of scan pixels to pad around the dataset (auto if None).
+    aperture : ndarray
+        Aperture mask. If None, attempts to extract from parameters.
+    subscan_region : list
+        Subregion for CTF fitting: [left, top, right, bottom].
+    compensate_lowfreq_drift : bool
+        Whether to compensate for pattern drift in large FOVs.
+    append_lowfreq_shifts_to_params : bool
+        Whether to store low-frequency drift corrections in `params`.
+    interpolate_scan_factor : int
+        Factor to upsample the scan via interpolation (experimental).
+    binning_cross_corr : int
+        Binning factor before peak detection in cross-correlation.
+    phase_cross_corr_formula : bool
+        Use analytical peak refinement formula for phase correlation.
+    f_scale_lsq : float
+        Scaling factor for residuals in `least_squares`.
+    x_scale_lsq : float
+        Scaling for initial step size in `least_squares`.
+    loss_lsq : string
+        Loss function for `least_squares` optimization.
+    tol_ctf : float
+        Tolerance (`ftol`) for stopping criterion in optimization.
+
+
+    Returns
+    -------
+    dict
+        Updated parameter dictionary with fitted aberrations, defocus, and potentially updated scan positions and rotation.
+        
+    """
+    global cpu_mode
+    pypty_params=params.copy()
+    ## load parameters
+    data_path=pypty_params.get("data_path", "")
+    acc_voltage=pypty_params.get("acc_voltage", 60)
+    scan_size=np.copy(np.array(pypty_params.get("scan_size", None)))
+    scan_step_A=pypty_params.get("scan_step_A", 1)
+    if aperture is None:
+        aperture=pypty_params.get("aperture_mask", None)
+    if type(aperture)==str:
+        if aperture=="none" or aperture=="None":
+            aperture=None
+    pixel_size_x_A=pypty_params.get("pixel_size_x_A", 1)
+    rot_deg=pypty_params.get("PLRotation_deg", 0)
+    rez_pixel_size_A=pypty_params.get("rez_pixel_size_A", 1)
+    data_pad=pypty_params.get("data_pad",0)
+    upsample_pattern=pypty_params.get("upsample_pattern",1)
+    
+    
+    smart_memory=pypty_params.get("smart_memory", True)
+    save=pypty_params.get("save_preprocessing_files", save)
+    try:
+        smart_memory=smart_memory(0)
+    except:
+        smart_memory=smart_memory
+    sequence=pypty_params.get("sequence", None)
+    if cross_corr_type!="phase": phase_cross_corr_formula=False;
+    if not(sequence is None):
+        mask_sequence=np.ones(scan_size[0]*scan_size[1])
+        mask_sequence[sequence]=0
+        mask_sequence=mask_sequence.reshape(scan_size[0], scan_size[1])
+    if upsample_pattern!=1:
+        if not(aperture is None):
+            aperture=pyptyutils.downsample_something(aperture, upsample_pattern, np)
+        data_pad=data_pad//upsample_pattern
+        rez_pixel_size_A*=upsample_pattern
+    if data_pad!=0 and not(aperture is None):
+        aperture=aperture[data_pad:-data_pad,data_pad:-data_pad]
+    wavelength=12.4/np.sqrt(acc_voltage*(acc_voltage+2*511))
+    mrad_per_px=1000*rez_pixel_size_A*wavelength
+    if aberrations is None:
+        aberrations=pypty_params.get("aberrations", None)
+        if aberrations is None:
+            aberrations=list(np.zeros(n_aberrations_to_fit))
+            aberrations[0]=-1*pypty_params.get("extra_probe_defocus", 0)
+    plot=pypty_params.get("plot", False)
+    print_flag=pypty_params.get("print_flag", False)
+    flip_ky=pypty_params.get("flip_ky", False)
+    num_abs=len(aberrations)
+    possible_n, possible_m, possible_ab=pyptyutils.convert_num_to_nmab(num_abs)
+    aber_print, s=pyptyutils.nmab_to_strings(possible_n, possible_m, possible_ab), ""
+    for i in range(len(aberrations)): s+=aber_print[i]+" %.2e Å, "%aberrations[i];
+    if print_flag:
+        sys.stdout.write("\n******************************************************************************\n************************ Running the tcBF alignment **************************\n******************************************************************************\n")
+        sys.stdout.write("\nInitial aberrations: %s"% s[:-2]);
+        sys.stdout.flush()
+    angle_offset=-1*rot_deg*3.141592654/180
+    rot_rad=0
+    dataset_h5=pypty_params.get("dataset", None)
+    
+    if dataset_h5 is None:
+        if data_path[-3:]==".h5":
+            dataset_h5=h5py.File(data_path, "r")
+            dataset_h5=dataset_h5["data"]
+        elif data_path[-4:]==".npy":
+            dataset_h5=np.load(data_path)
+    if len(dataset_h5.shape)==4:
+        scan_size=[dataset_h5.shape[0], dataset_h5.shape[1]]
+        dataset_h5=dataset_h5.reshape(dataset_h5.shape[0]* dataset_h5.shape[1], dataset_h5.shape[2],dataset_h5.shape[3])
+    if flip_ky:
+        dataset_h5=dataset_h5[:,::-1, :]
+   
+    if not(pattern_blur_width is None):
+        dataset_h5=np.array(dataset_h5)
+        x,y=np.arange(-dataset_h5.shape[2]//2,dataset_h5.shape[2]-dataset_h5.shape[2]//2, 1), np.arange(-dataset_h5.shape[1]//2,dataset_h5.shape[1]-dataset_h5.shape[1]//2, 1)
+       
+        x,y=np.arange(-pattern_blur_width,pattern_blur_width+1,1), np.arange(-pattern_blur_width,pattern_blur_width+1,1)
+        x,y=np.meshgrid(x,y)
+        
+        r=((x**2+y**2)**0.5<=pattern_blur_width)[None,:,:]
+        dataset_h5=np.array(dataset_h5)
+        sncon(dataset_h5, r,output=dataset_h5)
+        
+    ## if bf disc is wobbling, try to compensate it, also we can save this shifts for ptycho reconsturction coming after this alignment!
+    if compensate_lowfreq_drift:
+        aperture_shifts_x=pypty_params.get("aperture_shifts_x", None)
+        aperture_shifts_y=pypty_params.get("aperture_shifts_y", None)
+        aperture = pypty_params.get("lowfreq_compensated_aperture", None)
+        if (aperture_shifts_x is None) or (aperture_shifts_y is None) or (aperture is None):
+            aperture_shifts_x, aperture_shifts_y=np.zeros(dataset_h5.shape[0], dtype=int), np.zeros(dataset_h5.shape[0], dtype=int)
+            apx,apy=np.meshgrid(np.arange(-dataset_h5.shape[2]//2,dataset_h5.shape[2]-dataset_h5.shape[2]//2,1),np.arange(-dataset_h5.shape[1]//2,dataset_h5.shape[1]-dataset_h5.shape[1]//2,1), indexing="xy")
+            structure = np.ones((5, 5), dtype=bool)
+            if aperture is None:
+                aperture_0=np.zeros((dataset_h5.shape[1], dataset_h5.shape[2]))
+            for ind1 in range(dataset_h5.shape[0]):
+                testim=dataset_h5[ind1]
+                testim=testim>compensate_lowfreq_drift*np.mean(testim)
+                testim=binary_closing(testim, structure=structure)
+                aperture_shifts_x[ind1]=np.average(apx, weights=testim)
+                aperture_shifts_y[ind1]=np.average(apy, weights=testim)
+                if ind1==0:
+                    if plot:
+                        plt.imshow(testim)
+                        plt.title("binary pattern for shift estimation")
+                        plt.axis("off")
+                        plt.show()
+                if aperture is None:
+                    rolled_im=np.roll(testim, (-int(np.round(aperture_shifts_y[ind1])), -int(np.round(aperture_shifts_x[ind1]))), axis=(0,1))
+                    aperture_0+=rolled_im
+            if append_lowfreq_shifts_to_params:
+                pypty_params["aperture_shifts_x"]=aperture_shifts_x.reshape(scan_size[0], scan_size[1])
+                pypty_params["aperture_shifts_y"]=aperture_shifts_y.reshape(scan_size[0], scan_size[1])
+            if aperture is None:
+                pypty_params["lowfreq_compensated_aperture"]=aperture_0
+                aperture=aperture_0>0.5*np.max(aperture_0)
+                if plot:
+                    plt.imshow(aperture_0)
+                    plt.title("estimated aperture")
+                    plt.axis("off")
+                    plt.show()
+        else:
+            aperture_shifts_x=aperture_shifts_x.flatten()
+            aperture_shifts_y=aperture_shifts_y.flatten()
+            aperture=aperture>0.5*np.max(aperture)
+    if not(cpu_mode or smart_memory):
+        dataset_h5=cp.asarray(dataset_h5)
+    if not(subscan_region is None):
+        left_border, top_border, right_border, bottom_border=subscan_region
+        if print_flag:
+            sys.stdout.write("\n Warning: you will do tcBF on a subscan!")
+        this_sequence_tcbf = []
+        for dummyi0 in range(top_border, bottom_border, 1):
+            for dummyi1 in range(left_border, right_border,1):
+                this_sequence_tcbf.append(dummyi1+dummyi0*scan_size[0])
+        scan_size[1]=right_border-left_border
+        scan_size[0]=bottom_border-top_border
+        dataset_h5=cp.asarray(dataset_h5[this_sequence_tcbf])
+        if compensate_lowfreq_drift:
+            aperture_shifts_x, aperture_shifts_y=aperture_shifts_x[this_sequence_tcbf], aperture_shifts_y[this_sequence_tcbf]
+        if not(sequence is None):
+            mask_sequence=mask_sequence[top_border:bottom_border, left_border:right_border]
+    if not(sequence is None):
+        mask_sequence=mask_sequence.flatten()
+        dataset_h5=cp.asarray(dataset_h5)
+        dataset_h5[mask_sequence.astype(bool), :,:]=cp.mean(dataset_h5[:,aperture])
+       # *mask_sequence[:,None,None]
+    if interpolate_scan_factor!=1:
+        scan_step_A/=interpolate_scan_factor
+        upsampled_y, upsampled_x= np.arange(0, scan_size[0], 1/interpolate_scan_factor), np.arange(0, scan_size[1], 1/interpolate_scan_factor)
+        new_data=np.zeros((len(upsampled_y)*len(upsampled_x), dataset_h5.shape[1], dataset_h5.shape[2]))
+        if print_flag:
+            sys.stdout.write("\nUpsampling the scan")
+        for dummyi2 in tqdm(range(dataset_h5.shape[1])):
+            for dummyi3 in range(dataset_h5.shape[2]):
+                this_data=(dataset_h5[:, dummyi2,dummyi3]).reshape(scan_size)
+            
+                this_data=RectBivariateSpline(np.arange(scan_size[0]), np.arange(scan_size[1]), this_data, ky=3, kx=3)(upsampled_y, upsampled_x)
+                new_data[:, dummyi2,dummyi3]=this_data.flatten()
+        dataset_h5=cp.asarray(new_data)
+        del new_data
+        if compensate_lowfreq_drift:
+            aperture_shifts_x = RectBivariateSpline(np.arange(scan_size[0]), np.arange(scan_size[1]), aperture_shifts_x.reshape(scan_size[0], scan_size[1]) , ky=1, kx=1)(upsampled_y, upsampled_x).flatten()
+            aperture_shifts_y = RectBivariateSpline(np.arange(scan_size[0]), np.arange(scan_size[1]), aperture_shifts_y.reshape(scan_size[0], scan_size[1]) , ky=1, kx=1)(upsampled_y, upsampled_x).flatten()
+        scan_size[0]*=interpolate_scan_factor
+        scan_size[1]*=interpolate_scan_factor
+        
+    if scan_pad is None:
+        scan_pad=1+int(np.ceil(np.ceil(pixel_size_x_A*(dataset_h5.shape[2]+2*data_pad)/(scan_step_A))/2))
+    padded_scan_size=[scan_size[0]+2*scan_pad, scan_size[1]+2*scan_pad]
+    ## create aperture
+    if aperture is None:
+        aperture=np.ones((dataset_h5.shape[2], dataset_h5.shape[1]))
+    else:
+        aperture=np.asarray(aperture)
+    if print_flag:
+        print("shape of data: ", dataset_h5.shape, " scan size: ",scan_size )
+    skx, sky=dataset_h5.shape[2], dataset_h5.shape[1]
+    skx2, sky2=skx//2, sky//2
+    ## create the grids of spatial frequencies
+    x_freq_scan_grid, y_freq_scan_grid=np.meshgrid(np.fft.fftfreq(padded_scan_size[1]), np.fft.fftfreq(padded_scan_size[0]), indexing="xy")
+    x_freq_scan_grid, y_freq_scan_grid=cp.asarray(x_freq_scan_grid), cp.asarray(y_freq_scan_grid)
+    kx_detector_full,ky_detector_full=np.meshgrid(np.arange(-skx2,skx-skx2, 1)*mrad_per_px*1e-3,np.arange(-sky2,sky-sky2, 1)*mrad_per_px*1e-3 , indexing="xy")
+    kx_detector_full, ky_detector_full=np.cos(rot_rad)*kx_detector_full+np.sin(rot_rad)*ky_detector_full, -np.sin(rot_rad)*kx_detector_full+np.cos(rot_rad)*ky_detector_full
+    kx_detector, ky_detector=kx_detector_full[aperture], ky_detector_full[aperture]
+    kx_full_run=np.arange(-skx2,skx-skx2, 1)*mrad_per_px*1e-3
+    ky_full_run=np.arange(-sky2,sky-sky2, 1)*mrad_per_px*1e-3
+    kx_full_run, ky_full_run=np.cos(rot_rad)*kx_full_run+np.sin(rot_rad)*ky_full_run, -np.sin(rot_rad)*kx_full_run+np.cos(rot_rad)*ky_full_run
+    ## create the folders etc
+    try:
+        os.makedirs(pypty_params["output_folder"], exist_ok=True)
+        os.makedirs(pypty_params["output_folder"]+"/tcbf/", exist_ok=True)
+    except:
+        sys.stdout.write("output folder was not created!")
+    ## now we have two options for the CTF fit: either do it on an aberration function aka Zernike-basis (conventional option) or fit a full 2D discretized phase of the beam. The later option IS experimental and I have to finish it!
+    
+    ## prepare some arrays
+    bin_prev=0
+    fit_abberations_array=np.zeros((len(binning_for_fit)+1, len(aberrations)))
+    fit_abberations_array[0,:]=aberrations
+    if optimize_angle:
+        fit_angle_array=np.zeros(len(binning_for_fit)+1)
+        fit_angle_array[0]=-1*angle_offset
+    if print_flag:
+        sys.stdout.write("Initializing the abberation fit!")
+        sys.stdout.flush()
+    ## now we will iterate through provided binning values (binning will happen in diffraction space)
+    for index_bin, bin_fac in enumerate(binning_for_fit):
+        try:
+            cp.fft.config.clear_plan_cache() ## free the memory
+            pool.free_all_blocks()
+            pinned_pool.free_all_blocks()
+        except:
+            pass
+        if print_flag:
+            sys.stdout.write("\n---> Starting iteration %d/%d of the CTF fit, this binning is %d"%(index_bin+1,len(binning_for_fit), bin_fac))
+            sys.stdout.flush()
+        zeroindex_x, zeroindex_y=skx//2, sky//2
+        difference_x_left,  difference_y_left  = (zeroindex_x-int(np.floor(bin_fac/2)))%bin_fac, (zeroindex_y-int(np.floor(bin_fac/2)))%bin_fac
+        difference_x_right, difference_y_right =  skx- (skx-zeroindex_x-int(np.ceil(bin_fac/2)))%bin_fac, sky- (sky-zeroindex_y-int(np.ceil(bin_fac/2)))%bin_fac
+        new_skx, new_sky=(difference_x_right-difference_x_left)//bin_fac, (difference_y_right-difference_y_left)//bin_fac
+        if bin_prev!=bin_fac: ## if we have not yet prepared the data for the binning value do following:
+            if print_flag:
+                sys.stdout.write("\nBinning the data by %d"%(bin_fac))
+                sys.stdout.flush()
+            if cpu_mode or not(smart_memory):
+                binned_data_bright_field=dataset_h5[:, difference_y_left:difference_y_right, difference_x_left:difference_x_right] ## trim the data
+            else:
+                binned_data_bright_field=cp.asarray(dataset_h5[:, difference_y_left:difference_y_right, difference_x_left:difference_x_right])
+            if compensate_lowfreq_drift: ## if we want to compensate the aperture wobbling, then we roll the patterns!
+                for ind111 in range(dataset_h5.shape[0]):
+                    shifty, shiftx= int(np.round(aperture_shifts_y[ind111])), int(np.round(aperture_shifts_x[ind111]))
+                    pattern_cropped=cp.copy(binned_data_bright_field[ind111])
+                    binned_data_bright_field[ind111]=cp.roll(pattern_cropped, (-shifty, -shiftx), axis=(0,1))
+            aperture_binned=aperture[difference_y_left:difference_y_right, difference_x_left:difference_x_right] ## trim the aperture
+            binned_data_bright_field=cp.sum(binned_data_bright_field.reshape(dataset_h5.shape[0], new_sky,bin_fac, new_skx,bin_fac), axis=(-3, -1)) ## bin the data
+            aperture_binned=np.sum(aperture_binned.reshape(new_sky,bin_fac, new_skx,bin_fac), axis=(-3, -1)) ## bin the aperture
+            aperture_binned=aperture_binned.astype(bool)
+            binned_kx_detector_full=kx_detector_full[difference_y_left:difference_y_right, difference_x_left:difference_x_right] # trim the x-coordinate
+            binned_ky_detector_full=ky_detector_full[difference_y_left:difference_y_right, difference_x_left:difference_x_right] # trim the y-coordinate
+            binned_kx_detector_full=cp.mean(binned_kx_detector_full.reshape(new_sky,bin_fac, new_skx,bin_fac), axis=(-3, -1)) # bin the x-coordinate
+            binned_ky_detector_full=cp.mean(binned_ky_detector_full.reshape(new_sky,bin_fac, new_skx,bin_fac), axis=(-3, -1)) # bin the y-coordinate
+            binned_kx_detector, binned_ky_detector=binned_kx_detector_full[aperture_binned], binned_ky_detector_full[aperture_binned]
+            binned_data_bright_field=cp.array([d[aperture_binned] for d in binned_data_bright_field]) ## select the pixels in the bright field
+            binned_data_bright_field=binned_data_bright_field.reshape(scan_size[0], scan_size[1], binned_data_bright_field.shape[1]) ## reshape
+            binned_data_bright_field=cp.pad(binned_data_bright_field, [[scan_pad, scan_pad], [scan_pad, scan_pad], [0,0]]) ## pad with zeros on the sides
+            for dummyind in range(binned_data_bright_field.shape[-1]):  # fill the edge values with a "mean" count
+                mean=cp.mean(binned_data_bright_field[scan_pad:-scan_pad,scan_pad:-scan_pad,dummyind])
+                binned_data_bright_field[:scan_pad,:,dummyind]=mean
+                binned_data_bright_field[-scan_pad:,:,dummyind]=mean
+                binned_data_bright_field[:,:scan_pad,dummyind]=mean
+                binned_data_bright_field[:,-scan_pad:,dummyind]=mean
+            zero_freq=np.argmin(binned_kx_detector**2+binned_ky_detector**2) ## find where is your lowest spatial frequency after binning
+            binned_data_bright_field_fourier=pyptyfft.fft2(binned_data_bright_field, axes=(0,1)) ### fourier transform
+            Matrix_shifts_x=np.zeros((len(binned_ky_detector), len(aberrations)))  ## this thing will be needed for aberation fit later
+            Matrix_shifts_y=np.zeros((len(binned_ky_detector), len(aberrations)))
+            for indmat2 in range(len(aberrations)): ## we prepare a Jacobian for the CTF fit
+                thisaberations_delta=np.zeros_like(aberrations)
+                thisaberations_delta[indmat2]=1
+                D_ctf_grad_x_dab, D_ctf_grad_y_dab=pyptyutils.get_ctf_derivatives(thisaberations_delta, binned_kx_detector ,binned_ky_detector, wavelength, angle_offset)
+                Matrix_shifts_x[:,indmat2]=D_ctf_grad_x_dab*wavelength/(6.283185307179586*scan_step_A)
+                Matrix_shifts_y[:,indmat2]=D_ctf_grad_y_dab*wavelength/(6.283185307179586*scan_step_A)
+            if print_flag:
+                sys.stdout.write("\nFFT of binned data is done!")
+                sys.stdout.flush()
+            bin_prev=bin_fac
+        else: ## if the preparation was done at the previous iteration, reuse the results!
+            if print_flag:
+                sys.stdout.write("\nUsing results of previous binning")
+                sys.stdout.flush()
+        ctf_grad_x, ctf_grad_y=pyptyutils.get_ctf_derivatives(aberrations,binned_kx_detector, binned_ky_detector, wavelength, angle_offset)
+        
+        reference_x, reference_y=ctf_grad_x*wavelength/(6.283185307179586*scan_step_A),ctf_grad_y*wavelength/(6.283185307179586*scan_step_A) ## this are our reference shifts
+        reference_shifts=np.zeros((2, reference_x.shape[0]))
+        reference_shifts[0]=reference_x
+        reference_shifts[1]=reference_y
+        if not(cpu_mode):
+            reference_x, reference_y = cp.asarray(reference_x), cp.asarray(reference_y)
+            
+        pixel_shift = 6.283185307179586*  ( reference_x[None, None,:] * x_freq_scan_grid[:,:,None]+ reference_y[None, None,:] * y_freq_scan_grid[:,:,None])
+        kernel=cp.exp(-1j*pixel_shift) ## here we create a shift kernel to generate a tcBF image
+        
+        if ctf_sign_flip:
+            if bin_prev!=bin_fac or index_bin==0:
+                scan_freq_rad_x, scan_freq_rad_y = x_freq_scan_grid*wavelength / scan_step_A, y_freq_scan_grid * wavelength / scan_step_A
+                
+                pl_rot_extra = -1 * angle_offset
+                
+                rotated_bd_x, rotated_bd_y= cp.asarray(binned_kx_detector), cp.asarray(binned_ky_detector)
+                rotated_bd_x, rotated_bd_y= cp.cos(pl_rot_extra)*rotated_bd_x + cp.sin(pl_rot_extra)*rotated_bd_y, -cp.sin(pl_rot_extra)*rotated_bd_x + cp.cos(pl_rot_extra)*rotated_bd_y
+                
+                #scan_freq_rad_x, scan_freq_rad_y=cp.cos(pl_rot_extra)*scan_freq_rad_x + cp.sin(pl_rot_extra)*scan_freq_rad_y, -cp.sin(pl_rot_extra)*scan_freq_rad_x + cp.cos(pl_rot_extra)*scan_freq_rad_y
+
+                k_minus_ktilde_x = rotated_bd_x[None, None,:]  - scan_freq_rad_x[:,:,None]
+                k_minus_ktilde_y = rotated_bd_y[None, None,:]  - scan_freq_rad_y[:,:,None]
+                
+            normal_ctf  = cp.asarray(pyptyutils.get_ctf(aberrations,  rotated_bd_x, rotated_bd_y, wavelength, 0))
+            shifted_ctf = pyptyutils.get_ctf(aberrations, k_minus_ktilde_x,     k_minus_ktilde_y, wavelength, 0)
+            sign_kernel = shifted_ctf - normal_ctf[None, None,:]  + pixel_shift
+            sign_kernel = cp.sign(sign_kernel)
+            kernel*= sign_kernel
+        
+        image_bf_binned_fourier=(cp.sum(binned_data_bright_field_fourier*kernel, -1)) ## align the pixel images
+        # now we have to decide with what will the reference shifts be compared:
+        if reference_type=="bf": # option 1: cross-corelate the individual pixel images with a tcBF estimate
+            refence=image_bf_binned_fourier
+        else: # option 2: cross-corelate the individual pixel images with an image corresponding to the lowest spatial frequency
+            refence=binned_data_bright_field_fourier[:,:, zero_freq]
+        if cross_corr_type=="phase":
+            full_cross_corr=cp.fft.fftshift(pyptyfft.ifft2(cp.exp(-1j*cp.angle(binned_data_bright_field_fourier*cp.conjugate(refence)[:,:,None])), axes=(0,1)), axes=(0,1)) ## phase cross correlation
+        else:
+            full_cross_corr=cp.fft.fftshift(pyptyfft.ifft2( cp.conjugate(binned_data_bright_field_fourier)*refence[:,:,None]  , axes=(0,1)), axes=(0,1)) ## phase cross correlation
+        if not cpu_mode:
+            reference_x=reference_x.get()
+            reference_y=reference_y.get()
+        if plot or save: ## plot the tcBF estimate
+            image_bf_binned_plot=cp.real(pyptyfft.ifft2(image_bf_binned_fourier))
+            if not(cpu_mode):
+                image_bf_binned_plot=image_bf_binned_plot.get()
+            plt.imshow(image_bf_binned_plot, cmap="gray")
+            plt.title("tcBF image at bin %d. Iteration %d"%(bin_fac, index_bin))
+            plt.axis("off")
+            if save:
+                plt.savefig(pypty_params["output_folder"]+"/tcbf/tcbf_image_"+str(index_bin)+".png", dpi=200)
+                np.save(pypty_params["output_folder"]+"/tcbf/tcbf_image_"+str(index_bin)+".npy", image_bf_binned_plot)
+            if not(plot):
+                plt.close()
+            else:
+                plt.show()
+        estimated_shifts=np.zeros((2, binned_data_bright_field_fourier.shape[-1])) ## now we have to find the peaks in the correlations
+        total=binned_data_bright_field_fourier.shape[-1]
+        success=np.zeros(total, dtype=bool)
+        for dummyind in range(total):
+            this_cross_corr=full_cross_corr[:,:,dummyind] ## get a correlation between the reference image and a pixel image "dummyind"
+            this_cross_corr_abs=cp.real(this_cross_corr)
+            if binning_cross_corr==1:
+                indy, indx=cp.unravel_index(this_cross_corr_abs.argmax(), this_cross_corr_abs.shape) ## find maximum
+            else:
+                sh0_cc, sh1_cc=(this_cross_corr_abs.shape[0])//binning_cross_corr, (this_cross_corr_abs.shape[1])//binning_cross_corr
+                this_cross_corr_abs_binned=this_cross_corr_abs[:binning_cross_corr*sh0_cc, :binning_cross_corr*sh1_cc]
+                this_cross_corr_abs_binned=cp.sum(this_cross_corr_abs_binned.reshape(sh0_cc, binning_cross_corr, sh1_cc, binning_cross_corr),(1,3))
+                indy, indx=cp.unravel_index(this_cross_corr_abs_binned.argmax(), this_cross_corr_abs_binned.shape)
+                indy=indy*binning_cross_corr+binning_cross_corr//2
+                indx=indx*binning_cross_corr+binning_cross_corr//2
+               # this_cross_corr_abs_cropped=this_cross_corr_abs[indy*binning_cross_corr-binning_cross_corr:indy*binning_cross_corr+binning_cross_corr, indx*binning_cross_corr-binning_cross_corr:indx*binning_cross_corr+binning_cross_corr]
+               # new_indy,new_indx=cp.unravel_index(this_cross_corr_abs_cropped.argmax(), this_cross_corr_abs_cropped.shape)
+               # indy=new_indy+indy*binning_cross_corr-binning_cross_corr
+                #indx=new_indx+indx*binning_cross_corr-binning_cross_corr
+            ## now we have to remember that the our scan grid is relatively sparce, i.e. the argmax index is not really exact, so we have to refine it
+            chopped_cross_corr=this_cross_corr[indy-refine_box_dim:indy+refine_box_dim+1, indx-refine_box_dim:indx+refine_box_dim+1] ## crop a small "box" around the maximum of the correlation and try to upsample it via interpolation
+            if cross_corr_type=="phase" and phase_cross_corr_formula: ## for phase cross corr, the output is a 2D sinc function. We can find its maximum analyticaly, for more info see H. Foroosh et al. "Extension of Phase Correlation to Subpixel Registration"
+                peak_center=this_cross_corr_abs[indy, indx]
+                test_peak_left=this_cross_corr_abs[indy, indx-1]
+                test_peak_right=this_cross_corr_abs[indy, indx+1]
+                test_peak_top=this_cross_corr_abs[indy-1, indx]
+                test_peak_bottom=this_cross_corr_abs[indy+1, indx]
+                if test_peak_right>test_peak_left:
+                    shift_x=test_peak_right /(test_peak_right+ peak_center)
+                    if np.abs(shift_x)>1: shift_x=test_peak_right/(test_peak_right-peak_center);
+                else:
+                    if test_peak_right<test_peak_left:
+                        shift_x=test_peak_left/(test_peak_left + peak_center)
+                        if np.abs(shift_x)>1: shift_x=test_peak_left/(test_peak_left - peak_center);
+                    else:
+                        shift_x=0
+                if test_peak_bottom>test_peak_top:
+                    shift_y=test_peak_bottom/(test_peak_bottom + peak_center)
+                    if np.abs(shift_y)>1: shift_y=test_peak_bottom/(test_peak_bottom - peak_center);
+                else:
+                    if test_peak_bottom<test_peak_top:
+                        shift_y=test_peak_top/(peak_center+ test_peak_top)
+                        if np.abs(shift_y)>1: shift_y=test_peak_top/(-peak_center+ test_peak_top);
+                    else:
+                        shift_y=0
+                shift_x=indx-shift_x-padded_scan_size[1]//2
+                shift_y=indy-shift_y-padded_scan_size[0]//2
+                success[dummyind]=True ## if everything is okay, make a note about success!
+            else:
+                if not cpu_mode:
+                    chopped_cross_corr=chopped_cross_corr.get()
+                x_old, y_old=np.meshgrid(np.arange(-refine_box_dim,refine_box_dim+1,1), np.arange(-refine_box_dim,refine_box_dim+1,1), indexing="xy")
+                x_new, y_new=np.meshgrid(np.arange(-refine_box_dim, refine_box_dim+0.1/upsample,1/upsample), np.arange(-refine_box_dim,refine_box_dim+0.1/upsample,1/upsample), indexing="xy")
+                try:
+                    interp_cross_corr=np.abs(griddata((x_old.flatten(), y_old.flatten()), chopped_cross_corr.flatten(), (x_new, y_new), method='cubic', fill_value=0)) ## i know that this should be real, but somehow abs is more stable on the gpu--> bug to be solved!
+                    refined_indy, refined_indx=np.unravel_index(interp_cross_corr.argmax(), interp_cross_corr.shape) ## this argmax is much more precise!
+                    new_indy=indy+y_new[refined_indy, refined_indx]
+                    new_indx=indx+x_new[refined_indy, refined_indx]
+                    shift_y=new_indy-padded_scan_size[0]//2 ## now we compute the shift between the reference and pixel image
+                    shift_x=new_indx-padded_scan_size[1]//2
+                    success[dummyind]=True ## if everything is okay, make a note about success!
+                except:
+                    shift_y, shift_x=0,0
+                    success[dummyind]=False
+            estimated_shifts[0,dummyind]=shift_x
+            estimated_shifts[1,dummyind]=shift_y
+            if print_flag:
+                if print_flag==2:
+                    sys.stdout.write("\rFitting the shifts: %d/%d. shift y: %.2f, shift x: %.2f...."%(dummyind+1, total, shift_y, shift_x))
+                if print_flag>2:
+                    sys.stdout.write("\nFitting the shifts: %d/%d. shift y: %.2f, shift x: %.2f...."%(dummyind+1, total, shift_y, shift_x))
+                sys.stdout.flush()
+        if not(cancel_large_shifts is None): ## now it might be that for a particular pixel the reference (grad of the CTF) and the cross correlation shifts differ way to much. It might ruin the fit. Thus, we can ignore this pixel at this particular itaretion and come back later!
+            denom=np.sum((reference_shifts)**2, axis=0)
+            nom=np.sum((estimated_shifts-reference_shifts)**2, axis=0)
+            nom[denom==0]=0
+            denom[denom==0]=1
+            radial_shifts_difference= nom /denom
+            threshold=np.percentile(radial_shifts_difference, q=cancel_large_shifts*100)
+            above_threshold= radial_shifts_difference>= threshold
+            success[above_threshold]=False
+        if print_flag:
+            sys.stdout.write("\nFound matching shifts for %d/%d pixels.\n"%(np.sum(success), total)) ## success is the number of binned bright field pixels for which we successfully interpolated the crosscorr, found maximum and the resulting shift is not too far away from what we have expected!
+        binned_kx_detector_suc,binned_ky_detector_suc=binned_kx_detector[success],binned_ky_detector[success]
+        estimated_shifts=estimated_shifts[:,success]
+        #estimated_shifts[0,:]-=np.mean(estimated_shifts[0,:])
+        #estimated_shifts[1,:]-=np.mean(estimated_shifts[1,:])
+       # estimated_shifts=np.round(estimated_shifts, 2)
+        
+        def ctf_residuals(this_guess): # define the residuals
+            nonlocal binned_kx_detector_suc,binned_ky_detector_suc, estimated_shifts, wavelength, optimize_angle, upsample, phase_cross_corr_formula
+            if optimize_angle: ## experimental
+                aberrations, angle_offset=this_guess[:-1], this_guess[-1]
+            else:
+                aberrations, angle_offset=this_guess, 0
+            ctf_grad_x, ctf_grad_y=pyptyutils.get_ctf_derivatives(aberrations, binned_kx_detector_suc, binned_ky_detector_suc, wavelength, angle_offset)
+            this_shifts_x=ctf_grad_x*wavelength/(6.283185307179586*scan_step_A)
+            this_shifts_y=ctf_grad_y*wavelength/(6.283185307179586*scan_step_A)
+            if not(phase_cross_corr_formula): ### this rounds the residuals, so jacobian is not true anymore, but it also prevents fitting super high values for higher aberrations. It is what it is..
+                this_shifts_x=(np.round(this_shifts_x*upsample,0))/upsample
+                this_shifts_y=(np.round(this_shifts_y*upsample,0))/upsample
+            dif_x=this_shifts_x-estimated_shifts[0,:]
+            dif_y=this_shifts_y-estimated_shifts[1,:]
+            return np.asarray([[dif_x], [dif_y]]).ravel()
+        shape=(estimated_shifts.shape[1])
+        def loss_ctf_residuals(z): ## this function is not used currently, but i may change it in the future
+            nonlocal upsample, phase_cross_corr_formula
+            z_1=z**0.5
+            if not(phase_cross_corr_formula):
+                z_2=(np.round(z*upsample,0))/upsample
+            z_3=z_2**2
+            l0=z_3 ## loss, actually false -> to be updated
+            l1=z_3 ## first derivative, actually false -> to be updated
+            l2=z_3 ## second derivative, actually false -> to be updated
+            return np.vstack(((l0,l1),l2))
+        
+        def jacobian_residuals(x): ## Jacobian
+            nonlocal binned_kx_detector_suc, binned_ky_detector_suc, wavelength, optimize_angle
+            if optimize_angle:
+                aberrations=x[:-1]
+                angle_offset=x[-1]
+            else:
+                aberrations=x
+                angle_offset=0
+            Matrix_shifts_x=np.zeros((len(binned_kx_detector_suc), len(aberrations)))
+            Matrix_shifts_y=np.zeros((len(binned_kx_detector_suc), len(aberrations)))
+            for indmat2 in range(len(aberrations)):
+                thisaberations_delta=np.zeros_like(aberrations)
+                thisaberations_delta[indmat2]=1
+                D_ctf_grad_x_dab, D_ctf_grad_y_dab=pyptyutils.get_ctf_derivatives(thisaberations_delta, binned_kx_detector_suc ,binned_ky_detector_suc, wavelength, angle_offset)
+                Matrix_shifts_x[:,indmat2]=D_ctf_grad_x_dab*wavelength/(6.283185307179586*scan_step_A)
+                Matrix_shifts_y[:,indmat2]=D_ctf_grad_y_dab*wavelength/(6.283185307179586*scan_step_A)
+            
+            shape=len(binned_ky_detector_suc)
+            final_mat=np.zeros((shape*2, len(x)))
+            
+            if optimize_angle:
+                final_mat[:shape,:-1]=Matrix_shifts_x
+                final_mat[shape:,:-1]=Matrix_shifts_y
+                angle_gradient_x, angle_gradient_y=pyptyutils.get_ctf_gradient_rotation_angle(aberrations, binned_kx_detector_suc, binned_ky_detector_suc, wavelength, angle_offset)
+                final_mat[:shape,-1]=angle_gradient_x
+                final_mat[shape:,-1]=angle_gradient_y
+            else:
+                final_mat[:shape,:]=Matrix_shifts_x
+                final_mat[shape:,:]=Matrix_shifts_y
+            return final_mat
+            
+        if optimize_angle:
+            start_x=np.hstack((aberrations, angle_offset))
+        else:
+            start_x=aberrations
+        result=least_squares(ctf_residuals,start_x, jac=jacobian_residuals, x_scale=x_scale_lsq, loss=loss_lsq, f_scale=f_scale_lsq, ftol=tol_ctf) ## do least squares!
+        aberrations= np.asarray(result.x)
+        if save:
+            np.save(pypty_params["output_folder"]+"/tcbf/estimated_shifts_%d.npy"%index_bin, estimated_shifts)
+            np.save(pypty_params["output_folder"]+"/tcbf/aberrations_%d.npy"%index_bin, aberrations)
+        if optimize_angle:
+            angle_offset=aberrations[-1]
+            aberrations=aberrations[:-1]
+            fit_angle_array[index_bin+1]=-1*angle_offset
+        fit_abberations_array[index_bin+1,:]=aberrations
+        if print_flag:
+            sys.stdout.write("\nCTF fitted successfully: %s."%(result.success))
+            sys.stdout.flush()
+        if plot or save: ## plot the results
+            ctf_grad_x, ctf_grad_y=pyptyutils.get_ctf_derivatives(aberrations, binned_kx_detector_suc,binned_ky_detector_suc,  wavelength, angle_offset)
+            fig, ax=plt.subplots(1,2, figsize=(10,5))
+            ap_show=rotate(aperture_binned, angle=0, axes=(1, 0), reshape=False, order=0)
+            ax[0].imshow(ap_show, cmap="gray", extent=[np.min(binned_kx_detector_full),np.max(binned_kx_detector_full), np.min(binned_ky_detector_full), np.max(binned_ky_detector_full)])
+            ax[0].quiver(binned_kx_detector_suc,binned_ky_detector_suc, estimated_shifts[0,:], estimated_shifts[1,:],  color="red", capstyle="round")
+            ax[1].imshow(ap_show, cmap="gray", extent=[np.min(binned_kx_detector_full), np.max(binned_kx_detector_full), np.min(binned_ky_detector_full), np.max(binned_ky_detector_full)])
+            ax[1].quiver(binned_kx_detector_suc,binned_ky_detector_suc, ctf_grad_x, ctf_grad_y,  color="red", capstyle="round")
+            ax[0].set_title("Fitted shifts")
+            ax[1].set_title("Fitted CTF grad")
+            if save:
+                fig.savefig(pypty_params["output_folder"]+"/tcbf/tcbf_shifts_"+str(index_bin)+".png", dpi=200)
+            if not(plot):
+                plt.close()
+            else:
+                fig.show()
+            plt.show()
+        if print_flag:
+            num_abs=len(aberrations)
+            possible_n, possible_m, possible_ab=pyptyutils.convert_num_to_nmab(num_abs)
+            aber_print, s=pyptyutils.nmab_to_strings(possible_n, possible_m, possible_ab), ""
+            for i in range(len(aberrations)): s+=aber_print[i]+" %.2e A, "%aberrations[i];
+            sys.stdout.write("\nFitted aberrations: %s"%s[:-2])
+            if optimize_angle:
+                sys.stdout.write("\nFitted PL rot angle: %.2f deg"%(-1*(angle_offset)*180/np.pi))
+        if not(cpu_mode):
+            cp.fft.config.clear_plan_cache()
+            cp.get_default_memory_pool().free_all_blocks()
+            cp.get_default_pinned_memory_pool().free_all_blocks()
+    
+    if print_flag:
+        sys.stdout.write("\nFinal CTF Fit done!")
+    
+    if save:
+        np.save(pypty_params["output_folder"]+"/tcbf/aberrations_A.npy", fit_abberations_array)
+        if optimize_angle:
+            np.save(pypty_params["output_folder"]+"/tcbf/PL_angle_deg.npy", (fit_angle_array)*180/np.pi)
+    
+    if plot:
+        num_abs=len(aberrations)
+        possible_n, possible_m, possible_ab=pyptyutils.convert_num_to_nmab(num_abs)
+        leg=pyptyutils.nmab_to_strings(possible_n, possible_m, possible_ab)
+        fig, ax=plt.subplots(len(aberrations),1,figsize=(10, 2*len(aberrations)))
+        if len(aberrations)==1:
+            ax=[ax]
+        for index_aberr in range(len(aberrations)):
+            ax[index_aberr].plot(fit_abberations_array[:,index_aberr],"-.", linewidth=2, label=leg[index_aberr])
+            ax[index_aberr].legend(loc=1)
+            ax[index_aberr].set_xlabel("iteration")
+            ax[index_aberr].set_ylabel("value")
+        if save:
+            fig.savefig(pypty_params["output_folder"]+"/tcbf/aberrations_fit.png")
+        plt.show()
+        if optimize_angle:
+            fig, ax=plt.subplots(figsize=(10, 2))
+            ax.plot((fit_angle_array)*180/np.pi, "-.", linewidth=2, label="angle offset")
+            ax.set_xlabel("iteration")
+            ax.set_ylabel("angle (deg)")
+            if save:
+                fig.savefig(pypty_params["output_folder"]+"/tcbf/angle_fit.png")
+            plt.show()
+    del binned_data_bright_field
+    try:
+        cp.fft.config.clear_plan_cache()
+        cp.get_default_memory_pool().free_all_blocks()
+        cp.get_default_pinned_memory_pool().free_all_blocks()
+    except:
+        pass
+    pypty_params["extra_probe_defocus"]=0
+    
+    if optimize_angle:
+        old_pl_rot   = pypty_params["PLRotation_deg"]
+        new_pl_rot   = -1*(angle_offset)*180/np.pi
+        old_postions = pypty_params["positions"]
+        
+        opy, opx=old_postions[:,0], old_postions[:,1]
+        rot_ang=-1*(new_pl_rot-old_pl_rot) * np.pi/180
+        opx_prime, opy_prime=opx * np.cos(rot_ang) + opy * np.sin(rot_ang), -1*opx * np.sin(rot_ang) + opy * np.cos(rot_ang)
+        opx_prime-=np.min(opx_prime)
+        opy_prime-=np.min(opy_prime)
+        
+        old_postions[:,1]=opx_prime
+        old_postions[:,0]=opy_prime
+        pypty_params["PLRotation_deg"]=new_pl_rot
+        pypty_params["positions"]=old_postions
+   
+    pypty_params["aberrations"]=aberrations
+    pypty_params["beam_ctf"]=None
+    pypty_params["probe"]=None
+    try:
+        f.close()
+    except:
+        pass
+    return pypty_params
+
+
+def upsampled_tcbf(pypty_params, upsample=5, pad=10,
+                    compensate_lowfreq_drift=False,
+                    ctf_sign_flip = False,
+                    default_float=64, round_shifts=False,
+                    xp=cp, save=0, max_parallel_fft=100, bin_fac=1):
+    """
+    Perform an upsampled tcBF (transmission coherent Bright Field) reconstruction.
+    
+    This function reconstructs a tcBF image on an upsampled scan grid from 4D-STEM data.
+    It applies Fourier-based shifts to align the bright field pixel images and combines them into a final image.
+    Prior to calling this function, it is recommended to run the tcBF alignment routine to update `pypty_params`.
+    
+    Parameters
+    ----------
+    pypty_params : dict
+        Dictionary containing experimental parameters and reconstruction settings.
+        This should include keys such as 'data_path', 'scan_size', 'aperture_mask', 'acc_voltage', etc.
+    upsample : int, optional
+        Upsampling factor for the scan grid. Default is 5.
+    pad : int, optional
+        Number of additional scan positions to pad on each side to avoid wrap-around artifacts.
+        Default is 10.
+    compensate_lowfreq_drift : bool, optional
+        If True, compensates for low-frequency drift of the aperture.
+        Requires that run_tcbf_alignment has been executed to provide drift corrections.
+        Default is False.
+    ctf_sign_flig: bool
+        Boolean flag, helps to compensate artifacts
+    default_float : {64, 32}, optional
+        Precision for floating point computations. Use 64 for higher precision or 32 for lower memory usage.
+        Default is 64.
+    round_shifts : bool, optional
+        If True, shifts are rounded and alignment is performed using array roll operations.
+        If False, FFT-based subpixel shifting is used. Default is False.
+    xp : module, optional
+        Backend array module (e.g., numpy or cupy). Default is cupy.
+    save : bool or int, optional
+        Flag to save the output image. If True, the image is saved to disk.
+        Ignored if 'save_preprocessing_files' is set in `pypty_params`. Default is 0 (False).
+    max_parallel_fft : int, optional
+        Maximum number of FFTs to perform in parallel for vectorized processing.
+        Default is 100.
+    bin_fac : int, optional
+        Binning factor for the data in reciprocal space. Default is 1 (no binning).
+    
+    Returns
+    -------
+    ndarray
+        Real-valued tcBF image reconstructed on the upsampled grid.
+    float
+        Final pixel size in Ångströms after upsampling.
+    """
+    bright_field_pixels=None
+    acc_voltage_kV= pypty_params.get("acc_voltage", 60)
+    scan_step= pypty_params.get("scan_step_A", 1)
+    aperture= pypty_params.get("aperture_mask", 1)
+    aberrations=pypty_params.get("aberrations", None)
+    PL_rot=pypty_params.get("PLRotation_deg", 0)
+    data_path= pypty_params.get("data_path", "")
+    data_pad= pypty_params.get("data_pad", 1)
+    rez_pixel_size_A= pypty_params.get("rez_pixel_size_A", 1)
+    upsample_pattern= pypty_params.get("upsample_pattern", 1)
+    save=pypty_params.get("save_preprocessing_files", save)
+    flip_ky=pypty_params.get("flip_ky", False)
+    xp=cp  #pypty_params.get("backend", cp)
+    if data_pad!=0:
+        aperture=aperture[data_pad:-data_pad,data_pad:-data_pad]
+    if upsample_pattern!=1:
+        aperture=pyptyutils.downsample_something(aperture, upsample_pattern, np)
+        rez_pixel_size_A*=upsample_pattern
+    scan_size= np.copy(pypty_params.get("scan_size", None))
+    patterns=pypty_params.get("dataset", None)
+    if patterns is None:
+        if data_path[-3:]==".h5":
+            f=h5py.File(data_path, "r")
+            patterns=f["data"]
+        elif data_path[-4:]==".npy":
+            patterns=np.load(data_path)
+    if len(patterns.shape)==4:
+        scan_size=[patterns.shape[0], patterns.shape[1]]
+        patterns=patterns.reshape(patterns.shape[0]* patterns.shape[1], patterns.shape[2],patterns.shape[3])
+    if flip_ky:
+        patterns=patterns[:,::-1, :]
+    comx= pypty_params.get("aperture_shifts_x", pypty_params.get("comx", None)) # pypty_params.get("comx", None)
+    comy=pypty_params.get("aperture_shifts_y", pypty_params.get("comy", None)) #pypty_params.get("comy", None)
+    print_flag=pypty_params.get("print_flag", 1)
+    if print_flag:
+        sys.stdout.write("\n******************************************************************************\n************************ Creating upsampled tcBF Image ***********************\n******************************************************************************\n")
+        sys.stdout.flush()
+    try:
+        os.makedirs(pypty_params["output_folder"], exist_ok=True)
+        os.makedirs(pypty_params["output_folder"]+"/tcbf/", exist_ok=True)
+    except:
+        sys.stdout.write("output folder was not created!")
+    wavelength=12.4/np.sqrt(acc_voltage_kV*(acc_voltage_kV+2*511))
+    radperpixel=rez_pixel_size_A*wavelength*bin_fac
+    if default_float==64:
+        default_float=xp.float64
+        default_complex=xp.complex128
+    else:
+        default_float=xp.float32
+        default_complex=xp.complex64
+    N_steps_y, N_steps_x= scan_size
+    aperture=aperture>0.5*np.max(aperture)
+    if bin_fac!=1:
+        sys.stdout.write("\nBinning the data")
+        sky, skx=patterns.shape[1], patterns.shape[2]
+        zeroindex_x, zeroindex_y=skx//2, sky//2
+        difference_x_left,  difference_y_left  = (zeroindex_x-int(np.floor(bin_fac/2)))%bin_fac, (zeroindex_y-int(np.floor(bin_fac/2)))%bin_fac
+        difference_x_right, difference_y_right =  skx- (skx-zeroindex_x-int(np.ceil(bin_fac/2)))%bin_fac, sky- (sky-zeroindex_y-int(np.ceil(bin_fac/2)))%bin_fac
+        new_skx, new_sky=(difference_x_right-difference_x_left)//bin_fac, (difference_y_right-difference_y_left)//bin_fac
+        if not(compensate_lowfreq_drift):
+            aperture=aperture[difference_y_left:difference_y_right, difference_x_left:difference_x_right]
+            aperture=np.mean(aperture.reshape(new_sky,bin_fac, new_skx,bin_fac), axis=(-3, -1)).astype(bool)
+            bright_field_pixels=[]
+            for ind111 in tqdm(range(patterns.shape[0])):
+                pattern_binned=np.sum((np.copy(patterns[ind111])[difference_y_left:difference_y_right, difference_x_left:difference_x_right]).reshape(new_sky,bin_fac, new_skx,bin_fac), axis=(-3, -1))
+                bright_field_pixels.append(pattern_binned[aperture])
+            bright_field_pixels=np.array(bright_field_pixels)
+    if compensate_lowfreq_drift: ## if we want to compensate the aperture wobbling, then we roll the patterns!
+        bright_field_pixels=[]
+        aperture=pypty_params.get("lowfreq_compensated_aperture", aperture)
+        aperture=aperture>0.5*np.max(aperture)
+        if bin_fac!=1:
+            aperture=np.mean(aperture[difference_y_left:difference_y_right, difference_x_left:difference_x_right].reshape(new_sky,bin_fac, new_skx,bin_fac), axis=(-3, -1)).astype(bool)
+        sys.stdout.write("\nAligning data!")
+        comx=comx.flatten()
+        comy=comy.flatten()
+        maskx, masky=np.meshgrid(np.fft.fftfreq(patterns.shape[2]), np.fft.fftfreq(patterns.shape[1]), indexing="xy")
+        for ind111 in tqdm(range(patterns.shape[0])):
+            shifty, shiftx= int(comy[ind111]), int(comx[ind111])
+            pattern_shifted=np.roll(np.copy(patterns[ind111]), (-shifty, -shiftx), axis=(0,1))
+            if bin_fac!=1:
+                pattern_shifted=np.sum(pattern_shifted[difference_y_left:difference_y_right, difference_x_left:difference_x_right].reshape(new_sky,bin_fac, new_skx,bin_fac), axis=(-3, -1))
+            bright_field_pixels.append(pattern_shifted[aperture.astype(bool)])
+        bright_field_pixels=np.array(bright_field_pixels)
+    if bright_field_pixels is None:
+        bright_field_pixels=xp.array([d[aperture] for d in patterns])
+    sys.stdout.write("\n%.2e rad per pixel"%radperpixel)
+    px_size_final=scan_step/upsample
+    if max_parallel_fft is None:
+        max_parallel_fft=bright_field_pixels.shape[-1]
+    mask_scan=xp.zeros((N_steps_y*upsample+2*pad*upsample, N_steps_x*upsample+2*pad*upsample))
+    mask_scan[pad*upsample:-pad*upsample:upsample, pad*upsample:-pad*upsample:upsample]=1
+    mask_scan=mask_scan.astype(bool)
+    qx,qy=xp.meshgrid(xp.fft.fftfreq(mask_scan.shape[1], 1), xp.fft.fftfreq(mask_scan.shape[0], 1))
+    #qx,qy=1j*qx, 1j*qy
+    apshy, apshx=aperture.shape
+    dqx, dqy=np.meshgrid(np.arange( -(apshx//2), apshx-(apshx//2), 1)*radperpixel, np.arange(-(apshy//2), apshy-(apshy//2), 1)*radperpixel)
+    dqx, dqy=dqx[aperture], dqy[aperture]
+    dqx, dqy= np.cos(PL_rot*np.pi/180)*dqx+ np.sin(PL_rot*np.pi/180)*dqy,  np.cos(PL_rot*np.pi/180)*dqy- np.sin(PL_rot*np.pi/180)*dqx
+    aberrations=np.asarray(aberrations)
+    if print_flag:
+        sys.stdout.write("\nyour final pixel size will be %.2f Å"%px_size_final)
+        sys.stdout.write("\nfinal shape of image will be: (%d, %d) "%(mask_scan.shape[0], mask_scan.shape[1]))
+        sys.stdout.flush()
+   
+    bright_field_pixels=xp.asarray(bright_field_pixels).astype(default_float)
+    weights=xp.zeros_like(mask_scan).astype(default_complex)
+    O_r=xp.zeros_like(mask_scan).astype(default_complex)
+    mask_for_weights=xp.fft.fft2(mask_scan)
+    drx, dry=pyptyutils.get_ctf_derivatives(aberrations, dqx, dqy, wavelength, 0)
+    drx, dry=xp.array(drx), xp.array(dry)
+    drx*=wavelength/px_size_final
+    dry*=wavelength/px_size_final
+    
+    if round_shifts:
+        drx=(xp.round(drx/(2*xp.pi),0).astype(int))
+        dry=(xp.round(dry/(2*xp.pi),0).astype(int))
+        if xp!=np:
+            drx=drx.get()
+            dry=dry.get()
+        for i in tqdm(range(int(np.ceil(bright_field_pixels.shape[-1])))):
+            ddry=dry[i]
+            ddrx=drx[i]
+            aligned_batch=cp.zeros((O_r.shape[0],O_r.shape[1]), dtype=default_float)
+            aligned_batch[mask_scan.astype(bool)]=bright_field_pixels[:, i]
+            aligned_batch=xp.roll(aligned_batch, (ddry,ddrx), axis=(0,1))
+            w1=xp.roll(mask_scan, (ddry, ddrx), axis=(0,1))
+            O_r+=aligned_batch
+            weights+=w1
+    else:
+        if ctf_sign_flip:
+            scan_freq_rad_x, scan_freq_rad_y = qx*wavelength / (px_size_final), qy * wavelength / (px_size_final)
+            k_minus_ktilde_x =  xp.array(dqx)[None, None,:]  - scan_freq_rad_x[:,:,None]
+            k_minus_ktilde_y =  xp.array(dqy)[None, None,:]  - scan_freq_rad_y[:,:,None]
+            normal_ctf = xp.array(pyptyutils.get_ctf(aberrations,  dqx[:], dqy[:], wavelength, 0))
+
+        for i in tqdm(range(int(np.ceil(bright_field_pixels.shape[-1]/max_parallel_fft)))):
+        
+            ####################################################################################
+            pixel_shift= qx[:,:,None]*drx[None, None, i*max_parallel_fft:max_parallel_fft*(i+1)] + qy[:,:,None]*dry[None, None, i*max_parallel_fft:max_parallel_fft*(i+1)]
+            this_kern=xp.exp(-1j* pixel_shift)
+
+            weights+=xp.sum(xp.copy(mask_for_weights)[:,:,None]*this_kern,-1)
+
+            if ctf_sign_flip:
+                shifted_ctf = pyptyutils.get_ctf(aberrations, k_minus_ktilde_x[:,:,i*max_parallel_fft:max_parallel_fft*(i+1)],   k_minus_ktilde_y[:,:,i*max_parallel_fft:max_parallel_fft*(i+1)],   wavelength, 0)
+                sign_kernel = shifted_ctf - normal_ctf[None, None,i*max_parallel_fft:max_parallel_fft*(i+1)]  + pixel_shift
+                sign_kernel= xp.sign(sign_kernel)
+                this_kern*= sign_kernel
+                
+        
+
+            aligned_batch=xp.zeros((O_r.shape[0],O_r.shape[1], this_kern.shape[-1]), dtype=default_float)
+            aligned_batch[mask_scan.astype(bool),:]=bright_field_pixels[:, i*max_parallel_fft:max_parallel_fft*(i+1)]
+            aligned_batch=xp.fft.fft2(aligned_batch, axes=(0,1)).astype(default_complex)
+            aligned_batch=aligned_batch*this_kern
+            O_r+=xp.sum(aligned_batch, -1)
+
+               
+        O_r=xp.fft.ifft2(O_r, axes=(0,1))
+        weights=xp.fft.ifft2(weights, axes=(0,1))
+    O_r_before=xp.copy(O_r)
+    O_r=xp.conjugate(weights)*(O_r/(1e-3+xp.abs(weights)**2))
+    O_r=xp.real(O_r)
+    try:
+        f.close()
+    except:
+        pass
+    try:
+        O_r=O_r.get()
+        xp.fft.config.clear_plan_cache()
+        xp.get_default_memory_pool().free_all_blocks()
+        xp.get_default_pinned_memory_pool().free_all_blocks()
+    except:
+        O_r=np.array(O_r)
+    if save: np.save(pypty_params["output_folder"]+"/tcbf/tcbf_image_upsampling_%d.npy"%(upsample), O_r);
+    return  O_r, px_size_final
+
+
+
+
+
+def run_tcbf_compressed_alignment(params, num_iterations,
+                        save=True, optimize_angle=True,  aberrations=None, n_aberrations_to_fit=12,
+                        reference_type="bf",
+                        ctf_sign_flip=False,
+                        refine_box_dim=10, upsample=3,
+                        cross_corr_type="phase", cancel_large_shifts=None,
+                        pattern_blur_width=None,
+                        scan_pad=None, aperture=None, subscan_region=None,
+                        compensate_lowfreq_drift=False, append_lowfreq_shifts_to_params=True,
+                        interpolate_scan_factor=1,
+                        binning_cross_corr=1, phase_cross_corr_formula=False,
+                        f_scale_lsq=1,x_scale_lsq=1, loss_lsq="linear", tol_ctf=1e-8):
+    """
+    Perform a CTF alignment using compressed 4D-STEM data and masked bright-field regions.
+
+    This function fits the beam CTF to the shifts between the individual pixel images of the 4d-stem dataset. It's the same as run_tcbf_alignment, but for compressed data. The shift estimation is done via cross-correaltion.
+    
+    Parameters
+    ----------
+    params : dict
+        Dictionary containing experimental and reconstruction settings.
+    num_iterations : int
+        Number of fitting iterations to perform.
+    save : bool, optional
+        Whether to save intermediate tcBF images and shift maps. Default is True.
+    optimize_angle : bool, optional
+        Whether to include probe rotation angle in the CTF fit. Default is True.
+    aberrations : list or None, optional
+        Initial guess for the aberration coefficients. If None, it will be inferred or zero-initialized.
+    n_aberrations_to_fit : int, optional
+        Number of aberration coefficients to fit if `aberrations` is not provided. Default is 12.
+    reference_type : str, optional
+        "bf" to use the tcBF image as a reference, "zero" to use the central pixel. Default is "bf".
+    ctf_sign_flip: bool
+        Boolean flag, helps to compensate artifacts
+    refine_box_dim : int, optional
+        Size of the cropped region around the cross-correlation peak for sub-pixel refinement. Default is 10.
+    upsample : int, optional
+        Upsampling factor for sub-pixel interpolation. Default is 3.
+    cross_corr_type : str, optional
+        Cross-correlation method: "phase" (recommended) or "classic". Default is "phase".
+    cancel_large_shifts : float or None, optional
+        Threshold to reject large shift outliers during fitting. Value between 0 and 1. Default is None.
+    pattern_blur_width : int or None, optional
+        Width of blur kernel for patterns prior to analysis. Default is None.
+    scan_pad : int or None, optional
+        Number of scan pixels to pad around the scan to prevent wrap-around. Default is auto.
+    aperture : ndarray or None, optional
+        Aperture mask defining pixels to analyze. If None, it will be loaded from `params`.
+    subscan_region : list or None, optional
+        Optional subregion [left, top, right, bottom] on which to perform the alignment. Default is None.
+    compensate_lowfreq_drift : bool, optional
+        Whether to compute and correct for slow drifting of the aperture over time. Default is False.
+    append_lowfreq_shifts_to_params : bool, optional
+        If True, saves the low-frequency correction back into `params`. Default is True.
+    interpolate_scan_factor : int, optional
+        Experimental: interpolate scan grid by this factor (e.g., 2 for 2x upsampled grid). Default is 1.
+    binning_cross_corr : int, optional
+        Binning factor applied to cross-correlation maps before refinement. Default is 1.
+    phase_cross_corr_formula : bool, optional
+        If True, uses analytical subpixel peak estimation for phase correlation. Default is False.
+    f_scale_lsq : float, optional
+        Scaling factor for least squares residuals (`f_scale`). Default is 1.
+    x_scale_lsq : float, optional
+        Initial step scaling (`x_scale`) for least squares. Default is 1.
+    loss_lsq : str, optional
+        Loss type for least squares optimizer. E.g., "linear", "huber". Default is "linear".
+    tol_ctf : float, optional
+        Tolerance for optimizer convergence (`ftol`). Default is 1e-8.
+
+    Returns
+    -------
+    dict
+        Updated dictionary of reconstruction parameters including fitted aberrations and scan rotation.
+
+    """
+    pypty_params=params.copy()
+    ## load parameters
+    data_path=pypty_params.get("data_path", "")
+    masks = pypty_params.get("masks", "")
+    acc_voltage=pypty_params.get("acc_voltage", 60)
+    scan_size=np.copy(np.array(pypty_params.get("scan_size", None)))
+    scan_step_A=pypty_params.get("scan_step_A", 1)
+    if aperture is None:
+        aperture=pypty_params.get("aperture_mask", None)
+    if type(aperture)==str:
+        if aperture=="none" or aperture=="None":
+            aperture=None
+    pixel_size_x_A=pypty_params.get("pixel_size_x_A", 1)
+    rot_deg=pypty_params.get("PLRotation_deg", 0)
+    rez_pixel_size_A=pypty_params.get("rez_pixel_size_A", 1)
+    data_pad=pypty_params.get("data_pad",0)
+    upsample_pattern=pypty_params.get("upsample_pattern",1)
+    save=pypty_params.get("save_preprocessing_files", save)
+    
+    if cross_corr_type!="phase": phase_cross_corr_formula=False;
+ 
+    if upsample_pattern!=1:
+        if not(aperture is None):
+            aperture=pyptyutils.downsample_something(aperture, upsample_pattern, np)
+        data_pad=data_pad//upsample_pattern
+        rez_pixel_size_A*=upsample_pattern
+        
+    if data_pad!=0 and not(aperture is None):
+        aperture=aperture[data_pad:-data_pad,data_pad:-data_pad]
+        
+    wavelength=12.4/np.sqrt(acc_voltage*(acc_voltage+2*511))
+    mrad_per_px=1000*rez_pixel_size_A*wavelength
+    if aberrations is None:
+        aberrations=pypty_params.get("aberrations", None)
+        if aberrations is None:
+            aberrations=list(np.zeros(n_aberrations_to_fit))
+            aberrations[0]=-1*pypty_params.get("extra_probe_defocus", 0)
+    plot=pypty_params.get("plot", False)
+    print_flag=pypty_params.get("print_flag", False)
+    flip_ky=pypty_params.get("flip_ky", False)
+    num_abs=len(aberrations)
+    possible_n, possible_m, possible_ab=pyptyutils.convert_num_to_nmab(num_abs)
+    aber_print, s=pyptyutils.nmab_to_strings(possible_n, possible_m, possible_ab), ""
+    for i in range(len(aberrations)): s+=aber_print[i]+" %.2e Å, "%aberrations[i];
+    if print_flag:
+        sys.stdout.write("\n******************************************************************************\n************************ Running the tcBF alignment **************************\n******************************************************************************\n")
+        sys.stdout.write("\nInitial aberrations: %s"% s[:-2]);
+        sys.stdout.flush()
+    ## create the folders etc
+    try:
+        os.makedirs(pypty_params["output_folder"], exist_ok=True)
+        os.makedirs(pypty_params["output_folder"]+"/tcbf/", exist_ok=True)
+    except:
+        sys.stdout.write("output folder was not created!")
+    
+    angle_offset=-1*rot_deg*3.141592654/180
+    rot_rad=0
+    
+    dataset_h5=params.get("dataset", None)
+    
+    if dataset_h5 is None:
+        if data_path[-3:]==".h5":
+            dataset_h5=h5py.File(data_path, "r")
+            dataset_h5=dataset_h5["data"]
+        elif data_path[-4:]==".npy":
+            dataset_h5=np.load(data_path)
+    if len(dataset_h5.shape)==4:
+        scan_size=[dataset_h5.shape[0], dataset_h5.shape[1]]
+        dataset_h5=dataset_h5.reshape(dataset_h5.shape[0]* dataset_h5.shape[1], dataset_h5.shape[2],dataset_h5.shape[3])
+    if flip_ky:
+        dataset_h5=dataset_h5[:,::-1, :]
+   
+    binned_data_bright_field=cp.asarray(dataset_h5)
+    if scan_pad is None:
+        scan_pad=1+int(np.ceil(np.ceil(pixel_size_x_A*(aperture.shape[1]+2*data_pad)/(scan_step_A))/2))
+    padded_scan_size=[scan_size[0]+2*scan_pad, scan_size[1]+2*scan_pad]
+    if print_flag:
+        print("shape of data: ", dataset_h5.shape, " scan size: ",scan_size )
+        
+        
+        
+    skx, sky=aperture.shape[1], aperture.shape[0]
+    skx2, sky2=skx//2, sky//2
+    
+    ## create the grids of spatial frequencies
+    x_freq_scan_grid, y_freq_scan_grid=np.meshgrid(np.fft.fftfreq(padded_scan_size[1]), np.fft.fftfreq(padded_scan_size[0]), indexing="xy")
+    x_freq_scan_grid, y_freq_scan_grid=cp.asarray(x_freq_scan_grid), cp.asarray(y_freq_scan_grid)
+    
+    kx_detector_full,ky_detector_full=np.meshgrid(np.arange(-skx2,skx-skx2, 1)*mrad_per_px*1e-3,np.arange(-sky2,sky-sky2, 1)*mrad_per_px*1e-3 , indexing="xy")
+    kx_detector_full, ky_detector_full=np.cos(rot_rad)*kx_detector_full+np.sin(rot_rad)*ky_detector_full, -np.sin(rot_rad)*kx_detector_full+np.cos(rot_rad)*ky_detector_full
+
+    
+  
+  
+   
+    ssum_masks=cp.sum(masks, (1,2))
+    binned_kx_detector, binned_ky_detector=cp.sum(kx_detector_full[None,:,:]*masks, (1,2))/ssum_masks, cp.sum(ky_detector_full[None,:,:]*masks, (1,2))/ssum_masks
+    
+    
+    
+    zeroindex_x, zeroindex_y=skx//2, sky//2
+    binned_data_bright_field=binned_data_bright_field.reshape(scan_size[0], scan_size[1], binned_data_bright_field.shape[1]) ## reshape
+    binned_data_bright_field=cp.pad(binned_data_bright_field, [[scan_pad, scan_pad], [scan_pad, scan_pad], [0,0]]) ## pad with zeros on the sides
+    for dummyind in range(binned_data_bright_field.shape[-1]):  # fill the edge values with a "mean" count
+        mean=cp.mean(binned_data_bright_field[scan_pad:-scan_pad,scan_pad:-scan_pad,dummyind])
+        binned_data_bright_field[:scan_pad,:,dummyind]=mean
+        binned_data_bright_field[-scan_pad:,:,dummyind]=mean
+        binned_data_bright_field[:,:scan_pad,dummyind]=mean
+        binned_data_bright_field[:,-scan_pad:,dummyind]=mean
+    zero_freq=np.argmin(binned_kx_detector**2+binned_ky_detector**2) ## find where is your lowest spatial frequency after binning
+    binned_data_bright_field_fourier=pyptyfft.fft2(binned_data_bright_field, axes=(0,1)) ### fourier transform
+    Matrix_shifts_x=np.zeros((len(binned_ky_detector), len(aberrations)))  ## this thing will be needed for aberation fit later
+    Matrix_shifts_y=np.zeros((len(binned_ky_detector), len(aberrations)))
+    for indmat2 in range(len(aberrations)): ## we prepare a Jacobian for the CTF fit
+        thisaberations_delta=np.zeros_like(aberrations)
+        thisaberations_delta[indmat2]=1
+        D_ctf_grad_x_dab, D_ctf_grad_y_dab=pyptyutils.get_ctf_derivatives(thisaberations_delta, binned_kx_detector ,binned_ky_detector, wavelength, angle_offset)
+        Matrix_shifts_x[:,indmat2]=D_ctf_grad_x_dab*wavelength/(6.283185307179586*scan_step_A)
+        Matrix_shifts_y[:,indmat2]=D_ctf_grad_y_dab*wavelength/(6.283185307179586*scan_step_A)
+  
+  
+    ## prepare some arrays
+    fit_abberations_array=np.zeros((num_iterations+1, len(aberrations)))
+    fit_abberations_array[0,:]=aberrations
+    if optimize_angle:
+        fit_angle_array=np.zeros(num_iterations+1)
+        fit_angle_array[0]=-1*angle_offset
+        
+        
+    if print_flag:
+        sys.stdout.write("Initializing the abberation fit!")
+        sys.stdout.flush()
+    ## now we will iterate through provided binning values (binning will happen in diffraction space)
+    for index_it in range(num_iterations):
+        try:
+            cp.fft.config.clear_plan_cache() ## free the memory
+            pool.free_all_blocks()
+            pinned_pool.free_all_blocks()
+        except:
+            pass
+        if print_flag:
+            sys.stdout.write("\n---> Starting iteration %d/%d of the CTF fit"%(index_it+1,num_iterations))
+            sys.stdout.flush()
+        
+       
+        ctf_grad_x, ctf_grad_y=pyptyutils.get_ctf_derivatives(aberrations, binned_kx_detector, binned_ky_detector, wavelength, angle_offset)
+        reference_x, reference_y=ctf_grad_x*wavelength/(6.283185307179586*scan_step_A),ctf_grad_y*wavelength/(6.283185307179586*scan_step_A) ## this are our reference shifts
+        reference_shifts=np.zeros((2, reference_x.shape[0]))
+        reference_shifts[0]=reference_x
+        reference_shifts[1]=reference_y
+        reference_x, reference_y = cp.asarray(reference_x), cp.asarray(reference_y)
+        
+        
+        
+        pixel_shift=6.283185307179586*(reference_x[None, None,:] * x_freq_scan_grid[:,:,None]+ reference_y[None, None,:] * y_freq_scan_grid[:,:,None])
+        kernel=cp.exp(-1j*pixel_shift) ## here we create a shift kernel to generate a tcBF image
+        
+        
+        if ctf_sign_flip:
+            if index_it==0:
+                scan_freq_rad_x, scan_freq_rad_y = x_freq_scan_grid*wavelength / scan_step_A, y_freq_scan_grid * wavelength / scan_step_A
+                
+                pl_rot_extra = -1 * angle_offset
+                
+                rotated_bd_x, rotated_bd_y= cp.asarray(binned_kx_detector), cp.asarray(binned_ky_detector)
+                rotated_bd_x, rotated_bd_y= cp.cos(pl_rot_extra)*rotated_bd_x + cp.sin(pl_rot_extra)*rotated_bd_y, -cp.sin(pl_rot_extra)*rotated_bd_x + cp.cos(pl_rot_extra)*rotated_bd_y
+                
+
+                k_minus_ktilde_x = rotated_bd_x[None, None,:]  - scan_freq_rad_x[:,:,None]
+                k_minus_ktilde_y = rotated_bd_y[None, None,:]  - scan_freq_rad_y[:,:,None]
+                
+            normal_ctf  = cp.asarray(pyptyutils.get_ctf(aberrations,  rotated_bd_x, rotated_bd_y, wavelength, 0))
+            shifted_ctf = pyptyutils.get_ctf(aberrations, k_minus_ktilde_x,     k_minus_ktilde_y, wavelength, 0)
+            sign_kernel = shifted_ctf - normal_ctf[None, None,:]  + pixel_shift
+            sign_kernel = cp.sign(sign_kernel)
+            kernel*= sign_kernel
+        
+       
+        image_bf_binned_fourier= binned_data_bright_field_fourier*kernel
+        np.save('/Users/anton/Desktop/ptychography_datasets/Anton and Tolga/pythonic_data/test.npy', np.moveaxis(np.fft.ifft2(image_bf_binned_fourier, axes=(0,1)), 2,0).real)
+        
+        
+        image_bf_binned_fourier=(cp.sum(image_bf_binned_fourier, -1)) ## align the pixel images
+        
+        if reference_type=="bf": # option 1: cross-corelate the individual pixel images with a tcBF estimate
+            refence=image_bf_binned_fourier
+        else: # option 2: cross-corelate the individual pixel images with an image corresponding to the lowest spatial frequency
+            refence=binned_data_bright_field_fourier[:,:, zero_freq]
+        if cross_corr_type=="phase":
+            full_cross_corr=cp.fft.fftshift(pyptyfft.ifft2(cp.exp(-1j*cp.angle(binned_data_bright_field_fourier*cp.conjugate(refence)[:,:,None])), axes=(0,1)), axes=(0,1)) ## phase cross correlation
+        else:
+            full_cross_corr=cp.fft.fftshift(pyptyfft.ifft2( cp.conjugate(binned_data_bright_field_fourier)*refence[:,:,None]  , axes=(0,1)), axes=(0,1)) ## phase cross correlation
+        try:
+            reference_x=reference_x.get()
+            reference_y=reference_y.get()
+        except:
+            pass
+        if plot or save: ## plot the tcBF estimate
+            image_bf_binned_plot=cp.real(pyptyfft.ifft2(image_bf_binned_fourier))
+            try:
+                image_bf_binned_plot=image_bf_binned_plot.get()
+            except:
+                pass
+            plt.imshow(image_bf_binned_plot, cmap="gray")
+            plt.title("tcBF image Iteration %d"%(index_it))
+            plt.axis("off")
+            if save:
+                plt.savefig(pypty_params["output_folder"]+"/tcbf/tcbf_image_"+str(index_it)+".png", dpi=200)
+                np.save(pypty_params["output_folder"]+"/tcbf/tcbf_image_"+str(index_it)+".npy", image_bf_binned_plot)
+            if not(plot):
+                plt.close()
+            else:
+                plt.show()
+        estimated_shifts=np.zeros((2, binned_data_bright_field_fourier.shape[-1])) ## now we have to find the peaks in the correlations
+        total=binned_data_bright_field_fourier.shape[-1]
+        success=np.zeros(total, dtype=bool)
+        for dummyind in range(total):
+            this_cross_corr=full_cross_corr[:,:,dummyind] ## get a correlation between the reference image and a pixel image "dummyind"
+            this_cross_corr_abs=cp.real(this_cross_corr)
+            if binning_cross_corr==1:
+                indy, indx=cp.unravel_index(this_cross_corr_abs.argmax(), this_cross_corr_abs.shape) ## find maximum
+            else:
+                sh0_cc, sh1_cc=(this_cross_corr_abs.shape[0])//binning_cross_corr, (this_cross_corr_abs.shape[1])//binning_cross_corr
+                this_cross_corr_abs_binned=this_cross_corr_abs[:binning_cross_corr*sh0_cc, :binning_cross_corr*sh1_cc]
+                this_cross_corr_abs_binned=cp.sum(this_cross_corr_abs_binned.reshape(sh0_cc, binning_cross_corr, sh1_cc, binning_cross_corr),(1,3))
+                indy, indx=cp.unravel_index(this_cross_corr_abs_binned.argmax(), this_cross_corr_abs_binned.shape)
+                indy=indy*binning_cross_corr+binning_cross_corr//2
+                indx=indx*binning_cross_corr+binning_cross_corr//2
+            ## now we have to remember that the our scan grid is relatively sparce, i.e. the argmax index is not really exact, so we have to refine it
+            chopped_cross_corr=this_cross_corr[indy-refine_box_dim:indy+refine_box_dim+1, indx-refine_box_dim:indx+refine_box_dim+1] ## crop a small "box" around the maximum of the correlation and try to upsample it via interpolation
+            if cross_corr_type=="phase" and phase_cross_corr_formula: ## for phase cross corr, the output is a 2D sinc function. We can find its maximum analyticaly, for more info see H. Foroosh et al. "Extension of Phase Correlation to Subpixel Registration"
+                peak_center=this_cross_corr_abs[indy, indx]
+                test_peak_left=this_cross_corr_abs[indy, indx-1]
+                test_peak_right=this_cross_corr_abs[indy, indx+1]
+                test_peak_top=this_cross_corr_abs[indy-1, indx]
+                test_peak_bottom=this_cross_corr_abs[indy+1, indx]
+                if test_peak_right>test_peak_left:
+                    shift_x=test_peak_right /(test_peak_right+ peak_center)
+                    if np.abs(shift_x)>1: shift_x=test_peak_right/(test_peak_right-peak_center);
+                else:
+                    if test_peak_right<test_peak_left:
+                        shift_x=test_peak_left/(test_peak_left + peak_center)
+                        if np.abs(shift_x)>1: shift_x=test_peak_left/(test_peak_left - peak_center);
+                    else:
+                        shift_x=0
+                if test_peak_bottom>test_peak_top:
+                    shift_y=test_peak_bottom/(test_peak_bottom + peak_center)
+                    if np.abs(shift_y)>1: shift_y=test_peak_bottom/(test_peak_bottom - peak_center);
+                else:
+                    if test_peak_bottom<test_peak_top:
+                        shift_y=test_peak_top/(peak_center+ test_peak_top)
+                        if np.abs(shift_y)>1: shift_y=test_peak_top/(-peak_center+ test_peak_top);
+                    else:
+                        shift_y=0
+                shift_x=indx-shift_x-padded_scan_size[1]//2
+                shift_y=indy-shift_y-padded_scan_size[0]//2
+                success[dummyind]=True ## if everything is okay, make a note about success!
+            else:
+                try:
+                    chopped_cross_corr=chopped_cross_corr.get()
+                except:
+                    pass
+                x_old, y_old=np.meshgrid(np.arange(-refine_box_dim,refine_box_dim+1,1), np.arange(-refine_box_dim,refine_box_dim+1,1), indexing="xy")
+                x_new, y_new=np.meshgrid(np.arange(-refine_box_dim, refine_box_dim+0.1/upsample,1/upsample), np.arange(-refine_box_dim,refine_box_dim+0.1/upsample,1/upsample), indexing="xy")
+                try:
+                    interp_cross_corr=np.abs(griddata((x_old.flatten(), y_old.flatten()), chopped_cross_corr.flatten(), (x_new, y_new), method='cubic', fill_value=0)) ## i know that this should be real, but somehow abs is more stable on the gpu--> bug to be solved!
+                    refined_indy, refined_indx=np.unravel_index(interp_cross_corr.argmax(), interp_cross_corr.shape) ## this argmax is much more precise!
+                    new_indy=indy+y_new[refined_indy, refined_indx]
+                    new_indx=indx+x_new[refined_indy, refined_indx]
+                    shift_y=new_indy-padded_scan_size[0]//2 ## now we compute the shift between the reference and pixel image
+                    shift_x=new_indx-padded_scan_size[1]//2
+                    success[dummyind]=True ## if everything is okay, make a note about success!
+                except:
+                    shift_y, shift_x=0,0
+                    success[dummyind]=False
+            estimated_shifts[0,dummyind]=shift_x
+            estimated_shifts[1,dummyind]=shift_y
+            if print_flag:
+                if print_flag==2:
+                    sys.stdout.write("\rFitting the shifts: %d/%d. shift y: %.2f, shift x: %.2f...."%(dummyind+1, total, shift_y, shift_x))
+                if print_flag>2:
+                    sys.stdout.write("\nFitting the shifts: %d/%d. shift y: %.2f, shift x: %.2f...."%(dummyind+1, total, shift_y, shift_x))
+                sys.stdout.flush()
+        if not(cancel_large_shifts is None): ## now it might be that for a particular pixel the reference (grad of the CTF) and the cross correlation shifts differ way to much. It might ruin the fit. Thus, we can ignore this pixel at this particular itaretion and come back later!
+            denom=np.sum((reference_shifts)**2, axis=0)
+            nom=np.sum((estimated_shifts-reference_shifts)**2, axis=0)
+            nom[denom==0]=0
+            denom[denom==0]=1
+            radial_shifts_difference= nom /denom
+            threshold=np.percentile(radial_shifts_difference, q=cancel_large_shifts*100)
+            above_threshold= radial_shifts_difference>= threshold
+            success[above_threshold]=False
+        if print_flag:
+            sys.stdout.write("\nFound matching shifts for %d/%d pixels.\n"%(np.sum(success), total)) ## success is the number of binned bright field pixels for which we successfully interpolated the crosscorr, found maximum and the resulting shift is not too far away from what we have expected!
+        binned_kx_detector_suc,binned_ky_detector_suc=binned_kx_detector[success],binned_ky_detector[success]
+        estimated_shifts=estimated_shifts[:,success]
+        
+        estimated_shifts = estimated_shifts- np.mean(estimated_shifts, axis=1)[:,None]
+        
+        
+        
+        def ctf_residuals(this_guess): # define the residuals
+            nonlocal binned_kx_detector_suc,binned_ky_detector_suc, estimated_shifts, wavelength, optimize_angle, upsample, phase_cross_corr_formula
+            if optimize_angle: ## experimental
+                aberrations, angle_offset=this_guess[:-1], this_guess[-1]
+            else:
+                aberrations, angle_offset=this_guess, 0
+            ctf_grad_x, ctf_grad_y=pyptyutils.get_ctf_derivatives(aberrations, binned_kx_detector_suc, binned_ky_detector_suc, wavelength, angle_offset)
+            this_shifts_x=ctf_grad_x*wavelength/(6.283185307179586*scan_step_A)
+            this_shifts_y=ctf_grad_y*wavelength/(6.283185307179586*scan_step_A)
+            if not(phase_cross_corr_formula): ### this rounds the residuals, so jacobian is not true anymore, but it also prevents fitting super high values for higher aberrations. It is what it is..
+                this_shifts_x=(np.round(this_shifts_x*upsample,0))/upsample
+                this_shifts_y=(np.round(this_shifts_y*upsample,0))/upsample
+            dif_x=this_shifts_x-estimated_shifts[0,:]
+            dif_y=this_shifts_y-estimated_shifts[1,:]
+            return np.asarray([[dif_x], [dif_y]]).ravel()
+        shape=(estimated_shifts.shape[1])
+        if optimize_angle:
+            final_mat=None
+        else:
+            final_mat=np.zeros((shape*2,Matrix_shifts_x.shape[1]))
+            final_mat[:shape,:]=Matrix_shifts_x[success,:]
+            final_mat[shape:,:]=Matrix_shifts_y[success,:]
+            
+        def loss_ctf_residuals(z): ## this function is not used currently, but i may change it in the future
+            nonlocal upsample, phase_cross_corr_formula
+            z_1=z**0.5
+            if not(phase_cross_corr_formula):
+                z_2=(np.round(z*upsample,0))/upsample
+            z_3=z_2**2
+            l0=z_3 ## loss, actually false -> to be updated
+            l1=z_3 ## first derivative, actually false -> to be updated
+            l2=z_3 ## second derivative, actually false -> to be updated
+            return np.vstack(((l0,l1),l2))
+        
+        def jacobian_residuals(x): ## Jacobian
+            nonlocal final_mat, binned_kx_detector_suc, binned_ky_detector_suc, wavelength, optimize_angle
+            if final_mat is None:
+                aberrations=x[:-1]
+                angle_offset=x[-1]
+                Matrix_shifts_x=np.zeros((len(binned_kx_detector_suc), len(aberrations)))
+                Matrix_shifts_y=np.zeros((len(binned_kx_detector_suc), len(aberrations)))
+                for indmat2 in range(len(aberrations)):
+                    thisaberations_delta=np.zeros_like(aberrations)
+                    thisaberations_delta[indmat2]=1
+                    D_ctf_grad_x_dab, D_ctf_grad_y_dab=pyptyutils.get_ctf_derivatives(thisaberations_delta, binned_kx_detector_suc ,binned_ky_detector_suc, wavelength, angle_offset)
+                    Matrix_shifts_x[:,indmat2]=D_ctf_grad_x_dab*wavelength/(6.283185307179586*scan_step_A)
+                    Matrix_shifts_y[:,indmat2]=D_ctf_grad_y_dab*wavelength/(6.283185307179586*scan_step_A)
+                angle_gradient_x, angle_gradient_y=pyptyutils.get_ctf_gradient_rotation_angle(aberrations, binned_kx_detector_suc, binned_ky_detector_suc, wavelength, angle_offset)
+                shape=len(binned_ky_detector_suc)
+                final_mat=np.zeros((shape*2, len(x)))
+                final_mat[:shape,:-1]=Matrix_shifts_x
+                final_mat[shape:,:-1]=Matrix_shifts_y
+                final_mat[:shape,-1]=angle_gradient_x
+                final_mat[shape:,-1]=angle_gradient_y
+            return final_mat
+            
+        if optimize_angle:
+            start_x=np.hstack((aberrations, angle_offset))
+        else:
+            start_x=aberrations
+        result=least_squares(ctf_residuals,start_x, jac=jacobian_residuals, x_scale=x_scale_lsq, loss=loss_lsq, f_scale=f_scale_lsq, ftol=tol_ctf) ## do least squares!
+        aberrations= np.asarray(result.x)
+        if save:
+            np.save(pypty_params["output_folder"]+"/tcbf/estimated_shifts_%d.npy"%index_it, estimated_shifts)
+            np.save(pypty_params["output_folder"]+"/tcbf/aberrations_%d.npy"%index_it, aberrations)
+        if optimize_angle:
+            angle_offset=aberrations[-1]
+            aberrations=aberrations[:-1]
+            fit_angle_array[index_it+1]=-1*angle_offset
+        fit_abberations_array[index_it+1,:]=aberrations
+        if print_flag:
+            sys.stdout.write("\nCTF fitted successfully: %s."%(result.success))
+            sys.stdout.flush()
+        if plot or save: ## plot the results
+            ctf_grad_x, ctf_grad_y=pyptyutils.get_ctf_derivatives(aberrations, binned_kx_detector_suc,binned_ky_detector_suc,  wavelength, angle_offset)
+            fig, ax=plt.subplots(1,2, figsize=(10,5))
+            ap_show=aperture
+            ax[0].imshow(ap_show, cmap="gray", extent=[np.min(kx_detector_full),np.max(kx_detector_full), np.min(ky_detector_full), np.max(ky_detector_full)])
+            ax[0].quiver(binned_kx_detector_suc,binned_ky_detector_suc, estimated_shifts[0,:], estimated_shifts[1,:],  color="red", capstyle="round")
+            ax[1].imshow(ap_show, cmap="gray", extent=[np.min(kx_detector_full), np.max(kx_detector_full), np.min(ky_detector_full), np.max(ky_detector_full)])
+            ax[1].quiver(binned_kx_detector_suc,binned_ky_detector_suc, ctf_grad_x, ctf_grad_y,  color="red", capstyle="round")
+            ax[0].set_title("Fitted shifts")
+            ax[1].set_title("Fitted CTF grad")
+            if save:
+                fig.savefig(pypty_params["output_folder"]+"/tcbf/tcbf_shifts_"+str(index_it)+".png", dpi=200)
+            if not(plot):
+                plt.close()
+            else:
+                fig.show()
+            plt.show()
+        if print_flag:
+            num_abs=len(aberrations)
+            possible_n, possible_m, possible_ab=pyptyutils.convert_num_to_nmab(num_abs)
+            aber_print, s=pyptyutils.nmab_to_strings(possible_n, possible_m, possible_ab), ""
+            for i in range(len(aberrations)): s+=aber_print[i]+" %.2e A, "%aberrations[i];
+            sys.stdout.write("\nFitted aberrations: %s"%s[:-2])
+            if optimize_angle:
+                sys.stdout.write("\nFitted PL rot angle: %.2f deg"%(-1*(angle_offset)*180/np.pi))
+        try:
+            cp.fft.config.clear_plan_cache()
+            cp.get_default_memory_pool().free_all_blocks()
+            cp.get_default_pinned_memory_pool().free_all_blocks()
+        except:
+            pass
+    
+    if print_flag:
+        sys.stdout.write("\nFinal CTF Fit done!")
+    
+    if save:
+        np.save(pypty_params["output_folder"]+"/tcbf/aberrations_A.npy", fit_abberations_array)
+        if optimize_angle:
+            np.save(pypty_params["output_folder"]+"/tcbf/PL_angle_deg.npy", (fit_angle_array)*180/np.pi)
+    
+    if plot:
+        num_abs=len(aberrations)
+        possible_n, possible_m, possible_ab=pyptyutils.convert_num_to_nmab(num_abs)
+        leg=pyptyutils.nmab_to_strings(possible_n, possible_m, possible_ab)
+        fig, ax=plt.subplots(len(aberrations),1,figsize=(10, 2*len(aberrations)))
+        if len(aberrations)==1:
+            ax=[ax]
+        for index_aberr in range(len(aberrations)):
+            ax[index_aberr].plot(fit_abberations_array[:,index_aberr],"-.", linewidth=2, label=leg[index_aberr])
+            ax[index_aberr].legend(loc=1)
+            ax[index_aberr].set_xlabel("iteration")
+            ax[index_aberr].set_ylabel("value")
+        if save:
+            fig.savefig(pypty_params["output_folder"]+"/tcbf/aberrations_fit.png")
+        plt.show()
+        if optimize_angle:
+            fig, ax=plt.subplots(figsize=(10, 2))
+            ax.plot((fit_angle_array)*180/np.pi, "-.", linewidth=2, label="angle offset")
+            ax.set_xlabel("iteration")
+            ax.set_ylabel("angle (deg)")
+            if save:
+                fig.savefig(pypty_params["output_folder"]+"/tcbf/angle_fit.png")
+            plt.show()
+    del binned_data_bright_field
+    try:
+        cp.fft.config.clear_plan_cache()
+        cp.get_default_memory_pool().free_all_blocks()
+        cp.get_default_pinned_memory_pool().free_all_blocks()
+    except:
+        pass
+    pypty_params["extra_probe_defocus"]=0
+    
+    if optimize_angle:
+        old_pl_rot   = pypty_params["PLRotation_deg"]
+        new_pl_rot   = -1*(angle_offset)*180/np.pi
+        old_postions = pypty_params["positions"]
+        
+        opy, opx=old_postions[:,0], old_postions[:,1]
+        rot_ang=-1*(new_pl_rot-old_pl_rot) * np.pi/180
+        opx_prime, opy_prime=opx * np.cos(rot_ang) + opy * np.sin(rot_ang), -1*opx * np.sin(rot_ang) + opy * np.cos(rot_ang)
+        opx_prime-=np.min(opx_prime)
+        opy_prime-=np.min(opy_prime)
+        
+        old_postions[:,1]=opx_prime
+        old_postions[:,0]=opy_prime
+        pypty_params["PLRotation_deg"]=new_pl_rot
+        pypty_params["positions"]=old_postions
+   
+    pypty_params["aberrations"]=aberrations
+    pypty_params["beam_ctf"]=None
+    pypty_params["probe"]=None
+    try:
+        f.close()
+    except:
+        pass
+    return pypty_params
+

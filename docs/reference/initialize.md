@@ -1,0 +1,3 @@
+# `pypty.initialize`
+
+::: pypty.initialize
